@@ -157,6 +157,23 @@ begin
   select count(*) into n from job_spray where job_id = job2; if n <> 3 then raise exception 'spray rows %', n; end if;
 end $$;
 
+-- 0008: job assignment and observations as the phone writes them (run as the table owner, before `set role`)
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; p constant uuid := '33333333-3333-3333-3333-333333333333';
+        prod constant uuid := 'aaaaaaaa-0000-0000-0000-000000000001'; w constant uuid := 'bbbbbbbb-0000-0000-0000-000000000001'; j constant uuid := 'ffffffff-0000-0000-0000-000000000001';
+begin
+  insert into jobs(id,farm_id,kind,status,product_id,worker_id,dose_str,dose_unit,planned_for) values (j,f,'spray','planned',prod,w,0.025,'ml/str','2026-11-18');
+  begin insert into jobs(farm_id,kind,status,product_id,worker_id,dose_str) values (f,'spray','planned',prod,w,0.025); raise exception 'open spray without a dose unit accepted'; exception when check_violation then null; end;
+  begin insert into jobs(farm_id,kind,status,worker_id,dose_str,dose_unit) values (f,'spray','planned',w,0.025,'ml/str'); raise exception 'open spray without a product accepted'; exception when check_violation then null; end;
+  begin insert into jobs(farm_id,kind,status,product_id,worker_id,dose_str,dose_unit) values (f,'spray','planned',prod,w,0,'ml/str'); raise exception 'job dose 0 accepted'; exception when check_violation then null; end;
+  update jobs set status = 'skipped', skip_reason = 'rain' where id = j;
+  begin update jobs set skip_reason = null where id = j; raise exception 'skipped job without a reason accepted'; exception when check_violation then null; end;
+  begin insert into jobs(farm_id,kind,status,product_id,worker_id,dose_str,dose_unit,skip_reason) values (f,'spray','planned',prod,w,0.025,'ml/str','rain'); raise exception 'reason on an open job accepted'; exception when check_violation then null; end;
+  insert into observations(farm_id,parcel_id,kind,note,observed_at,device_id,actor_id) values (f,p,'pest','aphids','2026-11-20 08:00+00','dev',w::text);
+  begin insert into observations(farm_id,parcel_id,kind) values (f,p,'rumour'); raise exception 'bad observation kind accepted'; exception when check_violation then null; end;
+  begin update observations set note = 'x'; raise exception 'observation update allowed'; exception when insufficient_privilege then null; end;
+end $$;
+
 create role app_user nologin;
 grant usage on schema public, auth to app_user;
 grant all on all tables in schema public to app_user;
