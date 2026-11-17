@@ -17,7 +17,7 @@ Scope: leafy greens and herbs, Megara plain. Replaces the v2 "why" texts.
 
 ## Weather inputs (added 2026-11-17, meteorologist review)
 - **Source:** ICON-EU (main, 0–78 h) with ECMWF IFS HRES as fallback and for days 4–10; model name and run time are stored as data. When the two disagree (Tmin > 2 °C apart, rain yes/no) drop one confidence level. Fetched every 6 h; older than 12 h = no weather advice.
-- **Confidence for gridded data** (replaces the station-distance rule): Low when the parcel elevation differs from the weather cell's by more than 100 m, when the cell is coastal, or for a valley or foothill parcel on a radiative night.
+- **Confidence for gridded data** (replaces the station-distance rule): Low when the parcel elevation differs from the weather cell's by more than 100 m, when the cell is coastal, or for a `plain` or `slope` parcel on a radiative night (the grid does not model cold pooling).
 - **Wind is a 10 m value.** State thresholds at 10 m or convert (boom height u2 ≈ 0.75 × u10). Block on the gust.
 - **Leaf-wet hour** (shared by SPRAY-WIN, DM-SPIN, LWD): an hour counts as wet if any of: RH ≥ [SET, 87–90] %; dew-point depression ≤ [SET, ~2 °C] with light wind; rain ≥ 0.2 mm; **sprinkler irrigation running**, plus a drying tail [SET]. Calibrate with dew observations or a leaf-wetness sensor. Open-Meteo's own leaf-wetness probability is daily only and is not used.
 - **Confidence wording (Greek UI):** High «μετρημένο/ετικέτα» · Medium «πρόγνωση μοντέλου ~7 km» · Low «εκτίμηση – ελέγξτε στο χωράφι». Always show «Πρόγνωση ΗΗ:ΜΜ».
@@ -88,11 +88,11 @@ Scope: leafy greens and herbs, Megara plain. Replaces the v2 "why" texts.
 ## B. Weather risk and disease
 
 ### FROST: Frost and cold-air pooling
-- **Inputs:** hourly 2 m Tmin, wind, cloud, dew point; parcel elevation and **topo class** (plain/valley floor, slope, ridge, coastal); crop and stage; covers on hand.
+- **Inputs:** hourly 2 m Tmin, wind, cloud, dew point; parcel elevation and **topo class** (**plain, slope, coast**; ~~plain/valley floor, slope, ridge, coastal~~ reduced to three classes on 2026-11-17); crop and stage; covers on hand.
 - **Logic:**
   - **Radiative night:** clear sky (cloud below [SET] oktas), wind below [SET, ~5 km/h], and 2 m Tmin at or below [SET, v2 used 2 °C].
   - **Parcel Tmin = cell Tmin + R × offset[topo class]** where R (0–1) comes from cloud and wind and the topo class is plain / slope / coast. Starting offsets, all [SET]: plain −1 to −3 °C; slope 0 to +2 °C; coast +1 to +2 °C. **Do not stack** the Open-Meteo lapse-rate correction with this pooling offset.
-  - **Cold-air pooling:** on radiative nights, plain and valley-floor parcels get a **colder** offset and slopes above the cold layer a warmer one. The offsets are [SET], calibrated against the farmer's frost/no-frost taps and any sensor.
+  - **Cold-air pooling:** on radiative nights, `plain` parcels (~~plain and valley-floor~~) get a **colder** offset and `slope` parcels above the cold layer a warmer one; `coast` parcels get a milder one. The offsets are [SET], calibrated against the farmer's frost/no-frost taps and any sensor.
   - **Leaf surface:** typically 1–3 °C below 2 m air on such nights [EST]. **Always show a range** (for example «1 έως −2 °C») with its basis («μοντέλο + διόρθωση εδάφους, μη βαθμονομημένο») and the run time, never a single number.
   - **Damage:** the damage temperature and duration for each crop and stage are **[SET]**. Until then, the alert says "frost conditions" only.
 - **Output:** High alert listing **every** affected parcel, lot and night (QA P1-3, P1-4). Actions: cover if fleece on hand (gain ~1–2 °C [EST]); no harvest until thawed.
