@@ -1,5 +1,6 @@
 import { DEMO_FARM_ID, DEMO_NAMESPACE } from '../config';
 import { AppDB, FARM_TABLES, type FarmTable, type Row, type WeatherRow } from './schema';
+import { demoExtraRows } from './demo-extra';
 import { uuidv5 } from './uuid';
 
 // Shape of reference/prototype/data.json (only what the importer relies on).
@@ -60,6 +61,7 @@ export async function importDemo(db: AppDB, data: PrototypeData): Promise<void> 
   const weather: WeatherRow[] = await Promise.all(Object.entries(data.weather.by_parcel).map(async ([p, days]) =>
     ({ id: await uuidv5(`weather:${p}`, DEMO_NAMESPACE), farm_id: DEMO_FARM_ID, parcel_id: ref('parcels', p) as string, days })));
 
+  const extra = await demoExtraRows(data, (t, legacy) => ref(t, legacy) as string); // fictional spray / harvest / stock / label / soil records, built before the transaction (it may not await anything else)
   await db.transaction('rw', tables, async () => {
     await removeFarmRows(db, DEMO_FARM_ID);
     await db.farms.put({ id: DEMO_FARM_ID, name: String(data.meta.farm ?? 'Demo farm'), is_demo: true, meta: data.meta });
@@ -75,6 +77,7 @@ export async function importDemo(db: AppDB, data: PrototypeData): Promise<void> 
       });
       await db[table].bulkPut(rows);
     }
+    for (const [table, rows] of Object.entries(extra)) await db[table as FarmTable].bulkPut(rows ?? []);
     await db.weather.bulkPut(weather);
   });
 }

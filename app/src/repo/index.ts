@@ -13,9 +13,11 @@ export const isAppendOnly = (table: string) => (APPEND_ONLY as readonly string[]
 export function guardAppendOnly(db: AppDB): void {
   for (const table of db.tables) {
     if (!isAppendOnly(table.name)) continue;
-    const refuse = () => { throw new Error(`${table.name} is append-only: insert an amending row instead`); };
-    table.hook('updating', refuse);
-    table.hook('deleting', refuse);
+    const refuse = (row: { farm_id?: string } | undefined) => { // the Demo farm's sample rows may be replaced and removed with the demo; a REAL record never
+      if (row?.farm_id !== DEMO_FARM_ID) throw new Error(`${table.name} is append-only: insert an amending row instead`);
+    };
+    table.hook('updating', ((_mods: unknown, _key: unknown, obj: { farm_id?: string }) => refuse(obj)) as never);
+    table.hook('deleting', ((_key: unknown, obj: { farm_id?: string }) => refuse(obj)) as never);
   }
 }
 
