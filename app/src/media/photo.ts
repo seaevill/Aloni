@@ -59,3 +59,12 @@ export async function addPhoto(db: AppDB, farmId: string, enc: Encoded, nowIso: 
     return { ok: false }; // e.g. storage full: the caller says so, nothing half-written (one transaction)
   }
 }
+
+export type Stored = { result: 'saved' | 'duplicate' | 'error'; id?: string };
+
+/** Picked file → shrunk → stored (or recognised as already stored). `error` = nothing was stored and the caller must say so. */
+export async function storePhoto(db: AppDB, farmId: string, file: Blob, nowIso: string, encode: (f: Blob) => Promise<Encoded | undefined> = encodePhoto): Promise<Stored> {
+  const enc = await encode(file);
+  const r = enc ? await addPhoto(db, farmId, enc, nowIso) : undefined;
+  return !r?.ok ? { result: 'error' } : { result: r.duplicate ? 'duplicate' : 'saved', id: r.id };
+}

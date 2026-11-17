@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { activeFarm, dataVersion, db, realFarmId } from '../db';
 import type { MediaRow } from '../db/schema';
 import { t, tn, type I18nKey } from '../i18n';
-import { addPhoto, encodePhoto } from '../media/photo';
+import { storePhoto } from '../media/photo';
 import { EmptyState } from './states';
 
 const MSG_KEYS: Record<'saved' | 'duplicate' | 'error', I18nKey> = { saved: 'photos.saved', duplicate: 'photos.duplicate', error: 'photos.error' };
@@ -18,9 +18,16 @@ function useBlobUrl(data: ArrayBuffer, mime: string): string {
   return url;
 }
 
-function Picture({ m, big }: { m: MediaRow; big?: boolean }) {
+export function Picture({ m, big }: { m: MediaRow; big?: boolean }) {
   const url = useBlobUrl(m.data, m.mime);
   return url ? <img class={big ? 'photo big' : 'photo'} src={url} alt={t('photos.alt')} width={m.width} height={m.height} /> : null;
+}
+
+/** A stored photo by id (e.g. a product's label photo), small. Nothing is drawn while it loads or if it is missing. */
+export function MediaThumb({ id }: { id: string }) {
+  const [m, setM] = useState<MediaRow | undefined>(undefined);
+  useEffect(() => { void db.media.get(id).then(setM); }, [id]);
+  return m ? <Picture m={m} /> : null;
 }
 
 /** More → Photos: what is stored on this phone. Add (camera or library), see, open full size. Photos are never deleted or edited. */
@@ -38,9 +45,7 @@ export function Photos({ onBack }: { onBack: () => void }) {
     const file = el.files?.[0];
     el.value = ''; // the same file can be picked again (it is then recognised as a duplicate)
     if (!file) return;
-    const enc = await encodePhoto(file);
-    const r = enc ? await addPhoto(db, realFarmId.value, enc, new Date().toISOString()) : undefined;
-    setMsg(!r?.ok ? 'error' : r.duplicate ? 'duplicate' : 'saved');
+    setMsg((await storePhoto(db, realFarmId.value, file, new Date().toISOString())).result);
     dataVersion.value++;
   };
 
