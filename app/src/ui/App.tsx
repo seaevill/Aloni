@@ -1,7 +1,8 @@
 import { signal } from '@preact/signals';
 import { t, type I18nKey } from '../i18n';
 import { Crops } from './Crops';
-import { Parcels, Stock, Today } from './screens';
+import { Parcels, Today } from './screens';
+import { Stock } from './Stock';
 import { BackupBanner } from './Backup';
 import { More } from './More';
 import { SyncChip } from './states';

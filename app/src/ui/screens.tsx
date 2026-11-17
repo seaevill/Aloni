@@ -73,19 +73,3 @@ export function Parcels() {
     </section>
   );
 }
-
-export function Stock() {
-  const q = useRows('products');
-  return (
-    <section>
-      <Title k="stock.title" />
-      <Status q={q} message={t('list.empty')} />
-      {q.rows?.map((r) => (
-        <div class="card" key={r.id}>{nameOf(r)}
-          <small>{r.qty == null ? t('value.unknown') : `${formatQty(r.qty as number | string)} ${typeof r.unit === 'string' ? r.unit : ''}`}</small>
-          <UnsyncedMark id={r.id} />
-        </div>
-      ))}
-    </section>
-  );
-}
