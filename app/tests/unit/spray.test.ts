@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildLabelUse, withSignOff, type LabelUseInput } from '../../src/labels/label-use';
-import { buildHarvest, harvestGate } from '../../src/spray/harvest';
+import { buildHarvest, cutFromParcel, harvestGate } from '../../src/spray/harvest';
 import { buildSpray, buildWaitEntry, effectiveSprays, type SprayContext, type SprayInput } from '../../src/spray/spray';
 import type { Row } from '../../src/db/schema';
 
@@ -131,5 +131,23 @@ describe('harvest gate: only a KNOWN waiting period that has run out unblocks; n
     expect(buildHarvest({ ...base, harvestedAt: '2026-11-28T00:00:00Z' }, links, sp, F, now, 'h1')).toMatchObject({ ok: true, row: { planting_id: 'pl1', crates_str: '12', harvested_at: '2026-11-28T00:00:00Z' } });
     for (const bad of ['', '0', '1,5', 'abc', '-2']) expect(buildHarvest({ ...base, crates: bad, harvestedAt: '2026-11-28T00:00:00Z' }, links, sp, F, now, 'h'), bad).toMatchObject({ ok: false, crates: true });
     expect(buildHarvest({ ...base, plantingId: '' }, links, sp, F, now, 'h')).toMatchObject({ ok: false, planting: true });
+  });
+});
+
+describe('«κοπή από»: per field, only from stored label values', () => {
+  const plantings: Row[] = [{ id: 'pl1', farm_id: F, parcel_id: 'P', crop_id: 'crop' }, { id: 'pl2', farm_id: F, parcel_id: 'P', crop_id: 'crop' }, { id: 'pl3', farm_id: F, parcel_id: 'Q', crop_id: 'crop' }];
+  const links: Row[] = [{ id: 'a', farm_id: F, job_id: 'job1', planting_id: 'pl1' }, { id: 'b', farm_id: F, job_id: 'job2', planting_id: 'pl2' }];
+  const signed = (job: string, at: string): Row => ({ ...build(input({ sprayedAt: at }), ctx()).spray, job_id: job, id: `sp-${job}` });
+  const unknown = (job: string): Row => ({ ...build(input(), ctx({ label: labelRow() })).spray, job_id: job, id: `sp-${job}` });
+  it('free when nothing was sprayed or everything has run out; the latest end when running', () => {
+    expect(cutFromParcel('P', '2026-11-21T00:00:00Z', plantings, links, [])).toEqual({ state: 'free' });
+    expect(cutFromParcel('P', '2026-12-30T00:00:00Z', plantings, links, [signed('job1', T0)])).toEqual({ state: 'free' });
+    expect(cutFromParcel('P', '2026-11-21T00:00:00Z', plantings, links, [signed('job1', T0), signed('job2', '2026-11-22T08:00:00Z')])).toEqual({ state: 'from', at: '2026-11-29T08:00:00Z' });
+    expect(cutFromParcel('Q', '2026-11-21T00:00:00Z', plantings, links, [signed('job1', T0)])).toEqual({ state: 'free' }); // another field
+  });
+  it('ONE unknown waiting period makes the whole field «unknown» (blocked), even if another planting has a date', () => {
+    expect(cutFromParcel('P', '2026-11-21T00:00:00Z', plantings, links, [signed('job1', T0), unknown('job2')])).toEqual({ state: 'unknown' });
+    expect(cutFromParcel('P', '2030-01-01T00:00:00Z', plantings, links, [unknown('job1')])).toEqual({ state: 'unknown' });
+    expect(cutFromParcel('P', 'Invalid Date', plantings, links, [])).toEqual({ state: 'unknown' }); // an unreadable «now» is never «free»
   });
 });
