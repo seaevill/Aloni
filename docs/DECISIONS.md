@@ -2,6 +2,7 @@
 
 | Date | Decision | Why / notes |
 |---|---|---|
+| 2026-11-17 | **Map provider: NOT decided.** Comparison written (`docs/milestones/M1-map-providers.md`). Key finding: none of the commercial options clearly allows offline tile caching for a PWA on a free plan; Ktimatologio terms unverified, so Bora sends a short Greek email (draft included). Until then "pin + type στρ." is enough and the map runs on OSM for development only | Bora asked for the comparison; research is partly secondary-source (marked ✔/~/?) |
 | 2026-11-17 | **Environment/git:** run once `git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'`; send new branches with `git push -u origin HEAD`. The "unpushed commits" hook warning on shallow single-branch clones is a false alarm and is not chased any more | docs/milestones/M1.md decision 12; written into CODING_STANDARDS.md and RUNBOOK dev notes |
 | 2026-11-17 | **Worker phones: NOT decided** (own phones vs shared farm phone); Bora decides before M2. `actor_id` and `device_id` are separate fields from M1 on, so both stay possible | Bora; M1.md decision 8 |
 | 2026-11-17 | **Photos stay on the phone in M1, with safeguards:** JSON backup/restore incl. photos, "only on this phone · last backup" warning (strong after 7 days), photos queued with UUID + sha256 for later upload, warning if not on Home Screen or persistent storage refused; checklist step 1 = Add to Home Screen | Bora; AGRO §2, TECH2 §1.5 |
