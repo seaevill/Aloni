@@ -1,9 +1,9 @@
 import { activeFarm } from '../db';
 import { DEMO_FARM_ID } from '../config';
-import { formatArea, lang, t } from '../i18n';
+import { formatArea, lang, t, type I18nKey } from '../i18n';
 import { useRows } from './useRows';
 
-function Title({ k }: { k: string }) {
+function Title({ k }: { k: I18nKey }) {
   return (
     <h1>
       {t(k)}
