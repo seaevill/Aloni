@@ -11,7 +11,7 @@ const use = (phi: string, rei: string, signed: boolean): UseFact => {
   return { productId: 'prod', cropId: 'crop', signed: requireSignOff(u, signed ? { by: 'A', on: '2026-11-17', fingerprint: fingerprint(u) } : undefined) };
 };
 const snap = (over: Partial<Snapshot>): Snapshot => ({
-  asOf: '2026-11-20T00:00:00Z', plantings: [{ id: 'pl', parcelId: 'p', cropId: 'crop' }], uses: [use('7', '24', true)], tasks: [], ruleStatus: {}, parcelsForInfo: [],
+  asOf: '2026-11-20T00:00:00Z', plantings: [{ id: 'pl', parcelId: 'p', cropId: 'crop' }], uses: [use('7', '24', true)], tasks: [], ruleStatus: {}, parcelsForInfo: [], draftJobs: [], products: [],
   jobs: [{ id: 'j', kind: 'spray', status: 'done', plantingIds: ['pl'], productId: 'prod', startedAt: '2026-11-18T08:00:00Z', endedAt: '2026-11-18T09:00:00Z' }], ...over,
 });
 
