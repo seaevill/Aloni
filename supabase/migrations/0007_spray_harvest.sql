@@ -48,7 +48,7 @@ alter table job_spray
   add constraint job_spray_wait_known check ((phi_days is null) = (phi_source is null) and (phi_days is null) = (phi_until is null) and (rei_hours is null) = (rei_until is null)),
   -- only a signed label or Bora's own entry may give a waiting period; an unsigned / changed / incomplete label leaves it NULL = unknown = harvest blocked
   add constraint job_spray_label_wait check (phi_source is distinct from 'label' or label_state = 'signed'),
-  add constraint job_spray_amends_manual check (amends_id is null or phi_source = 'manual');
+  add constraint job_spray_amends_manual check (amends_id is null or coalesce(phi_source, '') = 'manual');
 
 -- ---- job_harvest: the crate counter (no job of its own on the phone) ----
 alter table job_harvest alter column job_id drop not null;
