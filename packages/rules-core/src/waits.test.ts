@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { known, notOnLabel, parsePhiDays, parseReiHours, phiEnd, reiEnd, waitOver, fingerprint, makeDose, parseDecimal, parseMaxApps, requireSignOff, type DoseUnit, type LabelUse } from './index';
+import { dateAfterDays, known, notOnLabel, parsePhiDays, parseReiHours, phiEnd, reiEnd, waitOver, fingerprint, makeDose, parseDecimal, parseMaxApps, requireSignOff, type DoseUnit, type LabelUse } from './index';
 
 // A small seeded generator: the same run every time, no clock, no Math.random (rules-core is deterministic).
 function seeded(seed: number) {
@@ -86,5 +86,15 @@ describe('property: editing any label value after the sign-off drops the sign-of
         expect(requireSignOff(edited, signed), 'edited').toEqual({ known: false, reason: 'invalid' });
       }
     }
+  });
+});
+
+describe('dateAfterDays', () => {
+  it('adds whole days across months, years and leap days; a date that is not real gives unknown', () => {
+    expect(dateAfterDays('2026-11-20', 60)).toEqual({ known: true, value: '2027-01-19' });
+    expect(dateAfterDays('2027-12-31', 1)).toEqual({ known: true, value: '2028-01-01' });
+    expect(dateAfterDays('2028-02-28', 1)).toEqual({ known: true, value: '2028-02-29' });
+    expect(dateAfterDays('2026-11-20', 0)).toEqual({ known: true, value: '2026-11-20' });
+    for (const bad of ['', 'Invalid Date', '2026-02-31']) expect(dateAfterDays(bad, 5).known, bad).toBe(false);
   });
 });

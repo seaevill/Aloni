@@ -6,8 +6,8 @@ import { DEMO_FARM_ID } from '../config';
 import type { AppDB, Row } from '../db/schema';
 
 /** Records that are never changed or deleted once written (spray, harvest, stock movements, ...). */
-export const APPEND_ONLY = ['job_spray', 'job_harvest', 'job_fertilise', 'job_irrigate', 'job_sow', 'stock_movements', 'observations', 'media'] as const;
-const isAppendOnly = (table: string) => (APPEND_ONLY as readonly string[]).includes(table);
+export const APPEND_ONLY = ['job_spray', 'job_harvest', 'job_fertilise', 'job_irrigate', 'job_sow', 'stock_lots', 'stock_movements', 'observations', 'media'] as const;
+export const isAppendOnly = (table: string) => (APPEND_ONLY as readonly string[]).includes(table);
 
 /** Safety net behind put(): even a direct Dexie write to an append-only table throws. */
 export function guardAppendOnly(db: AppDB): void {
