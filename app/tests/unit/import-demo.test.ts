@@ -40,7 +40,7 @@ describe('demo import', () => {
   });
 
   it('never touches the real farm, is re-runnable and removable', async () => {
-    await db.farms.put({ id: 'main', name: 'Aloni Farm', isDemo: false });
+    await db.farms.put({ id: 'main', name: 'Aloni', isDemo: false });
     await db.parcels.put({ uid: 'main:X', farmId: 'main', id: 'X', name: 'Real parcel' });
     await importDemo(db, data);
     await importDemo(db, data); // twice: no duplicates

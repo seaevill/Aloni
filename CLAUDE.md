@@ -4,7 +4,9 @@ Read this first in every session. Facts are dated; when something changes, add a
 
 ## The project (as of 2026-11-17)
 
-FieldWise (working name – the name is taken by others, a new one is pending) is a field-management PWA for **Bora**, who grows leafy greens and herbs on the **Megara plain, West Attica, Greece**, and sells them by the crate (κλούβα) to regular clients. Full story: `docs/PROJECT-HISTORY.md`. Plan: `docs/plan/TECH-SPEC.md` (architecture, data model, milestones), `docs/plan/RULES.md` (agronomic rules), `docs/plan/COSTS-COMPLIANCE.md` (Turkish; costs, EU/Greek rules).
+FieldWise (eski çalışma adı, başkasında kayıtlı; şimdi **Aloni** / Αλώνι, geçici) is a field-management PWA for **Bora**, who grows leafy greens and herbs on the **Megara plain, West Attica, Greece**, and sells them by the crate (κλούβα) to regular clients. Full story: `docs/PROJECT-HISTORY.md`. Plan: `docs/plan/TECH-SPEC.md` (architecture, data model, milestones), `docs/plan/RULES.md` (agronomic rules), `docs/plan/COSTS-COMPLIANCE.md` (Turkish; costs, EU/Greek rules).
+
+**Name (2026-11-17, provisional):** the app is called **Aloni** / Αλώνι (set in `app/src/config.ts` only). Never "Aloni Farm" (taken by an Israeli app); English only in store titles. Until Bora finishes the name/trademark/domain checks, keep it marked provisional in `docs/DECISIONS.md`.
 
 Phase 1 = Bora (owner/admin) + his workers, his own farm only. Later: pilot with 5–10 neighbouring growers, then app stores.
 

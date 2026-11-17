@@ -1,7 +1,7 @@
 import { signal } from '@preact/signals';
 import { AppDB } from './schema';
 import { importDemo, removeDemo, type PrototypeData } from './import-demo';
-import { DEMO_FARM_ID, REAL_FARM_ID } from '../config';
+import { APP_NAME, DEMO_FARM_ID, REAL_FARM_ID } from '../config';
 import { t } from '../i18n';
 
 export const db = new AppDB();
@@ -13,7 +13,7 @@ export const dataVersion = signal(0);
 
 export async function initDb() {
   if (!(await db.farms.get(REAL_FARM_ID))) {
-    await db.farms.put({ id: REAL_FARM_ID, name: 'Aloni Farm', isDemo: false });
+    await db.farms.put({ id: REAL_FARM_ID, name: APP_NAME, isDemo: false });
   }
   hasDemo.value = !!(await db.farms.get(DEMO_FARM_ID));
   // Ask the browser not to evict our data (iOS evicts storage of non-installed sites).

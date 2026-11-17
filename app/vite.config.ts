@@ -1,16 +1,18 @@
 import { defineConfig } from 'vitest/config';
 import preact from '@preact/preset-vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { APP_NAME } from './src/config';
 
 export default defineConfig({
   plugins: [
     preact(),
+    { name: 'app-name', transformIndexHtml: (html: string) => html.replaceAll('%APP_NAME%', APP_NAME) },
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icon-180.png'],
       manifest: {
-        name: 'Aloni Farm',
-        short_name: 'Aloni Farm',
+        name: APP_NAME,
+        short_name: APP_NAME,
         description: 'Field management for a Greek leafy-greens farm',
         lang: 'el',
         start_url: '/',

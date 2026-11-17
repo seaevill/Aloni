@@ -19,6 +19,6 @@
 
 # M0 – Türkçe özet (Bora için)
 
-**Ne yapıldı:** Boş ama telefona kurulabilen bir uygulama kabuğu (Aloni Farm), 5 sekme, Yunanca/Türkçe/İngilizce, "Demo çiftlik" yükleme/silme, test altyapısı (CI) ve veritabanı şeması (SQL, henüz hiçbir yere uygulanmadı).
+**Ne yapıldı:** Boş ama telefona kurulabilen bir uygulama kabuğu (Aloni), 5 sekme, Yunanca/Türkçe/İngilizce, "Demo çiftlik" yükleme/silme, test altyapısı (CI) ve veritabanı şeması (SQL, henüz hiçbir yere uygulanmadı).
 **Denemen gereken:** Yukarıdaki 10 adım — ama yalnızca Cloudflare hesabı açıldıktan sonra (telefondan açılacak adres o zaman çıkar).
 **Bilinmesi gereken:** Demo veriler hayalidir ve gerçek çiftliğinden ayrı tutulur. Hiçbir ilaç dozu/bekleme süresi uydurulmaz; bilinmeyen değer "bilinmiyor" kalır.
