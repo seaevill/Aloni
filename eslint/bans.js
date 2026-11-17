@@ -1,9 +1,5 @@
-// Every safety ban, with an id. eslint.config.js builds the rules from this list and
-// app/tests/unit/lint-guards.test.ts requires EVERY id to be proven red by a fixture
-// (app/tests/fixtures/lint/**). A ban without a fixture cannot be merged (CODING_STANDARDS.md).
-//
-// Honest limit: these are syntax/type patterns, not a proof. They stop the known escape routes
-// (see the red-team fixtures and CODING_STANDARDS.md "Known limits"); a determined author can still get around them.
+// Every safety ban has an id. eslint.config.js builds the rules from these lists; app/tests/unit/lint-guards.test.ts requires EVERY id
+// to be proven red by a fixture in app/tests/fixtures/lint/**. These are syntax/type patterns, not a proof: see CODING_STANDARDS.md "Known limits".
 
 const MATH_FN = '/^(round|floor|ceil|trunc|f16round|fround|imul)$/';
 const BITWISE = '/^(\\||>>|>>>|<<|\\^)$/';

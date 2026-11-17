@@ -11,7 +11,6 @@ const APP_TS = ['app/src/**/*.{ts,tsx}', `${FIX}/dose/**/*.{ts,tsx}`];
 const APP_TSX = ['app/src/**/*.tsx', `${FIX}/ui/**/*.tsx`];
 const RULES_CORE = ['packages/rules-core/src/**/*.ts', `${FIX}/rules-core/**/*.ts`];
 const FORMAT_FILE = ['app/src/i18n/format.ts']; // the ONLY file allowed to touch number formatting (R05), with its own tests
-
 // Custom rules, one entry per use because a rule can be configured only once per block.
 const CLOCK_GLOBALS = ['performance', 'setTimeout', 'setInterval', 'setImmediate', 'queueMicrotask', 'requestAnimationFrame', 'requestIdleCallback',
   'process', 'Atomics', 'globalThis', 'window', 'self', 'global', 'navigator', 'localStorage', 'sessionStorage', 'fetch', 'document', 'location',
