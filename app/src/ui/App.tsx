@@ -5,7 +5,8 @@ import { Stock } from './Stock';
 import { BackupBanner } from './Backup';
 import { More } from './More';
 import { SyncChip } from './states';
-import { tab, type Tab } from './nav';
+import { tab, workerView, type Tab } from './nav';
+import { WorkerApp } from './WorkerApp';
 import { Toast } from './Toast';
 
 // Keys are spelled out as literals so the i18n key test can see them (no dynamic t(`tab.${id}`)).
@@ -20,6 +21,7 @@ const TABS: Array<{ id: Tab; icon: string; label: I18nKey }> = [
 export function App() {
   const screen = { today: Today, crops: Crops, parcels: Parcels, stock: Stock, more: More }[tab.value];
   const Screen = screen;
+  if (workerView.value !== undefined) return <><WorkerApp /><Toast /></>;
   return (
     <>
       <main><SyncChip /><BackupBanner /><Screen /></main>

@@ -16,7 +16,7 @@ const localNow = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60
  * The harvest counter. The planting must have NO running or unknown waiting period at the time chosen: otherwise the screen says why and saving is
  * impossible. There is no override and no «unblock» button: only a known waiting period that has run out opens the harvest.
  */
-export function HarvestForm({ onDone }: { onDone: (saved: boolean) => void }) {
+export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = false }: { onDone: (saved: boolean) => void; farmId?: string; actorId?: string; big?: boolean }) {
   const plantings = useRows('plantings'); const crops = useRows('crops'); const parcels = useRows('parcels'); const links = useRows('job_plantings'); const sprays = useRows('job_spray');
   const [planting, setPlanting] = useState('');
   const [crates, setCrates] = useState('');
@@ -30,9 +30,9 @@ export function HarvestForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const name = (p: Row) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) });
   const step = (d: 1 | -1) => { const n = parseWhole<'Crates'>(crates); const cur = n.known ? n.value : 0; setCrates(cur + d < 1 ? '' : `${cur + d}`); }; // the counter buttons: +1 / −1, never below 1
   const save = async () => {
-    const r = buildHarvest({ plantingId: planting, crates, harvestedAt: at, note }, links.rows ?? [], sprays.rows ?? [], realFarmId.value, new Date().toISOString(), crypto.randomUUID());
+    const r = buildHarvest({ plantingId: planting, crates, harvestedAt: at, note }, links.rows ?? [], sprays.rows ?? [], farmId, new Date().toISOString(), crypto.randomUUID());
     if (!r.ok) { setFailed(true); return; }
-    await put(db, 'job_harvest', r.row, 'insert');
+    await put(db, 'job_harvest', actorId ? { ...r.row, actor_id: actorId } : r.row, 'insert');
     dataVersion.value++;
     onDone(true);
   };
@@ -46,7 +46,7 @@ export function HarvestForm({ onDone }: { onDone: (saved: boolean) => void }) {
       <label class="field">{t('harvest.crates')}
         <input class="input" value={crates} inputMode="numeric" autoComplete="off" data-testid="harvest-crates" onInput={(e) => setCrates((e.target as HTMLInputElement).value)} />
       </label>
-      <div class="seg two">
+      <div class={big ? 'seg two big' : 'seg two'}>
         <button onClick={() => step(-1)}>{t('harvest.less')}</button>
         <button data-testid="harvest-more" onClick={() => step(1)}>{t('harvest.more')}</button>
       </div>
@@ -57,7 +57,7 @@ export function HarvestForm({ onDone }: { onDone: (saved: boolean) => void }) {
       <label class="field">{t('harvest.note')}
         <input class="input" value={note} autoComplete="off" onInput={(e) => setNote((e.target as HTMLInputElement).value)} />
       </label>
-      <button class="btn" data-testid="harvest-save" disabled={blocked !== undefined} onClick={() => void save()}>{t('harvest.save')}</button>
+      <button class={big ? 'btn big' : 'btn'} data-testid="harvest-save" disabled={blocked !== undefined} onClick={() => void save()}>{t('harvest.save')}</button>
       <button class="btn secondary" onClick={() => onDone(false)}>{t('product.cancel')}</button>
     </section>
   );
