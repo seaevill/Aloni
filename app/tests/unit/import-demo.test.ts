@@ -7,7 +7,7 @@ import { GREEK_NAME_FIXES, importDemo, removeDemo, type PrototypeData } from '..
 import { newDb, putParcel } from '../helpers/factories';
 
 const data = JSON.parse(readFileSync(new URL('../../../reference/prototype/data.json', import.meta.url), 'utf8')) as PrototypeData;
-const src = (t: string) => data[t] as Array<Record<string, unknown>>;
+const src = (t: string) => (data[t] as Array<Record<string, unknown>> | undefined) ?? []; // label_uses: the prototype has none (its `registered[]` stays in the product)
 const UUID5 = /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 let db: AppDB;
 beforeEach(async () => { db = await newDb(); });

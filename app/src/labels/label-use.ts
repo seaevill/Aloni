@@ -1,0 +1,97 @@
+import {
+  fingerprint, isCalendarDate, known, makeDose, notOnLabel, parseDecimal, parseMaxApps, parsePhiDays, parseReiHours, requireSignOff, unknown,
+  type DoseKind, type DoseUnit, type Known, type LabelUse, type SignOff,
+} from '@aloni/rules-core';
+import type { Row } from '../db/schema';
+
+// A label use = what the label says for ONE product on ONE crop. Every value is in exactly one of three states: empty (not yet entered),
+// entered (kept as typed, digits exact) or «δεν αναγράφεται» (the label does not say). Empty and «not on label» are both BLOCKED. Nothing is ever defaulted.
+
+export const NOT_ON_LABEL = 'not_on_label';
+export const KINDS: readonly DoseKind[] = ['single', 'range'];
+export const DOSE_UNITS: readonly DoseUnit[] = ['ml/str', 'g/str', 'l/str', 'kg/str', 'ml/100l', 'g/100l']; // provisional (DECISIONS.md): no other unit, no conversion
+export type FieldName = 'doseMin' | 'doseMax' | 'phi' | 'rei' | 'maxApps';
+/** What the farmer sees for one value: an empty box, a typed text, or the «δεν αναγράφεται» switch. */
+export interface Field { notOnLabel: boolean; text: string }
+export interface LabelUseInput {
+  productId: string; cropId: string; target: string; source: string;
+  kind: DoseKind | undefined; unit: DoseUnit | undefined;
+  doseMin: Field; doseMax: Field; phi: Field; rei: Field; maxApps: Field;
+}
+export type LabelUseResult =
+  | { ok: true; row: Row }
+  | { ok: false; product: boolean; crop: boolean; invalid: ReadonlySet<FieldName | 'range'> };
+
+const PARSE: Record<FieldName, (s: string) => Known<unknown>> = { doseMin: parseDecimal, doseMax: parseDecimal, phi: parsePhiDays, rei: parseReiHours, maxApps: parseMaxApps };
+const ROW_KEY: Record<FieldName, string> = { doseMin: 'dose_min', doseMax: 'dose_max', phi: 'phi_days', rei: 'rei_hours', maxApps: 'max_apps' };
+
+/** What gets stored for one value: the marker, the text as typed (decimals in their canonical form), or nothing. undefined + invalid=true = refused. */
+function stored(name: FieldName, f: Field): { value: string | undefined; invalid: boolean } {
+  if (f.notOnLabel) return { value: NOT_ON_LABEL, invalid: false };
+  if (f.text.trim() === '') return { value: undefined, invalid: false };
+  const p = PARSE[name](f.text);
+  if (!p.known) return { value: undefined, invalid: true };
+  return { value: name === 'doseMin' || name === 'doseMax' ? String(p.value) : f.text.trim(), invalid: false };
+}
+
+/**
+ * Builds the row. Incomplete is allowed (it is simply blocked); a value that is typed but unreadable («1.000», «7,5») is refused, never guessed.
+ * A row built here never carries a sign-off: editing a label drops it (it is recorded again separately).
+ */
+export function buildLabelUse(input: LabelUseInput, farmId: string, nowIso: string, id: string, createdAt: string = nowIso): LabelUseResult {
+  const invalid = new Set<FieldName | 'range'>();
+  const row: Row = { id, farm_id: farmId, product_id: input.productId, crop_id: input.cropId, created_at: createdAt, updated_at: nowIso, deleted_at: null };
+  const fields: FieldName[] = input.kind === 'single' ? ['doseMin', 'phi', 'rei', 'maxApps'] : ['doseMin', 'doseMax', 'phi', 'rei', 'maxApps']; // single = one box: no second dose is kept
+  for (const name of fields) {
+    const s = stored(name, input[name]);
+    if (s.invalid) invalid.add(name);
+    else if (s.value !== undefined) row[ROW_KEY[name]] = s.value;
+  }
+  if (input.kind) row.dose_kind = input.kind;
+  if (input.unit) row.dose_unit = input.unit;
+  if (input.target.trim()) row.target = input.target.trim();
+  if (input.source.trim()) row.source = input.source.trim();
+  if (invalid.size === 0 && input.kind === 'range' && !readUse(row).dose.known && typeof row.dose_min === 'string' && typeof row.dose_max === 'string' && row.dose_min !== NOT_ON_LABEL && row.dose_max !== NOT_ON_LABEL) invalid.add('range'); // min above max
+  if (!input.productId || !input.cropId || invalid.size > 0) return { ok: false, product: !input.productId, crop: !input.cropId, invalid };
+  return { ok: true, row };
+}
+
+const text = (v: unknown): string | undefined => (typeof v === 'string' ? v : undefined);
+const valueOf = <T,>(parse: (s: string) => Known<T>, v: unknown): Known<T> => {
+  const s = text(v);
+  if (s === undefined) return unknown('missing');
+  return s === NOT_ON_LABEL ? notOnLabel() : parse(s);
+};
+
+/** The stored row as label values. Anything missing, «not on label» or unreadable is unknown. */
+export function readUse(row: Row): LabelUse {
+  const kind = (KINDS as readonly string[]).includes(text(row.dose_kind) ?? '') ? known(row.dose_kind as DoseKind) : unknown('missing');
+  const unit = (DOSE_UNITS as readonly string[]).includes(text(row.dose_unit) ?? '') ? known(row.dose_unit as DoseUnit) : unknown('missing');
+  return {
+    dose: makeDose(kind, unit, valueOf(parseDecimal, row.dose_min), valueOf(parseDecimal, row.dose_max)),
+    phiDays: valueOf(parsePhiDays, row.phi_days),
+    reiHours: valueOf(parseReiHours, row.rei_hours),
+    maxApps: valueOf(parseMaxApps, row.max_apps),
+  };
+}
+
+export type Status = 'blocked' | 'unsigned' | 'changed' | 'signed';
+const signOffOf = (row: Row): SignOff | undefined => {
+  const s = row.sign_off as Partial<SignOff> | undefined;
+  return s && typeof s.by === 'string' && typeof s.on === 'string' && typeof s.fingerprint === 'string' ? { by: s.by, on: s.on, fingerprint: s.fingerprint } : undefined;
+};
+
+/** blocked = a value is missing / not on the label / unreadable; unsigned = complete, nobody approved it («Μη εγκεκριμένο»); changed = approved, then edited; signed = approved exactly as it is. */
+export function statusOf(row: Row): Status {
+  const use = readUse(row);
+  if (!use.dose.known || !use.phiDays.known || !use.reiHours.known || !use.maxApps.known) return 'blocked';
+  const so = signOffOf(row);
+  if (!so) return 'unsigned';
+  return requireSignOff(use, so).known ? 'signed' : 'changed';
+}
+
+/** Records the agronomist's sign-off for exactly the values in the row. Only a complete, unsigned label with a name and a real date can be signed. */
+export function withSignOff(row: Row, by: string, on: string, nowIso: string): Row | undefined {
+  if (statusOf(row) === 'blocked' || !by.trim() || !isCalendarDate(on)) return undefined;
+  return { ...row, sign_off: { by: by.trim(), on, fingerprint: fingerprint(readUse(row)) }, updated_at: nowIso };
+}
