@@ -41,3 +41,4 @@ nav.tabs .ico { font-size:20px; line-height:1; }
 .card.blocked { border:2px solid #8a1c1c; }
 .chip.calm { background:#eef3ec; color:#1e3d28; }
 .btn.big, .seg.big button { min-height:72px; font-size:18px; }
+.badge.calm { background:#eef3ec; color:#1e3d28; }

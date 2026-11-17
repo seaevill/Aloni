@@ -7,6 +7,7 @@ import { formatArea, formatQty } from '../i18n/format';
 import { archived, restored } from '../parcels/parcel';
 import { put } from '../repo';
 import { Analyses } from './Analyses';
+import { Cuts } from './Cuts';
 import { HarvestForm, Harvests } from './HarvestForm';
 import { SprayForm } from './SprayForm';
 import { Sprays } from './Sprays';
@@ -67,6 +68,7 @@ export function Today() {
       {recorded && <p class="msg" role="status" data-testid="spray-saved">{t('spray.saved')}</p>}
       {loaded && has && <Sprays readOnly={demo} />}
       {loaded && has && <Harvests />}
+      {loaded && has && <Cuts />}
       {loaded && has && <p class="card" data-testid="today-counts">{t('today.counts', { parcels: live(parcels).length, crops: formatQty(cropsInUse), plantings: formatQty(live(plantings).length) })}</p>}
     </section>
   );

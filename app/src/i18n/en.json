@@ -353,5 +353,9 @@
   "worker.kind.frost_damage": "Frost damage",
   "worker.kind.disease": "Disease",
   "worker.kind.pest": "Pest",
-  "worker.kind.other": "Other"
+  "worker.kind.other": "Other",
+  "cut.title": "Harvest by field",
+  "cut.free": "Harvest: no waiting period",
+  "cut.from": "Harvest from {d}",
+  "cut.unknown": "Harvest from: unknown. Harvest is blocked."
 }

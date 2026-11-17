@@ -15,6 +15,10 @@ test('the demo farm fills every screen, read-only, in Greek at 375 px without ov
   await expect(page.getByTestId('spray-phi').first()).toBeVisible(); // some have a known one
   await expect(page.getByTestId('harvest').first()).toBeVisible();
   expect(await page.getByTestId('harvest').count()).toBeGreaterThan(3);
+  await expect(page.getByTestId('cut').first()).toBeVisible();
+  const states = await page.getByTestId('cut').evaluateAll((els) => els.map((e) => e.getAttribute('data-state')));
+  expect(states.every((x) => ['free', 'from', 'unknown'].includes(String(x)))).toBe(true);
+  expect(states).toContain('unknown'); // unsigned demo labels leave some fields blocked
   await expect(page.getByTestId('spray-open')).toHaveCount(0);
   await expect(page.getByTestId('wait-open')).toHaveCount(0);
   await noSideways('today');

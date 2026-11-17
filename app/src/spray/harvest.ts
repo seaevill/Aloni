@@ -32,3 +32,20 @@ export function buildHarvest(input: HarvestInput, links: readonly Row[], sprayRo
   if (bad.planting || bad.crates || bad.time || !gate?.ok) return { ok: false, ...bad, gate: gate?.ok ? undefined : gate };
   return { ok: true, row: { id, farm_id: farmId, planting_id: input.plantingId, crates_str: input.crates.trim(), harvested_at: input.harvestedAt, created_at: nowIso, ...(input.note.trim() ? { note: input.note.trim() } : {}) } };
 }
+
+export type Cut = { state: 'free' } | { state: 'unknown' } | { state: 'from'; at: string };
+
+/**
+ * «Κοπή από …» for a parcel, from the waiting periods of ALL its plantings: one unknown waiting period makes the whole parcel «unknown» (blocked); otherwise
+ * the LATEST end; with nothing running (or nothing sprayed) it is free. It uses only the stored label values (signed, or Bora's own entry): never a default.
+ */
+export function cutFromParcel(parcelId: string, now: string, plantings: readonly Row[], links: readonly Row[], sprayRows: readonly Row[]): Cut {
+  let latest: string | undefined;
+  for (const p of plantings.filter((x) => x.parcel_id === parcelId && !x.deleted_at)) {
+    const g = harvestGate(p.id, now, links, sprayRows);
+    if (g.ok) continue;
+    if (g.reason !== 'running') return { state: 'unknown' }; // unknown waiting period or unreadable time
+    if (g.until && (latest === undefined || g.until > latest)) latest = g.until;
+  }
+  return latest === undefined ? { state: 'free' } : { state: 'from', at: latest };
+}

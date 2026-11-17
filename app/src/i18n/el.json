@@ -353,5 +353,9 @@
   "worker.kind.frost_damage": "Ζημιά από παγετό",
   "worker.kind.disease": "Ασθένεια",
   "worker.kind.pest": "Εχθρός",
-  "worker.kind.other": "Άλλο"
+  "worker.kind.other": "Άλλο",
+  "cut.title": "Κοπή ανά χωράφι",
+  "cut.free": "Κοπή: καμία αναμονή",
+  "cut.from": "Κοπή από {d}",
+  "cut.unknown": "Κοπή από: άγνωστο. Η συγκομιδή είναι μπλοκαρισμένη."
 }
