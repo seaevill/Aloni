@@ -14,7 +14,7 @@ const lum = (hex: string) => {
 };
 const ratio = (a: string, b: string) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
 
-const BG = token('bg'), CARD = token('card'), FG = token('fg'), GREEN = token('green'), WARN = token('warn'), LINE = token('line');
+const BG = token('bg'), CARD = token('card'), FG = token('fg'), GREEN = token('green'), WARN = token('warn'), LINE = token('line'), FIELD = token('field');
 const TEXT: Array<[string, string, string]> = [
   ['text on page', FG, BG], ['text on card', FG, CARD],
   ['muted text on page', '#4a4f47', BG], ['muted text on card', '#4a4f47', CARD],
@@ -24,12 +24,13 @@ const TEXT: Array<[string, string, string]> = [
 
 describe('colour contrast', () => {
   for (const [name, fg, bg] of TEXT) it(`${name} >= 7:1`, () => expect(ratio(fg, bg), `${fg} on ${bg}`).toBeGreaterThanOrEqual(7));
-  it('borders >= 3:1 is not required for the decorative card line, but the active-tab bar is >= 3:1', () => {
+  it('input borders and the active-tab bar are >= 3:1 (the card hairline is decorative)', () => {
+    expect(ratio(FIELD, CARD)).toBeGreaterThanOrEqual(3);
+    expect(ratio(FIELD, BG)).toBeGreaterThanOrEqual(3);
     expect(ratio(GREEN, CARD)).toBeGreaterThanOrEqual(3);
-    expect(LINE).not.toBe('');
   });
   it('every colour in styles.css is covered by a pair above', () => {
-    const listed = new Set([...TEXT.flat(), LINE].map((c) => c.toLowerCase().replace(/^#(\w)(\w)(\w)$/, '#$1$1$2$2$3$3')));
+    const listed = new Set([...TEXT.flat(), LINE, FIELD].map((c) => c.toLowerCase().replace(/^#(\w)(\w)(\w)$/, '#$1$1$2$2$3$3')));
     const used = [...css.matchAll(/#[0-9a-fA-F]{3,6}\b/g)].map((m) => m[0].toLowerCase().replace(/^#(\w)(\w)(\w)$/, '#$1$1$2$2$3$3'));
     expect(used.filter((c) => !listed.has(c))).toEqual([]);
   });

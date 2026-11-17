@@ -74,3 +74,23 @@ test('Information screen: draft legal texts, offline-safe, marked for lawyer rev
   await page.getByRole('button', { name: 'Επιστροφή' }).click();
   await expect(page.locator('h1')).toHaveText('Περισσότερα');
 });
+
+test('controller details: entered once, kept in the database, shown in the notice, gate opens', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('nav.tabs [data-tab="more"]').click();
+  await page.getByRole('button', { name: 'Πληροφορίες' }).click();
+  await expect(page.getByTestId('invite-status')).toContainText('κλειστή');
+  await expect(page.getByTestId('info-privacy')).toContainText('[δεν έχει οριστεί]');
+  const inputs = page.locator('input.input');
+  await inputs.nth(0).fill('Test Person');
+  await inputs.nth(1).fill('Test street 1');
+  await inputs.nth(2).fill('+30 000 0000000');
+  await page.getByRole('button', { name: 'Αποθήκευση' }).click();
+  await expect(page.getByTestId('info-privacy')).toContainText('Test Person');
+  await expect(page.getByTestId('invite-status')).toContainText('επιτρέπεται');
+  await page.reload();
+  await page.locator('nav.tabs [data-tab="more"]').click();
+  await page.getByRole('button', { name: 'Πληροφορίες' }).click();
+  await expect(page.getByTestId('info-privacy')).toContainText('Test street 1');
+  for (const i of [0, 1, 2]) expect((await inputs.nth(i).boundingBox())!.height).toBeGreaterThanOrEqual(56);
+});

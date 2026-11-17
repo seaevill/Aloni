@@ -3,6 +3,7 @@ import Dexie, { type Table } from 'dexie';
 /** Every row belongs to exactly one farm (real or demo). `uid` = `${farmId}:${id}` so ids never collide. */
 export interface Row { uid: string; farmId: string; id: string; [k: string]: unknown }
 export interface FarmRow { id: string; name: string; isDemo: boolean; meta?: unknown }
+export interface SettingRow { key: string; value: unknown }
 export interface WeatherRow { uid: string; farmId: string; parcelId: string; days: unknown[] }
 
 export const FARM_TABLES = ['parcels', 'crops', 'plantings', 'products', 'jobs', 'orders_weekly', 'alerts', 'recommendations'] as const;
@@ -19,6 +20,7 @@ export class AppDB extends Dexie {
   alerts!: Table<Row, string>;
   recommendations!: Table<Row, string>;
   weather!: Table<WeatherRow, string>;
+  settings!: Table<SettingRow, string>;
 
   constructor(name = 'aloni-farm') {
     super(name);
@@ -34,5 +36,6 @@ export class AppDB extends Dexie {
       recommendations: 'uid, farmId',
       weather: 'uid, farmId',
     });
+    this.version(2).stores({ settings: 'key' }); // owner settings (data controller details); migrated by M1 PR 4a
   }
 }
