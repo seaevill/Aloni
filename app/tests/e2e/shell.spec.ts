@@ -35,7 +35,7 @@ test('manifest is valid and installable', async ({ page, request }) => {
 
 test('demo farm: load, see data, switch language, remove', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByTestId('today-empty')).toBeVisible();
+  await expect(page.getByTestId('empty-state')).toBeVisible();
   await page.locator('nav.tabs [data-tab="more"]').click();
   await page.getByRole('button', { name: 'Φόρτωση επίδειξης' }).click();
   await expect(page.getByRole('status')).toContainText('φορτώθηκε');
@@ -51,7 +51,7 @@ test('demo farm: load, see data, switch language, remove', async ({ page }) => {
   await page.getByRole('button', { name: 'Demo çiftliği sil' }).click();
   await page.getByRole('button', { name: 'EL', exact: true }).click();
   await page.locator('nav.tabs [data-tab="today"]').click();
-  await expect(page.getByTestId('today-empty')).toBeVisible();
+  await expect(page.getByTestId('empty-state')).toBeVisible();
 });
 
 test('service worker registers (offline shell)', async ({ page }) => {

@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { DEMO_FARM_ID } from '../../src/config';
 import { AppDB, type Row } from '../../src/db/schema';
 import { importDemo, type PrototypeData } from '../../src/db/import-demo';
-import { actorId, deviceId, guardAppendOnly, pendingCount, put, putSetting } from '../../src/repo';
+import { actorId, deviceId, guardAppendOnly, pendingCount, pendingOps, put, putSetting, unsyncedIds } from '../../src/repo';
 import { readFileSync } from 'node:fs';
 import { TEST_FARM_ID, newDb } from '../helpers/factories';
 import type { Table } from 'dexie';
@@ -18,12 +18,14 @@ describe('repo.put: one write path', () => {
     expect(await db.parcels.get(a.id)).toEqual(a);
     const ops = await db.outbox.toArray();
     expect(ops).toHaveLength(2);
-    expect(ops[0]).toMatchObject({ table: 'parcels', row_id: a.id, op: 'update', status: 'pending', farm_id: TEST_FARM_ID });
-    expect(ops[0].device_id).toBe(ops[1].device_id);
-    expect(ops[0].actor_id).toBe(ops[1].actor_id);
-    expect(ops[0].device_id).not.toBe(ops[0].actor_id);
-    expect(await deviceId(db)).toBe(ops[0].device_id);
-    expect(await actorId(db)).toBe(ops[0].actor_id);
+    const opA = ops.find((o) => o.row_id === a.id)!; // the outbox is ordered by op_id (random), not by time
+    const opB = ops.find((o) => o.row_id === b.id)!;
+    expect(opA).toMatchObject({ table: 'parcels', op: 'update', status: 'pending', farm_id: TEST_FARM_ID });
+    expect(opA.device_id).toBe(opB.device_id);
+    expect(opA.actor_id).toBe(opB.actor_id);
+    expect(opA.device_id).not.toBe(opA.actor_id);
+    expect(await deviceId(db)).toBe(opA.device_id);
+    expect(await actorId(db)).toBe(opA.actor_id);
     expect(await pendingCount(db)).toBe(2);
   });
 
@@ -44,6 +46,15 @@ describe('repo.put: one write path', () => {
     expect(await db.parcels.where('farm_id').equals(TEST_FARM_ID).count()).toBe(0);
     await put(db, 'parcels', row());
     expect(await db.outbox.count()).toBe(1);
+  });
+
+  it('the screens see how many records are waiting and which ones (the unsynced dot); demo rows never show up', async () => {
+    const db = await newDb();
+    const a = row();
+    await put(db, 'parcels', a);
+    await put(db, 'parcels', row({ farm_id: DEMO_FARM_ID }));
+    expect(pendingOps.value).toBe(1);
+    expect([...unsyncedIds.value]).toEqual([a.id]);
   });
 
   it('owner settings are queued too', async () => {

@@ -43,5 +43,13 @@
   "info.controller.unset": "[girilmedi]",
   "info.invite.closed": "Bilgileri girene kadar işçi daveti kapalı.",
   "info.invite.open": "İşçi davet etmek serbest.",
-  "more.legacyKept": "Bu telefonda eski veriler bulundu. Silinmediler; dışa aktarma (yedek) yakında gelecek."
+  "more.legacyKept": "Bu telefonda eski veriler bulundu. Silinmediler; dışa aktarma (yedek) yakında gelecek.",
+  "sync.offline": "Çevrimdışı",
+  "sync.pending.one": "{n} eşitlenmemiş",
+  "sync.pending.other": "{n} eşitlenmemiş",
+  "sync.both": "{offline} · {pending}",
+  "sync.unsynced": "eşitlenmedi",
+  "state.error": "Bir şeyler ters gitti. Tekrar deneyin.",
+  "state.retry": "Tekrar dene",
+  "toast.undo": "Geri al"
 }

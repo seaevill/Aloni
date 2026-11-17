@@ -16,7 +16,9 @@ export function findI18nProblems(dicts: Dicts, source: string): Problems {
   const missingInDict: string[] = [];
   for (const k of used) for (const l of ['el', 'tr', 'en'] as const) if (!(k in dicts[l])) missingInDict.push(`${l}:${k}`);
 
-  const deadKeys = Object.keys(dicts.el).filter((k) => !source.includes(`'${k}'`) && !source.includes(`"${k}"`));
+  const spelled = (k: string) => source.includes(`'${k}'`) || source.includes(`"${k}"`);
+  // a plural form (`sync.pending.one` / `.other`) is used when tn('sync.pending', n) spells out its base
+  const deadKeys = Object.keys(dicts.el).filter((k) => !spelled(k) && !(/\.(zero|one|two|few|many|other)$/.test(k) && spelled(k.replace(/\.[a-z]+$/, ''))));
 
   const all = new Set([...Object.keys(dicts.el), ...Object.keys(dicts.tr), ...Object.keys(dicts.en)]);
   const keySetMismatch: string[] = [];

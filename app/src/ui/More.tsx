@@ -5,6 +5,7 @@ import { APP_VERSION } from '../version';
 import { LANGS, lang, setLang, t } from '../i18n';
 
 import { Info } from './Info';
+import { showUndo } from './Toast';
 
 export function More() {
   const [msg, setMsg] = useState('');
@@ -31,7 +32,7 @@ export function More() {
 
       <button class="btn" onClick={async () => { await loadDemo(); setMsg(t('more.demoLoaded')); }}>{t('more.loadDemo')}</button>
       {hasDemo.value && (
-        <button class="btn danger" onClick={async () => { await deleteDemo(); setMsg(t('more.demoRemoved')); }}>{t('more.removeDemo')}</button>
+        <button class="btn danger" onClick={async () => { await deleteDemo(); showUndo(t('more.demoRemoved'), loadDemo); }}>{t('more.removeDemo')}</button>
       )}
       <p class="muted">{t('more.demoNote')}</p>
       {msg && <p class="msg" role="status">{msg}</p>}

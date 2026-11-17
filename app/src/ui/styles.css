@@ -23,3 +23,9 @@ nav.tabs .ico { font-size:20px; line-height:1; }
 .field { display:block; margin:0 0 12px; font-weight:600; }
 .input { display:block; width:100%; min-height:56px; margin-top:4px; padding:0 12px; font:inherit; font-weight:400; color:var(--fg); background:var(--card); border:2px solid var(--field); border-radius:12px; }
 .seg.two { grid-template-columns:1fr 1fr; }
+.chip { margin:0 0 12px; padding:8px 12px; border-radius:12px; background:#fff3cd; color:#4a2500; font-size:14px; font-weight:600; }
+.unsynced { display:flex; align-items:center; }
+.dot { display:inline-block; width:10px; height:10px; margin-right:6px; border-radius:50%; background:var(--warn); }
+.empty { text-align:center; padding:24px 8px; }
+.toast { position:fixed; left:16px; right:16px; bottom:calc(72px + env(safe-area-inset-bottom)); z-index:10; display:flex; gap:12px; align-items:center; justify-content:space-between; padding:8px 8px 8px 16px; background:var(--fg); color:#fff; border-radius:12px; }
+.toast .btn { width:auto; min-width:96px; margin:0; }
