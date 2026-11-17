@@ -18,6 +18,7 @@ const CLOCK_GLOBALS = ['performance', 'setTimeout', 'setInterval', 'setImmediate
   'WeakRef', 'FinalizationRegistry', 'Temporal', 'AbortSignal'];
 const dose = {
   'aloni/no-numeric-default': 'error',
+  '@typescript-eslint/no-explicit-any': 'error', // `any` would switch the type-aware rules off
   'no-restricted-imports': ['error', { patterns: [{ group: ['lodash', 'lodash/*', 'lodash.*', 'mathjs', 'big.js', 'decimal.js', 'bignumber.js', 'numeral', 'accounting'], message: '[R08] No rounding/number libraries: numbers are shown only by i18n/format.ts.' }] }],
 };
 const clock = {
@@ -36,8 +37,10 @@ const typed = {
 };
 
 export default [
+  // `// eslint-disable...` comments are IGNORED (a banned line stays red); ts-ignore/ts-nocheck are errors too.
+  { linterOptions: { noInlineConfig: true, reportUnusedDisableDirectives: 'off' } },
   { ignores: ['**/dist/**', '**/dev-dist/**', '**/node_modules/**', '**/test-results/**', 'reference/**', 'app/tests/fixtures/**', 'eslint.config.js', 'eslint/**'] },
-  { files: ['app/**/*.{ts,tsx}', 'packages/**/*.ts'], ...typed, rules: { '@typescript-eslint/no-floating-promises': 'error' } },
+  { files: ['app/**/*.{ts,tsx}', 'packages/**/*.ts'], ...typed, rules: { '@typescript-eslint/no-floating-promises': 'error', '@typescript-eslint/ban-ts-comment': 'error' } },
   { files: APP_TS, ...typed, ...syntax([...ROUND, ...DEFAULTS], dose) },
   { files: APP_TSX, ...typed, ...syntax([...ROUND, ...DEFAULTS, ...UI], { ...dose, ...ui }) },
   { files: RULES_CORE, ...typed, ...syntax([...ROUND, ...DEFAULTS, ...CLOCK], { ...dose, ...clock }) },

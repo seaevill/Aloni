@@ -10,7 +10,7 @@ import { ALL_BANS } from '../../../eslint/bans.js';
 // Fixtures live in app/tests/fixtures/lint/** (any subfolder, incl. redteam/). A new ban without a fixture fails the last test.
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const FIXTURES = join(root, 'app/tests/fixtures/lint');
-const MAX_KNOWN_LIMITS = 60; // raising this needs a DECISIONS.md line
+const MAX_KNOWN_LIMITS = 33; // Bora: only ever goes DOWN; raising it needs his decision and a DECISIONS.md line
 const eslint = new ESLint({ cwd: root, ignore: false });
 
 const files = (readdirSync(FIXTURES, { recursive: true }) as string[])
@@ -32,7 +32,9 @@ describe('ESLint safety bans (seeded violations)', () => {
       const [res] = await eslint.lintFiles([rel]);
       const fatal = res.messages.filter((m) => m.fatal);
       expect(fatal.map((m) => m.message), `${rel} must parse`).toEqual([]);
-      const errors = res.messages.filter((m) => m.severity === 2);
+      const fixtureLines = readFileSync(file, 'utf8').split('\n');
+      const asksForAny = (line: number) => /@red @typescript-eslint\/no-explicit-any/.test(fixtureLines[line - 1] ?? '');
+      const errors = res.messages.filter((m) => m.severity === 2 && (m.ruleId !== '@typescript-eslint/no-explicit-any' || asksForAny(m.line)));
       const seen: Seen[] = errors.map((m) => ({ line: m.line, id: /\[([A-Z]\d+)\]/.exec(m.message)?.[1] ?? m.ruleId ?? '?' }));
       seenByFile.set(rel, seen);
       for (const s of seen) seenIds.add(s.id);
@@ -42,7 +44,12 @@ describe('ESLint safety bans (seeded violations)', () => {
       let limits = 0;
       lines.forEach((text, i) => {
         const n = i + 1;
-        if (/@limit/.test(text)) { limits++; return; } // documented known limit: lint cannot see it (CODING_STANDARDS.md)
+        if (/@limit/.test(text)) { // documented known limit: lint cannot see it (CODING_STANDARDS.md)
+          limits++;
+          const caught = seen.filter((s) => s.line === n).map((s) => s.id);
+          if (caught.length) problems.push(`line ${n}: @limit line is now caught by ${caught.join(',')}: mark it @red ${caught[0]} (the limit list shrinks)`);
+          return;
+        }
         const red = /@red\s+(\S+)/.exec(text)?.[1];
         const flagged = seen.filter((s) => s.line === n).map((s) => s.id);
         if (red && !flagged.includes(red)) problems.push(`line ${n}: expected ${red}, got [${flagged.join(',')}]  ${text.trim()}`);

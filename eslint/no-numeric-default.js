@@ -26,6 +26,7 @@ export default {
       if (t.flags & ts.TypeFlags.TypeParameter) { const c = checker.getBaseConstraintOfType(t); return c && c !== t ? isNum(c) : false; }
       return (t.flags & NUMERIC) !== 0;
     };
+    const hasText = (t) => (t.isUnion() ? t.types.some(hasText) : (t.flags & (ts.TypeFlags.StringLike | ANYISH)) !== 0);
     const isGeneric = (t) => (t.isUnion() ? t.types.some(isGeneric) : (t.flags & ts.TypeFlags.TypeParameter) !== 0);
     const unwrap = (n) => { let x = n; while (WRAPPERS.has(x.type)) x = x.expression ?? x.argument; return x; };
     const numericText = (n) => { const u = unwrap(n); return u.type === 'Literal' && typeof u.value === 'string' && NUMERIC_TEXT.test(u.value); };
@@ -51,6 +52,11 @@ export default {
       if (test.type === 'BinaryExpression' && test.operator === 'in') {
         return test.left.type === 'Literal' ? { synthetic: `${code.getText(test.right)}.${test.left.value}` } : test.right;
       }
+      if (test.type === 'BinaryExpression' && /^[<>]=?$/.test(test.operator)) { // `o.phi! > 0 ? o.phi : 0`
+        const lit = (n) => unwrap(n).type === 'Literal' && typeof unwrap(n).value === 'number';
+        if (lit(test.right)) return unwrap(test.left);
+        if (lit(test.left)) return unwrap(test.right);
+      }
       if (test.type === 'BinaryExpression' && /^[!=]==?$/.test(test.operator)) {
         const t = [test.left, test.right].find((x) => x.type === 'UnaryExpression' && x.operator === 'typeof');
         if (t) return t.argument;
@@ -65,6 +71,7 @@ export default {
     const fallback = (node, left, right) => {
       const l = typeOf(left);
       if ((isNum(l) || isGeneric(l) || (l.flags & ANYISH)) && numeric(right)) report(node);
+      else if (numericText(right) && hasText(l)) report(node); // `s ?? '0'`, `phiDays ?? '7'`: a number written as text
     };
     const objectsWithNumbers = (n) => {
       // an object whose TYPE has numeric properties (e.g. a DEFAULTS constant)

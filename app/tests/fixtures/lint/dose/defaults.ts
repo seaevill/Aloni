@@ -42,3 +42,13 @@ export const ok4 = (list: number[] | undefined) => list ?? []; // @ok
 export const ok5 = (n: number) => (n === 1 ? 'one' : 'other'); // @ok
 export const ok6 = (rows: unknown[] | null) => (rows ? rows.length : 0);  // @red D05
 export const ok7 = (a: boolean, b: boolean) => a || b; // @ok
+// text and comparison defaults (Bora's review): a number written as text, and a `> 0` guard that falls back to 0
+declare const s: string | undefined;
+declare const phiDays: string | undefined;
+declare const o3: { phi?: number };
+export const sx1 = s ?? '0'; // @red D05
+export const sx2 = phiDays ?? '7'; // @red D05
+export const sx3 = o3.phi! > 0 ? o3.phi : 0; // @red D05
+export const sx4 = Number(s ?? '7'); // @red D05
+export const sx5 = (s ?? 'unknown') + '!'; // @ok
+export const sx6 = o3.phi! > 0 ? o3.phi : undefined; // @ok

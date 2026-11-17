@@ -13,6 +13,6 @@
     "typecheck": "npm run typecheck -w app && npm run typecheck -w @aloni/rules-core",
     "test": "npm run test -w app",
     "e2e": "npm run e2e -w app",
-    "lint": "eslint ."
+    "lint": "eslint . --max-warnings 0"
   }
 }

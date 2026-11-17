@@ -1,4 +1,4 @@
-// @ts-nocheck-free file: red team 2, dose zone (defaults)
+// type-checked file: red team 2, dose zone (defaults)
 type Branded = number & { readonly __b: 'dose' };
 type Dose = number;
 declare const bd: Branded | undefined;
