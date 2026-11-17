@@ -32,18 +32,28 @@ export const actorId = (db: AppDB) => localId(db, 'actor_id');
 
 export type Op = 'insert' | 'update';
 
-async function enqueue(db: AppDB, farmId: string, table: string, rowId: string, op: Op, row: unknown): Promise<void> {
-  await db.outbox.add({
-    op_id: crypto.randomUUID(), farm_id: farmId, table, row_id: rowId, op, row,
-    device_id: await deviceId(db), actor_id: await actorId(db), at: new Date().toISOString(), status: 'pending',
-  });
+interface Ids { device_id: string; actor_id: string }
+async function enqueue(db: AppDB, farmId: string, table: string, rowId: string, op: Op, row: unknown, ids: Ids): Promise<void> {
+  await db.outbox.add({ op_id: crypto.randomUUID(), farm_id: farmId, table, row_id: rowId, op, row, ...ids, at: new Date().toISOString(), status: 'pending' });
 }
 
-export async function put(db: AppDB, table: string, row: Row, op: Op = 'update'): Promise<void> {
+/** Where a restored record came from: its own device_id/actor_id are kept; only a record that never had one gets the backup's phone (never the restoring phone). */
+export interface Origin { device_id: string }
+
+/**
+ * Every record carries who wrote it (actor_id) and on which phone (device_id), stamped once when it is first written. A restore keeps the
+ * original ids and queues the record under them; it never relabels it with the restoring phone's ids.
+ */
+export async function put(db: AppDB, table: string, row: Row, op: Op = 'update', origin?: Origin): Promise<void> {
   if (isAppendOnly(table) && op !== 'insert') throw new Error(`${table} is append-only: insert an amending row instead`);
   await db.transaction('rw', [db.table(table), db.outbox, db.settings], async () => {
-    await (op === 'insert' ? db.table(table).add(row) : db.table(table).put(row));
-    if (row.farm_id !== DEMO_FARM_ID) await enqueue(db, row.farm_id, table, row.id, op, table === 'media' ? { ...row, data: undefined } : row); // photo bytes stay in `media`; the upload reads them there
+    const mine: Ids = { device_id: await deviceId(db), actor_id: await actorId(db) };
+    const ids: Ids = origin
+      ? { device_id: typeof row.device_id === 'string' ? row.device_id : origin.device_id, actor_id: typeof row.actor_id === 'string' ? row.actor_id : 'unknown' }
+      : { device_id: typeof row.device_id === 'string' ? row.device_id : mine.device_id, actor_id: typeof row.actor_id === 'string' ? row.actor_id : mine.actor_id };
+    const stamped: Row = { ...row, device_id: ids.device_id, ...(origin && typeof row.actor_id !== 'string' ? {} : { actor_id: ids.actor_id }) };
+    await (op === 'insert' ? db.table(table).add(stamped) : db.table(table).put(stamped));
+    if (row.farm_id !== DEMO_FARM_ID) await enqueue(db, row.farm_id, table, row.id, op, table === 'media' ? { ...stamped, data: undefined } : stamped, origin ? ids : { device_id: mine.device_id, actor_id: mine.actor_id }); // photo bytes stay in `media`; the upload reads them there
   });
   await refreshPending(db);
 }
@@ -52,7 +62,7 @@ export async function put(db: AppDB, table: string, row: Row, op: Op = 'update')
 export async function putSetting(db: AppDB, farmId: string, key: string, value: unknown): Promise<void> {
   await db.transaction('rw', [db.settings, db.outbox], async () => {
     await db.settings.put({ key, value });
-    await enqueue(db, farmId, 'settings', key, 'update', { key, value });
+    await enqueue(db, farmId, 'settings', key, 'update', { key, value }, { device_id: await deviceId(db), actor_id: await actorId(db) });
   });
   await refreshPending(db);
 }

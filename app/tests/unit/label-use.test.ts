@@ -25,7 +25,7 @@ describe('typed values are kept exactly', () => {
     for (const k of ['dose_min', 'phi_days', 'rei_hours', 'max_apps']) expect(typeof row[k], k).toBe('string');
     const db = await newDb();
     await put(db, 'label_uses', row, 'insert');
-    expect(await db.label_uses.get('lu-1')).toEqual(row); // survives the database unchanged
+    expect(await db.label_uses.get('lu-1')).toMatchObject(row); // survives the database unchanged (plus who wrote it)
   });
   it('single = one box (a typed second dose is NOT kept); range = both, min above max refused, equal allowed', () => {
     expect(build(input({ doseMax: typed('9') })).dose_max).toBeUndefined();

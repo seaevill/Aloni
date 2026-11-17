@@ -244,5 +244,6 @@
   "analysis.saved": "Analysis saved.",
   "analysis.archive": "Archive",
   "analysis.archived": "Analysis archived.",
-  "analysis.empty": "No analyses yet."
+  "analysis.empty": "No analyses yet.",
+  "backup.skipped": "{n} records were not replaced because the phone has a newer or different version: {list}"
 }

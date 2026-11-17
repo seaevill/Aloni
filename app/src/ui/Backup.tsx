@@ -44,7 +44,8 @@ export function Backup() {
       realFarmId.value = r.farmId;
       activeFarm.value = r.farmId;
       dataVersion.value++;
-      setMsg(t('backup.restored', { n: r.rows }));
+      const list = r.skipped.slice(0, 8).map((x) => x.label).join(', ');
+      setMsg(r.skipped.length ? `${t('backup.restored', { n: r.rows })} ${t('backup.skipped', { n: r.skipped.length, list })}` : t('backup.restored', { n: r.rows }));
     } catch (err) {
       setMsg(err instanceof BackupError ? t(ERROR_KEYS[err.code]) : t('state.error'));
     }

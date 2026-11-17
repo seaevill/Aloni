@@ -15,7 +15,8 @@ describe('repo.put: one write path', () => {
     const db = await newDb();
     const a = row(); await put(db, 'parcels', a);
     const b = row(); await put(db, 'parcels', b);
-    expect(await db.parcels.get(a.id)).toEqual(a);
+    expect(await db.parcels.get(a.id)).toMatchObject(a);
+    expect(await db.parcels.get(a.id)).toMatchObject({ device_id: expect.any(String), actor_id: expect.any(String) });
     const ops = await db.outbox.toArray();
     expect(ops).toHaveLength(2);
     const opA = ops.find((o) => o.row_id === a.id)!; // the outbox is ordered by op_id (random), not by time
