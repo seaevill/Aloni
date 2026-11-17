@@ -42,7 +42,7 @@ export const ROUND = [
     `CallExpression[callee.property.name=/^(slice|substring|substr|split|replace|replaceAll|match)$/]:matches([callee.object.callee.name='String'], [callee.object.callee.property.name='toString'])`,
     `CallExpression[callee.name='parseInt']`,
     `MemberExpression[property.name='parseInt']`),
-  ban('R09', 'Typed arrays and DataView (Float32Array, Int32Array, ...) truncate numbers; only app/src/db/uuid.ts (hashing ids, never doses) may use them.',
+  ban('R09', 'Typed arrays and DataView (Float32Array, Int32Array, ...) truncate numbers; only app/src/db/uuid.ts and sha256.ts (hashing ids and files, never doses) may use them.',
     `Identifier[name=/^((Int|Uint|Float|BigInt|BigUint)(8|16|32|64)(Clamped)?Array|DataView)$/]`,
     `MemberExpression[object.name='BigInt'][property.name=/^as(Int|Uint)N$/]`),
   ban('R07', 'No dynamic code (eval / Function): it could hide any of the other bans.',

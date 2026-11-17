@@ -1,6 +1,7 @@
 import { signal } from '@preact/signals';
 import { t, type I18nKey } from '../i18n';
 import { Crops, Parcels, Stock, Today } from './screens';
+import { BackupBanner } from './Backup';
 import { More } from './More';
 import { SyncChip } from './states';
 import { Toast } from './Toast';
@@ -21,7 +22,7 @@ export function App() {
   const Screen = screen;
   return (
     <>
-      <main><SyncChip /><Screen /></main>
+      <main><SyncChip /><BackupBanner /><Screen /></main>
       <Toast />
       <nav class="tabs" aria-label={t('nav.main')}>
         {TABS.map(({ id, icon, label }) => (

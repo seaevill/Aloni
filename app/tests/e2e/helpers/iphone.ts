@@ -18,7 +18,7 @@ export async function iphone(page: Page): Promise<string[]> {
 const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
 
 export async function goTo(page: Page, route: Route): Promise<void> {
-  if (route === 'info') { await tab(page, 'more'); await page.locator('main button.btn.secondary').click(); } else await tab(page, route);
+  if (route === 'info') { await tab(page, 'more'); await page.getByTestId('open-info').click(); } else await tab(page, route);
 }
 
 /** Visits every screen in every language, first with an empty farm, then with the demo farm loaded. */

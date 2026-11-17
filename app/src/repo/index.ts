@@ -67,3 +67,8 @@ export async function refreshPending(db: AppDB): Promise<void> {
   pendingOps.value = rows.length;
   unsyncedIds.value = new Set(rows.map((r) => r.row_id));
 }
+
+/** Device-local settings (e.g. when the last backup was made): written here, NOT queued for the server. */
+export async function putLocal(db: AppDB, key: string, value: unknown): Promise<void> {
+  await db.settings.put({ key, value });
+}

@@ -16,6 +16,8 @@ export const hasDemo = signal(false);
 export const legacyKept = signal(false);
 /** bumps after any data change so screens re-query */
 export const dataVersion = signal(0);
+/** when the last backup file was made (device-local setting) */
+export const lastBackupAt = signal<string | undefined>(undefined);
 
 export async function initDb() {
   legacyKept.value = (await migrateLegacyDb(db)).status === 'kept';
@@ -24,6 +26,7 @@ export async function initDb() {
   realFarmId.value = real.id;
   activeFarm.value = real.id;
   hasDemo.value = !!(await db.farms.get(DEMO_FARM_ID));
+  lastBackupAt.value = (await db.settings.get('last_backup_at'))?.value as string | undefined;
   await refreshPending(db);
   // Ask the browser not to evict our data (iOS evicts storage of non-installed sites).
   try { await navigator.storage?.persist?.(); } catch { /* ignore */ }

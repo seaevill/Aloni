@@ -5,6 +5,7 @@ import { APP_VERSION } from '../version';
 import { LANGS, lang, setLang, t } from '../i18n';
 
 import { Info } from './Info';
+import { Backup } from './Backup';
 import { showUndo } from './Toast';
 
 export function More() {
@@ -36,7 +37,8 @@ export function More() {
       )}
       <p class="muted">{t('more.demoNote')}</p>
       {msg && <p class="msg" role="status">{msg}</p>}
-      <button class="btn secondary" onClick={() => setView('info')}>{t('more.info')}</button>
+      <Backup />
+      <button class="btn secondary" data-testid="open-info" onClick={() => setView('info')}>{t('more.info')}</button>
       {legacyKept.value && <p class="draft" role="note">{t('more.legacyKept')}</p>}
       <p class="muted">{t('more.version', { v: APP_VERSION })}</p>
     </section>

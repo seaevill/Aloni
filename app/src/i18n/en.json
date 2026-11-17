@@ -51,5 +51,20 @@
   "sync.unsynced": "not synced",
   "state.error": "Something went wrong. Try again.",
   "state.retry": "Try again",
-  "toast.undo": "Undo"
+  "toast.undo": "Undo",
+  "backup.title": "Data backup",
+  "backup.note": "Only on this phone · last backup: {when}",
+  "backup.never": "never",
+  "backup.export": "Export a backup",
+  "backup.restore": "Restore from a backup",
+  "backup.exported": "Backup saved ({n} records).",
+  "backup.restored": "Restored ({n} records).",
+  "backup.stale": "No recent backup (over 7 days, or never). Export one from More.",
+  "backup.error.format": "This file is not a backup of the app.",
+  "backup.error.version": "The backup is from another version and cannot be read.",
+  "backup.error.sha256": "A photo in the backup is damaged. Nothing was changed.",
+  "backup.error.demo": "The backup contains demo data and was rejected.",
+  "backup.error.conflict": "This phone already holds other data. Nothing was restored.",
+  "warn.homescreen": "Add the app to the Home Screen: otherwise the iPhone may delete its data.",
+  "warn.persist": "The browser does not guarantee the data will stay. Export a backup often."
 }

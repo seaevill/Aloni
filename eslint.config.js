@@ -46,7 +46,7 @@ export default [
   { files: APP_TSX, ...typed, ...syntax([...ROUND, ...DEFAULTS, ...UI], { ...dose, ...ui }) },
   { files: RULES_CORE, ...typed, ...syntax([...ROUND, ...DEFAULTS, ...CLOCK], { ...dose, ...clock }) },
   { files: ['packages/rules-core/src/**/*.test.ts'], rules: { 'no-restricted-imports': 'off' } },
-  { files: ['app/src/db/uuid.ts'], ...typed, ...syntax([...ROUND.filter(NO_TYPED_ARRAYS), ...DEFAULTS], dose) }, // hashes ids with typed arrays; no dose touches it
+  { files: ['app/src/db/uuid.ts', 'app/src/db/sha256.ts'], ...typed, ...syntax([...ROUND.filter(NO_TYPED_ARRAYS), ...DEFAULTS], dose) }, // hash ids and files with typed arrays; no dose touches them
   { files: FORMAT_FILE, ...typed, ...syntax([...ROUND.filter(NO_INTL), ...DEFAULTS], dose) },
   { files: ['app/src/repo/**/*.ts', 'app/src/db/**/*.ts'], rules: { 'aloni/no-direct-dexie-write': 'off' } }, // the write path itself and the database setup/import/migration
 ];
