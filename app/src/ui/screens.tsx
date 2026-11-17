@@ -1,5 +1,6 @@
 import { useState } from 'preact/hooks';
 import { activeFarm, dataVersion, db, loadDemo, realFarmId } from '../db';
+import { tab } from './nav';
 import { DEMO_FARM_ID } from '../config';
 import { lang, t, type I18nKey } from '../i18n';
 import { formatArea, formatQty } from '../i18n/format';
@@ -37,15 +38,21 @@ export function Status({ q, message, action }: { q: Rows; message: string; actio
 }
 
 export function Today() {
-  const parcels = useRows('parcels');
-  const crops = useRows('crops');
-  const plantings = useRows('plantings');
-  const empty = !parcels.rows?.length && !crops.rows?.length;
+  const rows = [useRows('parcels'), useRows('plantings'), useRows('products'), useRows('stock_lots'), useRows('crops')];
+  const [parcels, plantings, products, lots, crops] = rows;
+  const live = (q: Rows) => q.rows?.filter((r) => !r.deleted_at) ?? [];
+  const demo = activeFarm.value !== realFarmId.value;
+  const cropsInUse = demo ? live(crops).length : new Set(live(plantings).map((p) => p.crop_id)).size;
+  const loaded = rows.every((q) => q.rows);
+  const has = live(parcels).length + live(plantings).length + live(products).length + live(lots).length + (demo ? live(crops).length : 0) > 0;
   return (
     <section>
       <Title k="today.title" />
-      <Status q={{ ...parcels, rows: empty ? parcels.rows : [] }} message={t('today.empty')} />
-      {parcels.rows && !empty && <p class="card" data-testid="today-counts">{t('today.counts', { parcels: parcels.rows.length, crops: formatQty(crops.rows?.length), plantings: formatQty(plantings.rows?.length) })}</p>}
+      {rows.some((q) => q.failed) && <ErrorState onRetry={retry} />}
+      {loaded && !has && (
+        <EmptyState message={t('today.empty')} actionLabel={t('parcel.add')} onAction={() => { tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
+      )}
+      {loaded && has && <p class="card" data-testid="today-counts">{t('today.counts', { parcels: live(parcels).length, crops: formatQty(cropsInUse), plantings: formatQty(live(plantings).length) })}</p>}
     </section>
   );
 }

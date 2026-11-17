@@ -71,7 +71,7 @@
   "parcel.name": "Parcel name",
   "parcel.area": "Area in stremmata (στρ.)",
   "parcel.pin": "Take the position from GPS",
-  "parcel.pin.set": "Position: {lat}, {lng} (±{acc} m)",
+  "parcel.pin.set": "Latitude {lat} · longitude {lng} (±{acc} m)",
   "parcel.pin.error": "No position found. You can continue without it.",
   "parcel.topo.title": "Terrain (optional)",
   "parcel.topo.plain": "Plain",
@@ -245,5 +245,9 @@
   "analysis.archive": "Archive",
   "analysis.archived": "Analysis archived.",
   "analysis.empty": "No analyses yet.",
-  "backup.skipped": "{n} records were not replaced because the phone has a newer or different version: {list}"
+  "backup.skipped": "{n} records were not replaced because the phone has a newer or different version: {list}",
+  "sync.local": "Saved on this phone. It will be sent when an account is connected.",
+  "labeluse.name.phi": "Wait before harvest",
+  "labeluse.name.rei": "Re-entry to the field",
+  "labeluse.name.maxApps": "Maximum applications"
 }

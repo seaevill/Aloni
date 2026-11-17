@@ -21,7 +21,8 @@ test('add a planting offline: area kept as typed, bigger-than-parcel only warns,
   await context.setOffline(true);
 
   await tab(page, 'crops');
-  await expect(page.getByTestId('planting-need-parcel')).toBeVisible(); // no parcel yet: the screen says what to do first
+  await expect(page.getByTestId('empty-state').locator('button')).toHaveCount(2); // no parcel yet: «add a field» first, the demo second
+  await expect(page.getByTestId('empty-state').locator('button').first()).toHaveText('Προσθήκη χωραφιού');
   await addParcel(page, 'Κάτω Κάμπος', '0,5');
 
   await tab(page, 'crops');
@@ -43,7 +44,7 @@ test('add a planting offline: area kept as typed, bigger-than-parcel only warns,
   const line = page.getByTestId('planting');
   await expect(line).toContainText('Κάτω Κάμπος · 0,75 στρ.');
   await expect(line).toContainText('Σε συγκομιδή');
-  await expect(page.getByTestId('sync-chip')).toContainText('μη συγχρονισμένα'); // parcel + crop + planting waiting
+  await expect(page.getByTestId('sync-chip')).toContainText('Θα σταλεί όταν συνδεθεί λογαριασμός');
 
   await page.reload();
   await tab(page, 'crops');

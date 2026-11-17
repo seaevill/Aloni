@@ -26,8 +26,8 @@ test('add a parcel offline (typed στρ. kept exactly), keep it after reload, a
   const card = page.locator('main .card');
   await expect(card).toContainText('Κάτω Κάμπος');
   await expect(card).toContainText('0,625 στρ.'); // not 0,63
-  await expect(card).toContainText('μη συγχρονισμένο');
-  await expect(page.getByTestId('sync-chip')).toContainText('Εκτός σύνδεσης · 1 μη συγχρονισμένο');
+  await expect(card).not.toContainText('μη συγχρονισμένο'); // nothing is sent yet: no frightening «unsynced» word on the card
+  await expect(page.getByTestId('sync-chip')).toHaveText('Εκτός σύνδεσης · Αποθηκεύτηκε στο τηλέφωνο. Θα σταλεί όταν συνδεθεί λογαριασμός.');
 
   await page.reload();
   await page.locator('nav.tabs [data-tab="parcels"]').click();

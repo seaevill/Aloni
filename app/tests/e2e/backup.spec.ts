@@ -11,7 +11,7 @@ test('export a backup and restore it on a new phone', async ({ page, browser }) 
   const inputs = page.locator('input.input');
   await inputs.nth(0).fill('Test Person'); await inputs.nth(1).fill('Test street 1'); await inputs.nth(2).fill('+30 000 0000000');
   await page.getByRole('button', { name: 'Αποθήκευση' }).click();
-  await expect(page.getByTestId('sync-chip')).toContainText('μη συγχρονισμένο');
+  await expect(page.getByTestId('sync-chip')).toContainText('Αποθηκεύτηκε στο τηλέφωνο');
   await expect(page.getByTestId('backup-stale')).toBeVisible(); // data on the phone, no backup yet
   await page.getByRole('button', { name: 'Επιστροφή' }).click();
 

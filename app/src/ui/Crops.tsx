@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import { activeFarm, dataVersion, db, realFarmId } from '../db';
+import { activeFarm, dataVersion, db, loadDemo, realFarmId } from '../db';
 import { t } from '../i18n';
 import { formatArea } from '../i18n/format';
 import { formatDate } from '../i18n';
@@ -8,8 +8,9 @@ import { validDate } from '../plantings/planting';
 import { put } from '../repo';
 import type { Row } from '../db/schema';
 import { PlantingForm, STATUS_KEYS } from './PlantingForm';
+import { tab } from './nav';
 import { nameOf, Status, Title } from './screens';
-import { UnsyncedMark } from './states';
+import { EmptyState, UnsyncedMark } from './states';
 import { showUndo } from './Toast';
 import { useRows } from './useRows';
 
@@ -38,15 +39,24 @@ export function Crops() {
   };
   const sown = (r: Row) => { const d = text(r.sown_on) || text(r.sown); return validDate(d) ? formatDate(d) : t('value.unknown'); };
   const canAdd = !demo && liveParcels.length > 0;
+  // Only crops that are really planted are listed (label details for a crop do not make it «grown»); the demo shows its whole list.
+  const shown = demo ? crops.rows : crops.rows?.filter((c) => live.some((p) => p.crop_id === c.id));
+  if (!demo && parcels.rows && crops.rows && liveParcels.length === 0) {
+    return (
+      <section>
+        <Title k="crops.title" />
+        <EmptyState message={t('planting.noParcels')} actionLabel={t('parcel.add')} onAction={() => { tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
+      </section>
+    );
+  }
   return (
     <section>
       <Title k="crops.title" />
-      {demo ? <p class="muted" data-testid="planting-demo-note">{t('planting.demoActive')}</p>
-        : !liveParcels.length && crops.rows !== null && <p class="muted" data-testid="planting-need-parcel">{t('planting.noParcels')}</p>}
+      {demo && <p class="muted" data-testid="planting-demo-note">{t('planting.demoActive')}</p>}
       {canAdd && live.length > 0 && <button class="btn" data-testid="planting-add" onClick={() => setAdding(true)}>{t('planting.add')}</button>}
-      <Status q={{ ...crops, rows: crops.rows && crops.rows.length === 0 && canAdd ? [] : crops.rows }} message={t('list.empty')}
+      <Status q={{ ...crops, rows: shown && shown.length === 0 ? [] : shown ?? null }} message={t('list.empty')}
         action={canAdd ? { label: t('planting.add'), run: () => setAdding(true) } : undefined} />
-      {crops.rows?.map((c) => (
+      {shown?.map((c) => (
         <div class="card" key={c.id}>{nameOf(c)}{typeof c.latin === 'string' && <small>{c.latin}</small>}<UnsyncedMark id={c.id} />
           {live.filter((p) => p.crop_id === c.id).map((p) => (
             <div class="line" key={p.id} data-testid="planting">

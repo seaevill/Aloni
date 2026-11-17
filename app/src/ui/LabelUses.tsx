@@ -32,9 +32,9 @@ function Lines({ row }: { row: Row }) {
   return (
     <>
       {line('labeluse.dose', dose)}
-      {line('labeluse.phi', show(u.phiDays, (n) => tn('labeluse.days', n)))}
-      {line('labeluse.rei', show(u.reiHours, (n) => tn('labeluse.hours', n)))}
-      {line('labeluse.maxApps', show(u.maxApps, (n) => formatQty(n)))}
+      {line('labeluse.name.phi', show(u.phiDays, (n) => tn('labeluse.days', n)))}
+      {line('labeluse.name.rei', show(u.reiHours, (n) => tn('labeluse.hours', n)))}
+      {line('labeluse.name.maxApps', show(u.maxApps, (n) => formatQty(n)))}
     </>
   );
 }

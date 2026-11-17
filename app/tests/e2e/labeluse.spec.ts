@@ -44,7 +44,7 @@ test('label details offline: values kept as typed, empty or «δεν αναγρ�
   await expect(cards.first()).toContainText('Σπανάκι');
   await expect(cards.first().getByTestId('labeluse-status')).toHaveText('Χωρίς υπογραφή γεωπόνου'); // complete, but no agronomist has signed it
   await expect(cards.first()).toContainText('Δόση: 0,025 ml/στρ.'); // exactly as typed, not 0,03
-  await expect(cards.first()).toContainText('Αναμονή πριν από τη συγκομιδή (ημέρες): 7 ημέρες');
+  await expect(cards.first()).toContainText('Αναμονή πριν από τη συγκομιδή: 7 ημέρες');
 
   // 2) PHI «δεν αναγράφεται» and REI left empty → blocked
   await page.getByTestId('labeluse-add').click();
@@ -66,8 +66,8 @@ test('label details offline: values kept as typed, empty or «δεν αναγρ�
   expect(await bg(rocket.getByTestId('labeluse-status'))).toBe('rgb(138, 28, 28)');
   expect(await bg(cards.filter({ hasText: 'Σπανάκι' }).getByTestId('labeluse-status'))).not.toBe('rgb(138, 28, 28)');
   await expect(rocket).toContainText('Δόση: 0,25 – 0,35 g/στρ.');
-  await expect(rocket).toContainText('Αναμονή πριν από τη συγκομιδή (ημέρες): Δεν αναγράφεται');
-  await expect(rocket).toContainText('Επανείσοδος στο χωράφι (ώρες): Δεν έχει συμπληρωθεί');
+  await expect(rocket).toContainText('Αναμονή πριν από τη συγκομιδή: Δεν αναγράφεται');
+  await expect(rocket).toContainText('Επανείσοδος στο χωράφι: Δεν έχει συμπληρωθεί');
 
   // 3) edit: fix the missing values; reload keeps everything
   await rocket.getByRole('button', { name: 'Επεξεργασία' }).click();

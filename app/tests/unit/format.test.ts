@@ -55,6 +55,12 @@ describe('number formatting never rounds', () => {
   });
 });
 
+describe('negative numbers use a real minus sign', () => {
+  it('«−0,75» (U+2212), never a hyphen, in every language', () => {
+    for (const l of ['el', 'tr', 'en'] as const) { lang.value = l; expect(formatQty('-0.75')).toBe(l === 'en' ? '\u22120.75' : '\u22120,75'); }
+  });
+});
+
 describe('property: a dose typed with a comma comes back out exactly, in every language (never rounded, never shortened)', () => {
   it('2000 seeded doses: parse → show gives the same digits (comma in el/tr, dot in en), trailing zeros kept', () => {
     let x = 99;

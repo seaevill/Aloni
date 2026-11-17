@@ -71,7 +71,7 @@
   "parcel.name": "Parsel adı",
   "parcel.area": "Alan, dönüm (στρ.)",
   "parcel.pin": "GPS ile konum al",
-  "parcel.pin.set": "Konum: {lat}, {lng} (±{acc} m)",
+  "parcel.pin.set": "Enlem {lat} · boylam {lng} (±{acc} m)",
   "parcel.pin.error": "Konum bulunamadı. Onsuz devam edebilirsiniz.",
   "parcel.topo.title": "Arazi tipi (isteğe bağlı)",
   "parcel.topo.plain": "Ova",
@@ -245,5 +245,9 @@
   "analysis.archive": "Arşivle",
   "analysis.archived": "Analiz arşivlendi.",
   "analysis.empty": "Henüz analiz yok.",
-  "backup.skipped": "Telefonda daha yeni veya farklı bir sürüm olduğu için {n} kayıt değiştirilmedi: {list}"
+  "backup.skipped": "Telefonda daha yeni veya farklı bir sürüm olduğu için {n} kayıt değiştirilmedi: {list}",
+  "sync.local": "Telefona kaydedildi. Hesap bağlanınca gönderilecek.",
+  "labeluse.name.phi": "Hasattan önce bekleme süresi",
+  "labeluse.name.rei": "Tarlaya yeniden giriş",
+  "labeluse.name.maxApps": "En çok uygulama sayısı"
 }
