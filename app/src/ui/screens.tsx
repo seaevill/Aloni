@@ -26,7 +26,7 @@ export function Today() {
       <Title k="today.title" />
       {parcels && (empty
         ? <p class="card" data-testid="today-empty">{t('today.empty')}</p>
-        : <p class="card" data-testid="today-counts">{t('today.counts', { parcels: parcels.length, crops: crops?.length ?? 0, plantings: plantings?.length ?? 0 })}</p>)}
+        : <p class="card" data-testid="today-counts">{t('today.counts', { parcels: parcels.length, crops: formatQty(crops?.length), plantings: formatQty(plantings?.length) })}</p>)}
     </section>
   );
 }
