@@ -54,3 +54,19 @@ describe('number formatting never rounds', () => {
     expect(formatQty(undefined)).toBe('— άγνωστο');
   });
 });
+
+describe('property: a dose typed with a comma comes back out exactly, in every language (never rounded, never shortened)', () => {
+  it('2000 seeded doses: parse → show gives the same digits (comma in el/tr, dot in en), trailing zeros kept', () => {
+    let x = 99;
+    const next = () => { x = (x * 1103515245 + 12345) % 2147483648; return x; };
+    for (let i = 0; i < 2000; i += 1) {
+      const whole = String(next() % 500);
+      const frac = String(next() % 1000000).padStart(1 + (next() % 6), '0').slice(-(1 + (next() % 6))); // 1–6 digits, zeros included
+      if (frac.length === 3 && whole !== '0') continue; // «1,000»-style input is refused by design (see decimal tests)
+      const typed = `${whole},${frac}`;
+      lang.value = 'el'; expect(dose(typed), typed).toBe(typed);
+      lang.value = 'tr'; expect(dose(typed), typed).toBe(typed);
+      lang.value = 'en'; expect(dose(typed), typed).toBe(`${whole}.${frac}`);
+    }
+  });
+});
