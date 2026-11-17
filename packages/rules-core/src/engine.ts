@@ -8,17 +8,20 @@ import { parseInstant, phiEnd, reiEnd, waitOver } from './waits';
 
 export interface PlantingFact { id: string; parcelId: string; cropId: string }
 export interface JobFact { id: string; kind: string; status: string; plantingIds: readonly string[]; productId: string; startedAt: string; endedAt: string | undefined }
-export interface UseFact { productId: string; cropId: string; signed: Known<SignedLabelUse> }
+/** `maxApps` / `minIntervalDays` are the label's own raw facts for ROT: undefined = the label does not give them = UNKNOWN (never a default). */
+export interface UseFact { productId: string; cropId: string; signed: Known<SignedLabelUse>; maxApps?: number; minIntervalDays?: number }
+export interface ProductFact { id: string; groupCode: string | undefined }
+export interface DraftJob { id: string; kind: string; plantingIds: readonly string[]; productId: string }
 export interface TaskFact { id: string; plantingIds: readonly string[]; at: string }
-export interface Veto { by: string; vetoed: string; reason: string; planting_id?: string; task_id?: string }
+export interface Veto { by: string; vetoed: string; reason: string; planting_id?: string; task_id?: string; product_id?: string }
 export interface Output {
-  rule_id: string; kind: 'alert' | 'info'; category: string; severity?: 'high' | 'medium' | 'low'; confidence?: 'high' | 'medium' | 'low'; notify: boolean;
+  rule_id: string; kind: 'alert' | 'block' | 'info'; category: string; severity?: 'high' | 'medium' | 'low'; confidence?: 'high' | 'medium' | 'low'; notify: boolean;
   parcel_ids: string[]; planting_ids: string[]; product_ids: string[]; crop_ids: string[];
   window?: { start: string; end: string }; values: Record<string, unknown>; vetoes: Veto[];
 }
 export interface Snapshot {
   asOf: string; plantings: readonly PlantingFact[]; jobs: readonly JobFact[]; uses: readonly UseFact[]; tasks: readonly TaskFact[];
-  ruleStatus: Readonly<Record<string, 'signed' | 'unsigned'>>; parcelsForInfo: readonly string[];
+  ruleStatus: Readonly<Record<string, 'signed' | 'unsigned'>>; parcelsForInfo: readonly string[]; draftJobs: readonly DraftJob[]; products: readonly ProductFact[];
 }
 
 const blank = (o: Pick<Output, 'rule_id' | 'kind' | 'category'> & Partial<Output>): Output => ({ notify: false, parcel_ids: [], planting_ids: [], product_ids: [], crop_ids: [], values: {}, vetoes: [], ...o });
@@ -65,6 +68,41 @@ function rei(s: Snapshot): Output[] {
   return out;
 }
 
+const registered = (s: Snapshot, productId: string, plantingId: string): boolean => {
+  const p = s.plantings.find((x) => x.id === plantingId);
+  const use = p && s.uses.find((u) => u.productId === productId && u.cropId === p.cropId);
+  return !!use?.signed.known; // only a signed, complete label counts as «on the label»
+};
+
+/** REG: a draft spray may only cover the plantings the label lists for that product; the others are excluded (never the whole parcel). */
+function reg(s: Snapshot): Output[] {
+  const out: Output[] = [];
+  for (const j of s.draftJobs.filter((x) => x.kind === 'spray')) {
+    const allowed = j.plantingIds.filter((id) => registered(s, j.productId, id));
+    const excluded = j.plantingIds.filter((id) => !allowed.includes(id));
+    if (excluded.length === 0) continue;
+    out.push(blank({ rule_id: 'REG', kind: 'block', category: 'exclude_unregistered_beds', severity: 'high', planting_ids: excluded, product_ids: [j.productId], values: { job_id: j.id, allowed_planting_ids: allowed, exclude_planting_ids: excluded },
+      vetoes: excluded.map((id) => ({ by: 'REG', vetoed: 'spray', planting_id: id, reason: 'not_on_label' })) }));
+  }
+  return out;
+}
+
+/** ROT: with the product's group code or the label's maximum applications / minimum interval missing, the rotation check is UNKNOWN and never cleared. */
+function rot(s: Snapshot): Output[] {
+  const out: Output[] = [];
+  for (const j of s.draftJobs.filter((x) => x.kind === 'spray')) {
+    const missing: string[] = [];
+    if (!s.products.find((p) => p.id === j.productId)?.groupCode) missing.push('group_code');
+    const uses = j.plantingIds.map((id) => s.plantings.find((p) => p.id === id)).map((p) => s.uses.find((u) => u.productId === j.productId && u.cropId === p?.cropId));
+    if (uses.some((u) => u?.maxApps === undefined)) missing.push('max_apps');
+    if (uses.some((u) => u?.minIntervalDays === undefined)) missing.push('min_interval_days');
+    if (missing.length === 0) continue;
+    out.push(blank({ rule_id: 'ROT', kind: 'block', category: 'rotation_unknown', severity: 'high', planting_ids: [...j.plantingIds], product_ids: [j.productId], values: { status: 'unknown', missing },
+      vetoes: [{ by: 'ROT', vetoed: 'spray', product_id: j.productId, reason: 'unknown_never_cleared' }] }));
+  }
+  return out;
+}
+
 /** A rule with unsigned thresholds only shows what it would look at. Never an alert, never a severity, never a notification. */
 function infoOnly(s: Snapshot): Output[] {
   return s.ruleStatus.FROST === 'unsigned' ? s.parcelsForInfo.map((id) => blank({ rule_id: 'FROST', kind: 'info', category: 'frost_inputs', parcel_ids: [id], values: { shows_inputs: true, badge: 'not_signed_off', notify: false } })) : [];
@@ -72,5 +110,5 @@ function infoOnly(s: Snapshot): Output[] {
 
 export function runRules(s: Snapshot): Output[] {
   if (!parseInstant(s.asOf).known) return []; // no readable «now»: nothing is decided
-  return [...phi(s), ...rei(s), ...infoOnly(s)];
+  return [...phi(s), ...rei(s), ...reg(s), ...rot(s), ...infoOnly(s)];
 }
