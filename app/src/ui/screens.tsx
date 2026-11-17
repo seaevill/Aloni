@@ -11,7 +11,7 @@ import { showUndo } from './Toast';
 import type { Row } from '../db/schema';
 import { useRows, type Rows } from './useRows';
 
-function Title({ k }: { k: I18nKey }) {
+export function Title({ k }: { k: I18nKey }) {
   return (
     <h1>
       {t(k)}
@@ -20,13 +20,13 @@ function Title({ k }: { k: I18nKey }) {
   );
 }
 
-const nameOf = (r: Record<string, unknown>) =>
+export const nameOf = (r: Record<string, unknown>) =>
   String(r[`name_${lang.value}`] ?? r.name_en ?? r.name ?? r.label ?? r.id);
 
-const retry = () => { dataVersion.value++; };
+export const retry = () => { dataVersion.value++; };
 
 /** The two states every list has: an error that says what to do next, and an empty state with ONE action. */
-function Status({ q, message, action }: { q: Rows; message: string; action?: { label: string; run: () => void } }) {
+export function Status({ q, message, action }: { q: Rows; message: string; action?: { label: string; run: () => void } }) {
   return (
     <>
       {q.failed && <ErrorState onRetry={retry} />}
@@ -45,19 +45,6 @@ export function Today() {
       <Title k="today.title" />
       <Status q={{ ...parcels, rows: empty ? parcels.rows : [] }} message={t('today.empty')} />
       {parcels.rows && !empty && <p class="card" data-testid="today-counts">{t('today.counts', { parcels: parcels.rows.length, crops: formatQty(crops.rows?.length), plantings: formatQty(plantings.rows?.length) })}</p>}
-    </section>
-  );
-}
-
-export function Crops() {
-  const q = useRows('crops');
-  return (
-    <section>
-      <Title k="crops.title" />
-      <Status q={q} message={t('list.empty')} />
-      {q.rows?.map((r) => (
-        <div class="card" key={r.id}>{nameOf(r)}{typeof r.latin === 'string' && <small>{r.latin}</small>}<UnsyncedMark id={r.id} /></div>
-      ))}
     </section>
   );
 }

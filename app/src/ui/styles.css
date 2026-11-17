@@ -29,3 +29,5 @@ nav.tabs .ico { font-size:20px; line-height:1; }
 .empty { text-align:center; padding:24px 8px; }
 .toast { position:fixed; left:16px; right:16px; bottom:calc(72px + env(safe-area-inset-bottom)); z-index:10; display:flex; gap:12px; align-items:center; justify-content:space-between; padding:8px 8px 8px 16px; background:var(--fg); color:#fff; border-radius:12px; }
 .toast .btn { width:auto; min-width:96px; margin:0; }
+.msg.warn { color:#4a2500; }
+.line { display:flex; flex-direction:column; gap:4px; padding:8px 0; border-top:1px solid var(--line); }
