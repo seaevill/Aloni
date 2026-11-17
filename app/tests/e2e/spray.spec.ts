@@ -100,6 +100,19 @@ test('a spray with an UNSIGNED label is still recorded, marked, and its waiting 
   await expect(card).toContainText('Χωρίς υπογραφή γεωπόνου');
   await expect(card.getByTestId('spray-phi-unknown')).toContainText('Άγνωστη αναμονή');
   await expect(card.getByTestId('spray-phi')).toHaveCount(0);
+
+  await card.getByTestId('wait-open').click(); // Bora types the label's values: a NEW row, the original stays
+  await page.getByTestId('wait-phi').fill('7,5'); await page.getByTestId('wait-rei').fill('24');
+  await page.getByTestId('wait-save').click();
+  await expect(page.locator('main .msg.error')).toHaveCount(1); // a PHI of 7,5 is refused, never rounded
+  await page.getByTestId('wait-phi').fill('7');
+  await page.getByTestId('wait-save').click();
+  await expect(page.getByTestId('spray')).toHaveCount(1); // still one spray on the screen
+  await expect(card.getByTestId('spray-phi')).toContainText('Αναμονή λήγει');
+  await expect(card.getByTestId('spray-manual')).toHaveText('Τιμή που καταχωρίσατε εσείς από την ετικέτα');
+  await expect(card.getByTestId('wait-open')).toHaveCount(0); // once known it cannot be entered again (it could only shorten it)
+  const rows = await page.evaluate(() => new Promise<number>((res) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const q = r.result.transaction('job_spray').objectStore('job_spray').count(); q.onsuccess = () => res(q.result); }; }));
+  expect(rows).toBe(2); // the original and the amending row
 });
 
 test('the spray form meets the UX bar in el/tr/en (375 px, targets, axe)', async ({ page }) => {

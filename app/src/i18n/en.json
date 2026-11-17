@@ -299,5 +299,8 @@
   "spray.phi.unknown": "Waiting period unknown: harvest of this planting is blocked until you enter the waiting period from the label.",
   "spray.phi.until": "Waiting period ends {d}",
   "spray.rei.until": "Re-entry from {d}",
-  "stock.reason.spray": "spray"
+  "stock.reason.spray": "spray",
+  "spray.phi.enter": "Enter the waiting period from the label",
+  "spray.phi.entry.note": "Write the values as on the label. It is added as a new row; the original record stays.",
+  "spray.phi.manual": "Value you entered from the label"
 }
