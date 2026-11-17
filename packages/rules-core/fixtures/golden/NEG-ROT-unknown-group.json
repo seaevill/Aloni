@@ -1,0 +1,184 @@
+{
+  "schema_version": 1,
+  "id": "NEG-ROT-unknown-group",
+  "case_type": "negative",
+  "source_case": "R07",
+  "qa_refs": [],
+  "rule_id": "ROT",
+  "related_rules": [],
+  "farm": "demo",
+  "as_of": "2026-11-16T06:40:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {
+      "max_consecutive_same_group": {
+        "value": 1,
+        "basis": "test-only [SET] (FRAC guideline per group)"
+      },
+      "multisite_exempt": {
+        "value": true,
+        "basis": "EST (FRAC M groups)"
+      },
+      "season": {
+        "value": "2026-09-01..2027-08-31",
+        "basis": "test-only [SET]"
+      }
+    }
+  },
+  "inputs": {
+    "plantings": [
+      {
+        "id": "PL12",
+        "crop_id": "parsley",
+        "parcel_id": "P4",
+        "area_str": "1.5",
+        "sown": "2026-08-15",
+        "stage_pct": 100,
+        "harvest_from": "2026-10-20",
+        "harvest_to": "2027-01-31",
+        "est_crates": 390,
+        "status": "harvesting",
+        "family": "Apiaceae"
+      }
+    ],
+    "products": [
+      {
+        "id": "PR02",
+        "label": "Azoxystrobin 25% SC",
+        "type": "fungicide",
+        "group_system": null,
+        "group_code": null,
+        "unit": "L"
+      }
+    ],
+    "label_uses": [
+      {
+        "product_id": "PR02",
+        "crop_id": "parsley",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.1",
+        "dose_max_per_str": "0.1",
+        "dose_unit": "L/στρ",
+        "phi_days": 14,
+        "rei_h": 24,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      }
+    ],
+    "stock": [
+      {
+        "product_id": "PR02",
+        "qty": "1",
+        "unit": "L",
+        "expiry": "2027-09-30"
+      }
+    ],
+    "jobs": [
+      {
+        "id": "J15",
+        "kind": "spray",
+        "parcel_id": "P4",
+        "planting_ids": [
+          "PL12"
+        ],
+        "product_id": "PR05",
+        "dose_per_str": "0.05",
+        "started_at": "2026-11-09T10:30:00+02:00",
+        "ended_at": null,
+        "time_source": "job notes",
+        "notes": "Septoria leaf spot (Septoria petroselini) on parsley; 50 L water/στρ; 10:30, leaves dry."
+      }
+    ]
+  },
+  "synthetic_inputs": {
+    "_synthetic": true,
+    "why": "Variant of R07: product record with the group code missing and label max_apps / min_interval missing (the prototype's real state).",
+    "draft_job": {
+      "id": "DJ-ROT-U",
+      "kind": "spray",
+      "status": "draft",
+      "planting_ids": [
+        "PL12"
+      ],
+      "area_str": "1.5",
+      "product_id": "PR02",
+      "dose_per_str": "0.1",
+      "target": "Septoria leaf spot (Septoria petroselini)",
+      "planned_for": "2026-11-24T10:00:00+02:00",
+      "origin": "manual"
+    },
+    "label_use_extras": {
+      "PR02": {
+        "target": "Septoria leaf spot (Septoria petroselini)"
+      }
+    }
+  },
+  "expected": {
+    "mode": "decide",
+    "kind": "block",
+    "category": "rotation_unknown",
+    "severity": "high",
+    "targets": {
+      "product_ids": [
+        "PR02"
+      ],
+      "planting_ids": [
+        "PL12"
+      ]
+    },
+    "values": {
+      "status": "unknown",
+      "missing": [
+        "group_code",
+        "max_apps",
+        "min_interval_days"
+      ]
+    },
+    "vetoes": [
+      {
+        "by": "ROT",
+        "vetoed": "spray",
+        "product_id": "PR02",
+        "reason": "unknown_never_cleared"
+      }
+    ],
+    "must_not": [
+      {
+        "id": "not-cleared",
+        "match": {
+          "rule_id": "ROT",
+          "product_ids": "PR02",
+          "values": {
+            "status": "pass"
+          }
+        },
+        "why": "no group code = unknown, never cleared"
+      },
+      {
+        "id": "no-default-max",
+        "match": {
+          "rule_id": "ROT",
+          "values": {
+            "max_apps": {
+              "$exists": true,
+              "$ne": null
+            }
+          }
+        },
+        "why": "never default a label value"
+      }
+    ]
+  },
+  "source_text": {
+    "prototype_id": "R07",
+    "action": "Hold harvest until Mon 23 Nov. No further fungicide now; if Septoria spreads after the front, next spray must not be FRAC 3 (e.g. copper hydroxide, FRAC M01, PHI 7) – check label.",
+    "window": "Until Mon 23 Nov",
+    "why_rule": "PHI + FRAC rotation: do not repeat the same FRAC group back-to-back.",
+    "severity": null
+  },
+  "notes": "Safety rule 1 for ROT."
+}

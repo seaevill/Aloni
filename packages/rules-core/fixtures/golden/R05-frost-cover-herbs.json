@@ -1,0 +1,233 @@
+{
+  "schema_version": 1,
+  "id": "R05-frost-cover-herbs",
+  "case_type": "golden",
+  "source_case": "R05",
+  "qa_refs": [
+    "P1-3",
+    "P1-4"
+  ],
+  "rule_id": "FROST",
+  "related_rules": [],
+  "farm": "demo",
+  "as_of": "2026-11-16T06:40:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {
+      "tmin_2m_max_c": {
+        "value": 2.0,
+        "basis": "v2 placeholder [SET]"
+      },
+      "wind_max_kmh": {
+        "value": 5,
+        "basis": "v2 placeholder [SET ~5]"
+      },
+      "cloud_max_oktas": {
+        "value": 2,
+        "basis": "test-only [SET]"
+      },
+      "elevation_max_m": {
+        "value": 50,
+        "basis": "v2 rule (topo class preferred)"
+      },
+      "cold_pool_offset_c": {
+        "value": {
+          "plain": 0.0,
+          "slope": 0.0,
+          "coastal": 0.0
+        },
+        "basis": "test-only [SET]; forecast already elevation-corrected"
+      },
+      "leaf_below_air_c": {
+        "value": [
+          1,
+          3
+        ],
+        "basis": "EST"
+      },
+      "damage_temp_by_crop_stage": {
+        "value": null,
+        "basis": "[SET] not set → 'frost conditions' only"
+      }
+    }
+  },
+  "inputs": {
+    "parcels": [
+      {
+        "id": "P2",
+        "name": "Μεσαίο Χωράφι (Middle Field)",
+        "area_str": "8",
+        "elevation_m": 34
+      }
+    ],
+    "plantings": [
+      {
+        "id": "PL04",
+        "crop_id": "rocket",
+        "parcel_id": "P2",
+        "area_str": "1",
+        "stage_pct": 68,
+        "harvest_from": "2026-11-26",
+        "status": "growing",
+        "family": "Brassicaceae"
+      },
+      {
+        "id": "PL05",
+        "crop_id": "coriander",
+        "parcel_id": "P2",
+        "area_str": "0.5",
+        "stage_pct": 41,
+        "harvest_from": "2026-12-10",
+        "status": "growing",
+        "family": "Apiaceae"
+      },
+      {
+        "id": "PL06",
+        "crop_id": "dill",
+        "parcel_id": "P2",
+        "area_str": "0.5",
+        "stage_pct": 46,
+        "harvest_from": "2026-12-08",
+        "status": "growing",
+        "family": "Apiaceae"
+      },
+      {
+        "id": "PL07",
+        "crop_id": "parsley",
+        "parcel_id": "P2",
+        "area_str": "1",
+        "stage_pct": 100,
+        "harvest_from": "2026-10-25",
+        "status": "harvesting",
+        "family": "Apiaceae"
+      },
+      {
+        "id": "PL16",
+        "crop_id": "rocket",
+        "parcel_id": "P2",
+        "area_str": "1",
+        "stage_pct": 28,
+        "harvest_from": "2026-12-12",
+        "status": "growing",
+        "family": "Brassicaceae"
+      }
+    ],
+    "weather_daily": {
+      "P2": [
+        {
+          "date": "2026-11-16",
+          "tmin": 3.0,
+          "wind_kmh": 6,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-17",
+          "tmin": 2.0,
+          "wind_kmh": 4,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-18",
+          "tmin": 1.5,
+          "wind_kmh": 4,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-19",
+          "tmin": 0.5,
+          "wind_kmh": 5,
+          "kind": "forecast"
+        }
+      ]
+    },
+    "weather_convention": "daily row D: tmin = night ending on the morning of D; wind_kmh used as night wind (approximation, no hourly in prototype)"
+  },
+  "synthetic_inputs": {
+    "_synthetic": true,
+    "why": "Prototype has no cloud cover, topo class or cover inventory. Values follow DATA-NOTES: 'clear, calm nights 14–19 Nov; cold air pools on the plain; Geraneia above the inversion; Pachi mild (sea)'.",
+    "night_cloud_oktas": {
+      "2026-11-16/2026-11-17": 0,
+      "2026-11-17/2026-11-18": 0,
+      "2026-11-18/2026-11-19": 0
+    },
+    "topo_class": {
+      "P2": "plain"
+    },
+    "covers_on_hand": {
+      "fleece_17_19_gm2_m2": 1500
+    }
+  },
+  "expected": {
+    "mode": "decide",
+    "kind": "recommendation",
+    "category": "cover",
+    "severity": null,
+    "confidence": "low",
+    "targets": {
+      "parcel_ids": [
+        "P2"
+      ],
+      "parcel_match": "exact",
+      "planting_ids": [
+        "PL05",
+        "PL06"
+      ],
+      "planting_match": "include"
+    },
+    "window": {
+      "start": "2026-11-16",
+      "end": "2026-11-19"
+    },
+    "values": {
+      "nights": [
+        {
+          "night": "2026-11-16/2026-11-17",
+          "P2": 2.0
+        },
+        {
+          "night": "2026-11-17/2026-11-18",
+          "P2": 1.5
+        },
+        {
+          "night": "2026-11-18/2026-11-19",
+          "P2": 0.5
+        }
+      ],
+      "cover_gain_c": "1–2 (EST)",
+      "damage_claimed": false
+    },
+    "vetoes": [],
+    "must_not": [
+      {
+        "id": "not-from-wednesday-only",
+        "match": {
+          "rule_id": "FROST",
+          "category": "cover",
+          "window": {
+            "start": {
+              "$gte": "2026-11-17"
+            }
+          }
+        },
+        "why": "QA P1-4: P2 is 2.0 °C on night 16→17 and 1.5 °C on 17→18"
+      },
+      {
+        "id": "no-damage-claim",
+        "match": {
+          "values": {
+            "damage_claimed": true
+          }
+        },
+        "why": "Do not automate"
+      }
+    ]
+  },
+  "source_text": {
+    "prototype_id": "R05",
+    "action": "Cover coriander (PL05) and dill (PL06) with 17-19 g/m² fleece Wed evening; uncover Thu after ~10:00. No harvest is due on these lots.",
+    "window": "Wed 18 Nov before sunset → Thu 19 Nov ~10:00",
+    "why_rule": "See frost alert A01: low-plain parcel, clear calm night, 2 m min <= 2 °C; young tender herbs most exposed.",
+    "severity": null
+  },
+  "notes": "Cover from Mon 16 evening, not only Wed (QA P1-4). Fleece area on hand (synthetic 1500 m²) covers PL05+PL06 (1 στρ = 1000 m²). Rocket PL04/PL16 on the same parcel may also be listed; not asserted because damage thresholds per crop/stage are [SET]."
+}

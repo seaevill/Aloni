@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "id": "NEG-PHI-no-label-row-blocks",
+  "case_type": "negative",
+  "source_case": null,
+  "qa_refs": [],
+  "rule_id": "PHI",
+  "related_rules": [
+    "REG",
+    "GAP"
+  ],
+  "farm": "demo",
+  "as_of": "2026-11-18T15:30:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {}
+  },
+  "inputs": {
+    "plantings": [
+      {
+        "id": "PL09",
+        "crop_id": "chard",
+        "parcel_id": "P3",
+        "area_str": "1",
+        "sown": "2026-09-15",
+        "stage_pct": 100,
+        "harvest_from": "2026-11-05",
+        "harvest_to": "2027-01-15",
+        "est_crates": 200,
+        "status": "harvesting",
+        "family": "Amaranthaceae"
+      }
+    ],
+    "products": [
+      {
+        "id": "PR03",
+        "label": "Mandipropamid 25% SC",
+        "type": "fungicide",
+        "group_system": "FRAC",
+        "group_code": "40",
+        "unit": "L"
+      }
+    ],
+    "label_uses": [
+      {
+        "product_id": "PR03",
+        "crop_id": "spinach",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.06",
+        "dose_max_per_str": "0.06",
+        "dose_unit": "L/στρ",
+        "phi_days": 14,
+        "rei_h": 24,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      }
+    ],
+    "label_uses_note": "PR03 has no label row for chard"
+  },
+  "synthetic_inputs": {
+    "_synthetic": true,
+    "why": "A logged spray of a product with no label row for the crop (e.g. drift/mistake on the chard bed next to R01).",
+    "jobs": [
+      {
+        "id": "J-X1",
+        "kind": "spray",
+        "status": "done",
+        "parcel_id": "P3",
+        "planting_ids": [
+          "PL09"
+        ],
+        "product_id": "PR03",
+        "dose_per_str": "0.06",
+        "started_at": "2026-11-18T11:00:00+02:00",
+        "ended_at": "2026-11-18T13:00:00+02:00"
+      }
+    ]
+  },
+  "expected": {
+    "mode": "decide",
+    "kind": "alert",
+    "category": "phi_blocked_unknown",
+    "severity": "high",
+    "targets": {
+      "planting_ids": [
+        "PL09"
+      ],
+      "planting_match": "exact"
+    },
+    "values": {
+      "lot_status": "blocked",
+      "safe_from": null,
+      "reason": "no_label_row"
+    },
+    "also": [
+      {
+        "rule_id": "REG",
+        "kind": "alert",
+        "category": "unregistered_use",
+        "planting_ids": [
+          "PL09"
+        ]
+      }
+    ],
+    "vetoes": [
+      {
+        "by": "PHI",
+        "vetoed": "harvest",
+        "planting_id": "PL09",
+        "reason": "no_label_row"
+      }
+    ],
+    "must_not": [
+      {
+        "id": "no-default-safe-from",
+        "match": {
+          "rule_id": "PHI",
+          "planting_ids": "PL09",
+          "values": {
+            "safe_from": {
+              "$exists": true,
+              "$ne": null
+            }
+          }
+        },
+        "why": "never a default PHI"
+      },
+      {
+        "id": "no-supply",
+        "match": {
+          "category": "supply_gap",
+          "values": {
+            "supply_by_planting": {
+              "PL09": [
+                {
+                  "$gt": 0
+                }
+              ]
+            }
+          }
+        },
+        "why": "blocked lot is not supply"
+      }
+    ]
+  },
+  "source_text": {
+    "rules": "PHI: If the label has no entry for that product and crop pair, the lot is blocked, never given a default."
+  },
+  "notes": "Release needs a person (agronomist), never the app."
+}

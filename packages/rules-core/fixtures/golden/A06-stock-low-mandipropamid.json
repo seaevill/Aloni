@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "id": "A06-stock-low-mandipropamid",
+  "case_type": "golden",
+  "source_case": "A06",
+  "qa_refs": [
+    "P2-7"
+  ],
+  "rule_id": "STOCK",
+  "related_rules": [],
+  "farm": "demo",
+  "as_of": "2026-11-16T06:40:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {
+      "low_factor": {
+        "value": "2",
+        "basis": "v2 placeholder [SET ×]"
+      },
+      "expiring_days": {
+        "value": 30,
+        "basis": "v2 placeholder [SET]"
+      }
+    }
+  },
+  "inputs": {
+    "products": [
+      {
+        "id": "PR03",
+        "label": "Mandipropamid 25% SC",
+        "type": "fungicide",
+        "group_system": "FRAC",
+        "group_code": "40",
+        "unit": "L"
+      }
+    ],
+    "stock": [
+      {
+        "product_id": "PR03",
+        "qty": "0.1",
+        "unit": "L",
+        "expiry": "2028-01-31"
+      }
+    ],
+    "label_uses": [
+      {
+        "product_id": "PR03",
+        "crop_id": "spinach",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.06",
+        "dose_max_per_str": "0.06",
+        "dose_unit": "L/στρ",
+        "phi_days": 14,
+        "rei_h": 24,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      }
+    ],
+    "plantings": [
+      {
+        "id": "PL08",
+        "crop_id": "spinach",
+        "parcel_id": "P3",
+        "area_str": "1.5",
+        "family": "Amaranthaceae"
+      }
+    ]
+  },
+  "synthetic_inputs": {
+    "_synthetic": true,
+    "why": "Prototype has no planned-jobs table; A06 assumes the R01 spray is the next planned use.",
+    "planned_jobs": [
+      {
+        "id": "PJ-R01",
+        "kind": "spray",
+        "status": "planned",
+        "planting_ids": [
+          "PL08"
+        ],
+        "area_str": "1.5",
+        "product_id": "PR03",
+        "dose_per_str": "0.06",
+        "planned_for": "2026-11-18"
+      }
+    ]
+  },
+  "expected": {
+    "mode": "decide",
+    "kind": "alert",
+    "category": "stock_low",
+    "severity": "medium",
+    "targets": {
+      "product_ids": [
+        "PR03"
+      ]
+    },
+    "values": {
+      "qty": "0.1",
+      "next_use_qty": "0.09",
+      "threshold_qty": "0.18",
+      "unit": "L",
+      "sufficient_for_next_job": true
+    },
+    "vetoes": [],
+    "must_not": [
+      {
+        "id": "no-insufficient-block",
+        "match": {
+          "rule_id": "STOCK",
+          "kind": "block",
+          "product_ids": "PR03"
+        },
+        "why": "0.1 ≥ 0.09"
+      },
+      {
+        "id": "no-rounded-next-use",
+        "match": {
+          "rule_id": "STOCK",
+          "values": {
+            "next_use_qty": "0.1"
+          }
+        },
+        "why": "never round (QA P0-1)"
+      }
+    ]
+  },
+  "source_text": {
+    "prototype_id": "A06",
+    "title": "Low stock: Mandipropamid 25% SC – 0.10 L left",
+    "body": "Enough for exactly one spray on Pachi spinach (1.5 στρ × 0.06 L = 0.09 L). Nothing left for a second FRAC 40 spray or for other lots.",
+    "action": "Reorder (a prescription from your agronomist may be required - verify). Keep alternatives in rotation: propamocarb (FRAC 28, last used 30 Oct on this lot).",
+    "why_rule": "Warn when stock < 2 × the next planned application.",
+    "severity": "medium"
+  },
+  "notes": "Severity is Low or Medium per RULES; Medium chosen because the stock covers exactly one planned job. Quantities are decimal strings."
+}

@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "id": "A03-phi-guard-harvesting-spinach",
+  "case_type": "golden",
+  "source_case": "A03",
+  "qa_refs": [],
+  "rule_id": "PHI-GUARD",
+  "related_rules": [
+    "DM-SPIN",
+    "PHI"
+  ],
+  "farm": "demo",
+  "as_of": "2026-11-16T06:40:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {
+      "harvest_buffer_days": {
+        "value": 0,
+        "basis": "test-only [SET buffer days]"
+      }
+    }
+  },
+  "inputs": {
+    "plantings": [
+      {
+        "id": "PL01",
+        "crop_id": "spinach",
+        "parcel_id": "P1",
+        "area_str": "1.5",
+        "sown": "2026-09-22",
+        "stage_pct": 100,
+        "harvest_from": "2026-11-10",
+        "harvest_to": "2026-11-28",
+        "est_crates": 225,
+        "status": "harvesting",
+        "family": "Amaranthaceae"
+      }
+    ],
+    "label_uses": [
+      {
+        "product_id": "PR01",
+        "crop_id": "spinach",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.2",
+        "dose_max_per_str": "0.2",
+        "dose_unit": "kg/στρ",
+        "phi_days": 7,
+        "rei_h": 24,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      },
+      {
+        "product_id": "PR03",
+        "crop_id": "spinach",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.06",
+        "dose_max_per_str": "0.06",
+        "dose_unit": "L/στρ",
+        "phi_days": 14,
+        "rei_h": 24,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      }
+    ],
+    "jobs": [
+      {
+        "id": "J09",
+        "kind": "spray",
+        "parcel_id": "P1",
+        "planting_ids": [
+          "PL01"
+        ],
+        "product_id": "PR01",
+        "dose_per_str": "0.2",
+        "started_at": "2026-11-02T10:45:00+02:00",
+        "ended_at": null,
+        "time_source": "job notes",
+        "notes": "Preventive copper before mid-Nov rains; 50 L water/στρ; 10:45."
+      },
+      {
+        "id": "J16",
+        "kind": "harvest",
+        "planting_id": "PL01",
+        "date": "2026-11-10",
+        "crates": 38
+      },
+      {
+        "id": "J19",
+        "kind": "harvest",
+        "planting_id": "PL01",
+        "date": "2026-11-14",
+        "crates": 36
+      }
+    ],
+    "upstream_outputs": [
+      {
+        "rule_id": "DM-SPIN",
+        "planting_ids": [
+          "PL01"
+        ],
+        "risk": "medium",
+        "note": "from prototype A03 body ('mildew conditions', leaf-wet 11–13 h/night)"
+      }
+    ],
+    "weather_daily": {
+      "P1": [
+        {
+          "date": "2026-11-14",
+          "leafwet_h": 13,
+          "rain_mm": 0,
+          "kind": "observed"
+        },
+        {
+          "date": "2026-11-15",
+          "leafwet_h": 12,
+          "rain_mm": 0,
+          "kind": "observed"
+        },
+        {
+          "date": "2026-11-16",
+          "leafwet_h": 11,
+          "rain_mm": 0,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-20",
+          "leafwet_h": 12,
+          "rain_mm": 6.5,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-21",
+          "leafwet_h": 20,
+          "rain_mm": 17.8,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-22",
+          "leafwet_h": 8,
+          "rain_mm": 3.2,
+          "kind": "forecast"
+        }
+      ]
+    }
+  },
+  "synthetic_inputs": null,
+  "expected": {
+    "mode": "decide",
+    "kind": "alert",
+    "category": "harvest_and_scout",
+    "severity": "medium",
+    "targets": {
+      "parcel_ids": [
+        "P1"
+      ],
+      "planting_ids": [
+        "PL01"
+      ],
+      "planting_match": "exact"
+    },
+    "window": null,
+    "values": {
+      "status": "harvesting",
+      "safe_since": "2026-11-09T10:45:00+02:00",
+      "scouting_prompt": true
+    },
+    "vetoes": [
+      {
+        "by": "PHI-GUARD",
+        "vetoed": "spray",
+        "planting_id": "PL01",
+        "reason": "lot_harvesting"
+      }
+    ],
+    "must_not": [
+      {
+        "id": "no-spray-rec",
+        "match": {
+          "kind": "recommendation",
+          "category": "spray_window",
+          "planting_ids": "PL01"
+        },
+        "why": "PHI would lock harvest 7–14 days"
+      },
+      {
+        "id": "no-options",
+        "match": {
+          "kind": "option",
+          "planting_ids": "PL01"
+        },
+        "why": "no product list for a guarded lot"
+      }
+    ]
+  },
+  "source_text": {
+    "prototype_id": "A03",
+    "title": "Spinach Κάτω Κάμπος: mildew conditions, but it is in harvest – do NOT spray",
+    "body": "Same wet nights after the rain (leaf-wet 11-13 h per night). This lot is being cut now (safe since Mon 9 Nov). Any fungicide now would lock harvest for 7-14 days and break supply.",
+    "action": "Keep cutting (~15 crates/day) Tue 17-Fri 20 Nov and Mon 23-Sat 28 Nov; not Thu before ~10:00 thaw, not in the rain Fri pm-Sun. Scout lower-leaf undersides each cut; grade out leaves with grey-violet growth.",
+    "why_rule": "If a planting is harvesting AND a spray's PHI would block cuts before the end of its harvest window, the app does not recommend a spray; it recommends faster harvest + scouting.",
+    "severity": "medium"
+  },
+  "notes": "J09 time 10:45 is parsed from the job notes. safe_since = 2 Nov 10:45 + 7 d."
+}

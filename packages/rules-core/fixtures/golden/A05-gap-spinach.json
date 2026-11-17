@@ -1,0 +1,250 @@
+{
+  "schema_version": 1,
+  "id": "A05-gap-spinach",
+  "case_type": "golden",
+  "source_case": "A05",
+  "qa_refs": [
+    "P2-12"
+  ],
+  "rule_id": "GAP",
+  "related_rules": [
+    "SOW",
+    "PHI",
+    "HARV-FC"
+  ],
+  "farm": "demo",
+  "as_of": "2026-11-16T06:40:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {
+      "gap_min_pct_of_orders": {
+        "value": 10,
+        "basis": "RULES [SET ~10]"
+      },
+      "gap_min_crates": {
+        "value": 3,
+        "basis": "RULES [SET ~3]"
+      },
+      "horizon_weeks": {
+        "value": 7,
+        "basis": "test-only [SET]"
+      },
+      "supply_model": {
+        "value": "even spread of (est_crates − logged harvests) from max(as_of, harvest_from, safe_from) to harvest_to",
+        "basis": "v2 method; HARV-FC replaces it in M3+"
+      },
+      "week": {
+        "value": "ISO week, Mon–Sun",
+        "basis": "convention"
+      }
+    }
+  },
+  "inputs": {
+    "orders_weekly": [
+      {
+        "crop_id": "spinach",
+        "crates_per_week": 90,
+        "multipliers": [
+          {
+            "week_start": "2026-12-21",
+            "factor": "1.3",
+            "source": "peak_note 'Christmas week ~x1.3'"
+          }
+        ]
+      }
+    ],
+    "plantings": [
+      {
+        "id": "PL01",
+        "crop_id": "spinach",
+        "parcel_id": "P1",
+        "area_str": "1.5",
+        "sown": "2026-09-22",
+        "stage_pct": 100,
+        "harvest_from": "2026-11-10",
+        "harvest_to": "2026-11-28",
+        "est_crates": 225,
+        "status": "harvesting",
+        "family": "Amaranthaceae",
+        "safe_from": "2026-11-09T10:45:00+02:00"
+      },
+      {
+        "id": "PL08",
+        "crop_id": "spinach",
+        "parcel_id": "P3",
+        "area_str": "1.5",
+        "sown": "2026-10-12",
+        "stage_pct": 67,
+        "harvest_from": "2026-12-03",
+        "harvest_to": "2026-12-22",
+        "est_crates": 225,
+        "status": "growing",
+        "family": "Amaranthaceae",
+        "safe_from": "2026-11-13T11:30:00+02:00"
+      }
+    ],
+    "jobs": [
+      {
+        "id": "J16",
+        "kind": "harvest",
+        "planting_id": "PL01",
+        "date": "2026-11-10",
+        "crates": 38
+      },
+      {
+        "id": "J19",
+        "kind": "harvest",
+        "planting_id": "PL01",
+        "date": "2026-11-14",
+        "crates": 36
+      }
+    ],
+    "sowing_lead_time_days": {
+      "spinach": [
+        60,
+        75
+      ],
+      "source": "prototype R04 ('60–75 days in winter')"
+    }
+  },
+  "synthetic_inputs": null,
+  "expected": {
+    "mode": "decide",
+    "kind": "alert",
+    "category": "supply_gap",
+    "severity": "medium",
+    "targets": {
+      "crop_ids": [
+        "spinach"
+      ]
+    },
+    "window": {
+      "start": "2026-11-23",
+      "end": "2027-01-03"
+    },
+    "values": {
+      "weeks": [
+        "2026-11-16",
+        "2026-11-23",
+        "2026-11-30",
+        "2026-12-07",
+        "2026-12-14",
+        "2026-12-21",
+        "2026-12-28"
+      ],
+      "orders": [
+        90,
+        90,
+        90,
+        90,
+        90,
+        117,
+        90
+      ],
+      "supply_by_planting": {
+        "PL01": [
+          81.3,
+          69.7,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "PL08": [
+          0.0,
+          0.0,
+          45.0,
+          78.8,
+          78.8,
+          22.5,
+          0.0
+        ]
+      },
+      "supply": [
+        81.3,
+        69.7,
+        45.0,
+        78.8,
+        78.8,
+        22.5,
+        0.0
+      ],
+      "gap": [
+        8.7,
+        20.3,
+        45.0,
+        11.2,
+        11.2,
+        94.5,
+        90.0
+      ],
+      "alert_weeks": [
+        "2026-11-23",
+        "2026-11-30",
+        "2026-12-07",
+        "2026-12-14",
+        "2026-12-21",
+        "2026-12-28"
+      ],
+      "sowing_can_arrive_in_time": false,
+      "action": "buy_in_or_agree_volumes",
+      "links_to": "SOW"
+    },
+    "tolerance": {
+      "crates": 1.0
+    },
+    "vetoes": [],
+    "must_not": [
+      {
+        "id": "no-pl08-week1",
+        "match": {
+          "category": "supply_gap",
+          "values": {
+            "supply_by_planting": {
+              "PL08": [
+                {
+                  "$gt": 0
+                }
+              ]
+            }
+          }
+        },
+        "why": "PL08 harvest starts 3 Dec"
+      },
+      {
+        "id": "no-pl08-week2",
+        "match": {
+          "category": "supply_gap",
+          "values": {
+            "supply_by_planting": {
+              "PL08": [
+                {},
+                {
+                  "$gt": 0
+                }
+              ]
+            }
+          }
+        },
+        "why": "PL08 harvest starts 3 Dec"
+      },
+      {
+        "id": "no-commit",
+        "match": {
+          "category": "order_change"
+        },
+        "why": "never commit volumes or cancel orders"
+      }
+    ]
+  },
+  "source_text": {
+    "prototype_id": "A05",
+    "title": "Spinach: no supply after Tue 22 Dec (orders 90 crates/week)",
+    "body": "Κάτω Κάμπος gives ~83 crates/week until Sat 28 Nov (already 7-19 short/week). Week Mon 30 Nov-Sun 6 Dec only ~45 (gap between lots). Pachi gives ~79/week Thu 3-Tue 22 Dec. From Wed 23 Dec nothing is planted - and Christmas week orders are ~117.",
+    "action": "Sow spinach now on Νότιος Κάμπος (R04) – earliest it can help is ~mid-Jan. For 23 Dec - mid-Jan: buy in or agree lower volumes with clients.",
+    "why_rule": "Gap = weekly orders - weekly supply (est. crates spread evenly over each planting's harvest window).",
+    "severity": "medium"
+  },
+  "notes": "Week 16–22 Nov gap 8.7 < 10 % of orders (9) → not an alert week under RULES thresholds (prototype said '7–19 short/week'). Supply uses remaining crates after logged cuts (151 for PL01), so W47/W48 are 81.3/69.7 instead of the prototype's 83/71. Christmas week orders 90 × 1.3 = 117."
+}

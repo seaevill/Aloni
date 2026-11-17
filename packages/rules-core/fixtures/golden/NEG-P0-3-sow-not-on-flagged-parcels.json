@@ -1,0 +1,379 @@
+{
+  "schema_version": 1,
+  "id": "NEG-P0-3-sow-not-on-flagged-parcels",
+  "case_type": "negative",
+  "source_case": "R04",
+  "qa_refs": [
+    "P0-3"
+  ],
+  "rule_id": "SOW",
+  "related_rules": [
+    "GAP",
+    "DM-SPIN"
+  ],
+  "farm": "demo",
+  "as_of": "2026-11-16T06:40:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {
+      "same_family_years": {
+        "value": 3,
+        "basis": "v2 placeholder [SET]"
+      },
+      "disease_years": {
+        "value": 3,
+        "basis": "test-only [SET]"
+      },
+      "workable_max_rain_mm": {
+        "value": 5,
+        "basis": "test-only [SET]"
+      },
+      "workable_rain_days": {
+        "value": 2,
+        "basis": "test-only [SET]"
+      },
+      "germination_c": {
+        "value": {
+          "spinach": {
+            "min": 2,
+            "opt": [
+              7,
+              24
+            ],
+            "poor_above": 30
+          },
+          "chard": {
+            "min": 5
+          }
+        },
+        "basis": "EST (chard test-only)"
+      },
+      "yield_kg_per_str": {
+        "value": {
+          "spinach": 1200
+        },
+        "basis": "v2 assumption [SET]"
+      },
+      "crate_kg": {
+        "value": {
+          "spinach": 8
+        },
+        "basis": "prototype crops.crate_kg [SET]"
+      },
+      "waste_pct": {
+        "value": 10,
+        "basis": "v2 assumption [SET]"
+      },
+      "gap.gap_min_pct_of_orders": {
+        "value": 10,
+        "basis": "RULES [SET ~10]"
+      },
+      "gap.gap_min_crates": {
+        "value": 3,
+        "basis": "RULES [SET ~3]"
+      },
+      "gap.horizon_weeks": {
+        "value": 7,
+        "basis": "test-only [SET]"
+      },
+      "gap.supply_model": {
+        "value": "even spread of (est_crates − logged harvests) from max(as_of, harvest_from, safe_from) to harvest_to",
+        "basis": "v2 method; HARV-FC replaces it in M3+"
+      },
+      "gap.week": {
+        "value": "ISO week, Mon–Sun",
+        "basis": "convention"
+      }
+    }
+  },
+  "inputs": {
+    "parcels": [
+      {
+        "id": "P1",
+        "name": "Κάτω Κάμπος (Lower Plain)",
+        "area_str": "12",
+        "elevation_m": 24
+      },
+      {
+        "id": "P2",
+        "name": "Μεσαίο Χωράφι (Middle Field)",
+        "area_str": "8",
+        "elevation_m": 34
+      },
+      {
+        "id": "P3",
+        "name": "Πάχη Παραλιακό (Pachi Coast)",
+        "area_str": "6",
+        "elevation_m": 8
+      },
+      {
+        "id": "P4",
+        "name": "Γεράνεια Πλαγιά (Geraneia Slope)",
+        "area_str": "5",
+        "elevation_m": 180
+      },
+      {
+        "id": "P5",
+        "name": "Νότιος Κάμπος (South Plain)",
+        "area_str": "7",
+        "elevation_m": 28
+      }
+    ],
+    "history": {
+      "P1": [
+        {
+          "crop_id": "spinach",
+          "family": "Amaranthaceae",
+          "season": "2026-autumn",
+          "source": "plantings PL01"
+        }
+      ],
+      "P2": [
+        {
+          "crop_id": "beetroot",
+          "family": "Amaranthaceae",
+          "season": "2026-spring",
+          "source": "parcel notes"
+        }
+      ],
+      "P3": [
+        {
+          "crop_id": "spinach",
+          "family": "Amaranthaceae",
+          "season": "2026-autumn",
+          "source": "plantings PL08"
+        },
+        {
+          "crop_id": "chard",
+          "family": "Amaranthaceae",
+          "season": "2026-autumn",
+          "source": "plantings PL09"
+        }
+      ],
+      "P4": [],
+      "P5": [
+        {
+          "crop_id": "onion",
+          "family": "Amaryllidaceae",
+          "season": "2026",
+          "harvested": "2026-10",
+          "source": "parcel notes"
+        }
+      ]
+    },
+    "disease_flags": [
+      {
+        "parcel_id": "P3",
+        "family": "Amaranthaceae",
+        "rule_id": "DM-SPIN",
+        "level": "high",
+        "see": "A02-dm-spin-pachi"
+      },
+      {
+        "parcel_id": "P3",
+        "family": "Amaranthaceae",
+        "history": "downy mildew Dec 2025"
+      }
+    ],
+    "weather_daily": {
+      "P5": [
+        {
+          "date": "2026-11-14",
+          "rain_mm": 0,
+          "kind": "observed"
+        },
+        {
+          "date": "2026-11-15",
+          "rain_mm": 0,
+          "kind": "observed"
+        },
+        {
+          "date": "2026-11-16",
+          "rain_mm": 0,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-17",
+          "rain_mm": 0,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-18",
+          "rain_mm": 0,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-19",
+          "rain_mm": 0,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-20",
+          "rain_mm": 6.5,
+          "kind": "forecast"
+        }
+      ]
+    },
+    "orders_weekly": [
+      {
+        "crop_id": "chard",
+        "crates_per_week": 20
+      }
+    ],
+    "plantings": [
+      {
+        "id": "PL09",
+        "crop_id": "chard",
+        "parcel_id": "P3",
+        "area_str": "1",
+        "sown": "2026-09-15",
+        "stage_pct": 100,
+        "harvest_from": "2026-11-05",
+        "harvest_to": "2027-01-15",
+        "est_crates": 200,
+        "status": "harvesting",
+        "family": "Amaranthaceae"
+      }
+    ],
+    "jobs": [
+      {
+        "id": "J21",
+        "kind": "harvest",
+        "planting_id": "PL09",
+        "date": "2026-11-15",
+        "crates": 16
+      }
+    ]
+  },
+  "synthetic_inputs": {
+    "_synthetic": true,
+    "why": "Prototype gives history only as free text and no soil temperature or free-area field. Values follow R04 and parcel notes: P5 'no spinach/beet/chard since 2023' (exact date chosen: spring 2023), P4 '~2 στρ free on narrow terraces', P5 '3 στρ prepared beds free'. Soil temps plausible for mid-Nov Megara. Two 'suitable parcels' queries, as on the Orders → sowing screen.",
+    "history_extra": {
+      "P5": [
+        {
+          "crop_id": "spinach",
+          "family": "Amaranthaceae",
+          "harvested": "2023-04-30"
+        }
+      ],
+      "P4": [
+        {
+          "note": "no Amaranthaceae in the last 3 years"
+        }
+      ]
+    },
+    "free_area_str": {
+      "P1": "0",
+      "P2": "1",
+      "P3": "0.5",
+      "P4": "2",
+      "P5": "3"
+    },
+    "soil_temp_5_10cm_c": {
+      "P1": 11.5,
+      "P2": 11.5,
+      "P3": 13.0,
+      "P4": 10.5,
+      "P5": 12.0
+    },
+    "suitability_queries": [
+      {
+        "crop_id": "spinach",
+        "area_str": "3"
+      },
+      {
+        "crop_id": "chard",
+        "area_str": "0.5"
+      }
+    ]
+  },
+  "expected": {
+    "mode": "decide",
+    "kind": "suitability",
+    "category": "sow_suitable_parcels",
+    "severity": null,
+    "values": {
+      "suitable": {
+        "spinach": [
+          "P5"
+        ],
+        "chard": [
+          "P5"
+        ]
+      },
+      "suitable_match": {
+        "spinach": "exact",
+        "chard": "include"
+      },
+      "chard_supply_weeks": [
+        21.1,
+        21.1,
+        21.1,
+        21.1
+      ],
+      "chard_gap_alert": false
+    },
+    "vetoes": [
+      {
+        "by": "DM-SPIN",
+        "vetoed": "sow",
+        "parcel_id": "P3",
+        "reason": "disease_flag_family"
+      }
+    ],
+    "must_not": [
+      {
+        "id": "no-p3",
+        "match": {
+          "category": "sow_suitable_parcels",
+          "parcel_ids": "P3"
+        },
+        "why": "downy-mildew flag, Amaranthaceae present"
+      },
+      {
+        "id": "no-p2",
+        "match": {
+          "category": "sow_suitable_parcels",
+          "parcel_ids": "P2"
+        },
+        "why": "beetroot spring 2026"
+      },
+      {
+        "id": "no-p1",
+        "match": {
+          "category": "sow_suitable_parcels",
+          "parcel_ids": "P1"
+        },
+        "why": "spinach this season"
+      },
+      {
+        "id": "no-chard-sow-rec",
+        "match": {
+          "kind": "recommendation",
+          "category": "sow",
+          "crop_ids": "chard"
+        },
+        "why": "no gap: chard supply ~21.1/wk vs 20 orders (QA: 0.6 crates was a rounding artefact)"
+      },
+      {
+        "id": "no-generic-list",
+        "match": {
+          "category": "sow_suitable_parcels",
+          "values": {
+            "agronomic_check": false
+          }
+        },
+        "why": "drop the list when no rule ran"
+      }
+    ]
+  },
+  "source_text": {
+    "qa": "P0-3: Orders → sowing listed Μεσαίο, Γεράνεια for spinach and Πάχη for chard as 'Suitable'.",
+    "prototype_id": "R04",
+    "action": "Sow spinach on 3 στρ of Νότιος Κάμπος (free prepared beds). Use a variety with the widest declared downy-mildew (Pe) race resistance. Optional pre-emergence lenacil (HRAC 5) 0.05 kg/στρ within 2 days of sowing – check label. NOT on Pachi Coast (mildew history, spinach already there).",
+    "window": "Tue 17 - Thu 19 Nov (before the front; rain will settle the seed)",
+    "why_rule": "Sow to close an order gap only on a parcel with: no same-family crop (spinach/chard/beet, Amaranthaceae) in the last 3 years, no disease flag for that crop, free area, workable soil.",
+    "severity": null
+  },
+  "notes": "The screen list must call the same SOW rule as R04. P4 for chard (0.5 στρ ≤ 2 στρ free, no Amaranthaceae) is allowed, hence 'include' for chard."
+}

@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "id": "REI-after-r01-spray",
+  "case_type": "derived",
+  "source_case": "R01",
+  "qa_refs": [
+    "P2-11"
+  ],
+  "rule_id": "REI",
+  "related_rules": [],
+  "farm": "demo",
+  "as_of": "2026-11-18T15:30:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {
+      "rei_starts_at": {
+        "value": "ended_at of the application",
+        "basis": "test convention (conservative)"
+      },
+      "tank_mix": {
+        "value": "longest REI wins",
+        "basis": "RULES"
+      }
+    }
+  },
+  "inputs": {
+    "plantings": [
+      {
+        "id": "PL08",
+        "crop_id": "spinach",
+        "parcel_id": "P3",
+        "area_str": "1.5",
+        "status": "growing",
+        "family": "Amaranthaceae"
+      },
+      {
+        "id": "PL09",
+        "crop_id": "chard",
+        "parcel_id": "P3",
+        "area_str": "1",
+        "status": "harvesting",
+        "family": "Amaranthaceae"
+      }
+    ],
+    "label_uses": [
+      {
+        "product_id": "PR03",
+        "crop_id": "spinach",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.06",
+        "dose_max_per_str": "0.06",
+        "dose_unit": "L/στρ",
+        "phi_days": 14,
+        "rei_h": 24,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      }
+    ]
+  },
+  "synthetic_inputs": {
+    "_synthetic": true,
+    "why": "R01 assumed carried out: the prototype has no job times as fields and no worker tasks.",
+    "jobs": [
+      {
+        "id": "J-R01",
+        "kind": "spray",
+        "status": "done",
+        "parcel_id": "P3",
+        "planting_ids": [
+          "PL08"
+        ],
+        "product_id": "PR03",
+        "dose_per_str": "0.06",
+        "started_at": "2026-11-18T11:00:00+02:00",
+        "ended_at": "2026-11-18T13:00:00+02:00"
+      }
+    ],
+    "worker_tasks": [
+      {
+        "id": "T1",
+        "worker": "worker-1",
+        "kind": "scouting",
+        "planting_ids": [
+          "PL08"
+        ],
+        "at": "2026-11-19T09:00:00+02:00"
+      },
+      {
+        "id": "T2",
+        "worker": "worker-1",
+        "kind": "harvest",
+        "planting_ids": [
+          "PL09"
+        ],
+        "at": "2026-11-19T09:00:00+02:00"
+      },
+      {
+        "id": "T3",
+        "worker": "worker-2",
+        "kind": "field_work",
+        "planting_ids": [
+          "PL08"
+        ],
+        "at": "2026-11-19T13:30:00+02:00"
+      }
+    ]
+  },
+  "expected": {
+    "mode": "decide",
+    "kind": "alert",
+    "category": "rei",
+    "severity": "high",
+    "confidence": "medium",
+    "targets": {
+      "parcel_ids": [
+        "P3"
+      ],
+      "planting_ids": [
+        "PL08"
+      ],
+      "planting_match": "exact"
+    },
+    "window": {
+      "start": "2026-11-18T13:00:00+02:00",
+      "end": "2026-11-19T13:00:00+02:00"
+    },
+    "values": {
+      "reentry_at": "2026-11-19T13:00:00+02:00",
+      "rei_h": 24,
+      "blocked_task_ids": [
+        "T1"
+      ],
+      "allowed_task_ids": [
+        "T2",
+        "T3"
+      ]
+    },
+    "vetoes": [
+      {
+        "by": "REI",
+        "vetoed": "task",
+        "task_id": "T1",
+        "reason": "before_reentry"
+      }
+    ],
+    "must_not": [
+      {
+        "id": "not-from-midnight",
+        "match": {
+          "rule_id": "REI",
+          "values": {
+            "reentry_at": {
+              "$in": [
+                "2026-11-19T00:00:00+02:00",
+                "2026-11-18T00:00:00+02:00"
+              ]
+            }
+          }
+        },
+        "why": "QA P2-11"
+      },
+      {
+        "id": "no-shortening",
+        "match": {
+          "rule_id": "REI",
+          "values": {
+            "reentry_at": {
+              "$lt": "2026-11-19T13:00:00+02:00"
+            }
+          }
+        },
+        "why": "never shorten REI"
+      }
+    ]
+  },
+  "source_text": {
+    "prototype_id": "R01",
+    "action": "Spray mandipropamid 25% SC (FRAC 40), 0.06 L/στρ in 50 L water/στρ, on the 1.5 στρ spinach only. Cut chard, coriander and spring onion on the same parcel BEFORE spraying; leave one unsprayed bed as buffer next to them (product not registered on those crops). New safe-to-harvest date: Wed 2 Dec; REI 24 h."
+  },
+  "notes": "T2 is on the untreated chard bed (PL09) – allowed; a drift buffer is [SET]. Confidence Medium: label is manual/illustrative. If M3 decides REI starts at started_at, change reentry_at to 11:00 and record it in DECISIONS.md."
+}

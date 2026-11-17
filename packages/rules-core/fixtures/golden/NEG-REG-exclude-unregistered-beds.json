@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "id": "NEG-REG-exclude-unregistered-beds",
+  "case_type": "negative",
+  "source_case": "R01",
+  "qa_refs": [],
+  "rule_id": "REG",
+  "related_rules": [],
+  "farm": "demo",
+  "as_of": "2026-11-16T06:40:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {}
+  },
+  "inputs": {
+    "plantings": [
+      {
+        "id": "PL08",
+        "crop_id": "spinach",
+        "parcel_id": "P3",
+        "area_str": "1.5",
+        "status": "growing",
+        "family": "Amaranthaceae"
+      },
+      {
+        "id": "PL09",
+        "crop_id": "chard",
+        "parcel_id": "P3",
+        "area_str": "1",
+        "status": "harvesting",
+        "family": "Amaranthaceae"
+      },
+      {
+        "id": "PL10",
+        "crop_id": "onion",
+        "parcel_id": "P3",
+        "area_str": "1",
+        "status": "harvesting",
+        "family": "Amaryllidaceae"
+      },
+      {
+        "id": "PL11",
+        "crop_id": "coriander",
+        "parcel_id": "P3",
+        "area_str": "0.5",
+        "status": "harvesting",
+        "family": "Apiaceae"
+      }
+    ],
+    "products": [
+      {
+        "id": "PR03",
+        "label": "Mandipropamid 25% SC",
+        "type": "fungicide",
+        "group_system": "FRAC",
+        "group_code": "40",
+        "unit": "L"
+      }
+    ],
+    "label_uses": [
+      {
+        "product_id": "PR03",
+        "crop_id": "spinach",
+        "target": "downy mildew (Peronospora effusa)",
+        "dose_kind": "single",
+        "dose_min_per_str": "0.06",
+        "dose_max_per_str": "0.06",
+        "dose_unit": "L/στρ",
+        "phi_days": 14,
+        "rei_h": 24,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      },
+      {
+        "product_id": "PR03",
+        "crop_id": "endive",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.06",
+        "dose_max_per_str": "0.06",
+        "dose_unit": "L/στρ",
+        "phi_days": 7,
+        "rei_h": 24,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      }
+    ]
+  },
+  "synthetic_inputs": {
+    "_synthetic": true,
+    "why": "Draft job covering the whole Pachi parcel; label target for PR03/spinach is TEST-ONLY.",
+    "draft_job": {
+      "id": "DJ-REG",
+      "kind": "spray",
+      "status": "draft",
+      "parcel_id": "P3",
+      "planting_ids": [
+        "PL08",
+        "PL09",
+        "PL10",
+        "PL11"
+      ],
+      "product_id": "PR03",
+      "dose_per_str": "0.06",
+      "target": "downy mildew (Peronospora effusa)"
+    }
+  },
+  "expected": {
+    "mode": "decide",
+    "kind": "block",
+    "category": "exclude_unregistered_beds",
+    "severity": "high",
+    "targets": {
+      "planting_ids": [
+        "PL09",
+        "PL10",
+        "PL11"
+      ],
+      "planting_match": "exact",
+      "product_ids": [
+        "PR03"
+      ]
+    },
+    "values": {
+      "job_id": "DJ-REG",
+      "allowed_planting_ids": [
+        "PL08"
+      ],
+      "exclude_planting_ids": [
+        "PL09",
+        "PL10",
+        "PL11"
+      ]
+    },
+    "vetoes": [
+      {
+        "by": "REG",
+        "vetoed": "spray",
+        "planting_id": "PL09",
+        "reason": "not_on_label"
+      },
+      {
+        "by": "REG",
+        "vetoed": "spray",
+        "planting_id": "PL10",
+        "reason": "not_on_label"
+      },
+      {
+        "by": "REG",
+        "vetoed": "spray",
+        "planting_id": "PL11",
+        "reason": "not_on_label"
+      }
+    ],
+    "must_not": [
+      {
+        "id": "no-whole-parcel",
+        "match": {
+          "rule_id": "REG",
+          "values": {
+            "allowed_planting_ids": {
+              "$in": [
+                "PL09",
+                "PL10",
+                "PL11"
+              ]
+            }
+          }
+        },
+        "why": "chard, onion, coriander not on the label"
+      }
+    ]
+  },
+  "source_text": {
+    "prototype_id": "R01",
+    "action": "Spray mandipropamid 25% SC (FRAC 40), 0.06 L/στρ in 50 L water/στρ, on the 1.5 στρ spinach only. Cut chard, coriander and spring onion on the same parcel BEFORE spraying; leave one unsprayed bed as buffer next to them (product not registered on those crops). New safe-to-harvest date: Wed 2 Dec; REI 24 h.",
+    "window": "Wed 18 Nov, 11:00-15:00",
+    "why_rule": "Spray only if: leaves dry (after dew ~10:00), gust < 20 km/h, no rain for >= 24 h after (product needs ~1 h to dry), planting not harvesting, new PHI ends before harvest starts, FRAC group different from the last spray on this lot, product registered for crop and in stock and not expired.",
+    "severity": null
+  },
+  "notes": "RULES REG: 'A job that covers unregistered beds says exclude these beds'."
+}

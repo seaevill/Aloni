@@ -1,0 +1,263 @@
+{
+  "schema_version": 1,
+  "id": "NEG-N-shared-valve",
+  "case_type": "negative",
+  "source_case": "R03",
+  "qa_refs": [
+    "P2-18"
+  ],
+  "rule_id": "N",
+  "related_rules": [],
+  "farm": "demo",
+  "as_of": "2026-11-16T06:40:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {
+      "ammonia_ph_min": {
+        "value": 7.5,
+        "basis": "EST"
+      },
+      "incorporation_mm": {
+        "value": 10,
+        "basis": "test-only [SET 5–15]"
+      },
+      "leach_rain_mm": {
+        "value": 10,
+        "basis": "test-only [SET]"
+      },
+      "leach_window": {
+        "value": "sum of daily rain on D, D+1, D+2 (≈ 48 h after application)",
+        "basis": "test convention"
+      },
+      "nitrate_days_before_harvest": {
+        "value": 21,
+        "basis": "v2 placeholder [SET]"
+      },
+      "nitrate_crops": {
+        "value": [
+          "spinach",
+          "rocket",
+          "lettuce"
+        ],
+        "basis": "RULES N.3"
+      },
+      "soil_test_max_age_months": {
+        "value": 12,
+        "basis": "RULES [SET 12]"
+      }
+    }
+  },
+  "inputs": {
+    "parcels": [
+      {
+        "id": "P1",
+        "name": "Κάτω Κάμπος (Lower Plain)",
+        "area_str": "12",
+        "elevation_m": 24,
+        "soil_test": {
+          "date": "2026-09-02",
+          "pH": 7.9,
+          "EC_dS_m": 0.9,
+          "CaCO3_pct": 21,
+          "N_ppm": 18
+        }
+      }
+    ],
+    "products": [
+      {
+        "id": "PR15",
+        "label": "Calcium nitrate 15.5% N (14.4% NO3-N) + 26.5% CaO",
+        "type": "fertiliser",
+        "group_system": "-",
+        "group_code": "-",
+        "unit": "kg",
+        "n_form": "nitrate",
+        "active": "nitrate N 14.4%, ammonium N 1.1%, CaO 26.5%"
+      },
+      {
+        "id": "PR16",
+        "label": "Urea 46% N",
+        "type": "fertiliser",
+        "group_system": "-",
+        "group_code": "-",
+        "unit": "kg",
+        "n_form": "urea",
+        "active": "urea N 46%"
+      }
+    ],
+    "plantings": [
+      {
+        "id": "PL01",
+        "crop_id": "spinach",
+        "parcel_id": "P1",
+        "harvest_from": "2026-11-10",
+        "harvest_to": "2026-11-28",
+        "status": "harvesting",
+        "family": "Amaranthaceae"
+      },
+      {
+        "id": "PL02",
+        "crop_id": "leek",
+        "parcel_id": "P1",
+        "harvest_from": "2027-01-10",
+        "harvest_to": "2027-02-28",
+        "status": "growing",
+        "family": "Amaryllidaceae"
+      },
+      {
+        "id": "PL03",
+        "crop_id": "chicory",
+        "parcel_id": "P1",
+        "harvest_from": "2026-11-18",
+        "harvest_to": "2026-12-15",
+        "status": "growing",
+        "family": "Asteraceae"
+      },
+      {
+        "id": "PL04",
+        "crop_id": "rocket",
+        "parcel_id": "P2",
+        "harvest_from": "2026-11-26",
+        "harvest_to": "2026-12-10",
+        "status": "growing",
+        "family": "Brassicaceae"
+      },
+      {
+        "id": "PL08",
+        "crop_id": "spinach",
+        "parcel_id": "P3",
+        "harvest_from": "2026-12-03",
+        "harvest_to": "2026-12-22",
+        "status": "growing",
+        "family": "Amaranthaceae"
+      },
+      {
+        "id": "PL13",
+        "crop_id": "rocket",
+        "parcel_id": "P4",
+        "harvest_from": "2026-11-12",
+        "harvest_to": "2026-11-30",
+        "status": "harvesting",
+        "family": "Brassicaceae"
+      }
+    ],
+    "weather_daily": {
+      "P1": [
+        {
+          "date": "2026-11-16",
+          "rain_mm": 0,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-17",
+          "rain_mm": 0,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-18",
+          "rain_mm": 0,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-19",
+          "rain_mm": 0,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-20",
+          "rain_mm": 6.5,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-21",
+          "rain_mm": 17.8,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-22",
+          "rain_mm": 3.2,
+          "kind": "forecast"
+        }
+      ]
+    }
+  },
+  "synthetic_inputs": {
+    "_synthetic": true,
+    "why": "Prototype has no valve/sector map and no planned fertiliser jobs. Sector map follows QA P2-18 ('confirm the sectors are separate'). Fertiliser doses stay null: doses are set by the agronomist. Variant: leek shares the spinach sector.",
+    "valves": {
+      "P1": {
+        "V1-A": [
+          "PL01",
+          "PL02",
+          "PL03"
+        ]
+      }
+    },
+    "planned_jobs": [
+      {
+        "id": "PJ-N1",
+        "kind": "fertilise",
+        "status": "planned",
+        "planting_ids": [
+          "PL02"
+        ],
+        "product_id": "PR15",
+        "method": "fertigation",
+        "valve": "V1-B",
+        "dose_per_str": null
+      }
+    ]
+  },
+  "expected": {
+    "mode": "decide",
+    "kind": "block",
+    "category": "fertigation_shared_sector",
+    "severity": "high",
+    "targets": {
+      "parcel_ids": [
+        "P1"
+      ],
+      "planting_ids": [
+        "PL02"
+      ],
+      "planting_match": "exact"
+    },
+    "values": {
+      "job_id": "PJ-N1",
+      "valve": "V1-A",
+      "blocking_planting_ids": [
+        "PL01"
+      ]
+    },
+    "vetoes": [
+      {
+        "by": "N",
+        "vetoed": "fertilise",
+        "planting_id": "PL02",
+        "reason": "shared_sector_with_nitrate_blocked_lot",
+        "blocking": "PL01"
+      }
+    ],
+    "must_not": [
+      {
+        "id": "no-fertigation-rec",
+        "match": {
+          "rule_id": "N",
+          "kind": "recommendation",
+          "values": {
+            "job_id": "PJ-N1"
+          }
+        },
+        "why": "PL01 spinach (harvest to 28 Nov) on the same valve"
+      }
+    ]
+  },
+  "source_text": {
+    "prototype_id": "R03",
+    "action": "Fertigate leek with calcium nitrate (nitrate N) 5 kg/στρ via drip = ~0.8 kg N/στρ. Do NOT top-dress urea on the surface. Do NOT give N to spinach (PL01, PL08), rocket (PL04, PL13) or other lots < 21 days from harvest.",
+    "window": "Mon 23 - Wed 25 Nov (after the front, when drip restarts)",
+    "why_rule": "N form must suit soil: on pH >= 7.5 with free lime, surface urea/ammonium loses NH3 unless incorporated by >= 10 mm rain or irrigation → use nitrate via fertigation. Not before heavy rain (leaching). Leafy greens: last N >= 21 days before harvest – winter low light raises leaf nitrate; EU sets maximum nitrate levels for spinach and rocket (Reg. (EU) 2023/915).",
+    "severity": null
+  },
+  "notes": "QA P2-18 lesson: fertigating leek through the spinach drip sector feeds N to a harvesting spinach lot. Severity not given in RULES; High chosen because it is a block."
+}

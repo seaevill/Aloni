@@ -1,0 +1,1981 @@
+{
+  "schema_version": 1,
+  "id": "R01-spray-window-pachi-spinach",
+  "case_type": "golden",
+  "source_case": "R01",
+  "qa_refs": [
+    "P0-1",
+    "P1-5",
+    "P2-9",
+    "P2-11"
+  ],
+  "rule_id": "SPRAY-WIN",
+  "related_rules": [
+    "REG",
+    "PHI-GUARD",
+    "ROT",
+    "STOCK",
+    "REI",
+    "DM-SPIN"
+  ],
+  "farm": "demo",
+  "as_of": "2026-11-16T06:40:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {
+      "wind_min_kmh": {
+        "value": 3,
+        "basis": "EST"
+      },
+      "wind_max_kmh": {
+        "value": 10,
+        "basis": "test-only [SET]"
+      },
+      "gust_max_kmh": {
+        "value": 20,
+        "basis": "v2 placeholder [SET] – one constant for UI legend and rule (QA P1-5)"
+      },
+      "dry_before_h": {
+        "value": 1,
+        "basis": "test-only [SET]"
+      },
+      "rain_lookahead_h": {
+        "value": 24,
+        "basis": "test-only [SET]"
+      },
+      "rain_max_mm": {
+        "value": 0.2,
+        "basis": "test-only [SET]"
+      },
+      "delta_t_min": {
+        "value": 2,
+        "basis": "EST"
+      },
+      "delta_t_max": {
+        "value": 8,
+        "basis": "EST"
+      },
+      "temp_max_c": {
+        "value": 28,
+        "basis": "test-only [SET]"
+      },
+      "inversion_after_sunrise_h": {
+        "value": 2,
+        "basis": "test-only [SET]"
+      },
+      "rainfast_fallback_h": {
+        "value": 1,
+        "basis": "[SET] used only when label rainfast_h is null (RULES SPRAY-WIN 5)"
+      },
+      "delta_t_formula": {
+        "value": "Stull (2011) wet-bulb from temp_c and rh_pct",
+        "basis": "test convention"
+      },
+      "sun_times": {
+        "value": "synthetic_inputs.sun",
+        "basis": "test convention"
+      },
+      "rot.max_consecutive_same_group": {
+        "value": 1,
+        "basis": "test-only [SET] (FRAC guideline per group)"
+      },
+      "rot.multisite_exempt": {
+        "value": true,
+        "basis": "EST (FRAC M groups)"
+      },
+      "rot.season": {
+        "value": "2026-09-01..2027-08-31",
+        "basis": "test-only [SET]"
+      },
+      "phi_guard.harvest_buffer_days": {
+        "value": 0,
+        "basis": "test-only [SET]; with ≥1 day PR03 is guarded out"
+      },
+      "drift_buffer": {
+        "value": "1 untreated bed next to unregistered crops",
+        "basis": "test-only [SET]"
+      }
+    }
+  },
+  "inputs": {
+    "parcels": [
+      {
+        "id": "P3",
+        "name": "Πάχη Παραλιακό (Pachi Coast)",
+        "area_str": "6",
+        "elevation_m": 8
+      }
+    ],
+    "plantings": [
+      {
+        "id": "PL08",
+        "crop_id": "spinach",
+        "parcel_id": "P3",
+        "area_str": "1.5",
+        "sown": "2026-10-12",
+        "stage_pct": 67,
+        "harvest_from": "2026-12-03",
+        "harvest_to": "2026-12-22",
+        "est_crates": 225,
+        "status": "growing",
+        "family": "Amaranthaceae"
+      },
+      {
+        "id": "PL09",
+        "crop_id": "chard",
+        "parcel_id": "P3",
+        "area_str": "1",
+        "status": "harvesting",
+        "family": "Amaranthaceae"
+      },
+      {
+        "id": "PL10",
+        "crop_id": "onion",
+        "parcel_id": "P3",
+        "area_str": "1",
+        "status": "harvesting",
+        "family": "Amaryllidaceae"
+      },
+      {
+        "id": "PL11",
+        "crop_id": "coriander",
+        "parcel_id": "P3",
+        "area_str": "0.5",
+        "status": "harvesting",
+        "family": "Apiaceae"
+      }
+    ],
+    "products": [
+      {
+        "id": "PR01",
+        "label": "Copper hydroxide 35% WG",
+        "type": "fungicide",
+        "group_system": "FRAC",
+        "group_code": "M01",
+        "unit": "kg"
+      },
+      {
+        "id": "PR03",
+        "label": "Mandipropamid 25% SC",
+        "type": "fungicide",
+        "group_system": "FRAC",
+        "group_code": "40",
+        "unit": "L"
+      },
+      {
+        "id": "PR04",
+        "label": "Propamocarb hydrochloride 722 g/L SL",
+        "type": "fungicide",
+        "group_system": "FRAC",
+        "group_code": "28",
+        "unit": "L"
+      }
+    ],
+    "label_uses": [
+      {
+        "product_id": "PR01",
+        "crop_id": "spinach",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.2",
+        "dose_max_per_str": "0.2",
+        "dose_unit": "kg/στρ",
+        "phi_days": 7,
+        "rei_h": 24,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      },
+      {
+        "product_id": "PR03",
+        "crop_id": "spinach",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.06",
+        "dose_max_per_str": "0.06",
+        "dose_unit": "L/στρ",
+        "phi_days": 14,
+        "rei_h": 24,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      },
+      {
+        "product_id": "PR04",
+        "crop_id": "spinach",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.2",
+        "dose_max_per_str": "0.2",
+        "dose_unit": "L/στρ",
+        "phi_days": 14,
+        "rei_h": 24,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      }
+    ],
+    "stock": [
+      {
+        "product_id": "PR01",
+        "qty": "4.5",
+        "unit": "kg",
+        "expiry": "2028-03-31"
+      },
+      {
+        "product_id": "PR03",
+        "qty": "0.1",
+        "unit": "L",
+        "expiry": "2028-01-31"
+      },
+      {
+        "product_id": "PR04",
+        "qty": "1.6",
+        "unit": "L",
+        "expiry": "2027-06-30"
+      }
+    ],
+    "jobs": [
+      {
+        "id": "J07",
+        "kind": "spray",
+        "parcel_id": "P3",
+        "planting_ids": [
+          "PL08"
+        ],
+        "product_id": "PR04",
+        "dose_per_str": "0.2",
+        "started_at": "2026-10-30T11:30:00+02:00",
+        "ended_at": null,
+        "time_source": "job notes",
+        "notes": "Preventive, downy mildew (Peronospora effusa); 50 L water/στρ. Applied 11:30, leaves dry."
+      }
+    ],
+    "upstream_outputs": [
+      {
+        "rule_id": "DM-SPIN",
+        "planting_ids": [
+          "PL08"
+        ],
+        "risk": "high",
+        "see": "A02-dm-spin-pachi"
+      }
+    ],
+    "weather_daily": {
+      "P3": [
+        {
+          "date": "2026-11-16",
+          "tmin": 7.5,
+          "tmax": 16.5,
+          "rain_mm": 0,
+          "wind_kmh": 9,
+          "gust_kmh": 18,
+          "rh_pct": 83,
+          "leafwet_h": 13,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-17",
+          "tmin": 6.5,
+          "tmax": 16.0,
+          "rain_mm": 0,
+          "wind_kmh": 7,
+          "gust_kmh": 15,
+          "rh_pct": 81,
+          "leafwet_h": 13,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-18",
+          "tmin": 6.0,
+          "tmax": 15.5,
+          "rain_mm": 0,
+          "wind_kmh": 7,
+          "gust_kmh": 14,
+          "rh_pct": 79,
+          "leafwet_h": 14,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-19",
+          "tmin": 5.0,
+          "tmax": 15.0,
+          "rain_mm": 0,
+          "wind_kmh": 8,
+          "gust_kmh": 16,
+          "rh_pct": 81,
+          "leafwet_h": 14,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-20",
+          "tmin": 7.0,
+          "tmax": 14.5,
+          "rain_mm": 6.5,
+          "wind_kmh": 23,
+          "gust_kmh": 52,
+          "rh_pct": 95,
+          "leafwet_h": 14,
+          "kind": "forecast"
+        }
+      ]
+    }
+  },
+  "synthetic_inputs": {
+    "_synthetic": true,
+    "why": "Prototype lacks hourly weather, sun times, job duration, and label target / max applications / min interval. Hourly P3 series: daily tmin/tmax, max gust, rain total and leaf-wet counts kept; Mon has a breezy dry afternoon, Tue dries only at 14:00 then goes calm, Wed dries at 10:00 with a 15:00 sea breeze; rain starts Fri 18:00 ('Fri 20 evening'). Label extras are TEST-ONLY values, never to be imported as label data.",
+    "weather_hourly": {
+      "P3": [
+        {
+          "time": "2026-11-16T00:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 10.9,
+          "rh_pct": 94,
+          "dewpoint_c": 10.0,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-16T01:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 10.3,
+          "rh_pct": 94,
+          "dewpoint_c": 9.4,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-16T02:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 9.8,
+          "rh_pct": 94,
+          "dewpoint_c": 8.9,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-16T03:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 9.2,
+          "rh_pct": 94,
+          "dewpoint_c": 8.3,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-16T04:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 8.6,
+          "rh_pct": 94,
+          "dewpoint_c": 7.7,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-16T05:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 8.1,
+          "rh_pct": 94,
+          "dewpoint_c": 7.2,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-16T06:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 7.5,
+          "rh_pct": 94,
+          "dewpoint_c": 6.6,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-16T07:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 7.7,
+          "rh_pct": 94,
+          "dewpoint_c": 6.8,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-16T08:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 8.5,
+          "rh_pct": 94,
+          "dewpoint_c": 7.6,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-16T09:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 9.7,
+          "rh_pct": 94,
+          "dewpoint_c": 8.8,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-16T10:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 10.9,
+          "rh_pct": 94,
+          "dewpoint_c": 10.0,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-16T11:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 13.0,
+          "rh_pct": 94,
+          "dewpoint_c": 12.1,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-16T12:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 14.2,
+          "rh_pct": 84,
+          "dewpoint_c": 11.5,
+          "wind_kmh": 12,
+          "gust_kmh": 16,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-16T13:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 15.3,
+          "rh_pct": 65,
+          "dewpoint_c": 8.8,
+          "wind_kmh": 13,
+          "gust_kmh": 18,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-16T14:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 16.5,
+          "rh_pct": 63,
+          "dewpoint_c": 9.4,
+          "wind_kmh": 12,
+          "gust_kmh": 16,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-16T15:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 15.9,
+          "rh_pct": 65,
+          "dewpoint_c": 9.3,
+          "wind_kmh": 11,
+          "gust_kmh": 14,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-16T16:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 15.2,
+          "rh_pct": 70,
+          "dewpoint_c": 9.8,
+          "wind_kmh": 11,
+          "gust_kmh": 14,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-16T17:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 14.6,
+          "rh_pct": 78,
+          "dewpoint_c": 10.8,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-16T18:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 14.0,
+          "rh_pct": 84,
+          "dewpoint_c": 11.3,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-16T19:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 13.4,
+          "rh_pct": 86,
+          "dewpoint_c": 11.1,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-16T20:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 12.8,
+          "rh_pct": 87,
+          "dewpoint_c": 10.7,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-16T21:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 12.1,
+          "rh_pct": 88,
+          "dewpoint_c": 10.2,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-16T22:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 11.5,
+          "rh_pct": 88,
+          "dewpoint_c": 9.6,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-16T23:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 10.9,
+          "rh_pct": 88,
+          "dewpoint_c": 9.0,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-17T00:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 10.2,
+          "rh_pct": 88,
+          "dewpoint_c": 8.3,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-17T01:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 9.6,
+          "rh_pct": 94,
+          "dewpoint_c": 8.7,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-17T02:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 9.0,
+          "rh_pct": 94,
+          "dewpoint_c": 8.1,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-17T03:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 8.4,
+          "rh_pct": 94,
+          "dewpoint_c": 7.5,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-17T04:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 7.8,
+          "rh_pct": 94,
+          "dewpoint_c": 6.9,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-17T05:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 7.1,
+          "rh_pct": 94,
+          "dewpoint_c": 6.2,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-17T06:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 6.5,
+          "rh_pct": 94,
+          "dewpoint_c": 5.6,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-17T07:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 6.7,
+          "rh_pct": 94,
+          "dewpoint_c": 5.8,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-17T08:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 7.5,
+          "rh_pct": 94,
+          "dewpoint_c": 6.6,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-17T09:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 8.7,
+          "rh_pct": 94,
+          "dewpoint_c": 7.8,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-17T10:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 9.9,
+          "rh_pct": 94,
+          "dewpoint_c": 9.0,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-17T11:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 12.0,
+          "rh_pct": 94,
+          "dewpoint_c": 11.1,
+          "wind_kmh": 9,
+          "gust_kmh": 12,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-17T12:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 13.3,
+          "rh_pct": 94,
+          "dewpoint_c": 12.4,
+          "wind_kmh": 10,
+          "gust_kmh": 13,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-17T13:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 14.7,
+          "rh_pct": 94,
+          "dewpoint_c": 13.7,
+          "wind_kmh": 10,
+          "gust_kmh": 15,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-17T14:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 16.0,
+          "rh_pct": 84,
+          "dewpoint_c": 13.3,
+          "wind_kmh": 9,
+          "gust_kmh": 12,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-17T15:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 15.4,
+          "rh_pct": 65,
+          "dewpoint_c": 8.8,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-17T16:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 14.8,
+          "rh_pct": 70,
+          "dewpoint_c": 9.4,
+          "wind_kmh": 2,
+          "gust_kmh": 3,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-17T17:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 14.1,
+          "rh_pct": 78,
+          "dewpoint_c": 10.3,
+          "wind_kmh": 2,
+          "gust_kmh": 3,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-17T18:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 13.5,
+          "rh_pct": 84,
+          "dewpoint_c": 10.8,
+          "wind_kmh": 2,
+          "gust_kmh": 3,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-17T19:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 12.9,
+          "rh_pct": 86,
+          "dewpoint_c": 10.6,
+          "wind_kmh": 6,
+          "gust_kmh": 8,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-17T20:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 12.2,
+          "rh_pct": 94,
+          "dewpoint_c": 11.3,
+          "wind_kmh": 6,
+          "gust_kmh": 8,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-17T21:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 11.6,
+          "rh_pct": 94,
+          "dewpoint_c": 10.7,
+          "wind_kmh": 6,
+          "gust_kmh": 8,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-17T22:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 11.0,
+          "rh_pct": 94,
+          "dewpoint_c": 10.1,
+          "wind_kmh": 6,
+          "gust_kmh": 8,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-17T23:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 10.4,
+          "rh_pct": 94,
+          "dewpoint_c": 9.5,
+          "wind_kmh": 6,
+          "gust_kmh": 8,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-18T00:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 9.8,
+          "rh_pct": 94,
+          "dewpoint_c": 8.9,
+          "wind_kmh": 4,
+          "gust_kmh": 5,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-18T01:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 9.1,
+          "rh_pct": 94,
+          "dewpoint_c": 8.2,
+          "wind_kmh": 4,
+          "gust_kmh": 5,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-18T02:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 8.5,
+          "rh_pct": 94,
+          "dewpoint_c": 7.6,
+          "wind_kmh": 4,
+          "gust_kmh": 5,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-18T03:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 7.9,
+          "rh_pct": 94,
+          "dewpoint_c": 7.0,
+          "wind_kmh": 4,
+          "gust_kmh": 5,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-18T04:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 7.2,
+          "rh_pct": 94,
+          "dewpoint_c": 6.3,
+          "wind_kmh": 4,
+          "gust_kmh": 5,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-18T05:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 6.6,
+          "rh_pct": 94,
+          "dewpoint_c": 5.7,
+          "wind_kmh": 4,
+          "gust_kmh": 5,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-18T06:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 6.0,
+          "rh_pct": 94,
+          "dewpoint_c": 5.1,
+          "wind_kmh": 4,
+          "gust_kmh": 5,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-18T07:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 6.2,
+          "rh_pct": 94,
+          "dewpoint_c": 5.3,
+          "wind_kmh": 4,
+          "gust_kmh": 5,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-18T08:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 7.0,
+          "rh_pct": 94,
+          "dewpoint_c": 6.1,
+          "wind_kmh": 4,
+          "gust_kmh": 5,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-18T09:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 8.2,
+          "rh_pct": 94,
+          "dewpoint_c": 7.3,
+          "wind_kmh": 4,
+          "gust_kmh": 5,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-18T10:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 9.4,
+          "rh_pct": 84,
+          "dewpoint_c": 6.8,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-18T11:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 11.5,
+          "rh_pct": 72,
+          "dewpoint_c": 6.6,
+          "wind_kmh": 6,
+          "gust_kmh": 8,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-18T12:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 12.8,
+          "rh_pct": 68,
+          "dewpoint_c": 7.0,
+          "wind_kmh": 7,
+          "gust_kmh": 9,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-18T13:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 14.2,
+          "rh_pct": 65,
+          "dewpoint_c": 7.7,
+          "wind_kmh": 7,
+          "gust_kmh": 9,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-18T14:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 15.5,
+          "rh_pct": 63,
+          "dewpoint_c": 8.5,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-18T15:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 14.8,
+          "rh_pct": 65,
+          "dewpoint_c": 8.3,
+          "wind_kmh": 11,
+          "gust_kmh": 14,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-18T16:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 14.2,
+          "rh_pct": 70,
+          "dewpoint_c": 8.8,
+          "wind_kmh": 12,
+          "gust_kmh": 14,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-18T17:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 13.5,
+          "rh_pct": 78,
+          "dewpoint_c": 9.7,
+          "wind_kmh": 6,
+          "gust_kmh": 8,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-18T18:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 12.9,
+          "rh_pct": 84,
+          "dewpoint_c": 10.3,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-18T19:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 12.2,
+          "rh_pct": 86,
+          "dewpoint_c": 9.9,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-18T20:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 11.6,
+          "rh_pct": 94,
+          "dewpoint_c": 10.7,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-18T21:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 10.9,
+          "rh_pct": 94,
+          "dewpoint_c": 10.0,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-18T22:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 10.2,
+          "rh_pct": 94,
+          "dewpoint_c": 9.3,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-18T23:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 9.6,
+          "rh_pct": 94,
+          "dewpoint_c": 8.7,
+          "wind_kmh": 5,
+          "gust_kmh": 6,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-19T00:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 8.9,
+          "rh_pct": 94,
+          "dewpoint_c": 8.0,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-19T01:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 8.3,
+          "rh_pct": 94,
+          "dewpoint_c": 7.4,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-19T02:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 7.6,
+          "rh_pct": 94,
+          "dewpoint_c": 6.7,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-19T03:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 7.0,
+          "rh_pct": 94,
+          "dewpoint_c": 6.1,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-19T04:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 6.3,
+          "rh_pct": 94,
+          "dewpoint_c": 5.4,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-19T05:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 5.7,
+          "rh_pct": 94,
+          "dewpoint_c": 4.8,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-19T06:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 5.0,
+          "rh_pct": 94,
+          "dewpoint_c": 4.1,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-19T07:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 5.2,
+          "rh_pct": 94,
+          "dewpoint_c": 4.3,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-19T08:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 6.0,
+          "rh_pct": 94,
+          "dewpoint_c": 5.1,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-19T09:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 7.2,
+          "rh_pct": 94,
+          "dewpoint_c": 6.3,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-19T10:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 8.4,
+          "rh_pct": 84,
+          "dewpoint_c": 5.9,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-19T11:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 10.5,
+          "rh_pct": 72,
+          "dewpoint_c": 5.7,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-19T12:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 12.0,
+          "rh_pct": 68,
+          "dewpoint_c": 6.3,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-19T13:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 13.5,
+          "rh_pct": 65,
+          "dewpoint_c": 7.0,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-19T14:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 15.0,
+          "rh_pct": 63,
+          "dewpoint_c": 8.0,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-19T15:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 14.5,
+          "rh_pct": 65,
+          "dewpoint_c": 8.0,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-19T16:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 14.0,
+          "rh_pct": 70,
+          "dewpoint_c": 8.6,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 1,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-19T17:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 13.5,
+          "rh_pct": 78,
+          "dewpoint_c": 9.7,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-19T18:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 13.0,
+          "rh_pct": 84,
+          "dewpoint_c": 10.4,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-19T19:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 12.5,
+          "rh_pct": 86,
+          "dewpoint_c": 10.2,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-19T20:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 12.0,
+          "rh_pct": 94,
+          "dewpoint_c": 11.1,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-19T21:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 11.5,
+          "rh_pct": 94,
+          "dewpoint_c": 10.6,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-19T22:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 11.0,
+          "rh_pct": 94,
+          "dewpoint_c": 10.1,
+          "wind_kmh": 8,
+          "gust_kmh": 10,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-19T23:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 10.5,
+          "rh_pct": 94,
+          "dewpoint_c": 9.6,
+          "wind_kmh": 8,
+          "gust_kmh": 16,
+          "rain_mm": 0.0,
+          "cloud_oktas": 0,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T00:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 10.0,
+          "rh_pct": 94,
+          "dewpoint_c": 9.1,
+          "wind_kmh": 12,
+          "gust_kmh": 16,
+          "rain_mm": 0.0,
+          "cloud_oktas": 4,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T01:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 9.5,
+          "rh_pct": 94,
+          "dewpoint_c": 8.6,
+          "wind_kmh": 12,
+          "gust_kmh": 16,
+          "rain_mm": 0.0,
+          "cloud_oktas": 4,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T02:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 9.0,
+          "rh_pct": 94,
+          "dewpoint_c": 8.1,
+          "wind_kmh": 12,
+          "gust_kmh": 16,
+          "rain_mm": 0.0,
+          "cloud_oktas": 4,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T03:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 8.5,
+          "rh_pct": 94,
+          "dewpoint_c": 7.6,
+          "wind_kmh": 12,
+          "gust_kmh": 16,
+          "rain_mm": 0.0,
+          "cloud_oktas": 4,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T04:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 8.0,
+          "rh_pct": 94,
+          "dewpoint_c": 7.1,
+          "wind_kmh": 12,
+          "gust_kmh": 16,
+          "rain_mm": 0.0,
+          "cloud_oktas": 4,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T05:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 7.5,
+          "rh_pct": 94,
+          "dewpoint_c": 6.6,
+          "wind_kmh": 12,
+          "gust_kmh": 16,
+          "rain_mm": 0.0,
+          "cloud_oktas": 4,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T06:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 7.0,
+          "rh_pct": 94,
+          "dewpoint_c": 6.1,
+          "wind_kmh": 12,
+          "gust_kmh": 16,
+          "rain_mm": 0.0,
+          "cloud_oktas": 4,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T07:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 7.2,
+          "rh_pct": 94,
+          "dewpoint_c": 6.3,
+          "wind_kmh": 12,
+          "gust_kmh": 16,
+          "rain_mm": 0.0,
+          "cloud_oktas": 4,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T08:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 8.0,
+          "rh_pct": 94,
+          "dewpoint_c": 7.1,
+          "wind_kmh": 12,
+          "gust_kmh": 16,
+          "rain_mm": 0.0,
+          "cloud_oktas": 4,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T09:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 9.2,
+          "rh_pct": 94,
+          "dewpoint_c": 8.3,
+          "wind_kmh": 12,
+          "gust_kmh": 16,
+          "rain_mm": 0.0,
+          "cloud_oktas": 4,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T10:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 10.4,
+          "rh_pct": 84,
+          "dewpoint_c": 7.8,
+          "wind_kmh": 12,
+          "gust_kmh": 16,
+          "rain_mm": 0.0,
+          "cloud_oktas": 4,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-20T11:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 12.5,
+          "rh_pct": 89,
+          "dewpoint_c": 10.7,
+          "wind_kmh": 12,
+          "gust_kmh": 16,
+          "rain_mm": 0.0,
+          "cloud_oktas": 4,
+          "leafwet_est": false
+        },
+        {
+          "time": "2026-11-20T12:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 13.2,
+          "rh_pct": 94,
+          "dewpoint_c": 12.3,
+          "wind_kmh": 20,
+          "gust_kmh": 26,
+          "rain_mm": 0.0,
+          "cloud_oktas": 8,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T13:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 13.8,
+          "rh_pct": 94,
+          "dewpoint_c": 12.9,
+          "wind_kmh": 20,
+          "gust_kmh": 26,
+          "rain_mm": 0.0,
+          "cloud_oktas": 8,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T14:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 14.5,
+          "rh_pct": 94,
+          "dewpoint_c": 13.5,
+          "wind_kmh": 20,
+          "gust_kmh": 26,
+          "rain_mm": 0.0,
+          "cloud_oktas": 8,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T15:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 14.3,
+          "rh_pct": 94,
+          "dewpoint_c": 13.3,
+          "wind_kmh": 20,
+          "gust_kmh": 26,
+          "rain_mm": 0.0,
+          "cloud_oktas": 8,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T16:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 14.1,
+          "rh_pct": 94,
+          "dewpoint_c": 13.1,
+          "wind_kmh": 20,
+          "gust_kmh": 26,
+          "rain_mm": 0.0,
+          "cloud_oktas": 8,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T17:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 13.8,
+          "rh_pct": 94,
+          "dewpoint_c": 12.9,
+          "wind_kmh": 20,
+          "gust_kmh": 26,
+          "rain_mm": 0.0,
+          "cloud_oktas": 8,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T18:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 13.6,
+          "rh_pct": 97,
+          "dewpoint_c": 13.1,
+          "wind_kmh": 30,
+          "gust_kmh": 39,
+          "rain_mm": 1.1,
+          "cloud_oktas": 8,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T19:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 13.4,
+          "rh_pct": 97,
+          "dewpoint_c": 12.9,
+          "wind_kmh": 30,
+          "gust_kmh": 39,
+          "rain_mm": 1.1,
+          "cloud_oktas": 8,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T20:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 13.2,
+          "rh_pct": 97,
+          "dewpoint_c": 12.7,
+          "wind_kmh": 30,
+          "gust_kmh": 39,
+          "rain_mm": 1.1,
+          "cloud_oktas": 8,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T21:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 13.0,
+          "rh_pct": 97,
+          "dewpoint_c": 12.5,
+          "wind_kmh": 30,
+          "gust_kmh": 39,
+          "rain_mm": 1.1,
+          "cloud_oktas": 8,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T22:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 12.8,
+          "rh_pct": 97,
+          "dewpoint_c": 12.3,
+          "wind_kmh": 30,
+          "gust_kmh": 39,
+          "rain_mm": 1.1,
+          "cloud_oktas": 8,
+          "leafwet_est": true
+        },
+        {
+          "time": "2026-11-20T23:00:00+02:00",
+          "kind": "forecast",
+          "temp_c": 12.5,
+          "rh_pct": 97,
+          "dewpoint_c": 12.0,
+          "wind_kmh": 30,
+          "gust_kmh": 52,
+          "rain_mm": 1.0,
+          "cloud_oktas": 8,
+          "leafwet_est": true
+        }
+      ]
+    },
+    "sun": {
+      "2026-11-16": {
+        "sunrise": "07:06",
+        "sunset": "17:10"
+      },
+      "2026-11-17": {
+        "sunrise": "07:07",
+        "sunset": "17:09"
+      },
+      "2026-11-18": {
+        "sunrise": "07:08",
+        "sunset": "17:08"
+      },
+      "2026-11-19": {
+        "sunrise": "07:09",
+        "sunset": "17:08"
+      },
+      "2026-11-20": {
+        "sunrise": "07:10",
+        "sunset": "17:07"
+      }
+    },
+    "planned_job": {
+      "id": "PJ-R01",
+      "kind": "spray",
+      "planting_ids": [
+        "PL08"
+      ],
+      "area_str": "1.5",
+      "target": "downy mildew (Peronospora effusa)",
+      "duration_h": 3,
+      "earliest": "2026-11-16T06:40:00+02:00"
+    },
+    "label_use_extras": {
+      "PR01": {
+        "target": "downy mildew (Peronospora effusa)",
+        "max_apps": 4,
+        "min_interval_days": 7
+      },
+      "PR03": {
+        "target": "downy mildew (Peronospora effusa)",
+        "max_apps": 3,
+        "min_interval_days": 10
+      },
+      "PR04": {
+        "target": "downy mildew (Peronospora effusa)",
+        "max_apps": 3,
+        "min_interval_days": 10
+      }
+    }
+  },
+  "expected": {
+    "mode": "decide",
+    "kind": "recommendation",
+    "category": "spray_window",
+    "severity": null,
+    "confidence": "medium",
+    "targets": {
+      "parcel_ids": [
+        "P3"
+      ],
+      "planting_ids": [
+        "PL08"
+      ],
+      "planting_match": "exact"
+    },
+    "window": {
+      "start": "2026-11-18T11:00:00+02:00",
+      "end": "2026-11-18T15:00:00+02:00"
+    },
+    "values": {
+      "rejected_days": {
+        "2026-11-16": [
+          "wind_above_max"
+        ],
+        "2026-11-17": [
+          "leaves_wet",
+          "wind_below_min"
+        ]
+      },
+      "option_product_ids": [
+        "PR01",
+        "PR03"
+      ],
+      "chosen_product_id": null,
+      "untreated_plantings": [
+        "PL09",
+        "PL10",
+        "PL11"
+      ]
+    },
+    "also": [
+      {
+        "rule_id": "SPRAY-WIN",
+        "kind": "option",
+        "product_ids": "PR03",
+        "planting_ids": "PL08",
+        "values": {
+          "group": "FRAC 40",
+          "dose_per_str": "0.06",
+          "dose_unit": "L/στρ",
+          "area_str": "1.5",
+          "total_qty": "0.09",
+          "stock_qty": "0.1",
+          "phi_days": 14,
+          "safe_from_date": "2026-12-02",
+          "rei_h": 24
+        }
+      },
+      {
+        "rule_id": "SPRAY-WIN",
+        "kind": "option",
+        "product_ids": "PR01",
+        "planting_ids": "PL08",
+        "values": {
+          "group": "FRAC M01",
+          "dose_per_str": "0.2",
+          "dose_unit": "kg/στρ",
+          "area_str": "1.5",
+          "total_qty": "0.3",
+          "stock_qty": "4.5",
+          "phi_days": 7,
+          "safe_from_date": "2026-11-25",
+          "rei_h": 24
+        }
+      }
+    ],
+    "vetoes": [
+      {
+        "by": "ROT",
+        "vetoed": "option",
+        "product_id": "PR04",
+        "reason": "same_group_consecutive (FRAC 28 after FRAC 28 on this lot)"
+      }
+    ],
+    "must_not": [
+      {
+        "id": "no-choice",
+        "match": {
+          "rule_id": "SPRAY-WIN",
+          "values": {
+            "chosen_product_id": {
+              "$exists": true,
+              "$ne": null
+            }
+          }
+        },
+        "why": "app never chooses product or dose"
+      },
+      {
+        "id": "no-pr04",
+        "match": {
+          "kind": "option",
+          "product_ids": "PR04"
+        },
+        "why": "ROT veto"
+      },
+      {
+        "id": "no-tuesday",
+        "match": {
+          "category": "spray_window",
+          "window": {
+            "start": {
+              "$lt": "2026-11-18T00:00:00+02:00"
+            }
+          }
+        },
+        "why": "Mon/Tue have no 3 h run"
+      },
+      {
+        "id": "no-rounded-total",
+        "match": {
+          "kind": "option",
+          "product_ids": "PR03",
+          "values": {
+            "total_qty": "0.1"
+          }
+        },
+        "why": "0.06 × 1.5 = 0.09 exactly (QA P0-1)"
+      },
+      {
+        "id": "no-neighbour-beds",
+        "match": {
+          "category": "spray_window",
+          "planting_ids": {
+            "$in": [
+              "PL09",
+              "PL10",
+              "PL11"
+            ]
+          }
+        },
+        "why": "PR03 not registered for chard/onion/coriander"
+      }
+    ]
+  },
+  "source_text": {
+    "prototype_id": "R01",
+    "action": "Spray mandipropamid 25% SC (FRAC 40), 0.06 L/στρ in 50 L water/στρ, on the 1.5 στρ spinach only. Cut chard, coriander and spring onion on the same parcel BEFORE spraying; leave one unsprayed bed as buffer next to them (product not registered on those crops). New safe-to-harvest date: Wed 2 Dec; REI 24 h.",
+    "window": "Wed 18 Nov, 11:00-15:00",
+    "why_rule": "Spray only if: leaves dry (after dew ~10:00), gust < 20 km/h, no rain for >= 24 h after (product needs ~1 h to dry), planting not harvesting, new PHI ends before harvest starts, FRAC group different from the last spray on this lot, product registered for crop and in stock and not expired.",
+    "severity": null
+  },
+  "notes": "The engine lists every option that passes the arbiter (PR01 copper M01 and PR03 mandipropamid); the prototype named only mandipropamid – Bora/agronomist choose. PR04 is vetoed by ROT (test param max 1 consecutive). PHI-GUARD passes only because buffer = 0: PR03 safe 2 Dec vs harvest 3 Dec. Hour-level reasons for Tue also include leaves_dry_too_short; 'include' semantics for rejected_days."
+}
