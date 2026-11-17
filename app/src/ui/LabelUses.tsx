@@ -1,7 +1,12 @@
 import { useState } from 'preact/hooks';
-import { known, type Known } from '@aloni/rules-core';
-import { t, tn, type I18nKey } from '../i18n';
+import { dataVersion, db } from '../db';
+import { archived, restored } from '../parcels/parcel';
+import { put } from '../repo';
+import { showUndo } from './Toast';
+import { SignOff } from './SignOff';
+import { formatDate, t, tn, type I18nKey } from '../i18n';
 import { formatDose, formatQty } from '../i18n/format';
+import { isCalendarDate, known, type Known } from '@aloni/rules-core';
 import { readUse, statusOf, type Status } from '../labels/label-use';
 import type { Row } from '../db/schema';
 import { LabelUseForm, UNIT_KEYS } from './LabelUseForm';
@@ -10,7 +15,7 @@ import { UnsyncedMark } from './states';
 import { useRows } from './useRows';
 
 const STATUS_KEYS: Record<Status, I18nKey> = {
-  blocked: 'labeluse.status.blocked', unsigned: 'labeluse.status.unsigned', changed: 'labeluse.status.changed', signed: 'labeluse.status.unsigned', // «signed» is shown by the sign-off PR
+  blocked: 'labeluse.status.blocked', unsigned: 'labeluse.status.unsigned', changed: 'labeluse.status.changed', signed: 'labeluse.status.signed',
 };
 
 /** A label value as the farmer sees it: the value, or why there is none («δεν αναγράφεται» / not filled in / unreadable). */
@@ -37,6 +42,7 @@ function Lines({ row }: { row: Row }) {
 /** One product's label uses, per crop: the values, and «Μη εγκεκριμένο» / blocked until an agronomist's approval is recorded. */
 export function LabelUses({ product, onBack }: { product: Row; onBack: () => void }) {
   const [editing, setEditing] = useState<Row | 'new' | undefined>(undefined);
+  const [signing, setSigning] = useState('');
   const uses = useRows('label_uses');
   const crops = useRows('crops');
   const mine = uses.rows?.filter((u) => u.product_id === product.id && !u.deleted_at) ?? [];
@@ -45,6 +51,16 @@ export function LabelUses({ product, onBack }: { product: Row; onBack: () => voi
     const taken = new Set(mine.map((u) => String(cropOf(u.crop_id)?.slug)));
     return <LabelUseForm productId={product.id} taken={taken} existing={editing === 'new' ? undefined : editing} onDone={() => setEditing(undefined)} />;
   }
+  const archive = async (r: Row) => {
+    await put(db, 'label_uses', archived(r, new Date().toISOString()));
+    dataVersion.value++;
+    showUndo(t('labeluse.archived'), async () => { await put(db, 'label_uses', restored(r, new Date().toISOString())); dataVersion.value++; });
+  };
+  const badge = (r: Row, st: Status): string => {
+    const so = r.sign_off as { by?: unknown; on?: unknown } | undefined;
+    const on = typeof so?.on === 'string' && isCalendarDate(so.on) ? formatDate(so.on) : t('value.unknown');
+    return st === 'signed' ? t('labeluse.status.signed', { by: String(so?.by), on }) : t(STATUS_KEYS[st]);
+  };
   return (
     <section>
       <h1>{nameOf(product)}</h1>
@@ -57,10 +73,13 @@ export function LabelUses({ product, onBack }: { product: Row; onBack: () => voi
         const crop = cropOf(r.crop_id);
         return (
           <div class="card" key={r.id} data-testid="labeluse">{crop ? nameOf(crop) : t('value.unknown')}
-            <span class={`badge ${st}`} data-testid="labeluse-status">{t(STATUS_KEYS[st])}</span>
+            <span class={`badge ${st}`} data-testid="labeluse-status">{badge(r, st)}</span>
             <Lines row={r} />
             <UnsyncedMark id={r.id} />
+            {(st === 'unsigned' || st === 'changed') && signing !== r.id && <button class="btn secondary" data-testid="signoff-open" onClick={() => setSigning(r.id)}>{t('signoff.record')}</button>}
+            {signing === r.id && <SignOff row={r} onDone={() => setSigning('')} />}
             <button class="btn secondary" onClick={() => setEditing(r)}>{t('labeluse.edit')}</button>
+            <button class="btn secondary" onClick={() => void archive(r)}>{t('labeluse.archive')}</button>
           </div>
         );
       })}

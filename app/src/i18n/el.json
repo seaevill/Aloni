@@ -180,5 +180,15 @@
   "labeluse.hours.other": "{n} ώρες",
   "labeluse.status.blocked": "Λείπουν στοιχεία: δεν μπορεί να χρησιμοποιηθεί",
   "labeluse.status.unsigned": "Μη εγκεκριμένο",
-  "labeluse.status.changed": "Άλλαξε μετά την έγκριση: Μη εγκεκριμένο"
+  "labeluse.status.changed": "Άλλαξε μετά την έγκριση: Μη εγκεκριμένο",
+  "signoff.record": "Καταγραφή έγκρισης γεωπόνου",
+  "signoff.note": "Καταγράψτε μόνο έγκριση που έχετε πράγματι από γεωπόνο. Η εφαρμογή δεν την ελέγχει· αν αλλάξετε κάποια τιμή, η έγκριση σβήνεται.",
+  "signoff.by": "Όνομα γεωπόνου",
+  "signoff.on": "Ημερομηνία έγκρισης",
+  "signoff.saved": "Η έγκριση καταγράφηκε.",
+  "signoff.error.by": "Γράψτε το όνομα του γεωπόνου.",
+  "signoff.error.date": "Μη έγκυρη ημερομηνία.",
+  "labeluse.status.signed": "Εγκεκριμένο από {by} · {on}",
+  "labeluse.archive": "Αρχειοθέτηση",
+  "labeluse.archived": "Τα στοιχεία ετικέτας αρχειοθετήθηκαν."
 }

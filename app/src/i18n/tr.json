@@ -180,5 +180,15 @@
   "labeluse.hours.other": "{n} saat",
   "labeluse.status.blocked": "Eksik bilgi var: kullanılamaz",
   "labeluse.status.unsigned": "Onaylanmadı",
-  "labeluse.status.changed": "Onaydan sonra değişti: Onaylanmadı"
+  "labeluse.status.changed": "Onaydan sonra değişti: Onaylanmadı",
+  "signoff.record": "Ziraat mühendisi onayını kaydet",
+  "signoff.note": "Yalnızca ziraat mühendisinden gerçekten aldığınız onayı kaydedin. Uygulama bunu kontrol etmez; bir değeri değiştirirseniz onay silinir.",
+  "signoff.by": "Ziraat mühendisinin adı",
+  "signoff.on": "Onay tarihi",
+  "signoff.saved": "Onay kaydedildi.",
+  "signoff.error.by": "Ziraat mühendisinin adını yazın.",
+  "signoff.error.date": "Geçersiz tarih.",
+  "labeluse.status.signed": "{by} onayladı · {on}",
+  "labeluse.archive": "Arşivle",
+  "labeluse.archived": "Etiket bilgileri arşivlendi."
 }
