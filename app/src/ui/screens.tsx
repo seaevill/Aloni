@@ -65,20 +65,20 @@ export function Today() {
       {loaded && has && !demo && <button class="btn" data-testid="harvest-open" onClick={() => setHarvesting(true)}>{t('harvest.add')}</button>}
       {harvested && <p class="msg" role="status" data-testid="harvest-saved">{t('harvest.saved')}</p>}
       {recorded && <p class="msg" role="status" data-testid="spray-saved">{t('spray.saved')}</p>}
-      {loaded && has && !demo && <Sprays />}
-      {loaded && has && !demo && <Harvests />}
+      {loaded && has && <Sprays readOnly={demo} />}
+      {loaded && has && <Harvests />}
       {loaded && has && <p class="card" data-testid="today-counts">{t('today.counts', { parcels: live(parcels).length, crops: formatQty(cropsInUse), plantings: formatQty(live(plantings).length) })}</p>}
     </section>
   );
 }
 
 export function Parcels() {
+  const demo = activeFarm.value !== realFarmId.value;
   const [adding, setAdding] = useState(false);
   const [analysing, setAnalysing] = useState<Row | undefined>(undefined);
   const q = useRows('parcels');
   if (adding) return <ParcelForm onDone={() => setAdding(false)} />;
-  if (analysing) return <Analyses parcel={analysing} onBack={() => setAnalysing(undefined)} />;
-  const demo = activeFarm.value !== realFarmId.value;
+  if (analysing) return <Analyses parcel={analysing} readOnly={demo} onBack={() => setAnalysing(undefined)} />;
   const live = q.rows?.filter((r) => !r.deleted_at) ?? [];
   const archive = async (r: Row) => {
     await put(db, 'parcels', archived(r, new Date().toISOString()));
@@ -92,7 +92,7 @@ export function Parcels() {
       <Status q={{ ...q, rows: q.rows && live.length === 0 ? [] : q.rows }} message={t('list.empty')} action={demo ? undefined : { label: t('parcel.add'), run: () => setAdding(true) }} />
       {live.map((r) => (
         <div class="card" key={r.id}>{String(r.name)}{typeof r.area_str !== 'undefined' && <small>{formatArea(r.area_str as number | string)}</small>}<UnsyncedMark id={r.id} />
-          {!demo && <button class="btn secondary" data-testid="analysis-open" onClick={() => setAnalysing(r)}>{t('analysis.open')}</button>}
+          <button class="btn secondary" data-testid="analysis-open" onClick={() => setAnalysing(r)}>{t('analysis.open')}</button>
           {!demo && <button class="btn secondary" onClick={() => void archive(r)}>{t('parcel.archive')}</button>}
         </div>
       ))}

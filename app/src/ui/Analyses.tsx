@@ -18,7 +18,7 @@ const unitText = (u: unknown): string => { const k = EC_UNITS.find((x) => x === 
 const KIND_KEYS: Record<Kind, I18nKey> = { soil: 'analysis.kind.soil', water: 'analysis.kind.water' };
 
 /** One parcel's soil and water analyses, newest first. Add (soil or water) and archive with undo; the report photo stays on the phone. */
-export function Analyses({ parcel, onBack }: { parcel: Row; onBack: () => void }) {
+export function Analyses({ parcel, onBack, readOnly = false }: { parcel: Row; onBack: () => void; readOnly?: boolean }) {
   const [adding, setAdding] = useState<Kind | undefined>(undefined);
   const soil = useRows('soil_tests');
   const water = useRows('water_tests');
@@ -48,15 +48,15 @@ export function Analyses({ parcel, onBack }: { parcel: Row; onBack: () => void }
       <h1>{String(parcel.name)}</h1>
       <button class="btn secondary" onClick={onBack}>{t('info.back')}</button>
       <h2>{t('analysis.title')}</h2>
-      <button class="btn" data-testid="analysis-add-soil" onClick={() => setAdding('soil')}>{t('analysis.add.soil')}</button>
-      <button class="btn" data-testid="analysis-add-water" onClick={() => setAdding('water')}>{t('analysis.add.water')}</button>
+      {!readOnly && <button class="btn" data-testid="analysis-add-soil" onClick={() => setAdding('soil')}>{t('analysis.add.soil')}</button>}
+      {!readOnly && <button class="btn" data-testid="analysis-add-water" onClick={() => setAdding('water')}>{t('analysis.add.water')}</button>}
       {soil.rows && water.rows && cards.length === 0 && <p class="muted" data-testid="analysis-empty">{t('analysis.empty')}</p>}
       {cards.map((c) => (
         <div class="card" key={c.r.id} data-testid="analysis">{c.title}
           {c.lines.map((l) => <small key={l}>{l}</small>)}
           {text(c.r.photo_id) && <div class="photos"><MediaThumb id={text(c.r.photo_id)} /></div>}
           <UnsyncedMark id={c.r.id} />
-          <button class="btn secondary" onClick={() => void archive(c.kind, c.r)}>{t('analysis.archive')}</button>
+          {!readOnly && <button class="btn secondary" onClick={() => void archive(c.kind, c.r)}>{t('analysis.archive')}</button>}
         </div>
       ))}
     </section>
