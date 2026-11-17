@@ -9,6 +9,13 @@ alter table weather_hourly drop constraint if exists weather_hourly_kind_check;
 alter table weather_daily  add constraint weather_daily_kind_check  check (kind in ('analysis','forecast','sensor','station'));
 alter table weather_hourly add constraint weather_hourly_kind_check check (kind in ('analysis','forecast','sensor','station'));
 
+-- The model name is part of the row identity, so ICON-EU and IFS HRES for the same parcel/time/kind/issue can sit side by side
+-- (the model-disagreement rule needs both). The tables are empty, so NOT NULL is safe; no default: an unknown model is a bug, not a value.
+alter table weather_daily  alter column model set not null;
+alter table weather_hourly alter column model set not null;
+alter table weather_daily  drop constraint weather_daily_pkey,  add primary key (parcel_id, day, kind, model, issued_at);
+alter table weather_hourly drop constraint weather_hourly_pkey, add primary key (parcel_id, at, kind, model, issued_at);
+
 alter table weather_daily  add column model_run timestamptz, add column cell_elev_m numeric;
 alter table weather_hourly add column model_run timestamptz, add column cell_elev_m numeric;
 
