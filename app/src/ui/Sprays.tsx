@@ -1,7 +1,10 @@
+import { useState } from 'preact/hooks';
 import { parsePhiDays, parseReiHours, phiEnd, reiEnd } from '@aloni/rules-core';
+import { dataVersion, db, realFarmId } from '../db';
+import { put } from '../repo';
 import { formatDateTime, t, type I18nKey } from '../i18n';
 import { NOT_ON_LABEL } from '../labels/label-use';
-import { effectiveSprays, type Flag } from '../spray/spray';
+import { buildWaitEntry, effectiveSprays, type Flag } from '../spray/spray';
 import type { Row } from '../db/schema';
 import { FLAG_KEYS } from './SprayForm';
 import { nameOf } from './screens';
@@ -18,8 +21,37 @@ const waitLine = (r: Row, days: 'phi_days' | 'rei_hours'): string | undefined =>
   return end.known ? t(days === 'phi_days' ? 'spray.phi.until' : 'spray.rei.until', { d: formatDateTime(end.value) }) : undefined;
 };
 
+/** Bora types the label's waiting period for a spray whose PHI is unknown. It is saved as a NEW row (the original stays); it never lifts a block by itself: the harvest opens only once this period has run out. */
+function WaitEntry({ spray, onDone }: { spray: Row; onDone: () => void }) {
+  const [phi, setPhi] = useState('');
+  const [rei, setRei] = useState('');
+  const [bad, setBad] = useState(false);
+  const save = async () => {
+    const e = buildWaitEntry(spray, phi, rei, new Date().toISOString(), crypto.randomUUID());
+    if (!e.ok) { setBad(true); return; }
+    await put(db, 'job_spray', { ...e.row, farm_id: realFarmId.value }, 'insert');
+    dataVersion.value++;
+    onDone();
+  };
+  return (
+    <div class="card" data-testid="wait-entry">
+      <p class="muted">{t('spray.phi.entry.note')}</p>
+      <label class="field">{t('labeluse.phi')}
+        <input class="input" value={phi} inputMode="numeric" autoComplete="off" data-testid="wait-phi" onInput={(e) => setPhi((e.target as HTMLInputElement).value)} />
+      </label>
+      <label class="field">{t('labeluse.rei')}
+        <input class="input" value={rei} inputMode="numeric" autoComplete="off" data-testid="wait-rei" onInput={(e) => setRei((e.target as HTMLInputElement).value)} />
+      </label>
+      {bad && <p class="msg error" role="alert">{t('labeluse.error.whole')}</p>}
+      <button class="btn" data-testid="wait-save" onClick={() => void save()}>{t('product.save')}</button>
+      <button class="btn secondary" onClick={onDone}>{t('product.cancel')}</button>
+    </div>
+  );
+}
+
 /** The sprays that were recorded, newest first: who sprayed, what, when, the marks, and the waiting periods (unknown ones in red: the harvest is blocked). */
 export function Sprays() {
+  const [entering, setEntering] = useState('');
   const sprays = useRows('job_spray'); const links = useRows('job_plantings'); const plantings = useRows('plantings');
   const crops = useRows('crops'); const products = useRows('products'); const workers = useRows('workers');
   const list = effectiveSprays(sprays.rows ?? []).sort((a, b) => text(b.sprayed_at).localeCompare(text(a.sprayed_at)));
@@ -42,6 +74,9 @@ export function Sprays() {
           <small>{c.crops}</small><small>{c.by}</small><small>{c.when}</small>
           {c.flags.map((f) => <span key={f} class={RED.includes(f) ? 'badge blocked' : 'badge warn'}>{t(FLAG_KEYS[f] as I18nKey)}</span>)}
           {c.phi ? <small data-testid="spray-phi">{c.phi}</small> : <span class="badge blocked" data-testid="spray-phi-unknown">{t('spray.phi.unknown')}</span>}
+          {c.phi && c.r.phi_source === 'manual' && <small data-testid="spray-manual">{t('spray.phi.manual')}</small>}
+          {!c.phi && entering !== c.r.id && <button class="btn secondary" data-testid="wait-open" onClick={() => setEntering(c.r.id)}>{t('spray.phi.enter')}</button>}
+          {entering === c.r.id && <WaitEntry spray={c.r} onDone={() => setEntering('')} />}
           {c.rei && <small data-testid="spray-rei">{c.rei}</small>}
           <UnsyncedMark id={c.r.id} />
         </div>

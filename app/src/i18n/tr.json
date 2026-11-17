@@ -299,5 +299,8 @@
   "spray.phi.unknown": "Bekleme süresi bilinmiyor: etiketteki bekleme süresini girene kadar bu ekimin hasadı engelli.",
   "spray.phi.until": "Bekleme süresi bitişi: {d}",
   "spray.rei.until": "Tarlaya giriş: {d} sonrası",
-  "stock.reason.spray": "ilaçlama"
+  "stock.reason.spray": "ilaçlama",
+  "spray.phi.enter": "Etiketteki bekleme süresini gir",
+  "spray.phi.entry.note": "Değerleri etiketteki gibi yazın. Yeni bir satır olarak eklenir; ilk kayıt olduğu gibi kalır.",
+  "spray.phi.manual": "Etiketten sizin girdiğiniz değer"
 }
