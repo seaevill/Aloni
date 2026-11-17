@@ -1,0 +1,1083 @@
+{
+ "meta": { "farm": "Bora – leafy greens & herbs (SAMPLE)", "region": "Megara plain, West Attica, Greece", "today": "2026-11-16", "source_note": "SAMPLE DATA – not real advice. Doses/PHI from the product label. All PHI (days), REI (hours) and doses (product unit per στρέμμα, 1 στρ = 0.1 ha) are ILLUSTRATIVE – check the label and the Greek registration database. phi_days null = not applicable (fertiliser, or pre-emergence herbicide whose timing covers PHI). Products are generic labels, no brands. Weather: observed 9-15 Nov from nearest station, forecast 16-22 Nov from model blend, both elevation-corrected; leaf-wet hours are estimates (no sensor). est_crates = area × yield assumption ÷ crate kg, ~10% waste; supply spread evenly over harvest window. Leek has no orders yet (harvest Jan 2027)." },
+ "parcels": [
+  {
+   "id": "P1",
+   "name": "Κάτω Κάμπος (Lower Plain)",
+   "locality": "Megara plain, south of town - lowest part of the plain",
+   "area_str": 12,
+   "elevation_m": 24,
+   "lat": 37.9905,
+   "lng": 23.356,
+   "soil": { "date": "2026-09-02", "pH": 7.9, "EC_dS_m": 0.9, "OM_pct": 1.6, "N_ppm": 18, "P_ppm": 22, "K_ppm": 280, "CaCO3_pct": 21, "notes": "Calcareous clay loam; N = nitrate-N; P Olsen. Surface urea loses NH3 here unless incorporated." },
+   "irrigation": { "type": "Drip (16 mm, 30 cm emitters)", "source": "Own borehole", "water_EC_dS_m": 1.2 },
+   "opekepe_code": "SAMPLE-ΟΣΔΕ-0001",
+   "sketch": { "shape": "rect", "rotation_deg": 12 }
+  },
+  {
+   "id": "P2",
+   "name": "Μεσαίο Χωράφι (Middle Field)",
+   "locality": "Megara plain, west of town",
+   "area_str": 8,
+   "elevation_m": 34,
+   "lat": 37.996,
+   "lng": 23.329,
+   "soil": { "date": "2026-09-02", "pH": 7.7, "EC_dS_m": 0.7, "OM_pct": 1.9, "N_ppm": 15, "P_ppm": 26, "K_ppm": 250, "CaCO3_pct": 14, "notes": "Loam, calcareous; drains well. Beetroot (Amaranthaceae) grown here spring 2026." },
+   "irrigation": { "type": "Mini-sprinklers (herbs) + drip (parsley)", "source": "Shared borehole", "water_EC_dS_m": 1.0 },
+   "opekepe_code": "SAMPLE-ΟΣΔΕ-0002",
+   "sketch": { "shape": "poly", "rotation_deg": -8 }
+  },
+  {
+   "id": "P3",
+   "name": "Πάχη Παραλιακό (Pachi Coast)",
+   "locality": "Pachi, ~400 m from the sea",
+   "area_str": 6,
+   "elevation_m": 8,
+   "lat": 37.9705,
+   "lng": 23.3835,
+   "soil": { "date": "2026-08-28", "pH": 8.0, "EC_dS_m": 1.8, "OM_pct": 1.2, "N_ppm": 12, "P_ppm": 19, "K_ppm": 210, "CaCO3_pct": 12, "notes": "Sandy loam; slightly saline (soil EC 1.8). Humid nights, sea breeze. Spinach downy mildew seen here in Dec 2025." },
+   "irrigation": { "type": "Drip", "source": "Coastal well", "water_EC_dS_m": 2.6 },
+   "opekepe_code": "SAMPLE-ΟΣΔΕ-0003",
+   "sketch": { "shape": "rect", "rotation_deg": -25 }
+  },
+  {
+   "id": "P4",
+   "name": "Γεράνεια Πλαγιά (Geraneia Slope)",
+   "locality": "Geraneia foothills, north of Megara (terraces)",
+   "area_str": 5,
+   "elevation_m": 180,
+   "lat": 38.027,
+   "lng": 23.301,
+   "soil": { "date": "2026-09-10", "pH": 8.1, "EC_dS_m": 0.5, "OM_pct": 2.1, "N_ppm": 11, "P_ppm": 14, "K_ppm": 190, "CaCO3_pct": 28, "notes": "Stony calcareous loam on terraces. Downslope gusts in north winds; on clear calm nights it sits ABOVE the cold air pooling on the plain." },
+   "irrigation": { "type": "Drip", "source": "Spring + storage tank", "water_EC_dS_m": 0.6 },
+   "opekepe_code": "SAMPLE-ΟΣΔΕ-0004",
+   "sketch": { "shape": "poly", "rotation_deg": 30 }
+  },
+  {
+   "id": "P5",
+   "name": "Νότιος Κάμπος (South Plain)",
+   "locality": "Megara plain, towards Pachi road",
+   "area_str": 7,
+   "elevation_m": 28,
+   "lat": 37.985,
+   "lng": 23.348,
+   "soil": { "date": "2026-10-20", "pH": 7.8, "EC_dS_m": 0.6, "OM_pct": 1.4, "N_ppm": 9, "P_ppm": 20, "K_ppm": 230, "CaCO3_pct": 15, "notes": "Sandy loam, low crusting. Previous crop spring onion (harvested Oct 2026). No spinach/beet/chard here since 2023; no downy mildew record. 3 στρ prepared beds free." },
+   "irrigation": { "type": "Drip", "source": "Own borehole", "water_EC_dS_m": 1.1 },
+   "opekepe_code": "SAMPLE-ΟΣΔΕ-0005",
+   "sketch": { "shape": "rect", "rotation_deg": 5 }
+  }
+ ],
+ "crops": [
+  { "id": "spinach", "name_el": "Σπανάκι", "name_en": "Spinach", "name_tr": "Ispanak", "latin": "Spinacia oleracea", "crate_kg": 8 },
+  { "id": "rocket", "name_el": "Ρόκα", "name_en": "Rocket", "name_tr": "Roka", "latin": "Eruca vesicaria subsp. sativa", "crate_kg": 4 },
+  { "id": "parsley", "name_el": "Μαϊντανός", "name_en": "Parsley", "name_tr": "Maydanoz", "latin": "Petroselinum crispum", "crate_kg": 6 },
+  { "id": "dill", "name_el": "Άνηθος", "name_en": "Dill", "name_tr": "Dereotu", "latin": "Anethum graveolens", "crate_kg": 5 },
+  { "id": "coriander", "name_el": "Κόλιανδρο", "name_en": "Coriander", "name_tr": "Kişniş", "latin": "Coriandrum sativum", "crate_kg": 5 },
+  { "id": "chicory", "name_el": "Ραδίκια άγρια", "name_en": "Wild chicory", "name_tr": "Yabani hindiba (radika)", "latin": "Cichorium intybus", "crate_kg": 8 },
+  { "id": "endive", "name_el": "Αντίδια", "name_en": "Endive", "name_tr": "Endivyen", "latin": "Cichorium endivia", "crate_kg": 9 },
+  { "id": "chard", "name_el": "Σέσκουλα", "name_en": "Swiss chard", "name_tr": "Pazı", "latin": "Beta vulgaris subsp. vulgaris (Cicla group)", "crate_kg": 9 },
+  { "id": "onion", "name_el": "Κρεμμύδι (φρέσκο)", "name_en": "Spring onion", "name_tr": "Taze soğan", "latin": "Allium cepa", "crate_kg": 8 },
+  { "id": "leek", "name_el": "Πράσο", "name_en": "Leek", "name_tr": "Pırasa", "latin": "Allium ampeloprasum var. porrum", "crate_kg": 12 }
+ ],
+ "plantings": [
+  { "id": "PL01", "crop_id": "spinach", "parcel_id": "P1", "area_str": 1.5, "sown": "2026-09-22", "stage_pct": 100, "harvest_from": "2026-11-10", "harvest_to": "2026-11-28", "est_crates": 225, "status": "harvesting" },
+  { "id": "PL02", "crop_id": "leek", "parcel_id": "P1", "area_str": 2.0, "sown": "2026-09-05", "stage_pct": 57, "harvest_from": "2027-01-10", "harvest_to": "2027-02-28", "est_crates": 400, "status": "growing" },
+  { "id": "PL03", "crop_id": "chicory", "parcel_id": "P1", "area_str": 1.0, "sown": "2026-09-10", "stage_pct": 97, "harvest_from": "2026-11-18", "harvest_to": "2026-12-15", "est_crates": 125, "status": "growing" },
+  { "id": "PL04", "crop_id": "rocket", "parcel_id": "P2", "area_str": 1.0, "sown": "2026-10-26", "stage_pct": 68, "harvest_from": "2026-11-26", "harvest_to": "2026-12-10", "est_crates": 180, "status": "growing" },
+  { "id": "PL05", "crop_id": "coriander", "parcel_id": "P2", "area_str": 0.5, "sown": "2026-10-30", "stage_pct": 41, "harvest_from": "2026-12-10", "harvest_to": "2026-12-24", "est_crates": 60, "status": "growing" },
+  { "id": "PL06", "crop_id": "dill", "parcel_id": "P2", "area_str": 0.5, "sown": "2026-10-28", "stage_pct": 46, "harvest_from": "2026-12-08", "harvest_to": "2026-12-22", "est_crates": 60, "status": "growing" },
+  { "id": "PL07", "crop_id": "parsley", "parcel_id": "P2", "area_str": 1.0, "sown": "2026-08-25", "stage_pct": 100, "harvest_from": "2026-10-25", "harvest_to": "2027-01-31", "est_crates": 260, "status": "harvesting" },
+  { "id": "PL08", "crop_id": "spinach", "parcel_id": "P3", "area_str": 1.5, "sown": "2026-10-12", "stage_pct": 67, "harvest_from": "2026-12-03", "harvest_to": "2026-12-22", "est_crates": 225, "status": "growing" },
+  { "id": "PL09", "crop_id": "chard", "parcel_id": "P3", "area_str": 1.0, "sown": "2026-09-15", "stage_pct": 100, "harvest_from": "2026-11-05", "harvest_to": "2027-01-15", "est_crates": 200, "status": "harvesting" },
+  { "id": "PL10", "crop_id": "onion", "parcel_id": "P3", "area_str": 1.0, "sown": "2026-09-01", "stage_pct": 100, "harvest_from": "2026-11-09", "harvest_to": "2026-12-15", "est_crates": 160, "status": "harvesting" },
+  { "id": "PL11", "crop_id": "coriander", "parcel_id": "P3", "area_str": 0.5, "sown": "2026-09-28", "stage_pct": 100, "harvest_from": "2026-11-12", "harvest_to": "2026-12-09", "est_crates": 70, "status": "harvesting" },
+  { "id": "PL12", "crop_id": "parsley", "parcel_id": "P4", "area_str": 1.5, "sown": "2026-08-15", "stage_pct": 100, "harvest_from": "2026-10-20", "harvest_to": "2027-01-31", "est_crates": 390, "status": "harvesting" },
+  { "id": "PL13", "crop_id": "rocket", "parcel_id": "P4", "area_str": 1.0, "sown": "2026-10-05", "stage_pct": 100, "harvest_from": "2026-11-12", "harvest_to": "2026-11-30", "est_crates": 200, "status": "harvesting" },
+  { "id": "PL14", "crop_id": "dill", "parcel_id": "P4", "area_str": 0.5, "sown": "2026-09-25", "stage_pct": 100, "harvest_from": "2026-11-10", "harvest_to": "2026-12-06", "est_crates": 80, "status": "harvesting" },
+  { "id": "PL15", "crop_id": "endive", "parcel_id": "P5", "area_str": 0.6, "sown": "2026-09-01", "stage_pct": 100, "harvest_from": "2026-11-16", "harvest_to": "2026-12-18", "est_crates": 200, "status": "ready" },
+  { "id": "PL16", "crop_id": "rocket", "parcel_id": "P2", "area_str": 1.0, "sown": "2026-11-06", "stage_pct": 28, "harvest_from": "2026-12-12", "harvest_to": "2027-01-02", "est_crates": 180, "status": "growing" }
+ ],
+ "weather": {
+  "by_parcel": {
+   "P1": [
+    { "date": "2026-11-09", "tmin": 9.8, "tmax": 20.2, "rain_mm": 0, "wind_kmh": 8, "gust_kmh": 18, "rh_pct": 70, "leafwet_h": 3, "kind": "observed" },
+    { "date": "2026-11-10", "tmin": 9.3, "tmax": 21.2, "rain_mm": 0, "wind_kmh": 6, "gust_kmh": 14, "rh_pct": 68, "leafwet_h": 4, "kind": "observed" },
+    { "date": "2026-11-11", "tmin": 10.8, "tmax": 19.2, "rain_mm": 0.4, "wind_kmh": 14, "gust_kmh": 30, "rh_pct": 76, "leafwet_h": 5, "kind": "observed" },
+    { "date": "2026-11-12", "tmin": 11.8, "tmax": 16.2, "rain_mm": 14.2, "wind_kmh": 22, "gust_kmh": 46, "rh_pct": 94, "leafwet_h": 18, "kind": "observed" },
+    { "date": "2026-11-13", "tmin": 8.3, "tmax": 14.2, "rain_mm": 9.6, "wind_kmh": 26, "gust_kmh": 52, "rh_pct": 87, "leafwet_h": 14, "kind": "observed" },
+    { "date": "2026-11-14", "tmin": 5.8, "tmax": 16.2, "rain_mm": 0, "wind_kmh": 10, "gust_kmh": 24, "rh_pct": 82, "leafwet_h": 13, "kind": "observed" },
+    { "date": "2026-11-15", "tmin": 4.0, "tmax": 17.2, "rain_mm": 0, "wind_kmh": 5, "gust_kmh": 12, "rh_pct": 80, "leafwet_h": 12, "kind": "observed" },
+    { "date": "2026-11-16", "tmin": 2.5, "tmax": 17.2, "rain_mm": 0, "wind_kmh": 6, "gust_kmh": 14, "rh_pct": 76, "leafwet_h": 11, "kind": "forecast" },
+    { "date": "2026-11-17", "tmin": 1.5, "tmax": 16.7, "rain_mm": 0, "wind_kmh": 4, "gust_kmh": 11, "rh_pct": 74, "leafwet_h": 11, "kind": "forecast" },
+    { "date": "2026-11-18", "tmin": 1.0, "tmax": 16.2, "rain_mm": 0, "wind_kmh": 4, "gust_kmh": 10, "rh_pct": 72, "leafwet_h": 12, "kind": "forecast" },
+    { "date": "2026-11-19", "tmin": 0.0, "tmax": 15.7, "rain_mm": 0, "wind_kmh": 5, "gust_kmh": 12, "rh_pct": 74, "leafwet_h": 12, "kind": "forecast" },
+    { "date": "2026-11-20", "tmin": 4.8, "tmax": 15.2, "rain_mm": 6.5, "wind_kmh": 20, "gust_kmh": 48, "rh_pct": 88, "leafwet_h": 12, "kind": "forecast" },
+    { "date": "2026-11-21", "tmin": 8.8, "tmax": 14.2, "rain_mm": 17.8, "wind_kmh": 24, "gust_kmh": 55, "rh_pct": 96, "leafwet_h": 20, "kind": "forecast" },
+    { "date": "2026-11-22", "tmin": 6.8, "tmax": 13.2, "rain_mm": 3.2, "wind_kmh": 28, "gust_kmh": 58, "rh_pct": 82, "leafwet_h": 8, "kind": "forecast" }
+   ],
+   "P2": [
+    { "date": "2026-11-09", "tmin": 10.0, "tmax": 20.0, "rain_mm": 0, "wind_kmh": 8, "gust_kmh": 18, "rh_pct": 68, "leafwet_h": 3, "kind": "observed" },
+    { "date": "2026-11-10", "tmin": 9.5, "tmax": 21.0, "rain_mm": 0, "wind_kmh": 6, "gust_kmh": 14, "rh_pct": 66, "leafwet_h": 4, "kind": "observed" },
+    { "date": "2026-11-11", "tmin": 11.0, "tmax": 19.0, "rain_mm": 0.4, "wind_kmh": 14, "gust_kmh": 30, "rh_pct": 74, "leafwet_h": 5, "kind": "observed" },
+    { "date": "2026-11-12", "tmin": 12.0, "tmax": 16.0, "rain_mm": 14.2, "wind_kmh": 22, "gust_kmh": 46, "rh_pct": 92, "leafwet_h": 18, "kind": "observed" },
+    { "date": "2026-11-13", "tmin": 8.5, "tmax": 14.0, "rain_mm": 9.6, "wind_kmh": 26, "gust_kmh": 52, "rh_pct": 85, "leafwet_h": 14, "kind": "observed" },
+    { "date": "2026-11-14", "tmin": 6.0, "tmax": 16.0, "rain_mm": 0, "wind_kmh": 10, "gust_kmh": 24, "rh_pct": 80, "leafwet_h": 13, "kind": "observed" },
+    { "date": "2026-11-15", "tmin": 4.5, "tmax": 17.0, "rain_mm": 0, "wind_kmh": 5, "gust_kmh": 12, "rh_pct": 78, "leafwet_h": 11, "kind": "observed" },
+    { "date": "2026-11-16", "tmin": 3.0, "tmax": 17.0, "rain_mm": 0, "wind_kmh": 6, "gust_kmh": 14, "rh_pct": 74, "leafwet_h": 10, "kind": "forecast" },
+    { "date": "2026-11-17", "tmin": 2.0, "tmax": 16.5, "rain_mm": 0, "wind_kmh": 4, "gust_kmh": 11, "rh_pct": 72, "leafwet_h": 10, "kind": "forecast" },
+    { "date": "2026-11-18", "tmin": 1.5, "tmax": 16.0, "rain_mm": 0, "wind_kmh": 4, "gust_kmh": 10, "rh_pct": 70, "leafwet_h": 11, "kind": "forecast" },
+    { "date": "2026-11-19", "tmin": 0.5, "tmax": 15.5, "rain_mm": 0, "wind_kmh": 5, "gust_kmh": 12, "rh_pct": 72, "leafwet_h": 11, "kind": "forecast" },
+    { "date": "2026-11-20", "tmin": 5.0, "tmax": 15.0, "rain_mm": 6.5, "wind_kmh": 20, "gust_kmh": 48, "rh_pct": 86, "leafwet_h": 12, "kind": "forecast" },
+    { "date": "2026-11-21", "tmin": 9.0, "tmax": 14.0, "rain_mm": 17.8, "wind_kmh": 24, "gust_kmh": 55, "rh_pct": 94, "leafwet_h": 20, "kind": "forecast" },
+    { "date": "2026-11-22", "tmin": 7.0, "tmax": 13.0, "rain_mm": 3.2, "wind_kmh": 28, "gust_kmh": 58, "rh_pct": 80, "leafwet_h": 8, "kind": "forecast" }
+   ],
+   "P3": [
+    { "date": "2026-11-09", "tmin": 12.0, "tmax": 19.5, "rain_mm": 0, "wind_kmh": 11, "gust_kmh": 22, "rh_pct": 77, "leafwet_h": 5, "kind": "observed" },
+    { "date": "2026-11-10", "tmin": 11.5, "tmax": 20.5, "rain_mm": 0, "wind_kmh": 9, "gust_kmh": 18, "rh_pct": 75, "leafwet_h": 6, "kind": "observed" },
+    { "date": "2026-11-11", "tmin": 13.0, "tmax": 18.5, "rain_mm": 0.4, "wind_kmh": 17, "gust_kmh": 34, "rh_pct": 83, "leafwet_h": 7, "kind": "observed" },
+    { "date": "2026-11-12", "tmin": 14.0, "tmax": 15.5, "rain_mm": 14.2, "wind_kmh": 25, "gust_kmh": 50, "rh_pct": 97, "leafwet_h": 20, "kind": "observed" },
+    { "date": "2026-11-13", "tmin": 10.5, "tmax": 13.5, "rain_mm": 9.6, "wind_kmh": 29, "gust_kmh": 56, "rh_pct": 94, "leafwet_h": 16, "kind": "observed" },
+    { "date": "2026-11-14", "tmin": 8.0, "tmax": 15.5, "rain_mm": 0, "wind_kmh": 13, "gust_kmh": 28, "rh_pct": 89, "leafwet_h": 15, "kind": "observed" },
+    { "date": "2026-11-15", "tmin": 9.0, "tmax": 16.5, "rain_mm": 0, "wind_kmh": 8, "gust_kmh": 16, "rh_pct": 87, "leafwet_h": 14, "kind": "observed" },
+    { "date": "2026-11-16", "tmin": 7.5, "tmax": 16.5, "rain_mm": 0, "wind_kmh": 9, "gust_kmh": 18, "rh_pct": 83, "leafwet_h": 13, "kind": "forecast" },
+    { "date": "2026-11-17", "tmin": 6.5, "tmax": 16.0, "rain_mm": 0, "wind_kmh": 7, "gust_kmh": 15, "rh_pct": 81, "leafwet_h": 13, "kind": "forecast" },
+    { "date": "2026-11-18", "tmin": 6.0, "tmax": 15.5, "rain_mm": 0, "wind_kmh": 7, "gust_kmh": 14, "rh_pct": 79, "leafwet_h": 14, "kind": "forecast" },
+    { "date": "2026-11-19", "tmin": 5.0, "tmax": 15.0, "rain_mm": 0, "wind_kmh": 8, "gust_kmh": 16, "rh_pct": 81, "leafwet_h": 14, "kind": "forecast" },
+    { "date": "2026-11-20", "tmin": 7.0, "tmax": 14.5, "rain_mm": 6.5, "wind_kmh": 23, "gust_kmh": 52, "rh_pct": 95, "leafwet_h": 14, "kind": "forecast" },
+    { "date": "2026-11-21", "tmin": 11.0, "tmax": 13.5, "rain_mm": 17.8, "wind_kmh": 27, "gust_kmh": 59, "rh_pct": 97, "leafwet_h": 22, "kind": "forecast" },
+    { "date": "2026-11-22", "tmin": 9.0, "tmax": 12.5, "rain_mm": 3.2, "wind_kmh": 31, "gust_kmh": 62, "rh_pct": 89, "leafwet_h": 10, "kind": "forecast" }
+   ],
+   "P4": [
+    { "date": "2026-11-09", "tmin": 9.0, "tmax": 18.8, "rain_mm": 0, "wind_kmh": 10, "gust_kmh": 22, "rh_pct": 62, "leafwet_h": 0, "kind": "observed" },
+    { "date": "2026-11-10", "tmin": 8.5, "tmax": 19.8, "rain_mm": 0, "wind_kmh": 8, "gust_kmh": 18, "rh_pct": 60, "leafwet_h": 1, "kind": "observed" },
+    { "date": "2026-11-11", "tmin": 10.0, "tmax": 17.8, "rain_mm": 0.4, "wind_kmh": 16, "gust_kmh": 34, "rh_pct": 68, "leafwet_h": 2, "kind": "observed" },
+    { "date": "2026-11-12", "tmin": 11.0, "tmax": 14.8, "rain_mm": 14.2, "wind_kmh": 24, "gust_kmh": 50, "rh_pct": 86, "leafwet_h": 15, "kind": "observed" },
+    { "date": "2026-11-13", "tmin": 7.5, "tmax": 12.8, "rain_mm": 9.6, "wind_kmh": 28, "gust_kmh": 64, "rh_pct": 79, "leafwet_h": 11, "kind": "observed" },
+    { "date": "2026-11-14", "tmin": 5.0, "tmax": 14.8, "rain_mm": 0, "wind_kmh": 12, "gust_kmh": 28, "rh_pct": 74, "leafwet_h": 10, "kind": "observed" },
+    { "date": "2026-11-15", "tmin": 8.0, "tmax": 15.8, "rain_mm": 0, "wind_kmh": 7, "gust_kmh": 16, "rh_pct": 72, "leafwet_h": 8, "kind": "observed" },
+    { "date": "2026-11-16", "tmin": 6.5, "tmax": 15.8, "rain_mm": 0, "wind_kmh": 8, "gust_kmh": 18, "rh_pct": 68, "leafwet_h": 7, "kind": "forecast" },
+    { "date": "2026-11-17", "tmin": 5.5, "tmax": 15.3, "rain_mm": 0, "wind_kmh": 6, "gust_kmh": 15, "rh_pct": 66, "leafwet_h": 7, "kind": "forecast" },
+    { "date": "2026-11-18", "tmin": 5.0, "tmax": 14.8, "rain_mm": 0, "wind_kmh": 6, "gust_kmh": 14, "rh_pct": 64, "leafwet_h": 8, "kind": "forecast" },
+    { "date": "2026-11-19", "tmin": 4.0, "tmax": 14.3, "rain_mm": 0, "wind_kmh": 7, "gust_kmh": 16, "rh_pct": 66, "leafwet_h": 8, "kind": "forecast" },
+    { "date": "2026-11-20", "tmin": 4.0, "tmax": 13.8, "rain_mm": 6.5, "wind_kmh": 22, "gust_kmh": 52, "rh_pct": 80, "leafwet_h": 9, "kind": "forecast" },
+    { "date": "2026-11-21", "tmin": 8.0, "tmax": 12.8, "rain_mm": 17.8, "wind_kmh": 26, "gust_kmh": 59, "rh_pct": 88, "leafwet_h": 17, "kind": "forecast" },
+    { "date": "2026-11-22", "tmin": 6.0, "tmax": 11.8, "rain_mm": 3.2, "wind_kmh": 30, "gust_kmh": 70, "rh_pct": 74, "leafwet_h": 5, "kind": "forecast" }
+   ],
+   "P5": [
+    { "date": "2026-11-09", "tmin": 9.9, "tmax": 20.1, "rain_mm": 0, "wind_kmh": 8, "gust_kmh": 18, "rh_pct": 69, "leafwet_h": 3, "kind": "observed" },
+    { "date": "2026-11-10", "tmin": 9.4, "tmax": 21.1, "rain_mm": 0, "wind_kmh": 6, "gust_kmh": 14, "rh_pct": 67, "leafwet_h": 4, "kind": "observed" },
+    { "date": "2026-11-11", "tmin": 10.9, "tmax": 19.1, "rain_mm": 0.4, "wind_kmh": 14, "gust_kmh": 30, "rh_pct": 75, "leafwet_h": 5, "kind": "observed" },
+    { "date": "2026-11-12", "tmin": 11.9, "tmax": 16.1, "rain_mm": 14.2, "wind_kmh": 22, "gust_kmh": 46, "rh_pct": 93, "leafwet_h": 18, "kind": "observed" },
+    { "date": "2026-11-13", "tmin": 8.4, "tmax": 14.1, "rain_mm": 9.6, "wind_kmh": 26, "gust_kmh": 52, "rh_pct": 86, "leafwet_h": 14, "kind": "observed" },
+    { "date": "2026-11-14", "tmin": 5.9, "tmax": 16.1, "rain_mm": 0, "wind_kmh": 10, "gust_kmh": 24, "rh_pct": 81, "leafwet_h": 13, "kind": "observed" },
+    { "date": "2026-11-15", "tmin": 4.2, "tmax": 17.1, "rain_mm": 0, "wind_kmh": 5, "gust_kmh": 12, "rh_pct": 79, "leafwet_h": 11, "kind": "observed" },
+    { "date": "2026-11-16", "tmin": 2.7, "tmax": 17.1, "rain_mm": 0, "wind_kmh": 6, "gust_kmh": 14, "rh_pct": 75, "leafwet_h": 10, "kind": "forecast" },
+    { "date": "2026-11-17", "tmin": 1.7, "tmax": 16.6, "rain_mm": 0, "wind_kmh": 4, "gust_kmh": 11, "rh_pct": 73, "leafwet_h": 10, "kind": "forecast" },
+    { "date": "2026-11-18", "tmin": 1.2, "tmax": 16.1, "rain_mm": 0, "wind_kmh": 4, "gust_kmh": 10, "rh_pct": 71, "leafwet_h": 11, "kind": "forecast" },
+    { "date": "2026-11-19", "tmin": 0.2, "tmax": 15.6, "rain_mm": 0, "wind_kmh": 5, "gust_kmh": 12, "rh_pct": 73, "leafwet_h": 11, "kind": "forecast" },
+    { "date": "2026-11-20", "tmin": 4.9, "tmax": 15.1, "rain_mm": 6.5, "wind_kmh": 20, "gust_kmh": 48, "rh_pct": 87, "leafwet_h": 12, "kind": "forecast" },
+    { "date": "2026-11-21", "tmin": 8.9, "tmax": 14.1, "rain_mm": 17.8, "wind_kmh": 24, "gust_kmh": 55, "rh_pct": 95, "leafwet_h": 20, "kind": "forecast" },
+    { "date": "2026-11-22", "tmin": 6.9, "tmax": 13.1, "rain_mm": 3.2, "wind_kmh": 28, "gust_kmh": 58, "rh_pct": 81, "leafwet_h": 8, "kind": "forecast" }
+   ]
+  }
+ },
+ "products": [
+  {
+   "id": "PR01",
+   "label": "Copper hydroxide 35% WG",
+   "name_el": "Υδροξείδιο του χαλκού 35% WG",
+   "name_en": "Copper hydroxide 35% WG",
+   "name_tr": "Bakır hidroksit %35 WG",
+   "active": "copper hydroxide",
+   "type": "fungicide",
+   "group_code": "M01",
+   "group_system": "FRAC",
+   "form": "WG",
+   "qty": 4.5,
+   "unit": "kg",
+   "expiry": "2028-03-31",
+   "registered": [
+    { "crop_id": "spinach", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.2 },
+    { "crop_id": "chard", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.2 },
+    { "crop_id": "rocket", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.2 },
+    { "crop_id": "parsley", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.2 },
+    { "crop_id": "endive", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.2 }
+   ]
+  },
+  {
+   "id": "PR02",
+   "label": "Azoxystrobin 25% SC",
+   "name_el": "Αζοξυστροβίνη 25% SC",
+   "name_en": "Azoxystrobin 25% SC",
+   "name_tr": "Azoksistrobin %25 SC",
+   "active": "azoxystrobin",
+   "type": "fungicide",
+   "group_code": "11",
+   "group_system": "FRAC",
+   "form": "SC",
+   "qty": 1.0,
+   "unit": "L",
+   "expiry": "2027-09-30",
+   "registered": [
+    { "crop_id": "spinach", "phi_days": 14, "rei_h": 24, "dose_per_str": 0.1 },
+    { "crop_id": "rocket", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.1 },
+    { "crop_id": "parsley", "phi_days": 14, "rei_h": 24, "dose_per_str": 0.1 },
+    { "crop_id": "endive", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.1 },
+    { "crop_id": "leek", "phi_days": 14, "rei_h": 24, "dose_per_str": 0.1 }
+   ]
+  },
+  {
+   "id": "PR03",
+   "label": "Mandipropamid 25% SC",
+   "name_el": "Μανδιπροπαμίδιο 25% SC",
+   "name_en": "Mandipropamid 25% SC",
+   "name_tr": "Mandipropamid %25 SC",
+   "active": "mandipropamid",
+   "type": "fungicide",
+   "group_code": "40",
+   "group_system": "FRAC",
+   "form": "SC",
+   "qty": 0.1,
+   "unit": "L",
+   "expiry": "2028-01-31",
+   "registered": [
+    { "crop_id": "spinach", "phi_days": 14, "rei_h": 24, "dose_per_str": 0.06 },
+    { "crop_id": "endive", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.06 }
+   ]
+  },
+  {
+   "id": "PR04",
+   "label": "Propamocarb hydrochloride 722 g/L SL",
+   "name_el": "Προπαμοκάρμπ υδροχλωρικό 722 g/L SL",
+   "name_en": "Propamocarb hydrochloride 722 g/L SL",
+   "name_tr": "Propamokarb hidroklorür 722 g/L SL",
+   "active": "propamocarb hydrochloride",
+   "type": "fungicide",
+   "group_code": "28",
+   "group_system": "FRAC",
+   "form": "SL",
+   "qty": 1.6,
+   "unit": "L",
+   "expiry": "2027-06-30",
+   "registered": [
+    { "crop_id": "spinach", "phi_days": 14, "rei_h": 24, "dose_per_str": 0.2 },
+    { "crop_id": "endive", "phi_days": 14, "rei_h": 24, "dose_per_str": 0.2 }
+   ]
+  },
+  {
+   "id": "PR05",
+   "label": "Difenoconazole 25% EC",
+   "name_el": "Διφαινοκοναζόλη 25% EC",
+   "name_en": "Difenoconazole 25% EC",
+   "name_tr": "Difenokonazol %25 EC",
+   "active": "difenoconazole",
+   "type": "fungicide",
+   "group_code": "3",
+   "group_system": "FRAC",
+   "form": "EC",
+   "qty": 0.6,
+   "unit": "L",
+   "expiry": "2027-11-30",
+   "registered": [
+    { "crop_id": "parsley", "phi_days": 14, "rei_h": 24, "dose_per_str": 0.05 },
+    { "crop_id": "leek", "phi_days": 21, "rei_h": 24, "dose_per_str": 0.05 }
+   ]
+  },
+  {
+   "id": "PR06",
+   "label": "Bacillus amyloliquefaciens QST 713, 1.34% SC",
+   "name_el": "Bacillus amyloliquefaciens QST 713, 1,34% SC",
+   "name_en": "Bacillus amyloliquefaciens QST 713, 1.34% SC",
+   "name_tr": "Bacillus amyloliquefaciens QST 713, %1,34 SC",
+   "active": "Bacillus amyloliquefaciens strain QST 713",
+   "type": "fungicide",
+   "group_code": "BM02",
+   "group_system": "FRAC",
+   "form": "SC",
+   "qty": 5.0,
+   "unit": "L",
+   "expiry": "2027-04-30",
+   "registered": [
+    { "crop_id": "spinach", "phi_days": 0, "rei_h": 4, "dose_per_str": 0.8 },
+    { "crop_id": "rocket", "phi_days": 0, "rei_h": 4, "dose_per_str": 0.8 },
+    { "crop_id": "parsley", "phi_days": 0, "rei_h": 4, "dose_per_str": 0.8 },
+    { "crop_id": "dill", "phi_days": 0, "rei_h": 4, "dose_per_str": 0.8 },
+    { "crop_id": "coriander", "phi_days": 0, "rei_h": 4, "dose_per_str": 0.8 },
+    { "crop_id": "chard", "phi_days": 0, "rei_h": 4, "dose_per_str": 0.8 }
+   ]
+  },
+  {
+   "id": "PR07",
+   "label": "Deltamethrin 2.5% EC",
+   "name_el": "Δελταμεθρίνη 2,5% EC",
+   "name_en": "Deltamethrin 2.5% EC",
+   "name_tr": "Deltametrin %2,5 EC",
+   "active": "deltamethrin",
+   "type": "insecticide",
+   "group_code": "3A",
+   "group_system": "IRAC",
+   "form": "EC",
+   "qty": 0.4,
+   "unit": "L",
+   "expiry": "2027-05-31",
+   "registered": [
+    { "crop_id": "rocket", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.05 },
+    { "crop_id": "spinach", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.05 },
+    { "crop_id": "endive", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.05 },
+    { "crop_id": "chard", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.05 },
+    { "crop_id": "leek", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.05 }
+   ]
+  },
+  {
+   "id": "PR08",
+   "label": "Spinosad 48% SC",
+   "name_el": "Σπινοσάντ 48% SC",
+   "name_en": "Spinosad 48% SC",
+   "name_tr": "Spinosad %48 SC",
+   "active": "spinosad",
+   "type": "insecticide",
+   "group_code": "5",
+   "group_system": "IRAC",
+   "form": "SC",
+   "qty": 0.12,
+   "unit": "L",
+   "expiry": "2026-12-15",
+   "registered": [
+    { "crop_id": "rocket", "phi_days": 3, "rei_h": 12, "dose_per_str": 0.025 },
+    { "crop_id": "spinach", "phi_days": 3, "rei_h": 12, "dose_per_str": 0.025 },
+    { "crop_id": "parsley", "phi_days": 3, "rei_h": 12, "dose_per_str": 0.025 },
+    { "crop_id": "endive", "phi_days": 3, "rei_h": 12, "dose_per_str": 0.025 },
+    { "crop_id": "leek", "phi_days": 7, "rei_h": 12, "dose_per_str": 0.025 }
+   ]
+  },
+  {
+   "id": "PR09",
+   "label": "Bacillus thuringiensis subsp. kurstaki WG",
+   "name_el": "Bacillus thuringiensis υποείδος kurstaki WG",
+   "name_en": "Bacillus thuringiensis subsp. kurstaki WG",
+   "name_tr": "Bacillus thuringiensis alt tür kurstaki WG",
+   "active": "Bacillus thuringiensis subsp. kurstaki",
+   "type": "insecticide",
+   "group_code": "11A",
+   "group_system": "IRAC",
+   "form": "WG",
+   "qty": 1.5,
+   "unit": "kg",
+   "expiry": "2027-08-31",
+   "registered": [
+    { "crop_id": "spinach", "phi_days": 0, "rei_h": 4, "dose_per_str": 0.1 },
+    { "crop_id": "rocket", "phi_days": 0, "rei_h": 4, "dose_per_str": 0.1 },
+    { "crop_id": "parsley", "phi_days": 0, "rei_h": 4, "dose_per_str": 0.1 },
+    { "crop_id": "dill", "phi_days": 0, "rei_h": 4, "dose_per_str": 0.1 },
+    { "crop_id": "coriander", "phi_days": 0, "rei_h": 4, "dose_per_str": 0.1 },
+    { "crop_id": "chard", "phi_days": 0, "rei_h": 4, "dose_per_str": 0.1 },
+    { "crop_id": "endive", "phi_days": 0, "rei_h": 4, "dose_per_str": 0.1 }
+   ]
+  },
+  {
+   "id": "PR10",
+   "label": "Acetamiprid 20% SP",
+   "name_el": "Ακεταμιπρίδη 20% SP",
+   "name_en": "Acetamiprid 20% SP",
+   "name_tr": "Asetamiprid %20 SP",
+   "active": "acetamiprid",
+   "type": "insecticide",
+   "group_code": "4A",
+   "group_system": "IRAC",
+   "form": "SP",
+   "qty": 0.3,
+   "unit": "kg",
+   "expiry": "2026-10-31",
+   "registered": [
+    { "crop_id": "spinach", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.025 },
+    { "crop_id": "rocket", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.025 },
+    { "crop_id": "endive", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.025 }
+   ]
+  },
+  {
+   "id": "PR11",
+   "label": "Flonicamid 50% WG",
+   "name_el": "Φλονικαμίδη 50% WG",
+   "name_en": "Flonicamid 50% WG",
+   "name_tr": "Flonikamid %50 WG",
+   "active": "flonicamid",
+   "type": "insecticide",
+   "group_code": "29",
+   "group_system": "IRAC",
+   "form": "WG",
+   "qty": 0.35,
+   "unit": "kg",
+   "expiry": "2028-05-31",
+   "registered": [
+    { "crop_id": "spinach", "phi_days": 14, "rei_h": 24, "dose_per_str": 0.014 },
+    { "crop_id": "rocket", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.014 },
+    { "crop_id": "endive", "phi_days": 7, "rei_h": 24, "dose_per_str": 0.014 }
+   ]
+  },
+  {
+   "id": "PR12",
+   "label": "Lenacil 80% WP (pre-emergence)",
+   "name_el": "Λενασίλ 80% WP (προφυτρωτικό)",
+   "name_en": "Lenacil 80% WP (pre-emergence)",
+   "name_tr": "Lenasil %80 WP (çıkış öncesi)",
+   "active": "lenacil",
+   "type": "herbicide",
+   "group_code": "5",
+   "group_system": "HRAC",
+   "form": "WP",
+   "qty": 0.8,
+   "unit": "kg",
+   "expiry": "2027-12-31",
+   "registered": [
+    { "crop_id": "spinach", "phi_days": null, "rei_h": 24, "dose_per_str": 0.05 },
+    { "crop_id": "chard", "phi_days": null, "rei_h": 24, "dose_per_str": 0.05 }
+   ]
+  },
+  {
+   "id": "PR13",
+   "label": "Propyzamide 40% SC",
+   "name_el": "Προπυζαμίδη 40% SC",
+   "name_en": "Propyzamide 40% SC",
+   "name_tr": "Propizamid %40 SC",
+   "active": "propyzamide",
+   "type": "herbicide",
+   "group_code": "3",
+   "group_system": "HRAC",
+   "form": "SC",
+   "qty": 1.0,
+   "unit": "L",
+   "expiry": "2027-10-31",
+   "registered": [
+    { "crop_id": "endive", "phi_days": 42, "rei_h": 24, "dose_per_str": 0.19 },
+    { "crop_id": "chicory", "phi_days": 42, "rei_h": 24, "dose_per_str": 0.19 }
+   ]
+  },
+  {
+   "id": "PR14",
+   "label": "Cycloxydim 10% EC",
+   "name_el": "Κυκλοξυντίμ 10% EC",
+   "name_en": "Cycloxydim 10% EC",
+   "name_tr": "Sikloksidim %10 EC",
+   "active": "cycloxydim",
+   "type": "herbicide",
+   "group_code": "1",
+   "group_system": "HRAC",
+   "form": "EC",
+   "qty": 1.2,
+   "unit": "L",
+   "expiry": "2028-02-29",
+   "registered": [
+    { "crop_id": "leek", "phi_days": 28, "rei_h": 24, "dose_per_str": 0.25 },
+    { "crop_id": "onion", "phi_days": 28, "rei_h": 24, "dose_per_str": 0.25 }
+   ]
+  },
+  {
+   "id": "PR15",
+   "label": "Calcium nitrate 15.5% N (14.4% NO3-N) + 26.5% CaO",
+   "name_el": "Νιτρική ασβεστούχος 15,5-0-0 + 26,5 CaO",
+   "name_en": "Calcium nitrate 15.5-0-0 + 26.5 CaO",
+   "name_tr": "Kalsiyum nitrat 15,5-0-0 + %26,5 CaO",
+   "active": "nitrate N 14.4%, ammonium N 1.1%, CaO 26.5%",
+   "type": "fertiliser",
+   "group_code": "-",
+   "group_system": "-",
+   "form": "soluble granules",
+   "qty": 175,
+   "unit": "kg",
+   "expiry": null,
+   "registered": [
+    { "crop_id": "leek", "phi_days": null, "rei_h": 0, "dose_per_str": 5 },
+    { "crop_id": "rocket", "phi_days": null, "rei_h": 0, "dose_per_str": 4 },
+    { "crop_id": "spinach", "phi_days": null, "rei_h": 0, "dose_per_str": 4 },
+    { "crop_id": "endive", "phi_days": null, "rei_h": 0, "dose_per_str": 4 },
+    { "crop_id": "parsley", "phi_days": null, "rei_h": 0, "dose_per_str": 4 },
+    { "crop_id": "chard", "phi_days": null, "rei_h": 0, "dose_per_str": 4 }
+   ]
+  },
+  {
+   "id": "PR16",
+   "label": "Urea 46% N",
+   "name_el": "Ουρία 46-0-0",
+   "name_en": "Urea 46-0-0",
+   "name_tr": "Üre 46-0-0",
+   "active": "urea N 46%",
+   "type": "fertiliser",
+   "group_code": "-",
+   "group_system": "-",
+   "form": "prilled",
+   "qty": 200,
+   "unit": "kg",
+   "expiry": null,
+   "registered": [
+    { "crop_id": "leek", "phi_days": null, "rei_h": 0, "dose_per_str": 3 }
+   ]
+  },
+  {
+   "id": "PR17",
+   "label": "Potassium nitrate 13-0-46",
+   "name_el": "Νιτρικό κάλιο 13-0-46",
+   "name_en": "Potassium nitrate 13-0-46",
+   "name_tr": "Potasyum nitrat 13-0-46",
+   "active": "nitrate N 13%, K2O 46%",
+   "type": "fertiliser",
+   "group_code": "-",
+   "group_system": "-",
+   "form": "soluble crystals",
+   "qty": 25,
+   "unit": "kg",
+   "expiry": null,
+   "registered": [
+    { "crop_id": "leek", "phi_days": null, "rei_h": 0, "dose_per_str": 3 },
+    { "crop_id": "parsley", "phi_days": null, "rei_h": 0, "dose_per_str": 3 },
+    { "crop_id": "chard", "phi_days": null, "rei_h": 0, "dose_per_str": 3 }
+   ]
+  }
+ ],
+ "jobs": [
+  {
+   "id": "J01",
+   "date": "2026-09-03",
+   "parcel_id": "P5",
+   "planting_id": "PL15",
+   "kind": "spray",
+   "product_id": "PR13",
+   "dose": 0.19,
+   "by": "Bora",
+   "weather_at_time": { "t": 19, "wind": 5, "gust": 9, "rh": 55 },
+   "notes": "Pre-emergence after transplanting endive; 50 L water/στρ."
+  },
+  {
+   "id": "J02",
+   "date": "2026-10-12",
+   "parcel_id": "P3",
+   "planting_id": "PL08",
+   "kind": "sow",
+   "by": "Ahmet",
+   "weather_at_time": { "t": 22, "wind": 8, "gust": 15, "rh": 60 },
+   "notes": "Spinach, mildew-tolerant variety (declared Pe races per seed catalogue); 1.5 στρ."
+  },
+  {
+   "id": "J03",
+   "date": "2026-10-20",
+   "parcel_id": "P1",
+   "planting_id": "PL02",
+   "kind": "spray",
+   "product_id": "PR14",
+   "dose": 0.25,
+   "by": "Bora",
+   "weather_at_time": { "t": 21, "wind": 6, "gust": 12, "rh": 58 },
+   "notes": "Grass weeds in leek; 40 L water/στρ. Target: annual grasses."
+  },
+  {
+   "id": "J04",
+   "date": "2026-10-26",
+   "parcel_id": "P2",
+   "planting_id": "PL04",
+   "kind": "sow",
+   "by": "Ahmet",
+   "weather_at_time": { "t": 20, "wind": 7, "gust": 14, "rh": 62 },
+   "notes": "Rocket, 1 στρ."
+  },
+  {
+   "id": "J05",
+   "date": "2026-10-28",
+   "parcel_id": "P3",
+   "planting_id": "PL08",
+   "kind": "fertilise",
+   "product_id": "PR15",
+   "dose": 4,
+   "by": "Ahmet",
+   "weather_at_time": { "t": 19, "wind": 5, "gust": 10, "rh": 64 },
+   "notes": "Fertigation via drip, nitrate form; 36 days before harvest window."
+  },
+  {
+   "id": "J06",
+   "date": "2026-10-28",
+   "parcel_id": "P2",
+   "planting_id": "PL06",
+   "kind": "sow",
+   "by": "Ahmet",
+   "weather_at_time": { "t": 19, "wind": 5, "gust": 10, "rh": 64 },
+   "notes": "Dill, 0.5 στρ."
+  },
+  {
+   "id": "J07",
+   "date": "2026-10-30",
+   "parcel_id": "P3",
+   "planting_id": "PL08",
+   "kind": "spray",
+   "product_id": "PR04",
+   "dose": 0.2,
+   "by": "Bora",
+   "weather_at_time": { "t": 18, "wind": 6, "gust": 11, "rh": 66 },
+   "notes": "Preventive, downy mildew (Peronospora effusa); 50 L water/στρ. Applied 11:30, leaves dry."
+  },
+  {
+   "id": "J08",
+   "date": "2026-10-30",
+   "parcel_id": "P2",
+   "planting_id": "PL05",
+   "kind": "sow",
+   "by": "Ahmet",
+   "weather_at_time": { "t": 18, "wind": 6, "gust": 11, "rh": 66 },
+   "notes": "Coriander, 0.5 στρ."
+  },
+  {
+   "id": "J09",
+   "date": "2026-11-02",
+   "parcel_id": "P1",
+   "planting_id": "PL01",
+   "kind": "spray",
+   "product_id": "PR01",
+   "dose": 0.2,
+   "by": "Bora",
+   "weather_at_time": { "t": 18, "wind": 7, "gust": 13, "rh": 62 },
+   "notes": "Preventive copper before mid-Nov rains; 50 L water/στρ; 10:45."
+  },
+  {
+   "id": "J10",
+   "date": "2026-11-02",
+   "parcel_id": "P2",
+   "planting_id": "PL04",
+   "kind": "fertilise",
+   "product_id": "PR15",
+   "dose": 4,
+   "by": "Ahmet",
+   "weather_at_time": { "t": 18, "wind": 7, "gust": 13, "rh": 62 },
+   "notes": "Fertigation, nitrate form; 24 days before harvest window (rule: last N >= 21 days)."
+  },
+  {
+   "id": "J11",
+   "date": "2026-11-04",
+   "parcel_id": "P2",
+   "planting_id": "PL04",
+   "kind": "spray",
+   "product_id": "PR07",
+   "dose": 0.05,
+   "by": "Bora",
+   "weather_at_time": { "t": 17, "wind": 5, "gust": 9, "rh": 64 },
+   "notes": "Flea beetle (Phyllotreta) shot-holes on cotyledons; 40 L water/στρ; 16:30."
+  },
+  {
+   "id": "J12",
+   "date": "2026-11-06",
+   "parcel_id": "P2",
+   "planting_id": "PL16",
+   "kind": "sow",
+   "by": "Ahmet",
+   "weather_at_time": { "t": 18, "wind": 6, "gust": 12, "rh": 60 },
+   "notes": "Rocket, 1 στρ (follow-on lot for mid-Dec - early Jan)."
+  },
+  {
+   "id": "J13",
+   "date": "2026-11-06",
+   "parcel_id": "P2",
+   "planting_id": "PL16",
+   "kind": "fertilise",
+   "product_id": "PR15",
+   "dose": 4,
+   "by": "Ahmet",
+   "weather_at_time": { "t": 18, "wind": 6, "gust": 12, "rh": 60 },
+   "notes": "Base N at sowing via drip, nitrate form; 36 days before harvest window."
+  },
+  {
+   "id": "J14",
+   "date": "2026-11-06",
+   "parcel_id": "P4",
+   "planting_id": "PL13",
+   "kind": "spray",
+   "product_id": "PR08",
+   "dose": 0.025,
+   "by": "Bora",
+   "weather_at_time": { "t": 18, "wind": 6, "gust": 12, "rh": 60 },
+   "notes": "Caterpillars (Spodoptera littoralis) on rocket; 40 L water/στρ; 17:00."
+  },
+  {
+   "id": "J15",
+   "date": "2026-11-09",
+   "parcel_id": "P4",
+   "planting_id": "PL12",
+   "kind": "spray",
+   "product_id": "PR05",
+   "dose": 0.05,
+   "by": "Bora",
+   "weather_at_time": { "t": 16, "wind": 8, "gust": 17, "rh": 61 },
+   "notes": "Septoria leaf spot (Septoria petroselini) on parsley; 50 L water/στρ; 10:30, leaves dry."
+  },
+  {
+   "id": "J16",
+   "date": "2026-11-10",
+   "parcel_id": "P1",
+   "planting_id": "PL01",
+   "kind": "harvest",
+   "by": "Crew (4)",
+   "weather_at_time": { "t": 17, "wind": 4, "gust": 9, "rh": 63 },
+   "notes": "First cut: 38 crates."
+  },
+  {
+   "id": "J17",
+   "date": "2026-11-10",
+   "parcel_id": "P4",
+   "planting_id": "PL14",
+   "kind": "harvest",
+   "by": "Crew (2)",
+   "weather_at_time": { "t": 16, "wind": 6, "gust": 13, "rh": 58 },
+   "notes": "Dill: 9 crates."
+  },
+  {
+   "id": "J18",
+   "date": "2026-11-14",
+   "parcel_id": "P4",
+   "planting_id": "PL13",
+   "kind": "harvest",
+   "by": "Crew (3)",
+   "weather_at_time": { "t": 14, "wind": 7, "gust": 18, "rh": 74 },
+   "notes": "Rocket: 30 crates. Soil still wet."
+  },
+  {
+   "id": "J19",
+   "date": "2026-11-14",
+   "parcel_id": "P1",
+   "planting_id": "PL01",
+   "kind": "harvest",
+   "by": "Crew (4)",
+   "weather_at_time": { "t": 13, "wind": 8, "gust": 17, "rh": 82 },
+   "notes": "Spinach: 36 crates."
+  },
+  {
+   "id": "J20",
+   "date": "2026-11-15",
+   "parcel_id": "P2",
+   "planting_id": "PL07",
+   "kind": "harvest",
+   "by": "Crew (2)",
+   "weather_at_time": { "t": 15, "wind": 3, "gust": 8, "rh": 70 },
+   "notes": "Parsley: 20 crates."
+  },
+  {
+   "id": "J21",
+   "date": "2026-11-15",
+   "parcel_id": "P3",
+   "planting_id": "PL09",
+   "kind": "harvest",
+   "by": "Crew (2)",
+   "weather_at_time": { "t": 15, "wind": 6, "gust": 12, "rh": 80 },
+   "notes": "Chard: 16 crates."
+  },
+  {
+   "id": "J22",
+   "date": "2026-11-15",
+   "parcel_id": "P3",
+   "planting_id": "PL11",
+   "kind": "harvest",
+   "by": "Crew (2)",
+   "weather_at_time": { "t": 15, "wind": 6, "gust": 12, "rh": 80 },
+   "notes": "Coriander: 8 crates."
+  }
+ ],
+ "orders_weekly": [
+  { "crop_id": "spinach", "crates_per_week": 90, "peak_note": "Christmas week ~x1.3; Clean Monday (Καθαρά Δευτέρα) Mon 15 Mar 2027 ~x2; Lent high" },
+  { "crop_id": "rocket", "crates_per_week": 70, "peak_note": "Steady; restaurants slower in January" },
+  { "crop_id": "parsley", "crates_per_week": 45, "peak_note": "Christmas/New Year ~x1.2" },
+  { "crop_id": "dill", "crates_per_week": 20, "peak_note": "Clean Monday 15 Mar 2027 ~x3" },
+  { "crop_id": "coriander", "crates_per_week": 18, "peak_note": "Steady" },
+  { "crop_id": "chicory", "crates_per_week": 30, "peak_note": "Lent (from 15 Mar 2027) higher" },
+  { "crop_id": "endive", "crates_per_week": 40, "peak_note": "Steady" },
+  { "crop_id": "chard", "crates_per_week": 20, "peak_note": "Lent pies (χορτόπιτα) higher" },
+  { "crop_id": "onion", "crates_per_week": 30, "peak_note": "Clean Monday 15 Mar 2027 ~x3" }
+ ],
+ "alerts": [
+  {
+   "id": "A01",
+   "severity": "high",
+   "kind": "frost",
+   "title": "Frost at leaf level on the low plain, night Wed 18 → Thu 19 Nov",
+   "body": "Clear, calm nights Tue-Thu. Cold air drains off Geraneia and pools on the plain: 2 m air min 0.5 °C at Μεσαίο Χωράφι, 0.0 °C at Κάτω Κάμπος, 0.2 °C at Νότιος Κάμπος. Leaf surfaces can be 2-3 °C colder than the air. Young coriander and dill (Μεσαίο Χωράφι) are the most exposed. Geraneia Slope is warmer (4.0 °C, above the cold layer) and Pachi (5.0 °C, sea).",
+   "parcel_id": "P2",
+   "action": "Wed 18 Nov before sunset: cover coriander + dill (Μεσαίο Χωράφι) with 17-19 g/m² fleece (gains ~1-2 °C). Remove Thu 19 after ~10:00 when thawed, before the windy front on Fri. Thu 19: no harvest of spinach (Κάτω Κάμπος) or chicory before leaves thaw (~10:00).",
+   "why": {
+    "rule": "Warn when forecast 2 m min <= 2 °C AND night wind <= 5 km/h AND clear sky on parcels below 50 m. Leaf surface can be 2-3 °C below air on such nights. Damage temperature for each crop is NOT set by the app – your agronomist can set it.",
+    "inputs": {
+     "tmin_2m_Wed→Thu": { "P1 Κάτω Κάμπος 24 m": 0.0, "P2 Μεσαίο 34 m": 0.5, "P5 Νότιος 28 m": 0.2, "P4 Γεράνεια 180 m": 4.0, "P3 Πάχη 8 m": 5.0 },
+     "night_wind_kmh": 5,
+     "sky": "clear (high pressure)",
+     "est_leaf_surface_min_C": "-2 to -2.5 (estimate)",
+     "exposed_plantings": [ "PL05 coriander, 41% grown", "PL06 dill, 46% grown" ]
+    },
+    "source": "Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%; cold-pooling pattern = rule (no frost sensor on parcels)",
+    "confidence": "Medium (that it gets near 0 °C on the low plain); Low (whether leaves are damaged)"
+   }
+  },
+  {
+   "id": "A02",
+   "severity": "high",
+   "kind": "disease",
+   "title": "Spinach downy mildew risk HIGH – Pachi Coast",
+   "body": "Leaves estimated wet 13-15 h every night since the rain of Thu 12-Fri 13 Nov, nights 6.0-9.0 °C, and the front on Fri 20-Sun 22 Nov brings 27.5 mm. Pachi had downy mildew in Dec 2025. This spinach is 67% grown, harvest from Thu 3 Dec – there is time for one protective spray that clears its PHI before harvest.",
+   "planting_id": "PL08",
+   "action": "See recommendation R01: one protective spray Wed 18 Nov (mandipropamid, FRAC 40). Before spraying, check lower-leaf undersides for grey-violet fuzzy growth (sporulation); yellow patches alone are not proof.",
+   "why": {
+    "rule": "High when leaf wetness >= 10 h on >= 3 of the last 5 nights with night temp 5-15 °C, AND rain forecast within 5 days, AND parcel has mildew history.",
+    "inputs": {
+     "leafwet_h_nights_14-18_Nov": [ 15, 14, 13, 13, 14 ],
+     "night_tmin_C_14-18_Nov": [ 8.0, 9.0, 7.5, 6.5, 6.0 ],
+     "rain_forecast_20-22_Nov_mm": 27.5,
+     "history": "downy mildew Dec 2025 (user entry)",
+     "variety_resistance": "declared for some Pe races only (seed catalogue) – new races possible"
+    },
+    "source": "Observed: nearest public station (Megara, ~3-6 km), corrected to parcel elevation; leaf-wet hours ESTIMATED from hours with RH>=90% (no leaf sensor); Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%; history = user entry",
+    "confidence": "Medium (leaf wetness is estimated, no sensor)"
+   }
+  },
+  {
+   "id": "A03",
+   "severity": "medium",
+   "kind": "disease",
+   "title": "Spinach Κάτω Κάμπος: mildew conditions, but it is in harvest – do NOT spray",
+   "body": "Same wet nights after the rain (leaf-wet 11-13 h per night). This lot is being cut now (safe since Mon 9 Nov). Any fungicide now would lock harvest for 7-14 days and break supply.",
+   "planting_id": "PL01",
+   "action": "Keep cutting (~15 crates/day) Tue 17-Fri 20 Nov and Mon 23-Sat 28 Nov; not Thu before ~10:00 thaw, not in the rain Fri pm-Sun. Scout lower-leaf undersides each cut; grade out leaves with grey-violet growth.",
+   "why": {
+    "rule": "If a planting is harvesting AND a spray's PHI would block cuts before the end of its harvest window, the app does not recommend a spray; it recommends faster harvest + scouting.",
+    "inputs": {
+     "status": "harvesting",
+     "harvest_window": "Tue 10 Nov - Sat 28 Nov",
+     "last_spray": "copper hydroxide (FRAC M01) Mon 2 Nov",
+     "safe_to_harvest_since": "Mon 9 Nov",
+     "leafwet_h_14-16_Nov": [ 13, 12, 11 ],
+     "front_rain_mm": 27.5
+    },
+    "source": "Observed: nearest public station (Megara, ~3-6 km), corrected to parcel elevation; leaf-wet hours ESTIMATED from hours with RH>=90% (no leaf sensor); Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%; spray log (user entry)",
+    "confidence": "Medium"
+   }
+  },
+  {
+   "id": "A04",
+   "severity": "medium",
+   "kind": "phi",
+   "title": "Parsley Geraneia: inside PHI until Mon 23 Nov",
+   "body": "Difenoconazole (FRAC 3) sprayed Mon 9 Nov for Septoria leaf spot; PHI 14 days → safe to harvest from Mon 23 Nov. Take parsley only from Μεσαίο Χωράφι this week (~18 crates/week vs orders 45).",
+   "planting_id": "PL12",
+   "action": "Do not cut Geraneia parsley before Mon 23 Nov. Tell clients parsley is short this week (~27 crates).",
+   "why": {
+    "rule": "Safe-to-harvest date = last spray date + PHI for that crop on the label.",
+    "inputs": { "last_spray": "Mon 9 Nov, difenoconazole 25% EC, 0.05 L/στρ", "phi_days_parsley": 14, "safe_from": "Mon 23 Nov", "other_parsley": "PL07 Μεσαίο, no spray, ~18 crates/week" },
+    "source": "Spray log (user entry); PHI from product record (illustrative – check label)",
+    "confidence": "High (if the spray log is correct)"
+   }
+  },
+  {
+   "id": "A05",
+   "severity": "medium",
+   "kind": "supply",
+   "title": "Spinach: no supply after Tue 22 Dec (orders 90 crates/week)",
+   "body": "Κάτω Κάμπος gives ~83 crates/week until Sat 28 Nov (already 7-19 short/week). Week Mon 30 Nov-Sun 6 Dec only ~45 (gap between lots). Pachi gives ~79/week Thu 3-Tue 22 Dec. From Wed 23 Dec nothing is planted - and Christmas week orders are ~117.",
+   "planting_id": "PL08",
+   "action": "Sow spinach now on Νότιος Κάμπος (R04) – earliest it can help is ~mid-Jan. For 23 Dec - mid-Jan: buy in or agree lower volumes with clients.",
+   "why": {
+    "rule": "Gap = weekly orders - weekly supply (est. crates spread evenly over each planting's harvest window).",
+    "inputs": {
+     "orders_per_week": 90,
+     "PL01_per_week": 83,
+     "PL08_per_week": 79,
+     "est_supply_weeks_from_16_Nov": [ 83, 71, 45, 79, 79, 22 ],
+     "weeks_without_spinach": "Wed 23 Dec → mid-Jan (until a new sowing is ready)",
+     "yield_basis": "1.2 t/στρ, 8 kg crate, ~10% waste included"
+    },
+    "source": "Orders from Κλούβες app (weekly totals, sample); yield = assumption",
+    "confidence": "Medium"
+   }
+  },
+  {
+   "id": "A06",
+   "severity": "medium",
+   "kind": "stock",
+   "title": "Low stock: Mandipropamid 25% SC – 0.10 L left",
+   "body": "Enough for exactly one spray on Pachi spinach (1.5 στρ × 0.06 L = 0.09 L). Nothing left for a second FRAC 40 spray or for other lots.",
+   "parcel_id": "P3",
+   "action": "Reorder (a prescription from your agronomist may be required - verify). Keep alternatives in rotation: propamocarb (FRAC 28, last used 30 Oct on this lot).",
+   "why": {
+    "rule": "Warn when stock < 2 × the next planned application.",
+    "inputs": { "qty_L": 0.1, "next_use_L": 0.09, "threshold_L": 0.18 },
+    "source": "Stock (user entry)",
+    "confidence": "High"
+   }
+  },
+  {
+   "id": "A07",
+   "severity": "low",
+   "kind": "stock",
+   "title": "Expired: Acetamiprid 20% SP (expired 31 Oct 2026)",
+   "body": "0.3 kg in store. Do not use expired product.",
+   "parcel_id": null,
+   "action": "Set aside, label 'EXPIRED', return via authorised collection scheme / supplier.",
+   "why": {
+    "rule": "Expiry date < today.",
+    "inputs": { "expiry": "2026-10-31", "today": "2026-11-16" },
+    "source": "Stock (user entry)",
+    "confidence": "High"
+   }
+  },
+  {
+   "id": "A08",
+   "severity": "low",
+   "kind": "stock",
+   "title": "Spinosad 48% SC expires Tue 15 Dec 2026",
+   "body": "0.12 L left (≈ 4.8 στρ of rocket at 0.025 L/στρ). Use first if caterpillars return; do not order more now.",
+   "parcel_id": null,
+   "action": "Use before 15 Dec if needed; otherwise return.",
+   "why": {
+    "rule": "Warn when expiry is within 30 days.",
+    "inputs": { "expiry": "2026-12-15", "days_left": 29 },
+    "source": "Stock (user entry)",
+    "confidence": "High"
+   }
+  },
+  {
+   "id": "A09",
+   "severity": "medium",
+   "kind": "weather",
+   "title": "Front Fri 20 - Sun 22 Nov: no spraying, strong gusts",
+   "body": "Rain 27.5 mm on the plain; gusts up to 55 km/h, 70 km/h on Geraneia (north wind Sun). Last spray day before it: Wed 18 Nov.",
+   "parcel_id": "P1",
+   "action": "Finish sprays Wed 18. Remove/secure fleece Thu. Irrigation off Fri-Sun. Harvest planned cuts by Fri morning.",
+   "why": {
+    "rule": "No spray when gust > 20 km/h, rain within 24 h of application, or leaves wet.",
+    "inputs": {
+     "rain_mm_20/21/22": [ 6.5, 17.8, 3.2 ],
+     "gust_kmh_20/21/22_plain": [ 48, 55, 58 ],
+     "gust_kmh_22_Geraneia": 70
+    },
+    "source": "Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%",
+    "confidence": "Medium (timing ±12 h)"
+   }
+  },
+  {
+   "id": "A10",
+   "severity": "low",
+   "kind": "water",
+   "title": "Pachi well water EC 2.6 dS/m",
+   "body": "Salty for spinach (sensitive); chard tolerates it. Rain of 20-22 Nov will leach salts – no irrigation needed this week.",
+   "parcel_id": "P3",
+   "action": "No irrigation until after the front; re-test well EC in December.",
+   "why": {
+    "rule": "Warn when irrigation water EC > 2.0 dS/m on a parcel with salt-sensitive crops.",
+    "inputs": { "water_EC": 2.6, "soil_EC": 1.8, "sensitive": "spinach PL08" },
+    "source": "Water test (user entry, Aug 2026)",
+    "confidence": "Medium"
+   }
+  }
+ ],
+ "recommendations": [
+  {
+   "id": "R01",
+   "planting_id": "PL08",
+   "action": "Spray mandipropamid 25% SC (FRAC 40), 0.06 L/στρ in 50 L water/στρ, on the 1.5 στρ spinach only. Cut chard, coriander and spring onion on the same parcel BEFORE spraying; leave one unsprayed bed as buffer next to them (product not registered on those crops). New safe-to-harvest date: Wed 2 Dec; REI 24 h.",
+   "window": "Wed 18 Nov, 11:00-15:00",
+   "why": {
+    "rule": "Spray only if: leaves dry (after dew ~10:00), gust < 20 km/h, no rain for >= 24 h after (product needs ~1 h to dry), planting not harvesting, new PHI ends before harvest starts, FRAC group different from the last spray on this lot, product registered for crop and in stock and not expired.",
+    "inputs": { "gust_kmh_Wed": 14, "wind_kmh_Wed": 7, "leafwet_h_night_before": 14, "next_rain": "Fri 20 Nov evening (>48 h after)", "last_spray_on_lot": "propamocarb (FRAC 28) Fri 30 Oct", "this_spray_group": "FRAC 40", "phi_days": 14, "safe_from": "Wed 2 Dec", "harvest_from": "Thu 3 Dec", "stock_L": 0.1, "needed_L": 0.09, "Tue_17_rejected": "dew + calm inversion risk in the morning, leaves dry only late; Wed has better drying" },
+    "source": "Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%; spray log + stock (user entry); PHI/dose from product record (illustrative – check label)",
+    "confidence": "Medium"
+   }
+  },
+  {
+   "id": "R02",
+   "planting_id": "PL01",
+   "action": "Harvest, no spray. ~151 crates left: cut ~15/day Tue 17-Fri 20 Nov, pause for the front, resume Mon 23-Sat 28 Nov. Scout undersides of lower leaves each cut.",
+   "window": "Tue 17 - Sat 28 Nov (Thu only after ~10:00 thaw; none Fri pm-Sun)",
+   "why": {
+    "rule": "Harvesting planting + disease risk → harvest faster, no fungicide (PHI would block harvest).",
+    "inputs": { "est_crates": 225, "logged_cuts": "38 (Tue 10) + 36 (Sat 14)", "remaining_est_crates": 151, "safe_since": "Mon 9 Nov", "orders_per_week": 90, "frost_Thu_tmin": 0.0 },
+    "source": "Harvest log + orders (user entry); Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%",
+    "confidence": "Medium"
+   }
+  },
+  {
+   "id": "R03",
+   "planting_id": "PL02",
+   "action": "Fertigate leek with calcium nitrate (nitrate N) 5 kg/στρ via drip = ~0.8 kg N/στρ. Do NOT top-dress urea on the surface. Do NOT give N to spinach (PL01, PL08), rocket (PL04, PL13) or other lots < 21 days from harvest.",
+   "window": "Mon 23 - Wed 25 Nov (after the front, when drip restarts)",
+   "why": {
+    "rule": "N form must suit soil: on pH >= 7.5 with free lime, surface urea/ammonium loses NH3 unless incorporated by >= 10 mm rain or irrigation → use nitrate via fertigation. Not before heavy rain (leaching). Leafy greens: last N >= 21 days before harvest – winter low light raises leaf nitrate; EU sets maximum nitrate levels for spinach and rocket (Reg. (EU) 2023/915).",
+    "inputs": {
+     "soil_pH": 7.9,
+     "CaCO3_pct": 21,
+     "soil_NO3_N_ppm": 18,
+     "soil_test_date": "2026-09-02",
+     "leek_harvest_from": "Sun 10 Jan 2027 (48 days after 23 Nov)",
+     "rain_forecast_20-22_mm": 27.5,
+     "excluded_lots_days_to_harvest_from_23_Nov": { "PL08 spinach": 10, "PL04 rocket": 3, "PL16 rocket": 19, "PL06 dill": 15, "PL05 coriander": 17, "PL01 spinach, PL13 rocket, PL07/PL12 parsley, PL09 chard, PL10 onion, PL11 coriander, PL14 dill, PL15 endive, PL03 chicory": "harvesting / ready" },
+     "stock_kg": 175,
+     "needed_kg": 10
+    },
+    "source": "Soil test (lab, user entry); Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%; rule = agronomic guideline, dose illustrative",
+    "confidence": "Medium"
+   }
+  },
+  {
+   "id": "R04",
+   "planting_id": null,
+   "parcel_id": "P5",
+   "action": "Sow spinach on 3 στρ of Νότιος Κάμπος (free prepared beds). Use a variety with the widest declared downy-mildew (Pe) race resistance. Optional pre-emergence lenacil (HRAC 5) 0.05 kg/στρ within 2 days of sowing – check label. NOT on Pachi Coast (mildew history, spinach already there).",
+   "window": "Tue 17 - Thu 19 Nov (before the front; rain will settle the seed)",
+   "why": {
+    "rule": "Sow to close an order gap only on a parcel with: no same-family crop (spinach/chard/beet, Amaranthaceae) in the last 3 years, no disease flag for that crop, free area, workable soil.",
+    "inputs": {
+     "order_gap": "90 crates/week from Wed 23 Dec",
+     "expected_harvest": "~mid-Jan to mid-Feb 2027 (60-75 days in winter, short days)",
+     "expected_crates": "~450 (3 στρ × 1.2 t/στρ ÷ 8 kg, ~10% waste)",
+     "parcel_history": "spring onion (Amaryllidaceae) harvested Oct 2026; no Amaranthaceae since 2023",
+     "rejected_parcels": { "P3 Pachi": "mildew HIGH alert + spinach on spinach", "P1 Κάτω Κάμπος": "spinach already this season (PL01)", "P2 Μεσαίο": "beetroot (same family) spring 2026", "P4 Γεράνεια": "only ~2 στρ free on narrow terraces" },
+     "free_area_str": 3.0,
+     "days_since_rain": 3,
+     "soil": "sandy loam, low crusting",
+     "lenacil_stock_kg": 0.8,
+     "lenacil_needed_kg": 0.15
+    },
+    "source": "Orders (Κλούβες, sample); field history (user entry); Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%",
+    "confidence": "Medium (harvest date ±10 days)"
+   }
+  },
+  {
+   "id": "R05",
+   "planting_id": "PL05",
+   "action": "Cover coriander (PL05) and dill (PL06) with 17-19 g/m² fleece Wed evening; uncover Thu after ~10:00. No harvest is due on these lots.",
+   "window": "Wed 18 Nov before sunset → Thu 19 Nov ~10:00",
+   "why": {
+    "rule": "See frost alert A01: low-plain parcel, clear calm night, 2 m min <= 2 °C; young tender herbs most exposed.",
+    "inputs": {
+     "tmin_P2_Thu": 0.5,
+     "wind_kmh": 5,
+     "stage_pct": { "coriander": 41, "dill": 46 }
+    },
+    "source": "Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%",
+    "confidence": "Medium / Low (damage)"
+   }
+  },
+  {
+   "id": "R06",
+   "planting_id": "PL03",
+   "action": "Start chicory harvest Wed 18 Nov after dew dries (~10:00); skip Thu morning (frozen leaves); cut again Fri morning before rain.",
+   "window": "Wed 18 Nov 10:00 → Fri 20 Nov 12:00",
+   "why": {
+    "rule": "Harvest when mature and safe; avoid cutting frozen or wet-and-frozen leaves.",
+    "inputs": { "stage_pct": 97, "harvest_from": "Wed 18 Nov", "last_spray": "none", "frost_Thu_tmin": 0.0 },
+    "source": "Planting record (user entry); Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%",
+    "confidence": "High"
+   }
+  },
+  {
+   "id": "R07",
+   "planting_id": "PL12",
+   "action": "Hold harvest until Mon 23 Nov. No further fungicide now; if Septoria spreads after the front, next spray must not be FRAC 3 (e.g. copper hydroxide, FRAC M01, PHI 7) – check label.",
+   "window": "Until Mon 23 Nov",
+   "why": {
+    "rule": "PHI + FRAC rotation: do not repeat the same FRAC group back-to-back.",
+    "inputs": { "last_spray": "difenoconazole, FRAC 3, Mon 9 Nov", "safe_from": "Mon 23 Nov" },
+    "source": "Spray log (user entry); PHI illustrative",
+    "confidence": "High"
+   }
+  }
+ ]
+}

@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#17201a">
+<meta name="format-detection" content="telephone=no">
+<title>FieldWise Megara</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#f1f3ec; --card:#ffffff; --ink:#111a14; --ink2:#34413a; --line:#c9d1c3; --line2:#e2e7dc;
+  --hd:#17201a; --hd2:#26332a; --hdtext:#f3f5ef; --hdsub:#cfdac9;
+  --acc:#1a5c36; --acc-ink:#fff; --acc-soft:#e1efe3;
+  --risk:#9a3d00; --risk-bg:#fdeee2; --high:#a3220f; --high-bg:#fbe7e3;
+  --ok:#174a8a; --ok-bg:#e4edf9; --warn-bg:#fff4cf; --warn:#5a4300;
+  --fc:#eef3fb; --fcline:#4c6f9e;
+  --r:14px; --tab-h:64px;
+  --sat:env(safe-area-inset-top,0px); --sab:env(safe-area-inset-bottom,0px);
+  --sal:env(safe-area-inset-left,0px); --sar:env(safe-area-inset-right,0px);
+  --font:Figtree,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",Arial,sans-serif;
+  --disp:"Bricolage Grotesque",Figtree,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+body.hc{ --bg:#fff; --card:#fff; --ink:#000; --ink2:#111; --line:#000; --line2:#555; --acc:#003d1c; --fc:#fff; --hdsub:#fff }
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:#d9ded3;color:var(--ink);font:400 16px/1.45 var(--font);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:rgba(26,92,54,.15)}
+button{font:inherit;color:inherit;-webkit-appearance:none;appearance:none;background:none;border:0;padding:0;margin:0;cursor:pointer;touch-action:manipulation}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #2f7de1;outline-offset:2px}
+.app{position:relative;max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--bg);box-shadow:0 0 0 1px rgba(0,0,0,.06)}
+/* header */
+.hdr{position:-webkit-sticky;position:sticky;top:0;z-index:20;background:var(--hd);color:var(--hdtext);padding:calc(var(--sat) + 8px) calc(12px + var(--sar)) 8px calc(12px + var(--sal))}
+.hdr-row{display:flex;align-items:center;gap:8px;min-height:52px}
+.hdr h1{margin:0;font:700 22px/1.15 var(--disp);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.hdr .sub{font-size:14px;color:var(--hdsub);font-weight:500}
+.back{display:flex;align-items:center;gap:4px;min-width:48px;min-height:48px;padding:0 12px 0 6px;border-radius:12px;background:var(--hd2);color:var(--hdtext);font-weight:600;font-size:16px;flex:none}
+.back svg{width:22px;height:22px}
+.samp{display:flex;gap:6px;align-items:center;margin:6px 0 0;font-size:14px;line-height:1.3;color:#1d1a08;background:#f2d46b;border-radius:8px;padding:4px 8px}
+.samp b{font-weight:700;letter-spacing:.02em}
+main{padding:12px calc(16px + var(--sar)) calc(var(--tab-h) + var(--sab) + 28px) calc(16px + var(--sal))}
+/* tabbar */
+.tabs{position:fixed;z-index:30;bottom:0;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);width:100%;max-width:480px;background:var(--card);border-top:1px solid var(--line);display:flex;padding:0 var(--sar) var(--sab) var(--sal)}
+.tab{flex:1;min-width:0;height:var(--tab-h);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;font-weight:600;color:var(--ink2);position:relative}
+.tab svg{width:26px;height:26px}
+.tab[aria-current="page"]{color:var(--acc)}
+.tab[aria-current="page"]::before{content:"";position:absolute;top:0;left:22%;right:22%;height:4px;border-radius:0 0 4px 4px;background:var(--acc)}
+.tab span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
+/* generic */
+h2{font:700 20px/1.2 var(--disp);margin:22px 0 10px}
+h2:first-child{margin-top:6px}
+h3{font-size:17px;margin:0 0 6px;line-height:1.3}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:0 0 12px}
+.muted{color:var(--ink2);font-size:14px}
+.small{font-size:14px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sp{flex:1}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.kv{display:grid;grid-template-columns:minmax(0,44%) minmax(0,1fr);gap:4px 10px;font-size:15px;margin:0}
+.kv dt{color:var(--ink2);font-size:14px;padding-top:1px}
+.kv dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:10px 16px;border-radius:12px;font-weight:700;font-size:16px;border:2px solid var(--ink);background:var(--card);text-align:center;line-height:1.2}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}
+.btn.blk{width:100%}
+.btns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.lnk{color:var(--acc);font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px;display:inline-block;min-height:44px;padding:10px 0;margin:-10px 0;text-align:left;vertical-align:baseline}
+.links{margin-top:8px;font-size:15px;line-height:1.9}
+.sub-l{color:var(--ink2);font-size:15px;margin-top:2px}
+details.more{margin-top:6px}
+details.more>summary{list-style:none;display:inline-flex;align-items:center;gap:4px;min-height:44px;font-weight:700;color:var(--ink2);cursor:pointer}
+details.more>summary::-webkit-details-marker{display:none}
+details.more[open]>summary .chev{-webkit-transform:rotate(90deg);transform:rotate(90deg)}
+.lw{color:var(--ok);font-weight:800}
+.sowrec{margin-top:10px;padding-top:10px;border-top:1px solid var(--line2)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:14px;font-weight:700;line-height:1.2;border-radius:999px;padding:5px 10px;border:1.5px solid currentColor;max-width:100%;text-align:left}
+.pill.high{color:var(--high);background:var(--high-bg)}
+.pill.medium{color:var(--risk);background:var(--risk-bg)}
+.pill.low,.pill.ok{color:var(--ok);background:var(--ok-bg)}
+.pill.neutral{color:var(--ink2);background:var(--card)}
+.pill.good{color:var(--acc);background:var(--acc-soft)}
+.pill.warn{color:var(--warn);background:var(--warn-bg)}
+.listbtn{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin:0 0 10px;text-align:left}
+.listbtn .t{font-weight:700;font-size:17px;line-height:1.25}
+.listbtn .ic{width:40px;height:40px;border-radius:10px;background:var(--acc-soft);color:var(--acc);display:flex;align-items:center;justify-content:center;flex:none}
+.listbtn .ic svg{width:24px;height:24px}
+.chev{width:20px;height:20px;flex:none;color:var(--ink2)}
+.cn-el{font-weight:700}
+.gloss{color:var(--ink2);font-weight:500;font-size:max(14px,.88em)}
+.bar{height:12px;border-radius:6px;background:var(--line2);overflow:hidden;border:1px solid var(--line)}
+.bar>i{display:block;height:100%;background:var(--acc)}
+/* weather now */
+.now{background:var(--hd);color:var(--hdtext);border-radius:var(--r);padding:12px;margin-bottom:12px}
+.now .grid2>div{background:var(--hd2);border-radius:10px;padding:10px}
+.now .lab{font-size:14px;color:var(--hdsub)}
+.now b{font-size:22px;display:block;line-height:1.2}
+.now .stamp{font-size:14px;color:var(--hdsub);margin-top:8px}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:6px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kpi b{font:700 26px/1.1 var(--disp);display:block}
+.kpi .muted{display:block}
+.kpi.wide{grid-column:1/-1;display:flex;align-items:center;gap:10px}
+/* alerts */
+.alert{border-left-width:6px}
+.alert.high{border-left-color:var(--high)} .alert.medium{border-left-color:var(--risk)} .alert.low{border-left-color:var(--ok)}
+.alert .ttl{font-weight:700;font-size:17px;margin:8px 0 2px;line-height:1.3}
+.alert .act{margin-top:6px;font-weight:600}
+/* weather strip */
+.wx{display:flex;border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden;margin:6px 0 4px}
+.wx-lab{flex:none;width:70px;border-right:1px solid var(--line);background:var(--card);font-size:14px;color:var(--ink2);font-weight:600}
+.wx-sc{flex:1;min-width:0;overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.wx-in{display:flex;width:max-content}
+.wx-col{width:48px;flex:none;text-align:center;font-size:14px;border-right:1px solid var(--line2)}
+.wx-col.fc{background:var(--fc);background-image:repeating-linear-gradient(135deg,transparent 0 7px,rgba(76,111,158,.10) 7px 9px)}
+.wx-col.today{box-shadow:inset 0 0 0 3px var(--ink)}
+.wx-c{height:30px;display:flex;align-items:center;justify-content:center;line-height:1.1}
+.wx-c.band{height:26px;font-size:14px;font-weight:800;letter-spacing:.04em}
+.wx-c.d{height:44px;flex-direction:column;font-weight:600}
+.wx-c.d small{font-size:14px;font-weight:500}
+.wx-c.rain{height:52px;flex-direction:column;justify-content:flex-end;padding-bottom:3px}
+.rb{width:16px;background:#2f6db3;border-radius:3px 3px 0 0;min-height:0}
+.wx-col.fc .rb{background:repeating-linear-gradient(0deg,#2f6db3 0 3px,#a9c4e6 3px 5px);outline:1px solid #2f6db3}
+.wx-c.t{height:44px;flex-direction:column;font-weight:700}
+.wx-c.t span:last-child{font-weight:500;color:var(--ink2)}
+.gw{color:var(--risk);font-weight:800}
+.wx-lab .wx-c{justify-content:flex-start;padding-left:6px;text-align:left}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:14px;color:var(--ink2);margin-bottom:6px}
+.sw{display:inline-block;width:16px;height:14px;border:1.5px solid var(--ink2);border-radius:3px;vertical-align:-2px;margin-right:4px;background:var(--card)}
+.sw.fc{background:var(--fc);border-style:dashed;border-color:var(--fcline)}
+/* chips */
+.chips{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 0 10px;margin:0 -2px}
+.chip{flex:none;min-height:44px;padding:8px 14px;border-radius:999px;border:2px solid var(--line);background:var(--card);font-weight:700;font-size:15px}
+.chip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+/* table */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{padding:10px 6px;border-bottom:1px solid var(--line2);text-align:right;vertical-align:top}
+th{font-size:14px;color:var(--ink2);font-weight:700;background:var(--card)}
+td:first-child,th:first-child{text-align:left}
+tr.tot td{font-weight:800;border-top:2px solid var(--ink)}
+/* sheet */
+.ov{cursor:pointer;position:fixed;inset:0;top:0;left:0;right:0;bottom:0;z-index:50;background:rgba(10,15,12,.55);display:none;align-items:flex-end;justify-content:center}
+.ov.open{display:flex}
+.sheet{cursor:auto;overscroll-behavior:contain;width:100%;max-width:480px;max-height:88vh;max-height:88dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--card);border-radius:20px 20px 0 0;padding:8px 16px calc(20px + var(--sab));box-shadow:0 -8px 30px rgba(0,0,0,.3)}
+.sheet .grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:4px auto 6px}
+.sheet-h{display:flex;align-items:flex-start;gap:8px}
+.sheet-h h3{font:700 20px/1.25 var(--disp);flex:1;margin:10px 0 8px}
+.x{min-width:48px;min-height:48px;border-radius:12px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;flex:none}
+.why-sec{margin:12px 0}
+.why-sec .lab{font-size:14px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+textarea{width:100%;min-height:220px;font:16px/1.4 ui-monospace,Menlo,Consolas,monospace;border:1px solid var(--line);border-radius:10px;padding:10px;color:var(--ink);background:#fafbf8;resize:vertical;-webkit-appearance:none}
+.toast{position:fixed;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);bottom:calc(var(--tab-h) + var(--sab) + 14px);z-index:60;background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-weight:600;max-width:90%;display:none}
+.toast.on{display:block}
+details.pl{background:var(--card);border:1px solid var(--line);border-radius:var(--r);margin:0 0 12px}
+details.pl>summary{list-style:none;padding:14px;min-height:56px;display:flex;align-items:center;gap:10px;cursor:pointer}
+details.pl>summary::-webkit-details-marker{display:none}
+details.pl>summary .chev{-webkit-transition:transform .15s;transition:transform .15s}
+details.pl[open]>summary .chev{-webkit-transform:rotate(90deg);transform:rotate(90deg)}
+details.pl .body{padding:0 14px 14px}
+.sub-h{font-size:14px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 6px}
+.divider{border-top:1px solid var(--line2);margin:12px 0}
+.sd{display:grid;grid-template-columns:72px minmax(0,1fr) 46px;gap:6px;align-items:center;font-size:14px;margin:4px 0}
+.sd .bx{height:16px;border-radius:4px;background:var(--line2);position:relative;overflow:hidden}
+.sd .bx i{position:absolute;left:0;top:0;bottom:0;display:block}
+.sd .sup i{background:var(--acc)}
+.sd .dem i{background:repeating-linear-gradient(90deg,#5a4a1a 0 4px,#c8b26a 4px 7px)}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{min-height:52px;min-width:64px;padding:8px 14px;border-radius:12px;border:2px solid var(--line);font-weight:700;background:var(--card)}
+.seg button[aria-pressed="true"]{border-color:var(--acc);background:var(--acc);color:#fff}
+.map{width:100%;height:auto;display:block;border-radius:12px;border:1px solid var(--line);background:#e9eee2}
+.empty{padding:16px;text-align:center;color:var(--ink2);border:2px dashed var(--line);border-radius:var(--r)}
+.ico{width:18px;height:18px;vertical-align:-3px;flex:none}
+@media (min-width:520px){ body{padding:0} .app{min-height:100vh} }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="hdr" id="hdr"></header>
+  <main id="main" tabindex="-1"></main>
+</div>
+<nav class="tabs" id="tabs" aria-label="Main"></nav>
+<div class="ov" id="ov" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+const DATA = /*DATA_START*/{"meta":{"farm":"Bora – leafy greens & herbs (SAMPLE)","region":"Megara plain, West Attica, Greece","today":"2026-11-16","source_note":"SAMPLE DATA – not real advice. Doses/PHI from the product label. All PHI (days), REI (hours) and doses (product unit per στρέμμα, 1 στρ = 0.1 ha) are ILLUSTRATIVE – check the label and the Greek registration database. phi_days null = not applicable (fertiliser, or pre-emergence herbicide whose timing covers PHI). Products are generic labels, no brands. Weather: observed 9-15 Nov from nearest station, forecast 16-22 Nov from model blend, both elevation-corrected; leaf-wet hours are estimates (no sensor). est_crates = area × yield assumption ÷ crate kg, ~10% waste; supply spread evenly over harvest window. Leek has no orders yet (harvest Jan 2027)."},"parcels":[{"id":"P1","name":"Κάτω Κάμπος (Lower Plain)","locality":"Megara plain, south of town - lowest part of the plain","area_str":12,"elevation_m":24,"lat":37.9905,"lng":23.356,"soil":{"date":"2026-09-02","pH":7.9,"EC_dS_m":0.9,"OM_pct":1.6,"N_ppm":18,"P_ppm":22,"K_ppm":280,"CaCO3_pct":21,"notes":"Calcareous clay loam; N = nitrate-N; P Olsen. Surface urea loses NH3 here unless incorporated."},"irrigation":{"type":"Drip (16 mm, 30 cm emitters)","source":"Own borehole","water_EC_dS_m":1.2},"opekepe_code":"SAMPLE-ΟΣΔΕ-0001","sketch":{"shape":"rect","rotation_deg":12}},{"id":"P2","name":"Μεσαίο Χωράφι (Middle Field)","locality":"Megara plain, west of town","area_str":8,"elevation_m":34,"lat":37.996,"lng":23.329,"soil":{"date":"2026-09-02","pH":7.7,"EC_dS_m":0.7,"OM_pct":1.9,"N_ppm":15,"P_ppm":26,"K_ppm":250,"CaCO3_pct":14,"notes":"Loam, calcareous; drains well. Beetroot (Amaranthaceae) grown here spring 2026."},"irrigation":{"type":"Mini-sprinklers (herbs) + drip (parsley)","source":"Shared borehole","water_EC_dS_m":1.0},"opekepe_code":"SAMPLE-ΟΣΔΕ-0002","sketch":{"shape":"poly","rotation_deg":-8}},{"id":"P3","name":"Πάχη Παραλιακό (Pachi Coast)","locality":"Pachi, ~400 m from the sea","area_str":6,"elevation_m":8,"lat":37.9705,"lng":23.3835,"soil":{"date":"2026-08-28","pH":8.0,"EC_dS_m":1.8,"OM_pct":1.2,"N_ppm":12,"P_ppm":19,"K_ppm":210,"CaCO3_pct":12,"notes":"Sandy loam; slightly saline (soil EC 1.8). Humid nights, sea breeze. Spinach downy mildew seen here in Dec 2025."},"irrigation":{"type":"Drip","source":"Coastal well","water_EC_dS_m":2.6},"opekepe_code":"SAMPLE-ΟΣΔΕ-0003","sketch":{"shape":"rect","rotation_deg":-25}},{"id":"P4","name":"Γεράνεια Πλαγιά (Geraneia Slope)","locality":"Geraneia foothills, north of Megara (terraces)","area_str":5,"elevation_m":180,"lat":38.027,"lng":23.301,"soil":{"date":"2026-09-10","pH":8.1,"EC_dS_m":0.5,"OM_pct":2.1,"N_ppm":11,"P_ppm":14,"K_ppm":190,"CaCO3_pct":28,"notes":"Stony calcareous loam on terraces. Downslope gusts in north winds; on clear calm nights it sits ABOVE the cold air pooling on the plain."},"irrigation":{"type":"Drip","source":"Spring + storage tank","water_EC_dS_m":0.6},"opekepe_code":"SAMPLE-ΟΣΔΕ-0004","sketch":{"shape":"poly","rotation_deg":30}},{"id":"P5","name":"Νότιος Κάμπος (South Plain)","locality":"Megara plain, towards Pachi road","area_str":7,"elevation_m":28,"lat":37.985,"lng":23.348,"soil":{"date":"2026-10-20","pH":7.8,"EC_dS_m":0.6,"OM_pct":1.4,"N_ppm":9,"P_ppm":20,"K_ppm":230,"CaCO3_pct":15,"notes":"Sandy loam, low crusting. Previous crop spring onion (harvested Oct 2026). No spinach/beet/chard here since 2023; no downy mildew record. 3 στρ prepared beds free."},"irrigation":{"type":"Drip","source":"Own borehole","water_EC_dS_m":1.1},"opekepe_code":"SAMPLE-ΟΣΔΕ-0005","sketch":{"shape":"rect","rotation_deg":5}}],"crops":[{"id":"spinach","name_el":"Σπανάκι","name_en":"Spinach","name_tr":"Ispanak","latin":"Spinacia oleracea","crate_kg":8},{"id":"rocket","name_el":"Ρόκα","name_en":"Rocket","name_tr":"Roka","latin":"Eruca vesicaria subsp. sativa","crate_kg":4},{"id":"parsley","name_el":"Μαϊντανός","name_en":"Parsley","name_tr":"Maydanoz","latin":"Petroselinum crispum","crate_kg":6},{"id":"dill","name_el":"Άνηθος","name_en":"Dill","name_tr":"Dereotu","latin":"Anethum graveolens","crate_kg":5},{"id":"coriander","name_el":"Κόλιανδρο","name_en":"Coriander","name_tr":"Kişniş","latin":"Coriandrum sativum","crate_kg":5},{"id":"chicory","name_el":"Ραδίκια άγρια","name_en":"Wild chicory","name_tr":"Yabani hindiba (radika)","latin":"Cichorium intybus","crate_kg":8},{"id":"endive","name_el":"Αντίδια","name_en":"Endive","name_tr":"Endivyen","latin":"Cichorium endivia","crate_kg":9},{"id":"chard","name_el":"Σέσκουλα","name_en":"Swiss chard","name_tr":"Pazı","latin":"Beta vulgaris subsp. vulgaris (Cicla group)","crate_kg":9},{"id":"onion","name_el":"Κρεμμύδι (φρέσκο)","name_en":"Spring onion","name_tr":"Taze soğan","latin":"Allium cepa","crate_kg":8},{"id":"leek","name_el":"Πράσο","name_en":"Leek","name_tr":"Pırasa","latin":"Allium ampeloprasum var. porrum","crate_kg":12}],"plantings":[{"id":"PL01","crop_id":"spinach","parcel_id":"P1","area_str":1.5,"sown":"2026-09-22","stage_pct":100,"harvest_from":"2026-11-10","harvest_to":"2026-11-28","est_crates":225,"status":"harvesting"},{"id":"PL02","crop_id":"leek","parcel_id":"P1","area_str":2.0,"sown":"2026-09-05","stage_pct":57,"harvest_from":"2027-01-10","harvest_to":"2027-02-28","est_crates":400,"status":"growing"},{"id":"PL03","crop_id":"chicory","parcel_id":"P1","area_str":1.0,"sown":"2026-09-10","stage_pct":97,"harvest_from":"2026-11-18","harvest_to":"2026-12-15","est_crates":125,"status":"growing"},{"id":"PL04","crop_id":"rocket","parcel_id":"P2","area_str":1.0,"sown":"2026-10-26","stage_pct":68,"harvest_from":"2026-11-26","harvest_to":"2026-12-10","est_crates":180,"status":"growing"},{"id":"PL05","crop_id":"coriander","parcel_id":"P2","area_str":0.5,"sown":"2026-10-30","stage_pct":41,"harvest_from":"2026-12-10","harvest_to":"2026-12-24","est_crates":60,"status":"growing"},{"id":"PL06","crop_id":"dill","parcel_id":"P2","area_str":0.5,"sown":"2026-10-28","stage_pct":46,"harvest_from":"2026-12-08","harvest_to":"2026-12-22","est_crates":60,"status":"growing"},{"id":"PL07","crop_id":"parsley","parcel_id":"P2","area_str":1.0,"sown":"2026-08-25","stage_pct":100,"harvest_from":"2026-10-25","harvest_to":"2027-01-31","est_crates":260,"status":"harvesting"},{"id":"PL08","crop_id":"spinach","parcel_id":"P3","area_str":1.5,"sown":"2026-10-12","stage_pct":67,"harvest_from":"2026-12-03","harvest_to":"2026-12-22","est_crates":225,"status":"growing"},{"id":"PL09","crop_id":"chard","parcel_id":"P3","area_str":1.0,"sown":"2026-09-15","stage_pct":100,"harvest_from":"2026-11-05","harvest_to":"2027-01-15","est_crates":200,"status":"harvesting"},{"id":"PL10","crop_id":"onion","parcel_id":"P3","area_str":1.0,"sown":"2026-09-01","stage_pct":100,"harvest_from":"2026-11-09","harvest_to":"2026-12-15","est_crates":160,"status":"harvesting"},{"id":"PL11","crop_id":"coriander","parcel_id":"P3","area_str":0.5,"sown":"2026-09-28","stage_pct":100,"harvest_from":"2026-11-12","harvest_to":"2026-12-09","est_crates":70,"status":"harvesting"},{"id":"PL12","crop_id":"parsley","parcel_id":"P4","area_str":1.5,"sown":"2026-08-15","stage_pct":100,"harvest_from":"2026-10-20","harvest_to":"2027-01-31","est_crates":390,"status":"harvesting"},{"id":"PL13","crop_id":"rocket","parcel_id":"P4","area_str":1.0,"sown":"2026-10-05","stage_pct":100,"harvest_from":"2026-11-12","harvest_to":"2026-11-30","est_crates":200,"status":"harvesting"},{"id":"PL14","crop_id":"dill","parcel_id":"P4","area_str":0.5,"sown":"2026-09-25","stage_pct":100,"harvest_from":"2026-11-10","harvest_to":"2026-12-06","est_crates":80,"status":"harvesting"},{"id":"PL15","crop_id":"endive","parcel_id":"P5","area_str":0.6,"sown":"2026-09-01","stage_pct":100,"harvest_from":"2026-11-16","harvest_to":"2026-12-18","est_crates":200,"status":"ready"},{"id":"PL16","crop_id":"rocket","parcel_id":"P2","area_str":1.0,"sown":"2026-11-06","stage_pct":28,"harvest_from":"2026-12-12","harvest_to":"2027-01-02","est_crates":180,"status":"growing"}],"weather":{"by_parcel":{"P1":[{"date":"2026-11-09","tmin":9.8,"tmax":20.2,"rain_mm":0,"wind_kmh":8,"gust_kmh":18,"rh_pct":70,"leafwet_h":3,"kind":"observed"},{"date":"2026-11-10","tmin":9.3,"tmax":21.2,"rain_mm":0,"wind_kmh":6,"gust_kmh":14,"rh_pct":68,"leafwet_h":4,"kind":"observed"},{"date":"2026-11-11","tmin":10.8,"tmax":19.2,"rain_mm":0.4,"wind_kmh":14,"gust_kmh":30,"rh_pct":76,"leafwet_h":5,"kind":"observed"},{"date":"2026-11-12","tmin":11.8,"tmax":16.2,"rain_mm":14.2,"wind_kmh":22,"gust_kmh":46,"rh_pct":94,"leafwet_h":18,"kind":"observed"},{"date":"2026-11-13","tmin":8.3,"tmax":14.2,"rain_mm":9.6,"wind_kmh":26,"gust_kmh":52,"rh_pct":87,"leafwet_h":14,"kind":"observed"},{"date":"2026-11-14","tmin":5.8,"tmax":16.2,"rain_mm":0,"wind_kmh":10,"gust_kmh":24,"rh_pct":82,"leafwet_h":13,"kind":"observed"},{"date":"2026-11-15","tmin":4.0,"tmax":17.2,"rain_mm":0,"wind_kmh":5,"gust_kmh":12,"rh_pct":80,"leafwet_h":12,"kind":"observed"},{"date":"2026-11-16","tmin":2.5,"tmax":17.2,"rain_mm":0,"wind_kmh":6,"gust_kmh":14,"rh_pct":76,"leafwet_h":11,"kind":"forecast"},{"date":"2026-11-17","tmin":1.5,"tmax":16.7,"rain_mm":0,"wind_kmh":4,"gust_kmh":11,"rh_pct":74,"leafwet_h":11,"kind":"forecast"},{"date":"2026-11-18","tmin":1.0,"tmax":16.2,"rain_mm":0,"wind_kmh":4,"gust_kmh":10,"rh_pct":72,"leafwet_h":12,"kind":"forecast"},{"date":"2026-11-19","tmin":0.0,"tmax":15.7,"rain_mm":0,"wind_kmh":5,"gust_kmh":12,"rh_pct":74,"leafwet_h":12,"kind":"forecast"},{"date":"2026-11-20","tmin":4.8,"tmax":15.2,"rain_mm":6.5,"wind_kmh":20,"gust_kmh":48,"rh_pct":88,"leafwet_h":12,"kind":"forecast"},{"date":"2026-11-21","tmin":8.8,"tmax":14.2,"rain_mm":17.8,"wind_kmh":24,"gust_kmh":55,"rh_pct":96,"leafwet_h":20,"kind":"forecast"},{"date":"2026-11-22","tmin":6.8,"tmax":13.2,"rain_mm":3.2,"wind_kmh":28,"gust_kmh":58,"rh_pct":82,"leafwet_h":8,"kind":"forecast"}],"P2":[{"date":"2026-11-09","tmin":10.0,"tmax":20.0,"rain_mm":0,"wind_kmh":8,"gust_kmh":18,"rh_pct":68,"leafwet_h":3,"kind":"observed"},{"date":"2026-11-10","tmin":9.5,"tmax":21.0,"rain_mm":0,"wind_kmh":6,"gust_kmh":14,"rh_pct":66,"leafwet_h":4,"kind":"observed"},{"date":"2026-11-11","tmin":11.0,"tmax":19.0,"rain_mm":0.4,"wind_kmh":14,"gust_kmh":30,"rh_pct":74,"leafwet_h":5,"kind":"observed"},{"date":"2026-11-12","tmin":12.0,"tmax":16.0,"rain_mm":14.2,"wind_kmh":22,"gust_kmh":46,"rh_pct":92,"leafwet_h":18,"kind":"observed"},{"date":"2026-11-13","tmin":8.5,"tmax":14.0,"rain_mm":9.6,"wind_kmh":26,"gust_kmh":52,"rh_pct":85,"leafwet_h":14,"kind":"observed"},{"date":"2026-11-14","tmin":6.0,"tmax":16.0,"rain_mm":0,"wind_kmh":10,"gust_kmh":24,"rh_pct":80,"leafwet_h":13,"kind":"observed"},{"date":"2026-11-15","tmin":4.5,"tmax":17.0,"rain_mm":0,"wind_kmh":5,"gust_kmh":12,"rh_pct":78,"leafwet_h":11,"kind":"observed"},{"date":"2026-11-16","tmin":3.0,"tmax":17.0,"rain_mm":0,"wind_kmh":6,"gust_kmh":14,"rh_pct":74,"leafwet_h":10,"kind":"forecast"},{"date":"2026-11-17","tmin":2.0,"tmax":16.5,"rain_mm":0,"wind_kmh":4,"gust_kmh":11,"rh_pct":72,"leafwet_h":10,"kind":"forecast"},{"date":"2026-11-18","tmin":1.5,"tmax":16.0,"rain_mm":0,"wind_kmh":4,"gust_kmh":10,"rh_pct":70,"leafwet_h":11,"kind":"forecast"},{"date":"2026-11-19","tmin":0.5,"tmax":15.5,"rain_mm":0,"wind_kmh":5,"gust_kmh":12,"rh_pct":72,"leafwet_h":11,"kind":"forecast"},{"date":"2026-11-20","tmin":5.0,"tmax":15.0,"rain_mm":6.5,"wind_kmh":20,"gust_kmh":48,"rh_pct":86,"leafwet_h":12,"kind":"forecast"},{"date":"2026-11-21","tmin":9.0,"tmax":14.0,"rain_mm":17.8,"wind_kmh":24,"gust_kmh":55,"rh_pct":94,"leafwet_h":20,"kind":"forecast"},{"date":"2026-11-22","tmin":7.0,"tmax":13.0,"rain_mm":3.2,"wind_kmh":28,"gust_kmh":58,"rh_pct":80,"leafwet_h":8,"kind":"forecast"}],"P3":[{"date":"2026-11-09","tmin":12.0,"tmax":19.5,"rain_mm":0,"wind_kmh":11,"gust_kmh":22,"rh_pct":77,"leafwet_h":5,"kind":"observed"},{"date":"2026-11-10","tmin":11.5,"tmax":20.5,"rain_mm":0,"wind_kmh":9,"gust_kmh":18,"rh_pct":75,"leafwet_h":6,"kind":"observed"},{"date":"2026-11-11","tmin":13.0,"tmax":18.5,"rain_mm":0.4,"wind_kmh":17,"gust_kmh":34,"rh_pct":83,"leafwet_h":7,"kind":"observed"},{"date":"2026-11-12","tmin":14.0,"tmax":15.5,"rain_mm":14.2,"wind_kmh":25,"gust_kmh":50,"rh_pct":97,"leafwet_h":20,"kind":"observed"},{"date":"2026-11-13","tmin":10.5,"tmax":13.5,"rain_mm":9.6,"wind_kmh":29,"gust_kmh":56,"rh_pct":94,"leafwet_h":16,"kind":"observed"},{"date":"2026-11-14","tmin":8.0,"tmax":15.5,"rain_mm":0,"wind_kmh":13,"gust_kmh":28,"rh_pct":89,"leafwet_h":15,"kind":"observed"},{"date":"2026-11-15","tmin":9.0,"tmax":16.5,"rain_mm":0,"wind_kmh":8,"gust_kmh":16,"rh_pct":87,"leafwet_h":14,"kind":"observed"},{"date":"2026-11-16","tmin":7.5,"tmax":16.5,"rain_mm":0,"wind_kmh":9,"gust_kmh":18,"rh_pct":83,"leafwet_h":13,"kind":"forecast"},{"date":"2026-11-17","tmin":6.5,"tmax":16.0,"rain_mm":0,"wind_kmh":7,"gust_kmh":15,"rh_pct":81,"leafwet_h":13,"kind":"forecast"},{"date":"2026-11-18","tmin":6.0,"tmax":15.5,"rain_mm":0,"wind_kmh":7,"gust_kmh":14,"rh_pct":79,"leafwet_h":14,"kind":"forecast"},{"date":"2026-11-19","tmin":5.0,"tmax":15.0,"rain_mm":0,"wind_kmh":8,"gust_kmh":16,"rh_pct":81,"leafwet_h":14,"kind":"forecast"},{"date":"2026-11-20","tmin":7.0,"tmax":14.5,"rain_mm":6.5,"wind_kmh":23,"gust_kmh":52,"rh_pct":95,"leafwet_h":14,"kind":"forecast"},{"date":"2026-11-21","tmin":11.0,"tmax":13.5,"rain_mm":17.8,"wind_kmh":27,"gust_kmh":59,"rh_pct":97,"leafwet_h":22,"kind":"forecast"},{"date":"2026-11-22","tmin":9.0,"tmax":12.5,"rain_mm":3.2,"wind_kmh":31,"gust_kmh":62,"rh_pct":89,"leafwet_h":10,"kind":"forecast"}],"P4":[{"date":"2026-11-09","tmin":9.0,"tmax":18.8,"rain_mm":0,"wind_kmh":10,"gust_kmh":22,"rh_pct":62,"leafwet_h":0,"kind":"observed"},{"date":"2026-11-10","tmin":8.5,"tmax":19.8,"rain_mm":0,"wind_kmh":8,"gust_kmh":18,"rh_pct":60,"leafwet_h":1,"kind":"observed"},{"date":"2026-11-11","tmin":10.0,"tmax":17.8,"rain_mm":0.4,"wind_kmh":16,"gust_kmh":34,"rh_pct":68,"leafwet_h":2,"kind":"observed"},{"date":"2026-11-12","tmin":11.0,"tmax":14.8,"rain_mm":14.2,"wind_kmh":24,"gust_kmh":50,"rh_pct":86,"leafwet_h":15,"kind":"observed"},{"date":"2026-11-13","tmin":7.5,"tmax":12.8,"rain_mm":9.6,"wind_kmh":28,"gust_kmh":64,"rh_pct":79,"leafwet_h":11,"kind":"observed"},{"date":"2026-11-14","tmin":5.0,"tmax":14.8,"rain_mm":0,"wind_kmh":12,"gust_kmh":28,"rh_pct":74,"leafwet_h":10,"kind":"observed"},{"date":"2026-11-15","tmin":8.0,"tmax":15.8,"rain_mm":0,"wind_kmh":7,"gust_kmh":16,"rh_pct":72,"leafwet_h":8,"kind":"observed"},{"date":"2026-11-16","tmin":6.5,"tmax":15.8,"rain_mm":0,"wind_kmh":8,"gust_kmh":18,"rh_pct":68,"leafwet_h":7,"kind":"forecast"},{"date":"2026-11-17","tmin":5.5,"tmax":15.3,"rain_mm":0,"wind_kmh":6,"gust_kmh":15,"rh_pct":66,"leafwet_h":7,"kind":"forecast"},{"date":"2026-11-18","tmin":5.0,"tmax":14.8,"rain_mm":0,"wind_kmh":6,"gust_kmh":14,"rh_pct":64,"leafwet_h":8,"kind":"forecast"},{"date":"2026-11-19","tmin":4.0,"tmax":14.3,"rain_mm":0,"wind_kmh":7,"gust_kmh":16,"rh_pct":66,"leafwet_h":8,"kind":"forecast"},{"date":"2026-11-20","tmin":4.0,"tmax":13.8,"rain_mm":6.5,"wind_kmh":22,"gust_kmh":52,"rh_pct":80,"leafwet_h":9,"kind":"forecast"},{"date":"2026-11-21","tmin":8.0,"tmax":12.8,"rain_mm":17.8,"wind_kmh":26,"gust_kmh":59,"rh_pct":88,"leafwet_h":17,"kind":"forecast"},{"date":"2026-11-22","tmin":6.0,"tmax":11.8,"rain_mm":3.2,"wind_kmh":30,"gust_kmh":70,"rh_pct":74,"leafwet_h":5,"kind":"forecast"}],"P5":[{"date":"2026-11-09","tmin":9.9,"tmax":20.1,"rain_mm":0,"wind_kmh":8,"gust_kmh":18,"rh_pct":69,"leafwet_h":3,"kind":"observed"},{"date":"2026-11-10","tmin":9.4,"tmax":21.1,"rain_mm":0,"wind_kmh":6,"gust_kmh":14,"rh_pct":67,"leafwet_h":4,"kind":"observed"},{"date":"2026-11-11","tmin":10.9,"tmax":19.1,"rain_mm":0.4,"wind_kmh":14,"gust_kmh":30,"rh_pct":75,"leafwet_h":5,"kind":"observed"},{"date":"2026-11-12","tmin":11.9,"tmax":16.1,"rain_mm":14.2,"wind_kmh":22,"gust_kmh":46,"rh_pct":93,"leafwet_h":18,"kind":"observed"},{"date":"2026-11-13","tmin":8.4,"tmax":14.1,"rain_mm":9.6,"wind_kmh":26,"gust_kmh":52,"rh_pct":86,"leafwet_h":14,"kind":"observed"},{"date":"2026-11-14","tmin":5.9,"tmax":16.1,"rain_mm":0,"wind_kmh":10,"gust_kmh":24,"rh_pct":81,"leafwet_h":13,"kind":"observed"},{"date":"2026-11-15","tmin":4.2,"tmax":17.1,"rain_mm":0,"wind_kmh":5,"gust_kmh":12,"rh_pct":79,"leafwet_h":11,"kind":"observed"},{"date":"2026-11-16","tmin":2.7,"tmax":17.1,"rain_mm":0,"wind_kmh":6,"gust_kmh":14,"rh_pct":75,"leafwet_h":10,"kind":"forecast"},{"date":"2026-11-17","tmin":1.7,"tmax":16.6,"rain_mm":0,"wind_kmh":4,"gust_kmh":11,"rh_pct":73,"leafwet_h":10,"kind":"forecast"},{"date":"2026-11-18","tmin":1.2,"tmax":16.1,"rain_mm":0,"wind_kmh":4,"gust_kmh":10,"rh_pct":71,"leafwet_h":11,"kind":"forecast"},{"date":"2026-11-19","tmin":0.2,"tmax":15.6,"rain_mm":0,"wind_kmh":5,"gust_kmh":12,"rh_pct":73,"leafwet_h":11,"kind":"forecast"},{"date":"2026-11-20","tmin":4.9,"tmax":15.1,"rain_mm":6.5,"wind_kmh":20,"gust_kmh":48,"rh_pct":87,"leafwet_h":12,"kind":"forecast"},{"date":"2026-11-21","tmin":8.9,"tmax":14.1,"rain_mm":17.8,"wind_kmh":24,"gust_kmh":55,"rh_pct":95,"leafwet_h":20,"kind":"forecast"},{"date":"2026-11-22","tmin":6.9,"tmax":13.1,"rain_mm":3.2,"wind_kmh":28,"gust_kmh":58,"rh_pct":81,"leafwet_h":8,"kind":"forecast"}]}},"products":[{"id":"PR01","label":"Copper hydroxide 35% WG","name_el":"Υδροξείδιο του χαλκού 35% WG","name_en":"Copper hydroxide 35% WG","name_tr":"Bakır hidroksit %35 WG","active":"copper hydroxide","type":"fungicide","group_code":"M01","group_system":"FRAC","form":"WG","qty":4.5,"unit":"kg","expiry":"2028-03-31","registered":[{"crop_id":"spinach","phi_days":7,"rei_h":24,"dose_per_str":0.2},{"crop_id":"chard","phi_days":7,"rei_h":24,"dose_per_str":0.2},{"crop_id":"rocket","phi_days":7,"rei_h":24,"dose_per_str":0.2},{"crop_id":"parsley","phi_days":7,"rei_h":24,"dose_per_str":0.2},{"crop_id":"endive","phi_days":7,"rei_h":24,"dose_per_str":0.2}]},{"id":"PR02","label":"Azoxystrobin 25% SC","name_el":"Αζοξυστροβίνη 25% SC","name_en":"Azoxystrobin 25% SC","name_tr":"Azoksistrobin %25 SC","active":"azoxystrobin","type":"fungicide","group_code":"11","group_system":"FRAC","form":"SC","qty":1.0,"unit":"L","expiry":"2027-09-30","registered":[{"crop_id":"spinach","phi_days":14,"rei_h":24,"dose_per_str":0.1},{"crop_id":"rocket","phi_days":7,"rei_h":24,"dose_per_str":0.1},{"crop_id":"parsley","phi_days":14,"rei_h":24,"dose_per_str":0.1},{"crop_id":"endive","phi_days":7,"rei_h":24,"dose_per_str":0.1},{"crop_id":"leek","phi_days":14,"rei_h":24,"dose_per_str":0.1}]},{"id":"PR03","label":"Mandipropamid 25% SC","name_el":"Μανδιπροπαμίδιο 25% SC","name_en":"Mandipropamid 25% SC","name_tr":"Mandipropamid %25 SC","active":"mandipropamid","type":"fungicide","group_code":"40","group_system":"FRAC","form":"SC","qty":0.1,"unit":"L","expiry":"2028-01-31","registered":[{"crop_id":"spinach","phi_days":14,"rei_h":24,"dose_per_str":0.06},{"crop_id":"endive","phi_days":7,"rei_h":24,"dose_per_str":0.06}]},{"id":"PR04","label":"Propamocarb hydrochloride 722 g/L SL","name_el":"Προπαμοκάρμπ υδροχλωρικό 722 g/L SL","name_en":"Propamocarb hydrochloride 722 g/L SL","name_tr":"Propamokarb hidroklorür 722 g/L SL","active":"propamocarb hydrochloride","type":"fungicide","group_code":"28","group_system":"FRAC","form":"SL","qty":1.6,"unit":"L","expiry":"2027-06-30","registered":[{"crop_id":"spinach","phi_days":14,"rei_h":24,"dose_per_str":0.2},{"crop_id":"endive","phi_days":14,"rei_h":24,"dose_per_str":0.2}]},{"id":"PR05","label":"Difenoconazole 25% EC","name_el":"Διφαινοκοναζόλη 25% EC","name_en":"Difenoconazole 25% EC","name_tr":"Difenokonazol %25 EC","active":"difenoconazole","type":"fungicide","group_code":"3","group_system":"FRAC","form":"EC","qty":0.6,"unit":"L","expiry":"2027-11-30","registered":[{"crop_id":"parsley","phi_days":14,"rei_h":24,"dose_per_str":0.05},{"crop_id":"leek","phi_days":21,"rei_h":24,"dose_per_str":0.05}]},{"id":"PR06","label":"Bacillus amyloliquefaciens QST 713, 1.34% SC","name_el":"Bacillus amyloliquefaciens QST 713, 1,34% SC","name_en":"Bacillus amyloliquefaciens QST 713, 1.34% SC","name_tr":"Bacillus amyloliquefaciens QST 713, %1,34 SC","active":"Bacillus amyloliquefaciens strain QST 713","type":"fungicide","group_code":"BM02","group_system":"FRAC","form":"SC","qty":5.0,"unit":"L","expiry":"2027-04-30","registered":[{"crop_id":"spinach","phi_days":0,"rei_h":4,"dose_per_str":0.8},{"crop_id":"rocket","phi_days":0,"rei_h":4,"dose_per_str":0.8},{"crop_id":"parsley","phi_days":0,"rei_h":4,"dose_per_str":0.8},{"crop_id":"dill","phi_days":0,"rei_h":4,"dose_per_str":0.8},{"crop_id":"coriander","phi_days":0,"rei_h":4,"dose_per_str":0.8},{"crop_id":"chard","phi_days":0,"rei_h":4,"dose_per_str":0.8}]},{"id":"PR07","label":"Deltamethrin 2.5% EC","name_el":"Δελταμεθρίνη 2,5% EC","name_en":"Deltamethrin 2.5% EC","name_tr":"Deltametrin %2,5 EC","active":"deltamethrin","type":"insecticide","group_code":"3A","group_system":"IRAC","form":"EC","qty":0.4,"unit":"L","expiry":"2027-05-31","registered":[{"crop_id":"rocket","phi_days":7,"rei_h":24,"dose_per_str":0.05},{"crop_id":"spinach","phi_days":7,"rei_h":24,"dose_per_str":0.05},{"crop_id":"endive","phi_days":7,"rei_h":24,"dose_per_str":0.05},{"crop_id":"chard","phi_days":7,"rei_h":24,"dose_per_str":0.05},{"crop_id":"leek","phi_days":7,"rei_h":24,"dose_per_str":0.05}]},{"id":"PR08","label":"Spinosad 48% SC","name_el":"Σπινοσάντ 48% SC","name_en":"Spinosad 48% SC","name_tr":"Spinosad %48 SC","active":"spinosad","type":"insecticide","group_code":"5","group_system":"IRAC","form":"SC","qty":0.12,"unit":"L","expiry":"2026-12-15","registered":[{"crop_id":"rocket","phi_days":3,"rei_h":12,"dose_per_str":0.025},{"crop_id":"spinach","phi_days":3,"rei_h":12,"dose_per_str":0.025},{"crop_id":"parsley","phi_days":3,"rei_h":12,"dose_per_str":0.025},{"crop_id":"endive","phi_days":3,"rei_h":12,"dose_per_str":0.025},{"crop_id":"leek","phi_days":7,"rei_h":12,"dose_per_str":0.025}]},{"id":"PR09","label":"Bacillus thuringiensis subsp. kurstaki WG","name_el":"Bacillus thuringiensis υποείδος kurstaki WG","name_en":"Bacillus thuringiensis subsp. kurstaki WG","name_tr":"Bacillus thuringiensis alt tür kurstaki WG","active":"Bacillus thuringiensis subsp. kurstaki","type":"insecticide","group_code":"11A","group_system":"IRAC","form":"WG","qty":1.5,"unit":"kg","expiry":"2027-08-31","registered":[{"crop_id":"spinach","phi_days":0,"rei_h":4,"dose_per_str":0.1},{"crop_id":"rocket","phi_days":0,"rei_h":4,"dose_per_str":0.1},{"crop_id":"parsley","phi_days":0,"rei_h":4,"dose_per_str":0.1},{"crop_id":"dill","phi_days":0,"rei_h":4,"dose_per_str":0.1},{"crop_id":"coriander","phi_days":0,"rei_h":4,"dose_per_str":0.1},{"crop_id":"chard","phi_days":0,"rei_h":4,"dose_per_str":0.1},{"crop_id":"endive","phi_days":0,"rei_h":4,"dose_per_str":0.1}]},{"id":"PR10","label":"Acetamiprid 20% SP","name_el":"Ακεταμιπρίδη 20% SP","name_en":"Acetamiprid 20% SP","name_tr":"Asetamiprid %20 SP","active":"acetamiprid","type":"insecticide","group_code":"4A","group_system":"IRAC","form":"SP","qty":0.3,"unit":"kg","expiry":"2026-10-31","registered":[{"crop_id":"spinach","phi_days":7,"rei_h":24,"dose_per_str":0.025},{"crop_id":"rocket","phi_days":7,"rei_h":24,"dose_per_str":0.025},{"crop_id":"endive","phi_days":7,"rei_h":24,"dose_per_str":0.025}]},{"id":"PR11","label":"Flonicamid 50% WG","name_el":"Φλονικαμίδη 50% WG","name_en":"Flonicamid 50% WG","name_tr":"Flonikamid %50 WG","active":"flonicamid","type":"insecticide","group_code":"29","group_system":"IRAC","form":"WG","qty":0.35,"unit":"kg","expiry":"2028-05-31","registered":[{"crop_id":"spinach","phi_days":14,"rei_h":24,"dose_per_str":0.014},{"crop_id":"rocket","phi_days":7,"rei_h":24,"dose_per_str":0.014},{"crop_id":"endive","phi_days":7,"rei_h":24,"dose_per_str":0.014}]},{"id":"PR12","label":"Lenacil 80% WP (pre-emergence)","name_el":"Λενασίλ 80% WP (προφυτρωτικό)","name_en":"Lenacil 80% WP (pre-emergence)","name_tr":"Lenasil %80 WP (çıkış öncesi)","active":"lenacil","type":"herbicide","group_code":"5","group_system":"HRAC","form":"WP","qty":0.8,"unit":"kg","expiry":"2027-12-31","registered":[{"crop_id":"spinach","phi_days":null,"rei_h":24,"dose_per_str":0.05},{"crop_id":"chard","phi_days":null,"rei_h":24,"dose_per_str":0.05}]},{"id":"PR13","label":"Propyzamide 40% SC","name_el":"Προπυζαμίδη 40% SC","name_en":"Propyzamide 40% SC","name_tr":"Propizamid %40 SC","active":"propyzamide","type":"herbicide","group_code":"3","group_system":"HRAC","form":"SC","qty":1.0,"unit":"L","expiry":"2027-10-31","registered":[{"crop_id":"endive","phi_days":42,"rei_h":24,"dose_per_str":0.19},{"crop_id":"chicory","phi_days":42,"rei_h":24,"dose_per_str":0.19}]},{"id":"PR14","label":"Cycloxydim 10% EC","name_el":"Κυκλοξυντίμ 10% EC","name_en":"Cycloxydim 10% EC","name_tr":"Sikloksidim %10 EC","active":"cycloxydim","type":"herbicide","group_code":"1","group_system":"HRAC","form":"EC","qty":1.2,"unit":"L","expiry":"2028-02-29","registered":[{"crop_id":"leek","phi_days":28,"rei_h":24,"dose_per_str":0.25},{"crop_id":"onion","phi_days":28,"rei_h":24,"dose_per_str":0.25}]},{"id":"PR15","label":"Calcium nitrate 15.5% N (14.4% NO3-N) + 26.5% CaO","name_el":"Νιτρική ασβεστούχος 15,5-0-0 + 26,5 CaO","name_en":"Calcium nitrate 15.5-0-0 + 26.5 CaO","name_tr":"Kalsiyum nitrat 15,5-0-0 + %26,5 CaO","active":"nitrate N 14.4%, ammonium N 1.1%, CaO 26.5%","type":"fertiliser","group_code":"-","group_system":"-","form":"soluble granules","qty":175,"unit":"kg","expiry":null,"registered":[{"crop_id":"leek","phi_days":null,"rei_h":0,"dose_per_str":5},{"crop_id":"rocket","phi_days":null,"rei_h":0,"dose_per_str":4},{"crop_id":"spinach","phi_days":null,"rei_h":0,"dose_per_str":4},{"crop_id":"endive","phi_days":null,"rei_h":0,"dose_per_str":4},{"crop_id":"parsley","phi_days":null,"rei_h":0,"dose_per_str":4},{"crop_id":"chard","phi_days":null,"rei_h":0,"dose_per_str":4}]},{"id":"PR16","label":"Urea 46% N","name_el":"Ουρία 46-0-0","name_en":"Urea 46-0-0","name_tr":"Üre 46-0-0","active":"urea N 46%","type":"fertiliser","group_code":"-","group_system":"-","form":"prilled","qty":200,"unit":"kg","expiry":null,"registered":[{"crop_id":"leek","phi_days":null,"rei_h":0,"dose_per_str":3}]},{"id":"PR17","label":"Potassium nitrate 13-0-46","name_el":"Νιτρικό κάλιο 13-0-46","name_en":"Potassium nitrate 13-0-46","name_tr":"Potasyum nitrat 13-0-46","active":"nitrate N 13%, K2O 46%","type":"fertiliser","group_code":"-","group_system":"-","form":"soluble crystals","qty":25,"unit":"kg","expiry":null,"registered":[{"crop_id":"leek","phi_days":null,"rei_h":0,"dose_per_str":3},{"crop_id":"parsley","phi_days":null,"rei_h":0,"dose_per_str":3},{"crop_id":"chard","phi_days":null,"rei_h":0,"dose_per_str":3}]}],"jobs":[{"id":"J01","date":"2026-09-03","parcel_id":"P5","planting_id":"PL15","kind":"spray","product_id":"PR13","dose":0.19,"by":"Bora","weather_at_time":{"t":19,"wind":5,"gust":9,"rh":55},"notes":"Pre-emergence after transplanting endive; 50 L water/στρ."},{"id":"J02","date":"2026-10-12","parcel_id":"P3","planting_id":"PL08","kind":"sow","by":"Ahmet","weather_at_time":{"t":22,"wind":8,"gust":15,"rh":60},"notes":"Spinach, mildew-tolerant variety (declared Pe races per seed catalogue); 1.5 στρ."},{"id":"J03","date":"2026-10-20","parcel_id":"P1","planting_id":"PL02","kind":"spray","product_id":"PR14","dose":0.25,"by":"Bora","weather_at_time":{"t":21,"wind":6,"gust":12,"rh":58},"notes":"Grass weeds in leek; 40 L water/στρ. Target: annual grasses."},{"id":"J04","date":"2026-10-26","parcel_id":"P2","planting_id":"PL04","kind":"sow","by":"Ahmet","weather_at_time":{"t":20,"wind":7,"gust":14,"rh":62},"notes":"Rocket, 1 στρ."},{"id":"J05","date":"2026-10-28","parcel_id":"P3","planting_id":"PL08","kind":"fertilise","product_id":"PR15","dose":4,"by":"Ahmet","weather_at_time":{"t":19,"wind":5,"gust":10,"rh":64},"notes":"Fertigation via drip, nitrate form; 36 days before harvest window."},{"id":"J06","date":"2026-10-28","parcel_id":"P2","planting_id":"PL06","kind":"sow","by":"Ahmet","weather_at_time":{"t":19,"wind":5,"gust":10,"rh":64},"notes":"Dill, 0.5 στρ."},{"id":"J07","date":"2026-10-30","parcel_id":"P3","planting_id":"PL08","kind":"spray","product_id":"PR04","dose":0.2,"by":"Bora","weather_at_time":{"t":18,"wind":6,"gust":11,"rh":66},"notes":"Preventive, downy mildew (Peronospora effusa); 50 L water/στρ. Applied 11:30, leaves dry."},{"id":"J08","date":"2026-10-30","parcel_id":"P2","planting_id":"PL05","kind":"sow","by":"Ahmet","weather_at_time":{"t":18,"wind":6,"gust":11,"rh":66},"notes":"Coriander, 0.5 στρ."},{"id":"J09","date":"2026-11-02","parcel_id":"P1","planting_id":"PL01","kind":"spray","product_id":"PR01","dose":0.2,"by":"Bora","weather_at_time":{"t":18,"wind":7,"gust":13,"rh":62},"notes":"Preventive copper before mid-Nov rains; 50 L water/στρ; 10:45."},{"id":"J10","date":"2026-11-02","parcel_id":"P2","planting_id":"PL04","kind":"fertilise","product_id":"PR15","dose":4,"by":"Ahmet","weather_at_time":{"t":18,"wind":7,"gust":13,"rh":62},"notes":"Fertigation, nitrate form; 24 days before harvest window (rule: last N >= 21 days)."},{"id":"J11","date":"2026-11-04","parcel_id":"P2","planting_id":"PL04","kind":"spray","product_id":"PR07","dose":0.05,"by":"Bora","weather_at_time":{"t":17,"wind":5,"gust":9,"rh":64},"notes":"Flea beetle (Phyllotreta) shot-holes on cotyledons; 40 L water/στρ; 16:30."},{"id":"J12","date":"2026-11-06","parcel_id":"P2","planting_id":"PL16","kind":"sow","by":"Ahmet","weather_at_time":{"t":18,"wind":6,"gust":12,"rh":60},"notes":"Rocket, 1 στρ (follow-on lot for mid-Dec - early Jan)."},{"id":"J13","date":"2026-11-06","parcel_id":"P2","planting_id":"PL16","kind":"fertilise","product_id":"PR15","dose":4,"by":"Ahmet","weather_at_time":{"t":18,"wind":6,"gust":12,"rh":60},"notes":"Base N at sowing via drip, nitrate form; 36 days before harvest window."},{"id":"J14","date":"2026-11-06","parcel_id":"P4","planting_id":"PL13","kind":"spray","product_id":"PR08","dose":0.025,"by":"Bora","weather_at_time":{"t":18,"wind":6,"gust":12,"rh":60},"notes":"Caterpillars (Spodoptera littoralis) on rocket; 40 L water/στρ; 17:00."},{"id":"J15","date":"2026-11-09","parcel_id":"P4","planting_id":"PL12","kind":"spray","product_id":"PR05","dose":0.05,"by":"Bora","weather_at_time":{"t":16,"wind":8,"gust":17,"rh":61},"notes":"Septoria leaf spot (Septoria petroselini) on parsley; 50 L water/στρ; 10:30, leaves dry."},{"id":"J16","date":"2026-11-10","parcel_id":"P1","planting_id":"PL01","kind":"harvest","by":"Crew (4)","weather_at_time":{"t":17,"wind":4,"gust":9,"rh":63},"notes":"First cut: 38 crates."},{"id":"J17","date":"2026-11-10","parcel_id":"P4","planting_id":"PL14","kind":"harvest","by":"Crew (2)","weather_at_time":{"t":16,"wind":6,"gust":13,"rh":58},"notes":"Dill: 9 crates."},{"id":"J18","date":"2026-11-14","parcel_id":"P4","planting_id":"PL13","kind":"harvest","by":"Crew (3)","weather_at_time":{"t":14,"wind":7,"gust":18,"rh":74},"notes":"Rocket: 30 crates. Soil still wet."},{"id":"J19","date":"2026-11-14","parcel_id":"P1","planting_id":"PL01","kind":"harvest","by":"Crew (4)","weather_at_time":{"t":13,"wind":8,"gust":17,"rh":82},"notes":"Spinach: 36 crates."},{"id":"J20","date":"2026-11-15","parcel_id":"P2","planting_id":"PL07","kind":"harvest","by":"Crew (2)","weather_at_time":{"t":15,"wind":3,"gust":8,"rh":70},"notes":"Parsley: 20 crates."},{"id":"J21","date":"2026-11-15","parcel_id":"P3","planting_id":"PL09","kind":"harvest","by":"Crew (2)","weather_at_time":{"t":15,"wind":6,"gust":12,"rh":80},"notes":"Chard: 16 crates."},{"id":"J22","date":"2026-11-15","parcel_id":"P3","planting_id":"PL11","kind":"harvest","by":"Crew (2)","weather_at_time":{"t":15,"wind":6,"gust":12,"rh":80},"notes":"Coriander: 8 crates."}],"orders_weekly":[{"crop_id":"spinach","crates_per_week":90,"peak_note":"Christmas week ~x1.3; Clean Monday (Καθαρά Δευτέρα) Mon 15 Mar 2027 ~x2; Lent high"},{"crop_id":"rocket","crates_per_week":70,"peak_note":"Steady; restaurants slower in January"},{"crop_id":"parsley","crates_per_week":45,"peak_note":"Christmas/New Year ~x1.2"},{"crop_id":"dill","crates_per_week":20,"peak_note":"Clean Monday 15 Mar 2027 ~x3"},{"crop_id":"coriander","crates_per_week":18,"peak_note":"Steady"},{"crop_id":"chicory","crates_per_week":30,"peak_note":"Lent (from 15 Mar 2027) higher"},{"crop_id":"endive","crates_per_week":40,"peak_note":"Steady"},{"crop_id":"chard","crates_per_week":20,"peak_note":"Lent pies (χορτόπιτα) higher"},{"crop_id":"onion","crates_per_week":30,"peak_note":"Clean Monday 15 Mar 2027 ~x3"}],"alerts":[{"id":"A01","severity":"high","kind":"frost","title":"Frost at leaf level on the low plain, night Wed 18 → Thu 19 Nov","body":"Clear, calm nights Tue-Thu. Cold air drains off Geraneia and pools on the plain: 2 m air min 0.5 °C at Μεσαίο Χωράφι, 0.0 °C at Κάτω Κάμπος, 0.2 °C at Νότιος Κάμπος. Leaf surfaces can be 2-3 °C colder than the air. Young coriander and dill (Μεσαίο Χωράφι) are the most exposed. Geraneia Slope is warmer (4.0 °C, above the cold layer) and Pachi (5.0 °C, sea).","parcel_id":"P2","action":"Wed 18 Nov before sunset: cover coriander + dill (Μεσαίο Χωράφι) with 17-19 g/m² fleece (gains ~1-2 °C). Remove Thu 19 after ~10:00 when thawed, before the windy front on Fri. Thu 19: no harvest of spinach (Κάτω Κάμπος) or chicory before leaves thaw (~10:00).","why":{"rule":"Warn when forecast 2 m min <= 2 °C AND night wind <= 5 km/h AND clear sky on parcels below 50 m. Leaf surface can be 2-3 °C below air on such nights. Damage temperature for each crop is NOT set by the app – your agronomist can set it.","inputs":{"tmin_2m_Wed→Thu":{"P1 Κάτω Κάμπος 24 m":0.0,"P2 Μεσαίο 34 m":0.5,"P5 Νότιος 28 m":0.2,"P4 Γεράνεια 180 m":4.0,"P3 Πάχη 8 m":5.0},"night_wind_kmh":5,"sky":"clear (high pressure)","est_leaf_surface_min_C":"-2 to -2.5 (estimate)","exposed_plantings":["PL05 coriander, 41% grown","PL06 dill, 46% grown"]},"source":"Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%; cold-pooling pattern = rule (no frost sensor on parcels)","confidence":"Medium (that it gets near 0 °C on the low plain); Low (whether leaves are damaged)"}},{"id":"A02","severity":"high","kind":"disease","title":"Spinach downy mildew risk HIGH – Pachi Coast","body":"Leaves estimated wet 13-15 h every night since the rain of Thu 12-Fri 13 Nov, nights 6.0-9.0 °C, and the front on Fri 20-Sun 22 Nov brings 27.5 mm. Pachi had downy mildew in Dec 2025. This spinach is 67% grown, harvest from Thu 3 Dec – there is time for one protective spray that clears its PHI before harvest.","planting_id":"PL08","action":"See recommendation R01: one protective spray Wed 18 Nov (mandipropamid, FRAC 40). Before spraying, check lower-leaf undersides for grey-violet fuzzy growth (sporulation); yellow patches alone are not proof.","why":{"rule":"High when leaf wetness >= 10 h on >= 3 of the last 5 nights with night temp 5-15 °C, AND rain forecast within 5 days, AND parcel has mildew history.","inputs":{"leafwet_h_nights_14-18_Nov":[15,14,13,13,14],"night_tmin_C_14-18_Nov":[8.0,9.0,7.5,6.5,6.0],"rain_forecast_20-22_Nov_mm":27.5,"history":"downy mildew Dec 2025 (user entry)","variety_resistance":"declared for some Pe races only (seed catalogue) – new races possible"},"source":"Observed: nearest public station (Megara, ~3-6 km), corrected to parcel elevation; leaf-wet hours ESTIMATED from hours with RH>=90% (no leaf sensor); Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%; history = user entry","confidence":"Medium (leaf wetness is estimated, no sensor)"}},{"id":"A03","severity":"medium","kind":"disease","title":"Spinach Κάτω Κάμπος: mildew conditions, but it is in harvest – do NOT spray","body":"Same wet nights after the rain (leaf-wet 11-13 h per night). This lot is being cut now (safe since Mon 9 Nov). Any fungicide now would lock harvest for 7-14 days and break supply.","planting_id":"PL01","action":"Keep cutting (~15 crates/day) Tue 17-Fri 20 Nov and Mon 23-Sat 28 Nov; not Thu before ~10:00 thaw, not in the rain Fri pm-Sun. Scout lower-leaf undersides each cut; grade out leaves with grey-violet growth.","why":{"rule":"If a planting is harvesting AND a spray's PHI would block cuts before the end of its harvest window, the app does not recommend a spray; it recommends faster harvest + scouting.","inputs":{"status":"harvesting","harvest_window":"Tue 10 Nov - Sat 28 Nov","last_spray":"copper hydroxide (FRAC M01) Mon 2 Nov","safe_to_harvest_since":"Mon 9 Nov","leafwet_h_14-16_Nov":[13,12,11],"front_rain_mm":27.5},"source":"Observed: nearest public station (Megara, ~3-6 km), corrected to parcel elevation; leaf-wet hours ESTIMATED from hours with RH>=90% (no leaf sensor); Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%; spray log (user entry)","confidence":"Medium"}},{"id":"A04","severity":"medium","kind":"phi","title":"Parsley Geraneia: inside PHI until Mon 23 Nov","body":"Difenoconazole (FRAC 3) sprayed Mon 9 Nov for Septoria leaf spot; PHI 14 days → safe to harvest from Mon 23 Nov. Take parsley only from Μεσαίο Χωράφι this week (~18 crates/week vs orders 45).","planting_id":"PL12","action":"Do not cut Geraneia parsley before Mon 23 Nov. Tell clients parsley is short this week (~27 crates).","why":{"rule":"Safe-to-harvest date = last spray date + PHI for that crop on the label.","inputs":{"last_spray":"Mon 9 Nov, difenoconazole 25% EC, 0.05 L/στρ","phi_days_parsley":14,"safe_from":"Mon 23 Nov","other_parsley":"PL07 Μεσαίο, no spray, ~18 crates/week"},"source":"Spray log (user entry); PHI from product record (illustrative – check label)","confidence":"High (if the spray log is correct)"}},{"id":"A05","severity":"medium","kind":"supply","title":"Spinach: no supply after Tue 22 Dec (orders 90 crates/week)","body":"Κάτω Κάμπος gives ~83 crates/week until Sat 28 Nov (already 7-19 short/week). Week Mon 30 Nov-Sun 6 Dec only ~45 (gap between lots). Pachi gives ~79/week Thu 3-Tue 22 Dec. From Wed 23 Dec nothing is planted - and Christmas week orders are ~117.","planting_id":"PL08","action":"Sow spinach now on Νότιος Κάμπος (R04) – earliest it can help is ~mid-Jan. For 23 Dec - mid-Jan: buy in or agree lower volumes with clients.","why":{"rule":"Gap = weekly orders - weekly supply (est. crates spread evenly over each planting's harvest window).","inputs":{"orders_per_week":90,"PL01_per_week":83,"PL08_per_week":79,"est_supply_weeks_from_16_Nov":[83,71,45,79,79,22],"weeks_without_spinach":"Wed 23 Dec → mid-Jan (until a new sowing is ready)","yield_basis":"1.2 t/στρ, 8 kg crate, ~10% waste included"},"source":"Orders from Κλούβες app (weekly totals, sample); yield = assumption","confidence":"Medium"}},{"id":"A06","severity":"medium","kind":"stock","title":"Low stock: Mandipropamid 25% SC – 0.10 L left","body":"Enough for exactly one spray on Pachi spinach (1.5 στρ × 0.06 L = 0.09 L). Nothing left for a second FRAC 40 spray or for other lots.","parcel_id":"P3","action":"Reorder (a prescription from your agronomist may be required - verify). Keep alternatives in rotation: propamocarb (FRAC 28, last used 30 Oct on this lot).","why":{"rule":"Warn when stock < 2 × the next planned application.","inputs":{"qty_L":0.1,"next_use_L":0.09,"threshold_L":0.18},"source":"Stock (user entry)","confidence":"High"}},{"id":"A07","severity":"low","kind":"stock","title":"Expired: Acetamiprid 20% SP (expired 31 Oct 2026)","body":"0.3 kg in store. Do not use expired product.","parcel_id":null,"action":"Set aside, label 'EXPIRED', return via authorised collection scheme / supplier.","why":{"rule":"Expiry date < today.","inputs":{"expiry":"2026-10-31","today":"2026-11-16"},"source":"Stock (user entry)","confidence":"High"}},{"id":"A08","severity":"low","kind":"stock","title":"Spinosad 48% SC expires Tue 15 Dec 2026","body":"0.12 L left (≈ 4.8 στρ of rocket at 0.025 L/στρ). Use first if caterpillars return; do not order more now.","parcel_id":null,"action":"Use before 15 Dec if needed; otherwise return.","why":{"rule":"Warn when expiry is within 30 days.","inputs":{"expiry":"2026-12-15","days_left":29},"source":"Stock (user entry)","confidence":"High"}},{"id":"A09","severity":"medium","kind":"weather","title":"Front Fri 20 - Sun 22 Nov: no spraying, strong gusts","body":"Rain 27.5 mm on the plain; gusts up to 55 km/h, 70 km/h on Geraneia (north wind Sun). Last spray day before it: Wed 18 Nov.","parcel_id":"P1","action":"Finish sprays Wed 18. Remove/secure fleece Thu. Irrigation off Fri-Sun. Harvest planned cuts by Fri morning.","why":{"rule":"No spray when gust > 20 km/h, rain within 24 h of application, or leaves wet.","inputs":{"rain_mm_20/21/22":[6.5,17.8,3.2],"gust_kmh_20/21/22_plain":[48,55,58],"gust_kmh_22_Geraneia":70},"source":"Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%","confidence":"Medium (timing ±12 h)"}},{"id":"A10","severity":"low","kind":"water","title":"Pachi well water EC 2.6 dS/m","body":"Salty for spinach (sensitive); chard tolerates it. Rain of 20-22 Nov will leach salts – no irrigation needed this week.","parcel_id":"P3","action":"No irrigation until after the front; re-test well EC in December.","why":{"rule":"Warn when irrigation water EC > 2.0 dS/m on a parcel with salt-sensitive crops.","inputs":{"water_EC":2.6,"soil_EC":1.8,"sensitive":"spinach PL08"},"source":"Water test (user entry, Aug 2026)","confidence":"Medium"}}],"recommendations":[{"id":"R01","planting_id":"PL08","action":"Spray mandipropamid 25% SC (FRAC 40), 0.06 L/στρ in 50 L water/στρ, on the 1.5 στρ spinach only. Cut chard, coriander and spring onion on the same parcel BEFORE spraying; leave one unsprayed bed as buffer next to them (product not registered on those crops). New safe-to-harvest date: Wed 2 Dec; REI 24 h.","window":"Wed 18 Nov, 11:00-15:00","why":{"rule":"Spray only if: leaves dry (after dew ~10:00), gust < 20 km/h, no rain for >= 24 h after (product needs ~1 h to dry), planting not harvesting, new PHI ends before harvest starts, FRAC group different from the last spray on this lot, product registered for crop and in stock and not expired.","inputs":{"gust_kmh_Wed":14,"wind_kmh_Wed":7,"leafwet_h_night_before":14,"next_rain":"Fri 20 Nov evening (>48 h after)","last_spray_on_lot":"propamocarb (FRAC 28) Fri 30 Oct","this_spray_group":"FRAC 40","phi_days":14,"safe_from":"Wed 2 Dec","harvest_from":"Thu 3 Dec","stock_L":0.1,"needed_L":0.09,"Tue_17_rejected":"dew + calm inversion risk in the morning, leaves dry only late; Wed has better drying"},"source":"Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%; spray log + stock (user entry); PHI/dose from product record (illustrative – check label)","confidence":"Medium"}},{"id":"R02","planting_id":"PL01","action":"Harvest, no spray. ~151 crates left: cut ~15/day Tue 17-Fri 20 Nov, pause for the front, resume Mon 23-Sat 28 Nov. Scout undersides of lower leaves each cut.","window":"Tue 17 - Sat 28 Nov (Thu only after ~10:00 thaw; none Fri pm-Sun)","why":{"rule":"Harvesting planting + disease risk → harvest faster, no fungicide (PHI would block harvest).","inputs":{"est_crates":225,"logged_cuts":"38 (Tue 10) + 36 (Sat 14)","remaining_est_crates":151,"safe_since":"Mon 9 Nov","orders_per_week":90,"frost_Thu_tmin":0.0},"source":"Harvest log + orders (user entry); Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%","confidence":"Medium"}},{"id":"R03","planting_id":"PL02","action":"Fertigate leek with calcium nitrate (nitrate N) 5 kg/στρ via drip = ~0.8 kg N/στρ. Do NOT top-dress urea on the surface. Do NOT give N to spinach (PL01, PL08), rocket (PL04, PL13) or other lots < 21 days from harvest.","window":"Mon 23 - Wed 25 Nov (after the front, when drip restarts)","why":{"rule":"N form must suit soil: on pH >= 7.5 with free lime, surface urea/ammonium loses NH3 unless incorporated by >= 10 mm rain or irrigation → use nitrate via fertigation. Not before heavy rain (leaching). Leafy greens: last N >= 21 days before harvest – winter low light raises leaf nitrate; EU sets maximum nitrate levels for spinach and rocket (Reg. (EU) 2023/915).","inputs":{"soil_pH":7.9,"CaCO3_pct":21,"soil_NO3_N_ppm":18,"soil_test_date":"2026-09-02","leek_harvest_from":"Sun 10 Jan 2027 (48 days after 23 Nov)","rain_forecast_20-22_mm":27.5,"excluded_lots_days_to_harvest_from_23_Nov":{"PL08 spinach":10,"PL04 rocket":3,"PL16 rocket":19,"PL06 dill":15,"PL05 coriander":17,"PL01 spinach, PL13 rocket, PL07/PL12 parsley, PL09 chard, PL10 onion, PL11 coriander, PL14 dill, PL15 endive, PL03 chicory":"harvesting / ready"},"stock_kg":175,"needed_kg":10},"source":"Soil test (lab, user entry); Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%; rule = agronomic guideline, dose illustrative","confidence":"Medium"}},{"id":"R04","planting_id":null,"parcel_id":"P5","action":"Sow spinach on 3 στρ of Νότιος Κάμπος (free prepared beds). Use a variety with the widest declared downy-mildew (Pe) race resistance. Optional pre-emergence lenacil (HRAC 5) 0.05 kg/στρ within 2 days of sowing – check label. NOT on Pachi Coast (mildew history, spinach already there).","window":"Tue 17 - Thu 19 Nov (before the front; rain will settle the seed)","why":{"rule":"Sow to close an order gap only on a parcel with: no same-family crop (spinach/chard/beet, Amaranthaceae) in the last 3 years, no disease flag for that crop, free area, workable soil.","inputs":{"order_gap":"90 crates/week from Wed 23 Dec","expected_harvest":"~mid-Jan to mid-Feb 2027 (60-75 days in winter, short days)","expected_crates":"~450 (3 στρ × 1.2 t/στρ ÷ 8 kg, ~10% waste)","parcel_history":"spring onion (Amaryllidaceae) harvested Oct 2026; no Amaranthaceae since 2023","rejected_parcels":{"P3 Pachi":"mildew HIGH alert + spinach on spinach","P1 Κάτω Κάμπος":"spinach already this season (PL01)","P2 Μεσαίο":"beetroot (same family) spring 2026","P4 Γεράνεια":"only ~2 στρ free on narrow terraces"},"free_area_str":3.0,"days_since_rain":3,"soil":"sandy loam, low crusting","lenacil_stock_kg":0.8,"lenacil_needed_kg":0.15},"source":"Orders (Κλούβες, sample); field history (user entry); Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%","confidence":"Medium (harvest date ±10 days)"}},{"id":"R05","planting_id":"PL05","action":"Cover coriander (PL05) and dill (PL06) with 17-19 g/m² fleece Wed evening; uncover Thu after ~10:00. No harvest is due on these lots.","window":"Wed 18 Nov before sunset → Thu 19 Nov ~10:00","why":{"rule":"See frost alert A01: low-plain parcel, clear calm night, 2 m min <= 2 °C; young tender herbs most exposed.","inputs":{"tmin_P2_Thu":0.5,"wind_kmh":5,"stage_pct":{"coriander":41,"dill":46}},"source":"Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%","confidence":"Medium / Low (damage)"}},{"id":"R06","planting_id":"PL03","action":"Start chicory harvest Wed 18 Nov after dew dries (~10:00); skip Thu morning (frozen leaves); cut again Fri morning before rain.","window":"Wed 18 Nov 10:00 → Fri 20 Nov 12:00","why":{"rule":"Harvest when mature and safe; avoid cutting frozen or wet-and-frozen leaves.","inputs":{"stage_pct":97,"harvest_from":"Wed 18 Nov","last_spray":"none","frost_Thu_tmin":0.0},"source":"Planting record (user entry); Forecast: model blend (ECMWF/ICON, ~2-9 km grid), corrected to parcel elevation/exposure; leaf-wet hours ESTIMATED from RH>=90%","confidence":"High"}},{"id":"R07","planting_id":"PL12","action":"Hold harvest until Mon 23 Nov. No further fungicide now; if Septoria spreads after the front, next spray must not be FRAC 3 (e.g. copper hydroxide, FRAC M01, PHI 7) – check label.","window":"Until Mon 23 Nov","why":{"rule":"PHI + FRAC rotation: do not repeat the same FRAC group back-to-back.","inputs":{"last_spray":"difenoconazole, FRAC 3, Mon 9 Nov","safe_from":"Mon 23 Nov"},"source":"Spray log (user entry); PHI illustrative","confidence":"High"}}]}/*DATA_END*/;
+
+/* ---------- i18n ---------- */
+const T = {
+en:{today:"Today",crops:"Crops",parcels:"Parcels",stock:"Stock",more:"More",back:"Back",
+ sample:"SAMPLE DATA", sampleTxt:"not real advice. Doses/PHI from the product label.",
+ weatherNow:"Weather now",temp:"Temp",tonight:"tonight",wind:"Wind",gust:"gust",humidity:"Humidity",lastRain:"Rain",rain24:"last 24 h",daysAgo:"{n} days ago",today0:"today",noRain:"no rain in 7 days",
+ updated:"Updated 06:40 · forecast model, not a field station",
+ alerts:"Alerts",noAlerts:"No critical jobs today.",nextActions:"Next actions",kpiH7:"Harvest next 7 days",kpiH28:"Harvest next 28 days",crates:"crates",cratesWk:"crates/week",activeCrops:"Active crops",safeToday:"Safe to harvest today",safeTodaySub:"mature AND PHI over",
+ why:"Why?",open:"Open",rule:"Rule",inputs:"Inputs",source:"Data source",confidence:"Confidence",action:"Action",window:"Window",high:"High",medium:"Medium",low:"Low",sevHigh:"High",sevMedium:"Medium",sevLow:"Info",
+ plantedIn:"Planted in",plantings:"Plantings",area:"Area",sown:"Sown",growth:"Growth",maturity:"Maturity (harvest window)",estCrates:"Est. crates",status:"Status",growing:"Growing",harvesting:"Harvesting",ready:"Ready to cut",
+ lastSpray:"Last spray",noSpray:"No spray recorded",product:"Product",active:"Active ingredient",type:"Type",group:"Group",dose:"Dose",phi:"PHI",phiClear:"PHI over — safe from",phiWait:"PHI running — safe from",rei:"Re-entry (REI)",reiUntil:"workers out until",notReg:"Not registered for this crop in sample label list",
+ weather14:"Weather: 7 days observed + 7 forecast",observed:"OBSERVED",forecast:"FORECAST",obsLeg:"Observed",fcLeg:"Forecast (striped)",rainMm:"Rain mm",tempC:"°C max min",gustK:"Gust km/h",rh:"RH %",leafwet:"Leaf wet h est.",gustWarn:"▲ gust ≥ 25: no spraying",
+ risk:"Disease / pest risk",noRisk:"No active disease/pest alert for this crop.",demand:"Orders vs supply",supply:"Supply",orders:"Orders",gap:"short",surplus:"surplus",otherCrops:"Other crops on same parcel",nextAction:"Next recommended action",noRec:"No recommendation right now.",
+ location:"Location",elevation:"Elevation",soil:"Soil test",irrigation:"Irrigation",waterEC:"Water EC",cropsOn:"Crops on this parcel",recentJobs:"Recent jobs",noJobs:"No jobs recorded.",opekepe:"OPEKEPE code",sketch:"Sketch (not to scale)",
+ all:"All",fungicide:"Fungicide",insecticide:"Insecticide",herbicide:"Herbicide",fertiliser:"Fertiliser",other:"Other",qtyLeft:"Left",expiry:"Expiry",expired:"Expired",expSoon:"Expires soon",lowStock:"Low stock",registeredFor:"Registered for (sample)",rotation:"Rotation",lastGroupOn:"Last {sys} group on {p}: {g} ({d})",sameGroup:"same group — rotate",diffGroup:"different group — OK",usage:"Used in jobs",
+ sprayLog:"Spray log",harvestFc:"Harvest forecast",ordersSow:"Orders → sowing",settings:"Settings",about:"About",
+ exportCsv:"Export CSV",csvTitle:"Spray log CSV",copy:"Copy",copied:"Copied to clipboard",copyFail:"Copy blocked — select the text and copy manually",close:"Close",by:"By",weatherAt:"Weather at spray",
+ week:"Week",total:"Total",perWeek:"orders/wk",perWk:"/wk",fcNote:"Crates estimated from planting area × assumed yield, spread evenly over each harvest window. Week = Mon–Sun.",
+ sowNeed:"Sow ~{a} for ~{c} crates/week from ~{d}",sowOk:"Supply covers orders — no extra sowing.",avoid:"Not on {p}: {r}",suitable:"Suitable parcels",daysToHarvest:"~{n} days sow→harvest",
+ language:"Language",units:"Area unit",fieldMode:"Field mode (high contrast)",on:"On",off:"Off",unitsNote:"Wind km/h incl. gusts · temperature °C · doses per στρέμμα (from label)",
+ aboutTxt:"FieldWise is a decision-support prototype for leafy-green growers around Megara. Every value here is SAMPLE data. Doses and pre-harvest intervals must always come from the product label and your agronomist — the app only reminds, it does not prescribe.",
+ dataNote:"Data note",kinds:{spray:"Spray",fertilise:"Fertilise",irrigate:"Irrigate",sow:"Sow",harvest:"Harvest"},
+ alertKinds:{disease:"Disease",pest:"Pest",frost:"Frost",phi:"PHI",spray:"Spray window",stock:"Stock",irrigation:"Irrigation",fertiliser:"Fertiliser",harvest:"Harvest",nitrate:"Nitrate",rei:"Re-entry",supply:"Supply",water:"Water",weather:"Weather"},
+ stage:"stage",noData:"No data",elevationShort:"elev.",onParcel:"on",cropsCount:"crops",harvestAt:"Harvest",whyHint:"Rule, inputs, source and confidence"},
+el:{today:"Σήμερα",crops:"Καλλιέργειες",parcels:"Αγροτεμάχια",stock:"Αποθήκη",more:"Περισσότερα",back:"Πίσω",
+ sample:"ΔΕΙΓΜΑ", sampleTxt:"όχι πραγματική συμβουλή. Δόσεις/ΠΧΑ από την ετικέτα.",
+ weatherNow:"Καιρός τώρα",temp:"Θερμ.",tonight:"απόψε",wind:"Άνεμος",gust:"ριπή",humidity:"Υγρασία",lastRain:"Βροχή",rain24:"τελ. 24 ώρες",daysAgo:"πριν {n} ημέρες",today0:"σήμερα",noRain:"καμία βροχή σε 7 ημέρες",
+ updated:"Ενημέρωση 06:40 · μοντέλο πρόγνωσης, όχι σταθμός αγρού",
+ alerts:"Ειδοποιήσεις",noAlerts:"Καμία κρίσιμη εργασία σήμερα.",nextActions:"Επόμενες ενέργειες",kpiH7:"Συγκομιδή 7 ημερών",kpiH28:"Συγκομιδή 28 ημερών",crates:"κλούβες",cratesWk:"κλούβες/εβδ.",activeCrops:"Ενεργές καλλιέργειες",safeToday:"Ασφαλής συγκομιδή σήμερα",safeTodaySub:"ώριμο ΚΑΙ τέλος ΠΧΑ",
+ why:"Γιατί;",open:"Άνοιγμα",rule:"Κανόνας",inputs:"Δεδομένα",source:"Πηγή",confidence:"Βεβαιότητα",action:"Ενέργεια",window:"Παράθυρο",high:"Υψηλή",medium:"Μέτρια",low:"Χαμηλή",sevHigh:"Υψηλό",sevMedium:"Μέτριο",sevLow:"Πληροφ.",
+ plantedIn:"Φυτεμένο σε",plantings:"Φυτεύσεις",area:"Έκταση",sown:"Σπορά",growth:"Ανάπτυξη",maturity:"Ωρίμανση (παράθυρο συγκομιδής)",estCrates:"Εκτ. κλούβες",status:"Κατάσταση",growing:"Αναπτύσσεται",harvesting:"Σε συγκομιδή",ready:"Έτοιμο για κόψιμο",
+ lastSpray:"Τελευταίος ψεκασμός",noSpray:"Δεν έχει καταγραφεί ψεκασμός",product:"Προϊόν",active:"Δραστική ουσία",type:"Τύπος",group:"Ομάδα",dose:"Δόση",phi:"ΠΧΑ",phiClear:"Τέλος ΠΧΑ — ασφαλές από",phiWait:"ΠΧΑ σε ισχύ — ασφαλές από",rei:"Επανείσοδος (REI)",reiUntil:"εργάτες εκτός έως",notReg:"Μη εγκεκριμένο για αυτή την καλλιέργεια (δείγμα)",
+ weather14:"Καιρός: 7 ημέρες μετρήσεις + 7 πρόγνωση",observed:"ΜΕΤΡΗΣΗ",forecast:"ΠΡΟΓΝΩΣΗ",obsLeg:"Μετρήσεις",fcLeg:"Πρόγνωση (ριγέ)",rainMm:"Βροχή mm",tempC:"°C μέγ ελάχ",gustK:"Ριπή km/h",rh:"Υγρ. %",leafwet:"Ύγρ. φύλ. h εκτ.",gustWarn:"▲ ριπή ≥ 25: όχι ψεκασμός",
+ risk:"Κίνδυνος ασθένειας / εχθρού",noRisk:"Καμία ενεργή ειδοποίηση για αυτή την καλλιέργεια.",demand:"Παραγγελίες vs προσφορά",supply:"Προσφορά",orders:"Παραγγελίες",gap:"έλλειμμα",surplus:"πλεόνασμα",otherCrops:"Άλλες καλλιέργειες στο ίδιο αγροτεμάχιο",nextAction:"Επόμενη προτεινόμενη ενέργεια",noRec:"Καμία πρόταση τώρα.",
+ location:"Τοποθεσία",elevation:"Υψόμετρο",soil:"Ανάλυση εδάφους",irrigation:"Άρδευση",waterEC:"EC νερού",cropsOn:"Καλλιέργειες στο αγροτεμάχιο",recentJobs:"Πρόσφατες εργασίες",noJobs:"Καμία εργασία.",opekepe:"Κωδικός ΟΠΕΚΕΠΕ",sketch:"Σκαρίφημα (όχι σε κλίμακα)",
+ all:"Όλα",fungicide:"Μυκητοκτόνο",insecticide:"Εντομοκτόνο",herbicide:"Ζιζανιοκτόνο",fertiliser:"Λίπασμα",other:"Άλλο",qtyLeft:"Απόθεμα",expiry:"Λήξη",expired:"Έληξε",expSoon:"Λήγει σύντομα",lowStock:"Χαμηλό απόθεμα",registeredFor:"Εγκεκριμένο για (δείγμα)",rotation:"Εναλλαγή",lastGroupOn:"Τελευταία ομάδα {sys} στο {p}: {g} ({d})",sameGroup:"ίδια ομάδα — εναλλάξτε",diffGroup:"διαφορετική ομάδα — ΟΚ",usage:"Χρήση σε εργασίες",
+ sprayLog:"Ημερολόγιο ψεκασμών",harvestFc:"Πρόβλεψη συγκομιδής",ordersSow:"Παραγγελίες → σπορά",settings:"Ρυθμίσεις",about:"Σχετικά",
+ exportCsv:"Εξαγωγή CSV",csvTitle:"CSV ψεκασμών",copy:"Αντιγραφή",copied:"Αντιγράφηκε",copyFail:"Η αντιγραφή μπλοκαρίστηκε — επιλέξτε το κείμενο",close:"Κλείσιμο",by:"Από",weatherAt:"Καιρός στον ψεκασμό",
+ week:"Εβδομάδα",total:"Σύνολο",perWeek:"παραγ./εβδ.",perWk:"/εβδ.",fcNote:"Κλούβες εκτιμώνται από έκταση × υποθετική απόδοση, ομοιόμορφα στο παράθυρο συγκομιδής. Εβδομάδα = Δευ–Κυρ.",
+ sowNeed:"Σπείρετε ~{a} για ~{c} κλούβες/εβδ. από ~{d}",sowOk:"Η προσφορά καλύπτει τις παραγγελίες.",avoid:"Όχι στο {p}: {r}",suitable:"Κατάλληλα αγροτεμάχια",daysToHarvest:"~{n} ημέρες σπορά→συγκομιδή",
+ language:"Γλώσσα",units:"Μονάδα έκτασης",fieldMode:"Λειτουργία αγρού (υψηλή αντίθεση)",on:"Ναι",off:"Όχι",unitsNote:"Άνεμος km/h με ριπές · θερμοκρασία °C · δόσεις ανά στρέμμα (από ετικέτα)",
+ aboutTxt:"Το FieldWise είναι πρωτότυπο υποστήριξης αποφάσεων για παραγωγούς φυλλωδών στα Μέγαρα. Όλες οι τιμές είναι ΔΕΙΓΜΑ. Δόσεις και ΠΧΑ πάντα από την ετικέτα και τον γεωπόνο σας — η εφαρμογή υπενθυμίζει, δεν συνταγογραφεί.",
+ dataNote:"Σημείωση δεδομένων",kinds:{spray:"Ψεκασμός",fertilise:"Λίπανση",irrigate:"Άρδευση",sow:"Σπορά",harvest:"Συγκομιδή"},
+ alertKinds:{disease:"Ασθένεια",pest:"Εχθρός",frost:"Παγετός",phi:"ΠΧΑ",spray:"Παράθυρο ψεκασμού",stock:"Απόθεμα",irrigation:"Άρδευση",fertiliser:"Λίπανση",harvest:"Συγκομιδή",nitrate:"Νιτρικά",rei:"Επανείσοδος",supply:"Προσφορά",water:"Νερό",weather:"Καιρός"},
+ stage:"στάδιο",noData:"Χωρίς δεδομένα",elevationShort:"υψ.",onParcel:"στο",cropsCount:"καλλιέργειες",harvestAt:"Συγκομιδή",whyHint:"Κανόνας, δεδομένα, πηγή, βεβαιότητα"},
+tr:{today:"Bugün",crops:"Ürünler",parcels:"Parseller",stock:"Depo",more:"Diğer",back:"Geri",
+ sample:"ÖRNEK VERİ", sampleTxt:"gerçek tavsiye değildir. Doz/PHI ürün etiketinden.",
+ weatherNow:"Şu an hava",temp:"Sıcaklık",tonight:"gece",wind:"Rüzgâr",gust:"hamle",humidity:"Nem",lastRain:"Yağış",rain24:"son 24 sa",daysAgo:"{n} gün önce",today0:"bugün",noRain:"7 gündür yağış yok",
+ updated:"Güncelleme 06:40 · tahmin modeli, tarla istasyonu değil",
+ alerts:"Uyarılar",noAlerts:"Bugün kritik iş yok.",nextActions:"Sıradaki işler",kpiH7:"Hasat, sonraki 7 gün",kpiH28:"Hasat, sonraki 28 gün",crates:"kasa",cratesWk:"kasa/hafta",activeCrops:"Aktif ürün",safeToday:"Bugün hasat edilebilir",safeTodaySub:"olgun VE PHI bitti",
+ why:"Neden?",open:"Aç",rule:"Kural",inputs:"Girdiler",source:"Veri kaynağı",confidence:"Güven",action:"Eylem",window:"Zaman aralığı",high:"Yüksek",medium:"Orta",low:"Düşük",sevHigh:"Yüksek",sevMedium:"Orta",sevLow:"Bilgi",
+ plantedIn:"Ekili olduğu yer",plantings:"Ekimler",area:"Alan",sown:"Ekim",growth:"Gelişim",maturity:"Olgunluk (hasat aralığı)",estCrates:"Tahmini kasa",status:"Durum",growing:"Büyüyor",harvesting:"Hasatta",ready:"Kesime hazır",
+ lastSpray:"Son ilaçlama",noSpray:"İlaçlama kaydı yok",product:"Ürün",active:"Etken madde",type:"Tür",group:"Grup",dose:"Doz",phi:"PHI",phiClear:"PHI bitti — güvenli:",phiWait:"PHI sürüyor — güvenli:",rei:"Tarlaya giriş (REI)",reiUntil:"işçi girmesin:",notReg:"Bu ürün için ruhsatlı değil (örnek liste)",
+ weather14:"Hava: 7 gün ölçüm + 7 gün tahmin",observed:"ÖLÇÜM",forecast:"TAHMİN",obsLeg:"Ölçüm",fcLeg:"Tahmin (çizgili)",rainMm:"Yağış mm",tempC:"°C yük düş",gustK:"Hamle km/s",rh:"Nem %",leafwet:"Yaprak ıslak sa tah.",gustWarn:"▲ hamle ≥ 25: ilaçlama yok",
+ risk:"Hastalık / zararlı riski",noRisk:"Bu ürün için aktif uyarı yok.",demand:"Sipariş ve arz",supply:"Arz",orders:"Sipariş",gap:"açık",surplus:"fazla",otherCrops:"Aynı parseldeki diğer ürünler",nextAction:"Önerilen sıradaki iş",noRec:"Şu an öneri yok.",
+ location:"Konum",elevation:"Rakım",soil:"Toprak analizi",irrigation:"Sulama",waterEC:"Su EC",cropsOn:"Bu parseldeki ürünler",recentJobs:"Son işler",noJobs:"İş kaydı yok.",opekepe:"OPEKEPE kodu",sketch:"Kroki (ölçeksiz)",
+ all:"Tümü",fungicide:"Fungisit",insecticide:"İnsektisit",herbicide:"Herbisit",fertiliser:"Gübre",other:"Diğer",qtyLeft:"Kalan",expiry:"Son kullanma",expired:"Süresi doldu",expSoon:"Yakında doluyor",lowStock:"Stok az",registeredFor:"Ruhsatlı olduğu ürünler (örnek)",rotation:"Rotasyon",lastGroupOn:"{p} parselinde son {sys} grubu: {g} ({d})",sameGroup:"aynı grup — değiştir",diffGroup:"farklı grup — uygun",usage:"Kullanıldığı işler",
+ sprayLog:"İlaçlama kaydı",harvestFc:"Hasat tahmini",ordersSow:"Sipariş → ekim",settings:"Ayarlar",about:"Hakkında",
+ exportCsv:"CSV dışa aktar",csvTitle:"İlaçlama CSV",copy:"Kopyala",copied:"Panoya kopyalandı",copyFail:"Kopyalama engellendi — metni seçip kopyalayın",close:"Kapat",by:"Yapan",weatherAt:"İlaçlama anı hava",
+ week:"Hafta",total:"Toplam",perWeek:"sipariş/hf",perWk:"/hf",fcNote:"Kasa sayısı alan × varsayılan verimden, hasat aralığına eşit dağıtılarak tahmin edildi. Hafta = Pzt–Paz.",
+ sowNeed:"~{a} ek: ~{d} itibarıyla ~{c} kasa/hafta",sowOk:"Arz siparişleri karşılıyor — ek ekim gerekmez.",avoid:"{p} olmaz: {r}",suitable:"Uygun parseller",daysToHarvest:"ekim→hasat ~{n} gün",
+ language:"Dil",units:"Alan birimi",fieldMode:"Tarla modu (yüksek kontrast)",on:"Açık",off:"Kapalı",unitsNote:"Rüzgâr km/s (hamle dahil) · sıcaklık °C · doz/στρέμμα (etiketten)",
+ aboutTxt:"FieldWise, Megara çevresindeki yeşillik üreticileri için bir karar destek prototipidir. Buradaki her değer ÖRNEK veridir. Doz ve hasat öncesi bekleme süresi her zaman ürün etiketinden ve ziraat mühendisinizden alınmalıdır — uygulama yalnızca hatırlatır, reçete yazmaz.",
+ dataNote:"Veri notu",kinds:{spray:"İlaçlama",fertilise:"Gübreleme",irrigate:"Sulama",sow:"Ekim",harvest:"Hasat"},
+ alertKinds:{disease:"Hastalık",pest:"Zararlı",frost:"Don",phi:"PHI",spray:"İlaçlama aralığı",stock:"Stok",irrigation:"Sulama",fertiliser:"Gübre",harvest:"Hasat",nitrate:"Nitrat",rei:"Tarlaya giriş",supply:"Arz",water:"Su",weather:"Hava"},
+ stage:"evre",noData:"Veri yok",elevationShort:"rakım",onParcel:"",cropsCount:"ürün",harvestAt:"Hasat",whyHint:"Kural, girdiler, kaynak, güven"}
+};
+(function(){const X={
+en:{tab_today:"Today",tab_crops:"Crops",tab_parcels:"Parcels",tab_stock:"Stock",tab_more:"More",crate:"crate",form:"Formulation",farm:"Farm",region:"Region",saline:"saline",sea:"sea",reiShort:"REI",irrSource:"Water source",parcel:"Parcel",planting:"planting",
+ contentEn:"Advice texts are in English only for now (sample data).",details:"Details",todayMaxMin:"Today max / min",tonightMin:"Tonight min",balanced:"balanced",noOrders:"No orders for this crop yet.",holdPhi:"Hold – PHI until {d}",inPhi:"held by PHI",notCounted:"in PHI until {d} – these crates are not counted before then",
+ kpiNote:"Crate estimates exclude lots still inside their PHI and crates already logged as cut.",loggedCut:"{n} crates already cut (harvest log)",lwWarn:"◆ leaf wet ≥ {h} h: disease risk",gustWarn:"▲ gust ≥ {g} km/h: no spraying",multiSite:"multi-site (M) group – low resistance risk",rotNone:"No earlier spray of this group on lots where it is registered.",
+ sowRule:"Rule (same as the sowing recommendation): no parcel with a disease flag for that crop family, no same-family crop recently, free area. Gaps smaller than 3 crates or 10 % of orders are ignored.",shortWeeks:"Short up to ~{c} crates/week in weeks from {w}",checkedOn:"Checked parcel",notOn:"Not on these parcels",tempGap:"Short-term gap (lot not ready yet or held by PHI) – sowing now cannot close it. See",noCheck:"No sowing check done yet (crop family, disease flags, free area) – ask your agronomist before choosing a parcel.",
+ updated:"Forecast run 06:40 (sample) · model, not a field station"},
+el:{tab_today:"Σήμερα",tab_crops:"Φυτά",tab_parcels:"Χωράφια",tab_stock:"Αποθήκη",tab_more:"Άλλα",crate:"κλούβα",form:"Σκεύασμα",farm:"Εκμετάλλευση",region:"Περιοχή",saline:"αλατούχο",sea:"θάλασσα",reiShort:"Επανείσ.",irrSource:"Πηγή νερού",parcel:"Αγροτεμάχιο",planting:"φύτευση",
+ contentEn:"Τα κείμενα συμβουλών είναι προς το παρόν μόνο στα Αγγλικά (δείγμα).",details:"Λεπτομέρειες",todayMaxMin:"Σήμερα μέγ. / ελάχ.",tonightMin:"Απόψε ελάχ.",balanced:"ισοζύγιο",noOrders:"Δεν υπάρχουν ακόμη παραγγελίες.",holdPhi:"Αναμονή – ΠΧΑ έως {d}",inPhi:"σε ΠΧΑ",notCounted:"σε ΠΧΑ έως {d} – δεν μετρώνται κλούβες πριν",
+ kpiNote:"Οι εκτιμήσεις εξαιρούν φυτεύσεις σε ΠΧΑ και κλούβες που έχουν ήδη κοπεί.",loggedCut:"{n} κλούβες ήδη κομμένες",lwWarn:"◆ ύγρανση ≥ {h} h: κίνδυνος ασθένειας",gustWarn:"▲ ριπή ≥ {g} km/h: όχι ψεκασμός",multiSite:"ομάδα πολλαπλής δράσης (M) – χαμηλός κίνδυνος ανθεκτικότητας",rotNone:"Κανένας προηγούμενος ψεκασμός αυτής της ομάδας.",
+ sowRule:"Κανόνας (ίδιος με την πρόταση σποράς): όχι αγροτεμάχιο με ειδοποίηση ασθένειας για την ίδια οικογένεια, όχι ίδια οικογένεια πρόσφατα, ελεύθερη έκταση. Ελλείμματα < 3 κλούβες ή < 10 % αγνοούνται.",shortWeeks:"Έλλειμμα έως ~{c} κλούβες/εβδ. τις εβδομάδες από {w}",checkedOn:"Ελεγμένο αγροτεμάχιο",notOn:"Όχι σε αυτά",tempGap:"Προσωρινό έλλειμμα (φύτευση δεν είναι έτοιμη ή σε ΠΧΑ) – η σπορά τώρα δεν το καλύπτει. Δείτε",noCheck:"Δεν έχει γίνει έλεγχος σποράς – ρωτήστε τον γεωπόνο πριν επιλέξετε αγροτεμάχιο.",
+ updated:"Πρόγνωση 06:40 (δείγμα) · μοντέλο, όχι σταθμός αγρού"},
+tr:{tab_today:"Bugün",tab_crops:"Ürünler",tab_parcels:"Parseller",tab_stock:"Depo",tab_more:"Diğer",crate:"kasa",form:"Formülasyon",farm:"İşletme",region:"Bölge",saline:"tuzlu",sea:"deniz",reiShort:"REI",irrSource:"Su kaynağı",parcel:"Parsel",planting:"ekim",
+ contentEn:"Tavsiye metinleri şimdilik yalnızca İngilizce (örnek veri).",details:"Ayrıntılar",todayMaxMin:"Bugün en yük. / düş.",tonightMin:"Bu gece en düşük",balanced:"dengede",noOrders:"Bu ürün için henüz sipariş yok.",holdPhi:"Bekle – PHI {d} tarihine kadar",inPhi:"PHI nedeniyle bekliyor",notCounted:"{d} tarihine kadar PHI'da – bu kasalar o tarihe kadar sayılmaz",
+ kpiNote:"Kasa tahminleri PHI içindeki ekimleri ve kesilmiş kasaları içermez.",loggedCut:"{n} kasa zaten kesildi (hasat kaydı)",lwWarn:"◆ yaprak ıslak ≥ {h} sa: hastalık riski",gustWarn:"▲ hamle ≥ {g} km/s: ilaçlama yok",multiSite:"çok yönlü (M) grup – düşük direnç riski",rotNone:"Bu grubun önceki ilaçlaması yok.",
+ sowRule:"Kural (ekim önerisiyle aynı): aynı ürün ailesi için hastalık uyarısı olan parsel yok, yakın zamanda aynı aile yok, boş alan. 3 kasadan veya siparişin %10'undan küçük açıklar yok sayılır.",shortWeeks:"{w} haftalarında ~{c} kasa/hafta açık",checkedOn:"Kontrol edilen parsel",notOn:"Bu parsellere değil",tempGap:"Geçici açık (ekim hazır değil veya PHI\'da) – şimdi ekim bunu kapatamaz. Bakınız",noCheck:"Henüz ekim kontrolü yapılmadı – parsel seçmeden önce ziraat mühendisine sorun.",
+ updated:"Tahmin 06:40 (örnek) · model, tarla istasyonu değil"}};
+for(const l in X)for(const k in X[l])T[l][k]=X[l][k];})();
+const DOW={en:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],el:["Κυρ","Δευ","Τρί","Τετ","Πέμ","Παρ","Σάβ"],tr:["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"]};
+const MON={en:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],el:["Ιαν","Φεβ","Μαρ","Απρ","Μαΐ","Ιουν","Ιουλ","Αυγ","Σεπ","Οκτ","Νοε","Δεκ"],tr:["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"]};
+
+/* ---------- state ---------- */
+const S={lang:"en",area:"str",hc:false,stack:[{v:"today"}],stockF:"all",logF:"spray"};
+try{const sv=JSON.parse(window.localStorage.getItem("fw2")||"{}");if(sv.lang&&T[sv.lang])S.lang=sv.lang;if(sv.area)S.area=sv.area;S.hc=!!sv.hc;}catch(e){}
+function save(){try{window.localStorage.setItem("fw2",JSON.stringify({lang:S.lang,area:S.area,hc:S.hc}))}catch(e){}}
+function t(k,vars){let s=(T[S.lang]&&T[S.lang][k]);if(s==null)s=T.en[k];if(s==null)s=k;if(vars)for(const x in vars)s=s.split("{"+x+"}").join(vars[x]);return s}
+function tk(group,k){const g=(T[S.lang][group]||{}),e=(T.en[group]||{});return g[k]||e[k]||cap(String(k||"").replace(/_/g," "))}
+function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):s}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function tx(o,k){if(!o)return"";return o[k+"_"+S.lang]!=null?o[k+"_"+S.lang]:(o[k]!=null?o[k]:"")}
+function numRaw(n){if(n==null||n==="")return"–";const s=String(n);return S.lang==="en"?s:s.replace(".",",")}
+function num(n,d){if(n==null||n==="")return"–";const v=Number(n);if(!isFinite(v))return esc(n);let s=d==null?String(Math.round(v*100)/100):v.toFixed(d);return S.lang==="en"?s:s.replace(".",",")}
+
+/* ---------- data access ---------- */
+const D=DATA||{};
+const arr=k=>Array.isArray(D[k])?D[k]:[];
+const META=D.meta||{};
+const TODAY=pd(META.today||"2026-11-16");
+const by=(k)=>{const m={};arr(k).forEach(x=>{if(x&&x.id!=null)m[x.id]=x});return m};
+const CROP=by("crops"),PARC=by("parcels"),PLANT=by("plantings"),PROD=by("products"),ALERT=by("alerts"),REC=by("recommendations"),JOB=by("jobs");
+function pd(s){if(!s)return null;const m=/^(\d{4})-(\d\d)-(\d\d)/.exec(String(s));if(!m)return null;return Date.UTC(+m[1],+m[2]-1,+m[3])}
+const DAY=864e5;
+function addD(ms,n){return ms+n*DAY}
+function iso(ms){return new Date(ms).toISOString().slice(0,10)}
+function fd(x,yr){const ms=typeof x==="number"?x:pd(x);if(ms==null)return esc(x||"–");const d=new Date(ms);const y=d.getUTCFullYear();return DOW[S.lang][d.getUTCDay()]+" "+d.getUTCDate()+" "+MON[S.lang][d.getUTCMonth()]+((yr||y!==new Date(TODAY).getUTCFullYear())?" "+y:"")}
+function fdShort(ms){const d=new Date(ms);return d.getUTCDate()+" "+MON[S.lang][d.getUTCMonth()]}
+function diffD(a,b){return Math.round((a-b)/DAY)}
+function area(v){if(v==null)return"–";return S.area==="ha"?num(v/10,2)+" ha":num(v,1).replace(/[.,]0$/,"")+" στρ."}
+function wxOf(pid){const w=(D.weather&&D.weather.by_parcel&&D.weather.by_parcel[pid])||[];return w.slice().sort((a,b)=>pd(a.date)-pd(b.date))}
+
+function cropName(c,opt){if(!c)return"–";const g=S.lang==="el"?(c.latin?"<i>"+esc(c.latin)+"</i>":""):esc(S.lang==="tr"?(c.name_tr||c.name_en):(c.name_en||c.name_tr));return '<span class="cn-el">'+esc(c.name_el||c.name_en||c.id)+'</span>'+(g?' <span class="gloss">· '+g+'</span>':"")}
+function cropPlain(c){if(!c)return"";return (c.name_el||c.name_en||c.id)+" · "+(S.lang==="tr"?(c.name_tr||c.name_en):S.lang==="el"?(c.name_en||""):(c.name_en||""))}
+function prodName(p){if(!p)return"–";const el=p.name_el||p.label;const g=S.lang==="tr"?(p.name_tr||p.label):(p.name_en||p.label);return '<span class="cn-el">'+esc(el)+'</span>'+(g&&g!==el?' <span class="gloss">· '+esc(g)+'</span>':"")}
+function dose(v,p){if(v==null||v==="")return"–";if(typeof v==="number"||/^[\d.]+$/.test(String(v)))return numRaw(v)+" "+esc((p&&p.unit)||"")+"/στρ.";return esc(v)}
+function phiTxt(r){return r&&r.phi_days!=null?num(r.phi_days,0)+" d":"–"}
+const L={crop:id=>CROP[id]?'<button class="lnk" data-go="crop:'+esc(id)+'">'+cropName(CROP[id])+'</button>':esc(id||"–"),
+ parcel:id=>PARC[id]?'<button class="lnk" data-go="parcel:'+esc(id)+'">'+esc(PARC[id].name)+'</button>':esc(id||"–"),
+ prod:id=>PROD[id]?'<button class="lnk" data-go="product:'+esc(id)+'">'+prodName(PROD[id])+'</button>':esc(id||"–")};
+
+/* ---------- icons ---------- */
+const I={
+ today:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>',
+ crops:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V11"/><path d="M12 11C12 6 8.5 3.5 4 3.5c0 5 3.5 7.5 8 7.5z"/><path d="M12 14c0-4 3-6.5 8-6.5 0 4.5-3 6.5-8 6.5z"/></svg>',
+ parcels:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 6.5l6-2.5 6 2.5 6-2.5v13.5l-6 2.5-6-2.5-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg>',
+ stock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3.5 8L12 3.5 20.5 8v8.5L12 21l-8.5-4.5z"/><path d="M3.5 8L12 12.5 20.5 8M12 12.5V21"/></svg>',
+ more:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2.2"/><circle cx="12" cy="12" r="2.2"/><circle cx="19" cy="12" r="2.2"/></svg>',
+ back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+ chev:'<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>',
+ x:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+ info:'<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5" stroke-linecap="round"/></svg>',
+ spray:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="9" width="8" height="12" rx="2"/><path d="M9 9V6h4v3M13 6h3l2-2M18 8h2M18 11h2M17.5 5.5l1.5-1.5"/></svg>',
+ chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/></svg>',
+ sow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16M7 19c0-4 2-6 5-7M12 12c3 0 5-2 5-6-3 0-5 2-5 6zM12 12c-2.5 0-4-1.5-4-4.5 2.5 0 4 1.5 4 4.5z"/></svg>',
+ gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-2.7 1.1V21a2 2 0 11-4 0v-.1a1.6 1.6 0 00-2.6-1.1l-.1.1a2 2 0 11-2.8-2.8l.1-.1A1.6 1.6 0 003 15.2H3a2 2 0 110-4h.1a1.6 1.6 0 001.1-2.6l-.1-.1a2 2 0 112.8-2.8l.1.1a1.6 1.6 0 001.8.3H9a1.6 1.6 0 001-1.5V3a2 2 0 114 0v.1a1.6 1.6 0 002.6 1.1l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 00-.3 1.8V9c.3.6.9 1 1.5 1H21a2 2 0 110 4h-.1c-.6 0-1.2.4-1.5 1z"/></svg>',
+ about:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5" stroke-linecap="round"/></svg>'
+};
+const SEV={high:"▲",medium:"◆",low:"●"};
+const TYPEI={fungicide:"⬢",insecticide:"✱",herbicide:"✂",fertiliser:"◍"};
+
+/* ---------- domain logic ---------- */
+const GUST_MAX=20, LW_RISK=12, EXP_SOON_D=30;
+function plantingsOf(f){return arr("plantings").filter(f)}
+function sprayJobsFor(pl){return arr("jobs").filter(j=>j.kind==="spray"&&(j.planting_id===pl.id||(!j.planting_id&&j.parcel_id===pl.parcel_id))).sort((a,b)=>pd(b.date)-pd(a.date))}
+function regFor(prod,cropId){return prod&&Array.isArray(prod.registered)?prod.registered.find(r=>r.crop_id===cropId):null}
+const SAFE={};
+function safety(pl){
+  if(SAFE[pl.id])return SAFE[pl.id];
+  const js=sprayJobsFor(pl);let safeFrom=null,reiUntil=null,last=js[0]||null,notReg=false;
+  js.forEach(j=>{const p=PROD[j.product_id];const r=regFor(p,pl.crop_id);if(!r){if(j===last)notReg=true;return}
+    const sf=addD(pd(j.date),Number(r.phi_days)||0);if(safeFrom==null||sf>safeFrom)safeFrom=sf;
+    const ru=pd(j.date)+(Number(r.rei_h)||0)*36e5;if(reiUntil==null||ru>reiUntil)reiUntil=ru;});
+  const lastProd=last?PROD[last.product_id]:null,lastReg=last?regFor(lastProd,pl.crop_id):null;
+  return (SAFE[pl.id]={last,lastProd,lastReg,safeFrom,reiUntil,notReg,clear:safeFrom==null||safeFrom<=TODAY});
+}
+function mature(pl){const f=pd(pl.harvest_from);return pl.status==="ready"||pl.status==="harvesting"||(f!=null&&f<=TODAY)}
+function onHold(pl){return mature(pl)&&!safety(pl).clear}
+function harvLogged(pl){return arr("jobs").filter(j=>j.kind==="harvest"&&j.planting_id===pl.id).reduce((s,j)=>{const n=j.crates!=null?j.crates:(/(\d+)\s*crates?/i.exec(j.notes||"")||[])[1];return s+(Number(n)||0)},0)}
+/* crates a planting can supply in [a,b): only days on/after harvest_from, PHI end and today;
+   if cuts are logged, the remaining crates are spread over the remaining window */
+function cratesIn(pl,a,b){
+  const f=pd(pl.harvest_from),to=pd(pl.harvest_to);if(f==null||to==null)return 0;
+  const sf=safety(pl).safeFrom;const start=Math.max(f,sf==null?f:sf,TODAY);if(start>to)return 0;
+  const est=Number(pl.est_crates)||0,lg=harvLogged(pl);
+  const rate=lg>0?Math.max(0,est-lg)/(diffD(to,start)+1):est/(diffD(to,f)+1);
+  const s=Math.max(start,a),e=Math.min(to,b-DAY);if(e<s)return 0;return rate*(diffD(e,s)+1);
+}
+function harvest(a,b,f){return plantingsOf(f||(()=>true)).reduce((s,pl)=>s+cratesIn(pl,a,b),0)}
+const WEEKS=[0,1,2,3].map(i=>{const st=addD(TODAY,i*7-((new Date(TODAY).getUTCDay()+6)%7));return {a:st,b:addD(st,7)}});
+function weekLabel(w){return fdShort(w.a)+"–"+fdShort(addD(w.b,-1))}
+function demandOf(cid){const o=arr("orders_weekly").find(o=>o.crop_id===cid);return o?Number(o.crates_per_week)||0:0}
+function heldFor(f){return plantingsOf(f).filter(pl=>{const s=safety(pl);const to=pd(pl.harvest_to);return s.safeFrom!=null&&s.safeFrom>TODAY&&to!=null&&to>=TODAY&&pd(pl.harvest_from)<addD(TODAY,28)})}
+function heldNote(f){return heldFor(f).map(pl=>'<div class="small" style="margin-top:6px;font-weight:700;color:var(--risk)">⏸ '+L.crop(pl.crop_id)+' · '+L.parcel(pl.parcel_id)+': '+esc(t("notCounted",{d:fd(safety(pl).safeFrom)}))+'</div>').join("")}
+function materialGap(gap,dem){return gap>=Math.max(3,0.1*dem)}
+/* crop family (botany; used for rotation + disease flags) */
+const GENUS_FAM={Spinacia:"Amaranthaceae",Beta:"Amaranthaceae",Amaranthus:"Amaranthaceae",Atriplex:"Amaranthaceae",Allium:"Amaryllidaceae",Cichorium:"Asteraceae",Lactuca:"Asteraceae",Eruca:"Brassicaceae",Brassica:"Brassicaceae",Raphanus:"Brassicaceae",Diplotaxis:"Brassicaceae",Petroselinum:"Apiaceae",Anethum:"Apiaceae",Coriandrum:"Apiaceae",Apium:"Apiaceae",Foeniculum:"Apiaceae",Scandix:"Apiaceae"};
+function familyOf(cid){const c=CROP[cid];if(!c)return cid;return c.family||GENUS_FAM[String(c.latin||"").split(" ")[0]]||cid}
+/* links between alerts/recs and plantings: explicit ids, plus planting ids named in the headline/action/inputs */
+function plIdsIn(s){return (String(s||"").match(/\bPL\d+\b/g)||[]).filter(id=>PLANT[id])}
+function uniq(a){const o=[];a.forEach(x=>{if(x!=null&&o.indexOf(x)<0)o.push(x)});return o}
+function alertPlantings(a){return uniq([a.planting_id].concat(a.planting_ids||[],plIdsIn(a.title),plIdsIn(short(a.action)),plIdsIn(JSON.stringify((a.why&&a.why.inputs)||{})))).filter(id=>PLANT[id])}
+function alertCrops(a){return uniq([a.crop_id].concat(a.crop_ids||[],alertPlantings(a).map(id=>PLANT[id].crop_id)))}
+function alertParcels(a){return uniq([a.parcel_id].concat(a.parcel_ids||[],alertPlantings(a).map(id=>PLANT[id].parcel_id)))}
+function recPlantings(r){return uniq([r.planting_id].concat(r.planting_ids||[],plIdsIn(short(r.action)))).filter(id=>PLANT[id])}
+function textCrop(s){s=String(s||"").toLowerCase();let best=null,bi=1e9;arr("crops").forEach(c=>{[c.name_en,c.name_el].forEach(n=>{if(!n)return;const i=s.indexOf(n.toLowerCase());if(i>=0&&i<bi){bi=i;best=c.id}})});return best}
+function recCrops(r){const ps=recPlantings(r);const c=ps.map(id=>PLANT[id].crop_id);if(r.crop_id)c.unshift(r.crop_id);if(!c.length){const tc=textCrop(r.action);if(tc)c.push(tc)}return uniq(c)}
+function recParcels(r){return uniq([r.parcel_id].concat(r.parcel_ids||[],recPlantings(r).map(id=>PLANT[id].parcel_id)))}
+function isSowRec(r){return !r.planting_id&&!(r.planting_ids||[]).length}
+function alertProd(a){if(a.product_id)return a.product_id;const s=String(a.title||"").toLowerCase();const p=arr("products").find(p=>p.label&&s.indexOf(p.label.toLowerCase())>=0);return p?p.id:null}
+function alertsFor(f){return arr("alerts").filter(f).sort((a,b)=>"hml".indexOf((a.severity||"l")[0])-"hml".indexOf((b.severity||"l")[0]))}
+function isDisease(a){return /disease|pest|mildew|fung|blight|rot\b|septoria/i.test((a.kind||"")+" "+(a.title||""))}
+function sinceRain(w){const obs=w.filter(d=>d.kind!=="forecast"&&pd(d.date)<TODAY).reverse();for(const d of obs){if(Number(d.rain_mm)>=1)return {days:diffD(TODAY,pd(d.date)),mm:d.rain_mm}}return null}
+/* first sentence, for one-line card headlines; the full text stays in Details / Why? */
+function short(s){s=String(s||"");const m=/^(.{20,}?[.;!])(\s|$)/.exec(s);let r=m?m[1]:s;if(r.length>110)r=r.slice(0,107).replace(/[\s,(]+\S*$/,"")+"…";return r}
+
+/* ---------- components ---------- */
+function confPill(c){const k=String(c||"").toLowerCase();const lv=k.indexOf("high")===0?"high":k.indexOf("med")===0?"medium":"low";const dots=lv==="high"?"●●●":lv==="medium"?"●●○":"●○○";const cls=lv==="high"?"good":lv==="medium"?"warn":"neutral";return '<span class="pill '+cls+'" aria-label="'+esc(t("confidence"))+': '+esc(t(lv))+'"><span aria-hidden="true">'+dots+'</span> '+esc(t(lv))+'</span>'}
+function sevPill(s){const lv=s==="high"?"high":s==="medium"?"medium":"low";return '<span class="pill '+lv+'"><span aria-hidden="true">'+SEV[lv]+'</span> '+esc(t(lv==="high"?"sevHigh":lv==="medium"?"sevMedium":"sevLow"))+'</span>'}
+function plPill(pl){if(onHold(pl))return '<span class="pill medium"><span aria-hidden="true">⏸</span> '+esc(t("holdPhi",{d:fdShort(safety(pl).safeFrom)}))+'</span>';const st=pl.status;const m={ready:"good",harvesting:"good",growing:"neutral"};const ic={ready:"✓",harvesting:"✂",growing:"↗"};return '<span class="pill '+(m[st]||"neutral")+'"><span aria-hidden="true">'+(ic[st]||"•")+'</span> '+esc(t(st)||st)+'</span>'}
+function typeLabel(ty){return '<span aria-hidden="true">'+(TYPEI[ty]||"•")+'</span> '+esc(t(ty))}
+function groupPill(p){if(!p||!p.group_system||p.group_system==="-")return"";return '<span class="pill neutral">'+esc(p.group_system)+' '+esc(p.group_code)+'</span>'}
+function enNote(){return S.lang==="en"?"":'<div class="muted" style="margin:-4px 0 10px">ⓘ '+esc(t("contentEn"))+'</div>'}
+function moreDetails(parts){const body=parts.filter(Boolean).map(x=>'<p style="margin:8px 0 0">'+esc(x)+'</p>').join("");return body?'<details class="more"><summary>'+esc(t("details"))+' '+I.chev+'</summary>'+body+'</details>':""}
+function linksLine(cids,pids,prid){return [cids.map(L.crop).join(", "),pids.map(L.parcel).join(", "),prid?L.prod(prid):""].filter(Boolean).join(" · ")}
+function alertCard(a){
+  const cids=alertCrops(a),pids=alertParcels(a),prid=alertProd(a);
+  const target=prid&&(a.kind==="stock"||!cids.length)?"product:"+prid:cids.length?"crop:"+cids[0]:pids.length?"parcel:"+pids[0]:null;
+  const act=tx(a,"action"),sh=short(act);
+  return '<article class="card alert '+esc(a.severity||"low")+'"><div class="row">'+sevPill(a.severity)+'<span class="pill neutral">'+esc(tk("alertKinds",a.kind))+'</span></div>'+
+  '<div class="ttl">'+esc(act?sh:tx(a,"title"))+'</div>'+
+  (act?'<div class="sub-l">'+esc(tx(a,"title"))+'</div>':"")+
+  '<div class="links">'+linksLine(cids,pids,prid)+'</div>'+
+  moreDetails([tx(a,"body"),act&&act!==sh?act:""])+
+  '<div class="btns">'+(target?'<button class="btn" data-go="'+esc(target)+'">'+esc(t("open"))+'</button>':'<span></span>')+'<button class="btn pri" data-why="alert:'+esc(a.id)+'">'+I.info.replace('class="ico"','class="ico" style="color:#fff"')+' '+esc(t("why"))+'</button></div></article>';
+}
+function recCard(r,showLinks){
+  const cids=recCrops(r),pids=recParcels(r);const act=tx(r,"action"),sh=short(act);
+  return '<article class="card alert low" style="border-left-color:var(--acc)">'+(isSowRec(r)?'<div class="row" style="margin-bottom:6px"><span class="pill good">'+esc(tk("kinds","sow"))+'</span></div>':"")+
+  '<div class="ttl" style="margin-top:0">'+esc(sh)+'</div>'+(tx(r,"window")?'<div class="sub-l"><span aria-hidden="true">🕒</span> <b>'+esc(tx(r,"window"))+'</b></div>':"")+
+  '<div class="links">'+linksLine(showLinks?cids:[],pids,null)+'</div>'+
+  moreDetails([act!==sh?act:""])+
+  '<div class="btns">'+(showLinks&&(cids.length||pids.length)?'<button class="btn" data-go="'+(cids.length?'crop:'+esc(cids[0]):'parcel:'+esc(pids[0]))+'">'+esc(t("open"))+'</button>':'<span></span>')+'<button class="btn pri" data-why="rec:'+esc(r.id)+'">'+esc(t("why"))+'</button></div></article>';
+}
+function wxStrip(pid,detailed){
+  const w=wxOf(pid);if(!w.length)return '<div class="empty">'+esc(t("noData"))+'</div>';
+  const maxR=Math.max(10,...w.map(d=>Number(d.rain_mm)||0));
+  const rows=[["band",""],["d",""],["rain",t("rainMm")],["t",t("tempC")],["g",t("gustK")]];
+  if(detailed){rows.push(["rh",t("rh")],["lw",t("leafwet")])}
+  const firstFc=w.findIndex(d=>d.kind==="forecast");
+  let lab='<div class="wx-lab" aria-hidden="true">'+rows.map(r=>'<div class="wx-c'+(r[0]==="band"?" band":r[0]==="d"?" d":r[0]==="rain"?" rain":r[0]==="t"?" t":"")+'" style="font-size:14px;line-height:1.05;padding-right:2px">'+esc(r[1])+'</div>').join("")+'</div>';
+  let cols=w.map((d,i)=>{const fc=d.kind==="forecast",ms=pd(d.date),isT=ms===TODAY,dt=new Date(ms);const rain=Number(d.rain_mm)||0,g=Number(d.gust_kmh)||0,lw=Number(d.leafwet_h)||0;
+    const lbl=fdShort(ms)+": "+(fc?t("forecast"):t("observed"))+", "+num(d.tmax,0)+"/"+num(d.tmin,0)+"°C, "+num(rain)+" mm, "+t("gust")+" "+g+" km/h";
+    let band=(i===0||i===firstFc)?(fc?t("forecast"):t("observed")):"";
+    return '<div class="wx-col'+(fc?" fc":"")+(isT?" today":"")+'" role="listitem" aria-label="'+esc(lbl)+'"><div class="wx-c band" style="white-space:nowrap;justify-content:flex-start;padding-left:4px;overflow:visible">'+esc(band)+'</div>'+
+    '<div class="wx-c d"><span>'+esc(isT?t("today"):DOW[S.lang][dt.getUTCDay()])+'</span><small>'+dt.getUTCDate()+'/'+(dt.getUTCMonth()+1)+'</small></div>'+
+    '<div class="wx-c rain"><span>'+(rain?num(rain):"0")+'</span><div class="rb" style="height:'+Math.round(rain/maxR*30)+'px"></div></div>'+
+    '<div class="wx-c t"><span>'+num(d.tmax,0)+'°</span><span>'+num(d.tmin,0)+'°</span></div>'+
+    '<div class="wx-c'+(g>=GUST_MAX?" gw":"")+'">'+(g>=GUST_MAX?"▲":"")+g+'</div>'+
+    (detailed?'<div class="wx-c">'+num(d.rh_pct,0)+'</div><div class="wx-c'+(lw>=LW_RISK?" lw":"")+'">'+(lw>=LW_RISK?"◆":"")+num(lw,0)+'</div>':"")+'</div>'}).join("");
+  return '<div class="legend"><span><i class="sw"></i>'+esc(t("obsLeg"))+'</span><span><i class="sw fc"></i>'+esc(t("fcLeg"))+'</span><span class="gw">'+esc(t("gustWarn",{g:GUST_MAX}))+'</span>'+(detailed?'<span class="lw">'+esc(t("lwWarn",{h:LW_RISK}))+'</span>':"")+'</div>'+
+   '<div class="wx">'+lab+'<div class="wx-sc" data-wx="1"><div class="wx-in" role="list">'+cols+'</div></div></div>';
+}
+function plantingSummary(pl){
+  return '<div class="row" style="justify-content:space-between"><div>'+L.crop(pl.crop_id)+'</div>'+plPill(pl)+'</div>'+
+   '<div class="sd" style="grid-template-columns:minmax(0,1fr) 48px;margin-top:8px"><div class="bar" role="img" aria-label="'+esc(t("growth"))+' '+num(pl.stage_pct,0)+'%"><i style="width:'+Math.min(100,Number(pl.stage_pct)||0)+'%"></i></div><b>'+num(pl.stage_pct,0)+'%</b></div>'+
+   '<div class="muted">'+area(pl.area_str)+' · '+esc(t("harvestAt"))+' '+fd(pl.harvest_from)+' – '+fd(pl.harvest_to)+' · ~'+num(pl.est_crates,0)+' '+esc(t("crates"))+'</div>';
+}
+function gapTxt(d){if(Math.abs(d)<1)return '<span>≈ '+esc(t("balanced"))+'</span>';return d>0?'<span style="color:var(--high)">▼ '+num(d,0)+' '+esc(t("gap"))+'</span>':'<span style="color:var(--ok)">▲ '+num(-d,0)+' '+esc(t("surplus"))+'</span>'}
+
+/* ---------- views ---------- */
+const V={};
+V.today=()=>{
+  const ps=arr("parcels");const base=ps[0];
+  let h="";
+  if(base){const w=wxOf(base.id);const d=w.find(x=>pd(x.date)===TODAY)||w[w.length-1]||{};const nx=w.find(x=>pd(x.date)===addD(TODAY,1))||{};const prev=w.find(x=>pd(x.date)===addD(TODAY,-1));const sr=sinceRain(w);
+    h+='<section class="now" aria-label="'+esc(t("weatherNow"))+'"><div class="row" style="justify-content:space-between"><b style="font-size:17px;display:inline">'+esc(t("weatherNow"))+'</b><span class="lab">'+esc(base.name)+' · '+num(base.elevation_m,0)+' m</span></div><div class="grid2" style="margin-top:8px">'+
+    '<div><span class="lab">'+esc(t("todayMaxMin"))+'</span><b>'+num(d.tmax,0)+'° / '+num(d.tmin,0)+'°</b><span class="lab">'+esc(t("tonightMin"))+' <b style="display:inline;font-size:15px">'+num(nx.tmin!=null?nx.tmin:d.tmin)+'°C</b></span></div>'+
+    '<div><span class="lab">'+esc(t("wind"))+'</span><b>'+num(d.wind_kmh,0)+' km/h</b><span class="lab">'+esc(t("gust"))+' '+num(d.gust_kmh,0)+' km/h</span></div>'+
+    '<div><span class="lab">'+esc(t("humidity"))+'</span><b>'+num(d.rh_pct,0)+'%</b><span class="lab">'+esc(t("leafwet"))+': '+num(d.leafwet_h,0)+'</span></div>'+
+    '<div><span class="lab">'+esc(t("lastRain"))+' · '+esc(t("rain24"))+'</span><b>'+num(prev?prev.rain_mm:0)+' mm</b><span class="lab">'+(sr?esc(t("daysAgo",{n:sr.days}))+' · '+num(sr.mm)+' mm':esc(t("noRain")))+'</span></div>'+
+    '</div><div class="stamp">'+esc(t("updated"))+'</div></section>';}
+  const h7=harvest(TODAY,addD(TODAY,7)),h28=harvest(TODAY,addD(TODAY,28));
+  const act=uniq(arr("plantings").map(p=>p.crop_id));
+  const safeN=arr("plantings").filter(p=>mature(p)&&safety(p).clear).length;
+  const held=heldFor(()=>true).filter(mature).length;
+  h+='<div class="kpis"><div class="kpi"><span class="muted">'+esc(t("kpiH7"))+'</span><b>'+num(h7,0)+'</b><span class="muted">'+esc(t("crates"))+'</span></div><div class="kpi"><span class="muted">'+esc(t("kpiH28"))+'</span><b>'+num(h28,0)+'</b><span class="muted">'+esc(t("crates"))+'</span></div>'+
+   '<button class="kpi" data-tab="crops" style="text-align:left"><span class="muted">'+esc(t("activeCrops"))+'</span><b>'+act.length+'</b></button><button class="kpi" data-tab="parcels" style="text-align:left"><span class="muted">'+esc(t("parcels"))+'</span><b>'+ps.length+'</b></button>'+
+   '<div class="kpi wide"><b style="color:var(--acc)">✓ '+safeN+'</b><div><div style="font-weight:700">'+esc(t("safeToday"))+'</div><span class="muted">'+esc(t("safeTodaySub"))+(held?' · ⏸ '+held+' '+esc(t("inPhi")):"")+'</span></div></div></div>'+
+   '<div class="muted">'+esc(t("kpiNote"))+'</div>';
+  const al=alertsFor(()=>true);
+  h+='<h2>'+esc(t("alerts"))+' <span class="muted">('+al.length+')</span></h2>'+enNote()+(al.length?al.map(alertCard).join(""):'<div class="empty">'+esc(t("noAlerts"))+'</div>');
+  const rs=arr("recommendations");if(rs.length)h+='<h2>'+esc(t("nextActions"))+'</h2>'+rs.map(r=>recCard(r,true)).join("");
+  return {title:fd(TODAY),sub:(META.region||"Megara")+(META.farm?" · "+META.farm:""),html:h};
+};
+V.crops=()=>{
+  const cs=arr("crops").slice();
+  const h=cs.map(c=>{const pls=plantingsOf(p=>p.crop_id===c.id);const al=alertsFor(a=>alertCrops(a).indexOf(c.id)>=0);
+    const nx=harvest(TODAY,addD(TODAY,7),p=>p.crop_id===c.id);const hold=heldFor(p=>p.crop_id===c.id).length;
+    return '<button class="listbtn" data-go="crop:'+esc(c.id)+'"><div style="flex:1;min-width:0"><div class="t">'+cropName(c)+'</div><div class="muted">'+pls.length+' '+esc(pls.length===1?t("planting"):t("plantings").toLowerCase())+' · '+uniq(pls.map(p=>p.parcel_id)).map(id=>esc((PARC[id]||{}).name||id)).join(", ")+'</div><div class="muted">'+esc(t("kpiH7"))+': <b>'+num(nx,0)+'</b> '+esc(t("crates"))+(hold?' · ⏸ '+esc(t("inPhi")):"")+'</div>'+
+    (al.length?'<div class="row" style="margin-top:6px">'+al.slice(0,2).map(a=>sevPill(a.severity)+' <span class="small">'+esc(tk("alertKinds",a.kind))+'</span>').join(" ")+'</div>':"")+'</div>'+I.chev+'</button>'}).join("");
+  return {title:t("crops"),sub:cs.length+" "+t("cropsCount"),html:h||'<div class="empty">'+esc(t("noData"))+'</div>'};
+};
+V.crop=(id)=>{
+  const c=CROP[id];if(!c)return {title:"–",html:'<div class="empty">'+esc(t("noData"))+'</div>'};
+  const pls=plantingsOf(p=>p.crop_id===id);
+  let h='<div class="card"><div style="font:700 26px/1.15 var(--disp)">'+esc(c.name_el)+'</div><div>'+esc(c.name_en||"")+(c.name_tr?' · '+esc(c.name_tr):"")+'</div><div class="muted"><i>'+esc(c.latin||"")+'</i>'+(c.crate_kg?' · 1 '+esc(t("crate"))+' ≈ '+num(c.crate_kg)+' kg':"")+'</div>'+
+   '<div class="muted" style="margin-top:6px">'+esc(t("plantedIn"))+': '+uniq(pls.map(p=>p.parcel_id)).map(L.parcel).join(", ")+'</div></div>';
+  const recs=arr("recommendations").filter(r=>recCrops(r).indexOf(id)>=0);
+  h+='<h2>'+esc(t("nextAction"))+'</h2>'+enNote()+(recs.length?recs.map(r=>recCard(r,false)).join(""):'<div class="empty">'+esc(t("noRec"))+'</div>');
+  h+='<h2>'+esc(t("plantings"))+' ('+pls.length+')</h2>';
+  pls.forEach((pl,i)=>{const p=PARC[pl.parcel_id]||{};const sf=safety(pl);
+    const others=plantingsOf(o=>o.parcel_id===pl.parcel_id&&o.id!==pl.id);const lg=harvLogged(pl);
+    h+='<details class="pl"'+(i===0?" open":"")+'><summary><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:17px">'+esc(p.name||pl.parcel_id)+' <span class="muted">· '+area(pl.area_str)+'</span></div><div class="row" style="margin-top:4px">'+plPill(pl)+(sf.last&&!onHold(pl)?(sf.clear?'<span class="pill ok">✓ '+esc(t("phi"))+' OK</span>':'<span class="pill medium">⏳ '+esc(t("phi"))+' → '+fdShort(sf.safeFrom)+'</span>'):"")+'</div></div>'+I.chev+'</summary><div class="body">'+
+    '<dl class="kv"><dt>'+esc(t("parcel"))+'</dt><dd>'+L.parcel(pl.parcel_id)+' <span class="muted">('+num(p.elevation_m,0)+' m)</span></dd><dt>'+esc(t("area"))+'</dt><dd>'+area(pl.area_str)+'</dd><dt>'+esc(t("sown"))+'</dt><dd>'+fd(pl.sown)+'</dd>'+
+    '<dt>'+esc(t("growth"))+'</dt><dd><div class="sd" style="grid-template-columns:minmax(0,1fr) 44px;margin:0"><div class="bar"><i style="width:'+Math.min(100,Number(pl.stage_pct)||0)+'%"></i></div><span>'+num(pl.stage_pct,0)+'%</span></div></dd>'+
+    '<dt>'+esc(t("maturity"))+'</dt><dd>'+fd(pl.harvest_from)+' – '+fd(pl.harvest_to)+'</dd><dt>'+esc(t("estCrates"))+'</dt><dd>~'+num(pl.est_crates,0)+(lg?'<div class="muted">'+esc(t("loggedCut",{n:lg}))+'</div>':"")+'</dd></dl>'+
+    '<div class="sub-h">'+esc(t("lastSpray"))+'</div>';
+    if(sf.last){const j=sf.last,pr=sf.lastProd||{},r=sf.lastReg;
+      h+='<dl class="kv"><dt>'+esc(t("product"))+'</dt><dd>'+L.prod(j.product_id)+' <span class="muted">· '+fd(j.date)+'</span></dd><dt>'+esc(t("active"))+'</dt><dd>'+esc(pr.active||"–")+'</dd><dt>'+esc(t("type"))+'</dt><dd>'+typeLabel(pr.type)+' '+groupPill(pr)+'</dd><dt>'+esc(t("dose"))+'</dt><dd>'+dose(j.dose!=null?j.dose:(r&&r.dose_per_str),pr)+'</dd>'+
+      '<dt>'+esc(t("phi"))+'</dt><dd>'+(r?phiTxt(r)+' → '+(sf.clear?'<span class="pill ok">✓ '+esc(t("phiClear"))+' '+fd(sf.safeFrom)+'</span>':'<span class="pill medium">⏳ '+esc(t("phiWait"))+' '+fd(sf.safeFrom)+'</span>'):'<span class="pill high">▲ '+esc(t("notReg"))+'</span>')+'</dd>'+
+      '<dt>'+esc(t("rei"))+'</dt><dd>'+(r?num(r.rei_h,0)+' h'+(sf.reiUntil&&sf.reiUntil>TODAY?' · '+esc(t("reiUntil"))+' '+fd(sf.reiUntil):""):"–")+'</dd></dl>';
+    } else h+='<div class="muted">'+esc(t("noSpray"))+'</div>';
+    h+='<div class="sub-h">'+esc(t("weather14"))+'</div>'+wxStrip(pl.parcel_id,true);
+    h+='<div class="sub-h">'+esc(t("otherCrops"))+'</div>'+(others.length?others.map(o=>'<div style="margin:6px 0">'+L.crop(o.crop_id)+' <span class="muted">· '+area(o.area_str)+' · '+esc(onHold(o)?t("holdPhi",{d:fdShort(safety(o).safeFrom)}):t(o.status))+'</span></div>').join(""):'<div class="muted">–</div>');
+    h+='</div></details>';});
+  const al=alertsFor(a=>alertCrops(a).indexOf(id)>=0);
+  h+='<h2>'+esc(t("risk"))+'</h2>'+(al.length?al.map(alertCard).join(""):'<div class="empty">'+esc(t("noRisk"))+'</div>');
+  h+='<h2>'+esc(t("demand"))+'</h2><div class="card">'+supplyDemand(id)+'</div>';
+  return {title:c.name_el,sub:(S.lang==="tr"?c.name_tr:c.name_en)||"",html:h};
+};
+function supplyDemand(id){
+  const dem=demandOf(id);const sup=WEEKS.map(w=>harvest(w.a,w.b,p=>p.crop_id===id));
+  if(!dem)return '<div class="muted">'+esc(t("noOrders"))+'</div><div style="margin-top:6px">'+esc(t("supply"))+': '+WEEKS.map((w,i)=>esc(fdShort(w.a))+' <b>'+num(sup[i],0)+'</b>').join(" · ")+'</div>'+heldNote(p=>p.crop_id===id);
+  const mx=Math.max(1,dem,...sup);
+  return '<div class="legend"><span><i class="sw" style="background:var(--acc);border-color:var(--acc)"></i>'+esc(t("supply"))+'</span><span><i class="sw" style="background:repeating-linear-gradient(90deg,#5a4a1a 0 4px,#c8b26a 4px 7px)"></i>'+esc(t("orders"))+' ('+num(dem,0)+' '+esc(t("cratesWk"))+')</span></div>'+
+  WEEKS.map((w,i)=>{const s=sup[i];return '<div style="margin:10px 0"><div class="small" style="font-weight:700">'+esc(weekLabel(w))+' · '+gapTxt(dem-s)+'</div>'+
+  '<div class="sd sup"><span>'+esc(t("supply"))+'</span><div class="bx"><i style="width:'+(s/mx*100)+'%"></i></div><b>'+num(s,0)+'</b></div>'+
+  '<div class="sd dem"><span>'+esc(t("orders"))+'</span><div class="bx"><i style="width:'+(dem/mx*100)+'%"></i></div><b>'+num(dem,0)+'</b></div></div>'}).join("")+heldNote(p=>p.crop_id===id)+'<div class="muted" style="margin-top:6px">'+esc(t("fcNote"))+'</div>';
+}
+V.parcels=()=>{
+  const h=arr("parcels").map(p=>{const pls=plantingsOf(x=>x.parcel_id===p.id);const al=alertsFor(a=>alertParcels(a).indexOf(p.id)>=0);
+    return '<button class="listbtn" data-go="parcel:'+esc(p.id)+'"><div style="flex:1;min-width:0"><div class="t">'+esc(p.name)+'</div><div class="muted">'+esc(p.locality||"")+' · '+area(p.area_str)+' · '+num(p.elevation_m,0)+' m</div><div class="muted">'+uniq(pls.map(x=>{const c=CROP[x.crop_id];return c?c.name_el:x.crop_id})).map(esc).join(", ")+'</div>'+
+    (al.length?'<div class="row" style="margin-top:6px">'+al.slice(0,2).map(a=>sevPill(a.severity)+' <span class="small">'+esc(tk("alertKinds",a.kind))+'</span>').join(" ")+'</div>':"")+'</div>'+I.chev+'</button>'}).join("");
+  return {title:t("parcels"),sub:arr("parcels").length+" · "+area(arr("parcels").reduce((s,p)=>s+(Number(p.area_str)||0),0)),html:h};
+};
+function sketch(p){
+  const pls=plantingsOf(x=>x.parcel_id===p.id);const sk=p.sketch||{};const rot=Number(sk.rotation_deg)||0;
+  const W=340,H=200,cx=170,cy=100;
+  const shape=sk.shape==="poly"?'<polygon points="70,50 250,35 285,125 210,165 60,150"/>':'<rect x="60" y="45" width="220" height="115" rx="4"/>';
+  const total=pls.reduce((s,x)=>s+(Number(x.area_str)||0),0)||1;const fillCols=["#9cc59a","#cfe0a3","#a6cbb8","#e3d9a0","#b9d4a0","#a3c2c9"];
+  let x=55,strips="",labels="";
+  pls.forEach((pl,i)=>{const w=235*(Number(pl.area_str)||0)/Math.max(total,Number(p.area_str)||total);strips+='<rect x="'+x.toFixed(1)+'" y="20" width="'+w.toFixed(1)+'" height="160" fill="'+fillCols[i%fillCols.length]+'" stroke="#2c4a33" stroke-width="1" stroke-dasharray="4 3"/>';
+    const c=CROP[pl.crop_id];const nm=esc(c?c.name_el:pl.crop_id);const mx=(x+w/2).toFixed(1);labels+=(w<60?'<text transform="translate('+mx+' '+cy+') rotate(-90)" text-anchor="middle" dy="5" font-size="15" font-weight="700" fill="#10251a">'+nm+'</text>':'<text x="'+mx+'" y="'+(cy+5)+'" text-anchor="middle" font-size="15" font-weight="700" fill="#10251a">'+nm+'</text>');x+=w;});
+  const coast=(Number(p.elevation_m)||0)<15?'<path d="M0 188 Q60 178 120 188 T240 188 T340 186 V200 H0Z" fill="#9fc3e3"/><text x="10" y="198" font-size="14" fill="#173b5e">'+esc(t("sea"))+'</text>':"";
+  const hill=(Number(p.elevation_m)||0)>=100?'<g fill="none" stroke="#8a7b55" stroke-width="1.2"><path d="M0 30 Q90 5 180 22 T340 18"/><path d="M0 14 Q100 -6 200 8 T340 4"/></g>':"";
+  return '<svg class="map" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(t("sketch"))+' — '+esc(p.name)+'"><defs><clipPath id="clp'+esc(p.id)+'">'+shape+'</clipPath></defs>'+coast+hill+
+   '<g transform="rotate('+rot+' '+cx+' '+cy+')"><g clip-path="url(#clp'+esc(p.id)+')"><rect x="0" y="0" width="340" height="200" fill="#d9e5c8"/>'+strips+'</g><g fill="none" stroke="#17201a" stroke-width="2.5">'+shape+'</g>'+labels+'</g>'+
+   '<g transform="translate(312,30)"><path d="M0 -16 L7 6 L0 1 L-7 6Z" fill="#17201a"/><text y="22" text-anchor="middle" font-size="15" font-weight="700">N</text></g>'+
+   '<text x="8" y="17" font-size="15" fill="#17201a" font-weight="700">'+area(p.area_str)+' · '+num(p.elevation_m,0)+' m</text></svg>';
+}
+V.parcel=(id)=>{
+  const p=PARC[id];if(!p)return {title:"–",html:'<div class="empty">'+esc(t("noData"))+'</div>'};
+  const pls=plantingsOf(x=>x.parcel_id===id);const s=p.soil||{},ir=p.irrigation||{};
+  let h=sketch(p)+'<div class="muted" style="margin:4px 0 10px">'+esc(t("sketch"))+'</div>';
+  h+='<div class="card"><dl class="kv"><dt>'+esc(t("location"))+'</dt><dd>'+esc(p.locality||"–")+(p.lat?' <span class="muted">('+num(p.lat,3)+', '+num(p.lng,3)+')</span>':"")+'</dd><dt>'+esc(t("area"))+'</dt><dd>'+area(p.area_str)+'</dd><dt>'+esc(t("elevation"))+'</dt><dd>'+num(p.elevation_m,0)+' m</dd><dt>'+esc(t("opekepe"))+'</dt><dd>'+esc(p.opekepe_code||"–")+'</dd></dl></div>';
+  const al=alertsFor(a=>alertParcels(a).indexOf(id)>=0);if(al.length)h+='<h2>'+esc(t("alerts"))+'</h2>'+enNote()+al.map(alertCard).join("");
+  const prs=arr("recommendations").filter(r=>recParcels(r).indexOf(id)>=0);if(prs.length)h+='<h2>'+esc(t("nextActions"))+'</h2>'+prs.map(r=>recCard(r,true)).join("");
+  h+='<h2>'+esc(t("cropsOn"))+'</h2>'+(pls.length?pls.map(pl=>'<div class="card">'+plantingSummary(pl)+'</div>').join(""):'<div class="empty">–</div>');
+  h+='<h2>'+esc(t("weather14"))+'</h2>'+wxStrip(id,true);
+  h+='<h2>'+esc(t("soil"))+' <span class="muted">· '+fd(s.date)+'</span></h2><div class="card"><div class="grid3">'+
+   [["pH",s.pH,1],["EC dS/m",s.EC_dS_m,1],["OM %",s.OM_pct,1],["N ppm",s.N_ppm,0],["P ppm",s.P_ppm,0],["K ppm",s.K_ppm,0],["CaCO₃ %",s.CaCO3_pct,0]].map(x=>'<div><div class="muted">'+x[0]+'</div><b style="font-size:19px">'+num(x[1],x[2])+'</b></div>').join("")+'</div>'+(s.notes?'<div class="muted" style="margin-top:8px">'+esc(s.notes)+'</div>':"")+'</div>';
+  h+='<h2>'+esc(t("irrigation"))+'</h2><div class="card"><dl class="kv"><dt>'+esc(t("type"))+'</dt><dd>'+esc(ir.type||"–")+'</dd><dt>'+esc(t("irrSource"))+'</dt><dd>'+esc(ir.source||"–")+'</dd><dt>'+esc(t("waterEC"))+'</dt><dd>'+num(ir.water_EC_dS_m,1)+' dS/m'+((Number(ir.water_EC_dS_m)||0)>=2?' <span class="pill medium">▲ '+esc(t("saline"))+'</span>':"")+'</dd></dl></div>';
+  const js=arr("jobs").filter(j=>j.parcel_id===id).sort((a,b)=>pd(b.date)-pd(a.date));
+  h+='<h2>'+esc(t("recentJobs"))+'</h2>'+(js.length?js.map(jobCard).join(""):'<div class="empty">'+esc(t("noJobs"))+'</div>');
+  return {title:p.name,sub:(p.locality||"")+" · "+num(p.elevation_m,0)+" m",html:h};
+};
+function jobCard(j){const pl=PLANT[j.planting_id];const w=j.weather_at_time||{};
+  return '<div class="card"><div class="row" style="justify-content:space-between"><b>'+fd(j.date)+'</b><span class="pill neutral">'+esc(tk("kinds",j.kind))+'</span></div>'+
+  '<div style="margin-top:6px">'+L.parcel(j.parcel_id)+(pl?' · '+L.crop(pl.crop_id):"")+'</div>'+(j.product_id?'<div style="margin-top:6px">'+L.prod(j.product_id)+(j.dose!=null?' · <b>'+dose(j.dose,PROD[j.product_id])+'</b>':"")+'</div>':"")+
+  '<div class="muted" style="margin-top:4px">'+esc(t("by"))+': '+esc(j.by||"–")+(w.t!=null?' · '+num(w.t,0)+'°C, '+esc(t("wind").toLowerCase())+' '+num(w.wind,0)+' / '+esc(t("gust"))+' '+num(w.gust,0)+' km/h, RH '+num(w.rh,0)+'%':"")+'</div>'+(j.notes?'<div class="muted">'+esc(j.notes)+'</div>':"")+'</div>'}
+/* stock warnings: expiry (≤30 d, same as data rule) and low stock = less than 2 applications on the largest registered lot */
+function nextAppNeed(p){let need=0;(p.registered||[]).forEach(r=>{const d=Number(r.dose_per_str)||0;plantingsOf(pl=>pl.crop_id===r.crop_id).forEach(pl=>{need=Math.max(need,d*(Number(pl.area_str)||0))})});return need}
+function prodWarn(p){const out=[];const ex=pd(p.expiry);let exp=false;if(ex!=null){if(ex<TODAY){out.push('<span class="pill high">▲ '+esc(t("expired"))+' · '+fd(ex,true)+'</span>');exp=true}else if(diffD(ex,TODAY)<=EXP_SOON_D){out.push('<span class="pill medium">⏳ '+esc(t("expSoon"))+' · '+fd(ex,true)+'</span>');exp=true}}
+  const need=nextAppNeed(p);const low=p.low_at!=null?Number(p.qty)<=Number(p.low_at):(need>0&&Number(p.qty)<2*need);if(!exp&&(low||p.low_stock))out.push('<span class="pill medium">▼ '+esc(t("lowStock"))+'</span>');return out.join(" ")}
+/* rotation per lot where the product is registered; multi-site (M) groups = low resistance risk */
+function rotationFor(p){const res=[];if(!p.group_system||p.group_system==="-")return res;
+  arr("plantings").forEach(pl=>{if(!regFor(p,pl.crop_id))return;const j=sprayJobsFor(pl).find(j=>{const q=PROD[j.product_id];return q&&q.group_system===p.group_system&&q.type===p.type});
+    if(j){const g=PROD[j.product_id].group_code;res.push({pl,j,g,same:g===p.group_code,multi:/^M/i.test(String(p.group_code))})}});return res}
+function rotLine(p,r,dateFn){const lbl=(CROP[r.pl.crop_id]||{}).name_el+" · "+((PARC[r.pl.parcel_id]||{}).name||"");
+  const verdict=r.same?(r.multi?t("multiSite"):t("sameGroup")):t("diffGroup");const bad=r.same&&!r.multi;
+  return '<b style="color:'+(bad?"var(--high)":"var(--ok)")+'">'+(bad?"▲ ":"✓ ")+esc(t("lastGroupOn",{sys:p.group_system,p:lbl,g:r.g,d:dateFn(pd(r.j.date))}))+' — '+esc(verdict)+'</b>'}
+V.stock=()=>{
+  const ps=arr("products");const types=["all"].concat(uniq(ps.map(p=>p.type)));
+  let h='<div class="chips" role="group" aria-label="'+esc(t("type"))+'">'+types.map(ty=>'<button class="chip" data-stockf="'+esc(ty)+'" aria-pressed="'+(S.stockF===ty)+'">'+(ty==="all"?esc(t("all")):typeLabel(ty))+' <span>('+(ty==="all"?ps.length:ps.filter(p=>p.type===ty).length)+')</span></button>').join("")+'</div>';
+  h+=ps.filter(p=>S.stockF==="all"||p.type===S.stockF).map(p=>{const rot=rotationFor(p).filter(r=>r.same&&!r.multi);
+    return '<button class="listbtn" style="align-items:flex-start" data-go="product:'+esc(p.id)+'"><div style="flex:1;min-width:0"><div class="t">'+prodName(p)+'</div><div class="muted">'+esc(p.active||"")+'</div>'+
+    '<div class="row" style="margin:6px 0">'+'<span class="pill neutral">'+typeLabel(p.type)+'</span>'+groupPill(p)+'</div>'+
+    '<div><b>'+numRaw(p.qty)+' '+esc(p.unit||"")+'</b> <span class="muted">'+esc(t("qtyLeft").toLowerCase())+' · '+esc(t("expiry"))+' '+fd(p.expiry,true)+'</span></div>'+
+    (prodWarn(p)?'<div class="row" style="margin-top:6px">'+prodWarn(p)+'</div>':"")+
+    ((p.registered||[]).length?'<div class="muted" style="margin-top:6px">'+(p.registered||[]).map(r=>esc((CROP[r.crop_id]||{}).name_el||r.crop_id)+' '+esc(t("phi"))+' '+phiTxt(r)).join(" · ")+'</div>':"")+
+    rot.map(r=>'<div class="small" style="margin-top:4px">'+rotLine(p,r,fdShort)+'</div>').join("")+
+    '</div>'+I.chev+'</button>'}).join("")||'<div class="empty">–</div>';
+  return {title:t("stock"),sub:ps.length+" · "+t("sample"),html:h};
+};
+V.product=(id)=>{
+  const p=PROD[id];if(!p)return {title:"–",html:'<div class="empty">'+esc(t("noData"))+'</div>'};
+  let h='<div class="card"><div class="row">'+'<span class="pill neutral">'+typeLabel(p.type)+'</span>'+groupPill(p)+'</div><dl class="kv" style="margin-top:10px"><dt>'+esc(t("active"))+'</dt><dd>'+esc(p.active||"–")+'</dd><dt>'+esc(t("form"))+'</dt><dd>'+esc(p.form||"–")+'</dd><dt>'+esc(t("qtyLeft"))+'</dt><dd>'+numRaw(p.qty)+' '+esc(p.unit||"")+'</dd><dt>'+esc(t("expiry"))+'</dt><dd>'+fd(p.expiry,true)+'</dd></dl>'+(prodWarn(p)?'<div class="row" style="margin-top:8px">'+prodWarn(p)+'</div>':"")+'</div>';
+  h+='<h2>'+esc(t("registeredFor"))+'</h2>'+((p.registered||[]).length?'<div class="tw"><table><thead><tr><th>'+esc(t("crops"))+'</th><th>'+esc(t("dose"))+'</th><th>'+esc(t("phi"))+'</th><th>'+esc(t("reiShort"))+'</th></tr></thead><tbody>'+p.registered.map(r=>'<tr><td>'+L.crop(r.crop_id)+'</td><td>'+dose(r.dose_per_str,p)+'</td><td>'+phiTxt(r)+'</td><td>'+num(r.rei_h,0)+' h</td></tr>').join("")+'</tbody></table></div><div class="muted" style="margin-top:6px">'+esc(t("sample"))+' — '+esc(t("sampleTxt"))+'</div>':'<div class="empty">–</div>');
+  if(p.group_system&&p.group_system!=="-"){const rot=rotationFor(p);h+='<h2>'+esc(t("rotation"))+'</h2>'+(rot.length?rot.map(r=>'<div class="card">'+rotLine(p,r,fd)+'<div class="muted" style="margin-top:4px">'+L.crop(r.pl.crop_id)+' · '+L.parcel(r.pl.parcel_id)+' · '+L.prod(r.j.product_id)+'</div></div>').join(""):'<div class="empty">'+esc(t("rotNone"))+'</div>');}
+  const js=arr("jobs").filter(j=>j.product_id===id).sort((a,b)=>pd(b.date)-pd(a.date));
+  h+='<h2>'+esc(t("usage"))+'</h2>'+(js.length?js.map(jobCard).join(""):'<div class="empty">'+esc(t("noJobs"))+'</div>');
+  return {title:p.name_el||p.label,sub:(S.lang==="tr"?p.name_tr:p.name_en)||p.label||"",html:h};
+};
+V.more=()=>{
+  const it=[["spraylog","spray"],["forecast","chart"],["orders","sow"],["settings","gear"],["about","about"]];
+  const lab={spraylog:"sprayLog",forecast:"harvestFc",orders:"ordersSow",settings:"settings",about:"about"};
+  return {title:t("more"),html:it.map(x=>'<button class="listbtn" data-go="'+x[0]+':"><span class="ic">'+I[x[1]]+'</span><span class="t" style="flex:1">'+esc(t(lab[x[0]]))+'</span>'+I.chev+'</button>').join("")};
+};
+function sprayJobs(){return arr("jobs").filter(j=>S.logF==="all"||j.kind===S.logF).sort((a,b)=>pd(b.date)-pd(a.date))}
+V.spraylog=()=>{
+  const kinds=["spray","all"].concat(uniq(arr("jobs").map(j=>j.kind)).filter(k=>k!=="spray"));
+  let h='<div class="chips">'+kinds.map(k=>'<button class="chip" data-logf="'+esc(k)+'" aria-pressed="'+(S.logF===k)+'">'+esc(k==="all"?t("all"):tk("kinds",k))+'</button>').join("")+'</div>';
+  h+='<button class="btn pri blk" data-csv="1" style="margin-bottom:12px">⇩ '+esc(t("exportCsv"))+'</button>';
+  const js=sprayJobs();h+=js.length?js.map(j=>{let card=jobCard(j);const pl=PLANT[j.planting_id];if(j.kind==="spray"&&pl){const p=PROD[j.product_id],r=regFor(p,pl.crop_id);if(r){const sf=addD(pd(j.date),Number(r.phi_days)||0);card=card.replace(/<\/div>$/,'<div class="row" style="margin-top:8px">'+(sf<=TODAY?'<span class="pill ok">✓ '+esc(t("phiClear"))+' '+fd(sf)+'</span>':'<span class="pill medium">⏳ '+esc(t("phiWait"))+' '+fd(sf)+'</span>')+groupPill(p)+'</div></div>')}else card=card.replace(/<\/div>$/,'<div style="margin-top:8px"><span class="pill high">▲ '+esc(t("notReg"))+'</span></div></div>')}return card}).join(""):'<div class="empty">'+esc(t("noJobs"))+'</div>';
+  return {title:t("sprayLog"),html:h};
+};
+V.forecast=()=>{
+  const cs=arr("crops").filter(c=>plantingsOf(p=>p.crop_id===c.id).length||demandOf(c.id));
+  const M=cs.map(c=>WEEKS.map(w=>harvest(w.a,w.b,p=>p.crop_id===c.id)));
+  let h='<div class="muted" style="margin-bottom:8px">'+esc(t("fcNote"))+'</div><div class="tw"><table><thead><tr><th>'+esc(t("crops"))+'</th>'+WEEKS.map(w=>'<th>'+esc(fdShort(w.a))+'<br><span style="font-weight:500">–'+new Date(addD(w.b,-1)).getUTCDate()+'</span></th>').join("")+'</tr></thead><tbody>'+
+   cs.map((c,i)=>{const d=demandOf(c.id);return '<tr><td><button class="lnk" data-go="crop:'+esc(c.id)+'">'+esc(c.name_el)+'</button><div class="muted">'+esc(t("orders"))+' '+(d?num(d,0):"–")+esc(t("perWk"))+'</div></td>'+M[i].map(v=>{const short_=d&&d-v>=1;return '<td'+(short_?' style="color:var(--high);font-weight:700"':'')+'>'+(short_?'▼':'')+num(v,0)+'</td>'}).join("")+'</tr>'}).join("")+
+   '<tr class="tot"><td>'+esc(t("total"))+'<div class="muted">'+esc(t("orders"))+' '+num(cs.reduce((s,c)=>s+demandOf(c.id),0),0)+esc(t("perWk"))+'</div></td>'+WEEKS.map((w,k)=>'<td>'+num(M.reduce((s,r)=>s+r[k],0),0)+'</td>').join("")+'</tr></tbody></table></div>'+
+   '<div class="muted" style="margin-top:6px">▼ = '+esc(t("supply"))+' &lt; '+esc(t("orders"))+'</div>'+heldNote(()=>true);
+  h+=cs.filter(c=>demandOf(c.id)).map(c=>'<h2>'+cropName(c)+'</h2><div class="card">'+supplyDemand(c.id)+'</div>').join("");
+  return {title:t("harvestFc"),sub:weekLabel(WEEKS[0])+" → "+fdShort(addD(WEEKS[3].b,-1)),html:h};
+};
+/* Orders → sowing. Same rule as the sowing recommendation: a parcel is excluded if it carries a disease
+   flag for a crop of the same family, or the recommendation rejected it; gaps < max(3 crates, 10 % of orders) are ignored. */
+function rejectedOf(r){const out=[];const rp=r&&r.why&&r.why.inputs&&r.why.inputs.rejected_parcels;if(rp&&typeof rp==="object")Object.keys(rp).forEach(k=>{const m=/^(P\d+)\b/.exec(k);const pid=m&&PARC[m[1]]?m[1]:(arr("parcels").find(p=>k.indexOf(p.name.split(" (")[0])>=0)||{}).id;if(pid)out.push({pid,why:String(rp[k])})});return out}
+function flaggedFor(cid){const fam=familyOf(cid);const out=[];alertsFor(a=>isDisease(a)).forEach(a=>{if(alertCrops(a).some(c=>familyOf(c)===fam))alertParcels(a).forEach(pid=>out.push({pid,why:tx(a,"title")}))});return out}
+V.orders=()=>{
+  let h=enNote()+'<div class="muted" style="margin-bottom:10px">'+esc(t("sowRule"))+'</div>';
+  arr("orders_weekly").forEach(o=>{const c=CROP[o.crop_id];if(!c)return;const dem=Number(o.crates_per_week)||0;
+    const sup=WEEKS.map(w=>harvest(w.a,w.b,p=>p.crop_id===o.crop_id));
+    const gaps=WEEKS.map((w,i)=>({w,g:dem-sup[i]})).filter(x=>materialGap(x.g,dem));
+    const recs=arr("recommendations").filter(r=>isSowRec(r)&&recCrops(r).indexOf(o.crop_id)>=0);
+    const okP=uniq([].concat.apply([],recs.map(recParcels)));
+    const excl=[];rejectedOf(recs[0]).concat(flaggedFor(o.crop_id)).forEach(x=>{if(okP.indexOf(x.pid)<0&&!excl.some(e=>e.pid===x.pid))excl.push(x)});
+    h+='<div class="card"><h3>'+L.crop(o.crop_id)+'</h3><div class="muted">'+esc(t("orders"))+': <b>'+num(dem,0)+'</b> '+esc(t("cratesWk"))+(o.peak_note?' · '+esc(tx(o,"peak_note")):"")+'</div>'+
+     '<div class="muted">'+esc(t("supply"))+' '+WEEKS.map((w,i)=>esc(fdShort(w.a))+': <b>'+num(sup[i],0)+'</b>').join(" · ")+'</div>';
+    if(gaps.length)h+='<div style="margin-top:8px;font-weight:700;color:var(--high)">▼ '+esc(t("shortWeeks",{c:num(Math.max.apply(null,gaps.map(x=>x.g)),0),w:gaps.map(x=>fdShort(x.w.a)).join(", ")}))+'</div>';
+    if(recs.length){h+=recs.map(r=>'<div class="sowrec"><div style="font-weight:700">→ '+esc(short(tx(r,"action")))+'</div>'+(tx(r,"window")?'<div class="small">🕒 '+esc(tx(r,"window"))+'</div>':"")+'<div class="small" style="margin-top:4px;color:var(--acc);font-weight:700">✓ '+esc(t("checkedOn"))+': '+recParcels(r).map(L.parcel).join(", ")+'</div><button class="btn pri" style="margin-top:8px" data-why="rec:'+esc(r.id)+'">'+esc(t("why"))+'</button></div>').join("")}
+    else if(gaps.some(x=>WEEKS.indexOf(x.w)>=2))h+='<div class="small" style="margin-top:6px">'+esc(t("noCheck"))+'</div>';
+    else if(gaps.length)h+='<div class="small" style="margin-top:6px">'+esc(t("tempGap"))+' '+L.crop(o.crop_id)+'</div>';
+    else h+='<div style="margin-top:8px;font-weight:700;color:var(--ok)">✓ '+esc(t("sowOk"))+'</div>';
+    if((recs.length||gaps.some(x=>WEEKS.indexOf(x.w)>=2))&&excl.length)h+='<div class="sub-h">'+esc(t("notOn"))+'</div>'+excl.map(x=>'<div class="small" style="margin:4px 0"><b style="color:var(--high)">✕</b> '+L.parcel(x.pid)+' — '+esc(x.why)+'</div>').join("");
+    h+='</div>';});
+  return {title:t("ordersSow"),html:h};
+};
+V.settings=()=>{
+  const langs=[["en","English"],["el","Ελληνικά"],["tr","Türkçe"]];
+  return {title:t("settings"),html:'<h2>'+esc(t("language"))+'</h2><div class="seg" role="group">'+langs.map(l=>'<button data-lang="'+l[0]+'" aria-pressed="'+(S.lang===l[0])+'">'+l[1]+'</button>').join("")+'</div>'+(S.lang==="en"?"":'<div class="muted" style="margin-top:8px">ⓘ '+esc(t("contentEn"))+'</div>')+
+   '<h2>'+esc(t("units"))+'</h2><div class="seg" role="group"><button data-area="str" aria-pressed="'+(S.area==="str")+'">στρέμματα</button><button data-area="ha" aria-pressed="'+(S.area==="ha")+'">ha</button></div><div class="muted" style="margin-top:8px">'+esc(t("unitsNote"))+'</div>'+
+   '<h2>'+esc(t("fieldMode"))+'</h2><div class="seg" role="group"><button data-hc="1" aria-pressed="'+S.hc+'">'+esc(t("on"))+'</button><button data-hc="0" aria-pressed="'+!S.hc+'">'+esc(t("off"))+'</button></div>'};
+};
+V.about=()=>({title:t("about"),html:'<div class="card"><h3>FieldWise · Megara</h3><p>'+esc(t("aboutTxt"))+'</p><p class="samp" style="display:block"><b>'+esc(t("sample"))+'</b> – '+esc(t("sampleTxt"))+'</p></div><div class="card"><h3>'+esc(t("dataNote"))+'</h3><dl class="kv"><dt>'+esc(t("farm"))+'</dt><dd>'+esc(META.farm||"–")+'</dd><dt>'+esc(t("region"))+'</dt><dd>'+esc(META.region||"–")+'</dd><dt>'+esc(t("today"))+'</dt><dd>'+fd(TODAY,true)+'</dd></dl><p class="muted">'+esc(tx(META,"source_note"))+'</p></div>'});
+
+/* ---------- why sheet ---------- */
+function whyObj(ref){const p=ref.split(":");if(p[0]==="alert")return ALERT[p[1]];if(p[0]==="rec")return REC[p[1]];return null}
+function fmtVal(v){if(v==null)return"–";if(Array.isArray(v))return v.map(fmtVal).join("<br>");if(typeof v==="object")return Object.keys(v).map(k=>'<span class="muted">'+esc(k)+':</span> '+fmtVal(v[k])).join("<br>");if(typeof v==="number")return numRaw(v);if(typeof v==="boolean")return v?"✓":"✕";return esc(v)}
+function openWhy(ref){
+  const o=whyObj(ref);if(!o)return;const w=o.why||{};const inp=w.inputs||{};
+  const title=tx(o,"title")||short(tx(o,"action"));
+  let h=enNote();
+  if(tx(o,"action"))h+='<div class="why-sec"><div class="lab">'+esc(t("action"))+'</div><div style="font-weight:700">'+esc(tx(o,"action"))+'</div></div>';
+  if(tx(o,"window"))h+='<div class="why-sec"><div class="lab">'+esc(t("window"))+'</div><div style="font-weight:700">'+esc(tx(o,"window"))+'</div></div>';
+  if(tx(o,"body"))h+='<div class="why-sec"><div class="lab">'+esc(t("details"))+'</div><div>'+esc(tx(o,"body"))+'</div></div>';
+  h+='<div class="why-sec"><div class="lab">'+esc(t("rule"))+'</div><div>'+esc(tx(w,"rule")||"–")+'</div></div>';
+  h+='<div class="why-sec"><div class="lab">'+esc(t("inputs"))+'</div>'+(Object.keys(inp).length?'<dl class="kv">'+Object.keys(inp).map(k=>'<dt>'+esc(k.replace(/_/g," "))+'</dt><dd>'+fmtVal(inp[k])+'</dd>').join("")+'</dl>':"–")+'</div>';
+  h+='<div class="why-sec"><div class="lab">'+esc(t("source"))+'</div><div>'+esc(tx(w,"source")||"–")+'</div></div>';
+  h+='<div class="why-sec"><div class="lab">'+esc(t("confidence"))+'</div>'+confPill(w.confidence)+(String(w.confidence||"").length>8?'<div class="muted" style="margin-top:4px">'+esc(w.confidence)+'</div>':"")+(w.confidence_note?'<div class="muted" style="margin-top:4px">'+esc(w.confidence_note)+'</div>':"")+'</div>';
+  h+='<div class="samp"><b>'+esc(t("sample"))+'</b> – '+esc(t("sampleTxt"))+'</div>';
+  sheet(t("why")+" "+title,h);
+}
+let lockY=0;
+function lockBody(){lockY=window.pageYOffset||0;const b=document.body.style;b.position="fixed";b.top=(-lockY)+"px";b.left="0";b.right="0";b.overflow="hidden"}
+function unlockBody(){const b=document.body.style;if(b.position!=="fixed")return;b.position="";b.top="";b.left="";b.right="";b.overflow="";window.scrollTo(0,lockY)}
+function sheetOpen(){return document.getElementById("ov").classList.contains("open")}
+function sheet(title,body){
+  const el=document.getElementById("sheet");
+  el.innerHTML='<div class="grab"></div><div class="sheet-h"><h3 id="sheetTitle">'+esc(title)+'</h3><button class="x" data-close="1" aria-label="'+esc(t("close"))+'">'+I.x+'</button></div>'+body;
+  const ov=document.getElementById("ov");if(!sheetOpen())lockBody();ov.classList.add("open");el.scrollTop=0;
+  setTimeout(()=>{const b=el.querySelector("[data-close]");if(b)try{b.focus({preventScroll:true})}catch(e){b.focus()}},30);
+}
+function closeSheet(){if(!sheetOpen())return;document.getElementById("ov").classList.remove("open");unlockBody()}
+function csvText(){
+  const q=v=>{v=v==null?"":String(v);return /[",\n;]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const rows=[["date","parcel","crop","kind","product","active","group","dose","by","temp_c","wind_kmh","gust_kmh","rh_pct","notes"]];
+  sprayJobs().forEach(j=>{const pl=PLANT[j.planting_id],p=PROD[j.product_id]||{},w=j.weather_at_time||{};const c=pl?CROP[pl.crop_id]:null;
+    rows.push([j.date,(PARC[j.parcel_id]||{}).name||j.parcel_id,c?c.name_el+" ("+(c.name_en||"")+")":"",j.kind,p.label||"",p.active||"",p.group_system&&p.group_system!=="-"?p.group_system+" "+p.group_code:"",j.dose!=null?j.dose+" "+(p.unit||"")+"/str":"",j.by||"",w.t,w.wind,w.gust,w.rh,j.notes||""])});
+  return rows.map(r=>r.map(q).join(",")).join("\n");
+}
+function openCsv(){
+  sheet(t("csvTitle"),'<p class="muted" style="margin-top:0">fieldwise_spray_log_'+iso(TODAY)+'.csv · '+esc(t("sample"))+'</p><textarea id="csv" readonly aria-label="CSV">'+esc(csvText())+'</textarea><button class="btn pri blk" data-copy="1" style="margin-top:10px">'+esc(t("copy"))+'</button>');
+}
+function copyCsv(){
+  const ta=document.getElementById("csv");if(!ta)return;const txt=ta.value;let ok=false;
+  /* synchronous path first: stays inside the user gesture (iOS) */
+  try{ta.readOnly=false;try{ta.focus({preventScroll:true})}catch(e){ta.focus()}ta.setSelectionRange(0,txt.length);ok=!!(document.execCommand&&document.execCommand("copy"))}catch(e){ok=false}
+  try{ta.readOnly=true}catch(e){}
+  if(ok){toast(t("copied"));return}
+  try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>toast(t("copied")),()=>toast(t("copyFail")));return}}catch(e){}
+  toast(t("copyFail"));
+}
+let tt;function toast(m){const el=document.getElementById("toast");el.textContent=m;el.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("on"),2600)}
+
+/* ---------- navigation (in-memory stack; history entries without hash so edge-swipe = Back) ---------- */
+const TABS=["today","crops","parcels","stock","more"];
+const ROOT={crop:"crops",parcel:"parcels",product:"stock",spraylog:"more",forecast:"more",orders:"more",settings:"more",about:"more"};
+let HIST=0;
+function cur(){return S.stack[S.stack.length-1]}
+function tabOf(v){return TABS.indexOf(v)>=0?v:ROOT[v]||S.stack[0].v}
+function push(v,id){cur().y=window.pageYOffset||0;S.stack.push({v,id});try{history.pushState({fw:S.stack.length},"");HIST++}catch(e){}render(true)}
+function back(){if(S.stack.length>1){S.stack.pop();render(false,cur().y||0)}}
+function navBack(){if(HIST>0&&S.stack.length>1){try{history.back();return}catch(e){HIST=0}}back()}
+window.addEventListener("popstate",()=>{if(HIST>0)HIST--;closeSheet();back()});
+function goTab(v){S.stack=[{v}];render(true)}
+function render(top,y){
+  const c=cur();const fn=V[c.v]||V.today;let r;
+  try{r=fn(c.id)}catch(e){console.error(e);r={title:"FieldWise",html:'<div class="empty">'+esc(t("noData"))+'</div>'}}
+  document.documentElement.lang=S.lang;document.body.classList.toggle("hc",S.hc);
+  const isRoot=S.stack.length===1;
+  document.getElementById("hdr").innerHTML='<div class="hdr-row">'+(isRoot?"":'<button class="back" data-back="1" aria-label="'+esc(t("back"))+'">'+I.back+'<span>'+esc(t("back"))+'</span></button>')+
+   '<div style="flex:1;min-width:0"><h1>'+esc(r.title)+'</h1>'+(r.sub?'<div class="sub">'+esc(r.sub)+'</div>':"")+'</div></div>'+
+   '<div class="samp" role="note"><span aria-hidden="true">⚠</span><span><b>'+esc(t("sample"))+'</b> – '+esc(t("sampleTxt"))+'</span></div>';
+  const m=document.getElementById("main");m.innerHTML=r.html;
+  const tab=tabOf(c.v);
+  document.getElementById("tabs").innerHTML=TABS.map(k=>'<button class="tab" data-tab="'+k+'"'+(k===tab?' aria-current="page"':"")+'>'+I[k]+'<span>'+esc(t("tab_"+k))+'</span></button>').join("");
+  m.querySelectorAll("[data-wx]").forEach(sc=>{const td=sc.querySelector(".today");if(td)sc.scrollLeft=Math.max(0,td.offsetLeft-sc.clientWidth+td.offsetWidth*4)});
+  window.scrollTo(0,top?0:(y||0));
+}
+document.getElementById("ov").addEventListener("click",e=>{if(e.target.id==="ov")closeSheet()});
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button");
+  if(!b)return;const d=b.dataset;
+  if(d.close){closeSheet();return}
+  if(d.copy){copyCsv();return}
+  if(d.why){openWhy(d.why);return}
+  if(d.go){closeSheet();const i=d.go.indexOf(":");push(d.go.slice(0,i),d.go.slice(i+1)||undefined);return}
+  if(d.back){navBack();return}
+  if(d.tab){goTab(d.tab);return}
+  if(d.stockf){S.stockF=d.stockf;render(false,window.pageYOffset);return}
+  if(d.logf){S.logF=d.logf;render(false,window.pageYOffset);return}
+  if(d.csv){openCsv();return}
+  if(d.lang){S.lang=d.lang;save();render(false,window.pageYOffset);return}
+  if(d.area){S.area=d.area;save();render(false,window.pageYOffset);return}
+  if(d.hc){S.hc=d.hc==="1";save();render(false,window.pageYOffset);return}
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(sheetOpen())closeSheet();else navBack()}});
+render(true);
+</script>
+</body>
+</html>
