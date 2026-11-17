@@ -4,7 +4,7 @@ import { fingerprint, known, makeDose, notOnLabel, parseDecimal, parseMaxApps, p
 const dec = parseDecimal;
 const kind = (k: DoseKind) => known(k);
 const unit = known<DoseUnit>('ml/str');
-const label = (over: Partial<LabelUse> = {}): LabelUse => ({ dose: makeDose(kind('single'), unit, dec('0,025'), dec('')), phiDays: parsePhiDays('7'), reiHours: parseReiHours('24'), maxApps: parseMaxApps('3'), ...over });
+const label = (over: Partial<LabelUse> = {}): LabelUse => ({ scope: 'p|c|', dose: makeDose(kind('single'), unit, dec('0,025'), dec('')), phiDays: parsePhiDays('7'), reiHours: parseReiHours('24'), maxApps: parseMaxApps('3'), ...over });
 const signed = (u: LabelUse) => ({ by: 'Test Agronomist', on: '2026-11-17', fingerprint: fingerprint(u) });
 
 describe('makeDose: single / range, nothing preselected', () => {
@@ -42,5 +42,22 @@ describe('requireSignOff: the only way to a SignedLabelUse; everything unclear i
       const u = label(bad);
       expect(requireSignOff(u, signed(u)).known, JSON.stringify(bad)).toBe(false);
     }
+  });
+});
+
+describe('a dose of 0 is not a dose; the approval covers WHAT the label is for', () => {
+  it('0, 0,0 and 0,000 are invalid (blocked) as a single dose and as either end of a range', () => {
+    for (const zero of ['0', '0,0', '0,000']) {
+      expect(makeDose(kind('single'), unit, dec(zero), dec('')), zero).toEqual({ known: false, reason: 'invalid' });
+      expect(makeDose(kind('range'), unit, dec(zero), dec('1')), zero).toEqual({ known: false, reason: 'invalid' });
+      expect(makeDose(kind('range'), unit, dec('1'), dec(zero)).known, zero).toBe(false);
+    }
+    expect(makeDose(kind('single'), unit, dec('0,001'), dec('')).known).toBe(true);
+  });
+  it('changing the product, crop or target after the approval drops it', () => {
+    const base = label();
+    const so = signed(base);
+    for (const scope of ['p2|c|', 'p|c2|', 'p|c|aphids']) expect(requireSignOff(label({ scope }), so), scope).toEqual({ known: false, reason: 'invalid' });
+    expect(requireSignOff(base, so).known).toBe(true);
   });
 });

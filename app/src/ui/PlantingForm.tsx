@@ -5,7 +5,7 @@ import { lang, t, type I18nKey } from '../i18n';
 import { formatArea } from '../i18n/format';
 import { archived } from '../parcels/parcel';
 import { athensToday, buildPlanting, exceedsParcel, STATUSES, type PlantingErrors, type Status } from '../plantings/planting';
-import { put } from '../repo';
+import { put, putMany } from '../repo';
 import type { Row } from '../db/schema';
 import { showUndo } from './Toast';
 
@@ -33,8 +33,8 @@ export function PlantingForm({ parcels, onDone }: { parcels: Row[]; onDone: () =
     const cropRowValue = crop ? await cropRow(crop, realFarmId.value, now) : undefined;
     const r = buildPlanting({ parcelId, cropId: cropRowValue?.id ?? '', variety, lot, area, sownOn, status }, realFarmId.value, now, crypto.randomUUID());
     if (!r.ok) { setErrors({ parcel: r.parcel, crop: r.crop, area: r.area, date: r.date }); return; }
-    if (cropRowValue && !(await db.crops.get(cropRowValue.id))) await put(db, 'crops', cropRowValue, 'insert');
-    await put(db, 'plantings', r.row, 'insert');
+    const newCrop = cropRowValue && !(await db.crops.get(cropRowValue.id)) ? [{ table: 'crops', row: cropRowValue, op: 'insert' as const }] : [];
+    await putMany(db, [...newCrop, { table: 'plantings', row: r.row, op: 'insert' }]);
     dataVersion.value++;
     showUndo(t('planting.saved'), async () => { await put(db, 'plantings', archived(r.row, new Date().toISOString())); dataVersion.value++; });
     onDone();

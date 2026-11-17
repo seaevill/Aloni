@@ -1,6 +1,6 @@
 import {
-  fingerprint, isCalendarDate, known, makeDose, notOnLabel, parseDecimal, parseMaxApps, parsePhiDays, parseReiHours, requireSignOff, unknown,
-  type DoseKind, type DoseUnit, type Known, type LabelUse, type SignOff,
+  compareDecimal, fingerprint, isCalendarDate, known, makeDose, notOnLabel, parseDecimal, parseMaxApps, parsePhiDays, parseReiHours, requireSignOff, unknown,
+  type Decimal, type DoseKind, type DoseUnit, type Known, type LabelUse, type SignOff,
 } from '@aloni/rules-core';
 import type { Row } from '../db/schema';
 
@@ -30,7 +30,7 @@ function stored(name: FieldName, f: Field): { value: string | undefined; invalid
   if (f.notOnLabel) return { value: NOT_ON_LABEL, invalid: false };
   if (f.text.trim() === '') return { value: undefined, invalid: false };
   const p = PARSE[name](f.text);
-  if (!p.known) return { value: undefined, invalid: true };
+  if (!p.known || ((name === 'doseMin' || name === 'doseMax') && compareDecimal(p.value as Decimal, '0' as Decimal) <= 0)) return { value: undefined, invalid: true }; // a dose of 0 is refused
   return { value: name === 'doseMin' || name === 'doseMax' ? String(p.value) : f.text.trim(), invalid: false };
 }
 
@@ -81,6 +81,7 @@ export function readUse(row: Row): LabelUse {
   const kind = (KINDS as readonly string[]).includes(text(row.dose_kind) ?? '') ? known(row.dose_kind as DoseKind) : unknown('missing');
   const unit = (DOSE_UNITS as readonly string[]).includes(text(row.dose_unit) ?? '') ? known(row.dose_unit as DoseUnit) : unknown('missing');
   return {
+    scope: JSON.stringify([row.product_id, row.crop_id, text(row.target) ?? '']), // what the label is FOR: the approval covers it too
     dose: makeDose(kind, unit, valueOf(parseDecimal, row.dose_min), valueOf(parseDecimal, row.dose_max)),
     phiDays: valueOf(parsePhiDays, row.phi_days),
     reiHours: valueOf(parseReiHours, row.rei_hours),

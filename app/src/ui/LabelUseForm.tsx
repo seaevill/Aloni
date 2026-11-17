@@ -4,7 +4,7 @@ import { CATALOG, cropRow } from '../crops/catalog';
 import { lang, t, type I18nKey } from '../i18n';
 import { buildLabelUse, DOSE_UNITS, KINDS, toInput, type Field, type FieldName, type LabelUseInput } from '../labels/label-use';
 import { archived } from '../parcels/parcel';
-import { put } from '../repo';
+import { putMany, put } from '../repo';
 import type { Row } from '../db/schema';
 import type { DoseKind, DoseUnit } from '@aloni/rules-core';
 import { showUndo } from './Toast';
@@ -43,8 +43,8 @@ export function LabelUseForm({ productId, taken, existing, onDone }: { productId
     const cropRowValue = crop ? await cropRow(crop, realFarmId.value, now) : undefined;
     const r = buildLabelUse({ ...v, cropId: existing ? v.cropId : cropRowValue?.id ?? '' }, realFarmId.value, now, existing?.id ?? crypto.randomUUID(), existing ? String(existing.created_at) : now);
     if (!r.ok) { setBad(r.invalid); setCropMissing(r.crop); return; }
-    if (cropRowValue && !(await db.crops.get(cropRowValue.id))) await put(db, 'crops', cropRowValue, 'insert');
-    await put(db, 'label_uses', r.row, existing ? 'update' : 'insert');
+    const newCrop = cropRowValue && !(await db.crops.get(cropRowValue.id)) ? [{ table: 'crops', row: cropRowValue, op: 'insert' as const }] : [];
+    await putMany(db, [...newCrop, { table: 'label_uses', row: r.row, op: existing ? 'update' : 'insert' }]); // the crop and its label details together
     dataVersion.value++;
     showUndo(t('labeluse.saved'), async () => { await put(db, 'label_uses', existing ?? archived(r.row, new Date().toISOString())); dataVersion.value++; });
     onDone();

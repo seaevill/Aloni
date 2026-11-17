@@ -35,7 +35,7 @@ describe('safe side: a wait that cannot be computed is «blocked», never «over
     expect(waitOver('2026-11-24T07:59:59Z', end)).toBe(false);
   });
   it('a sign-off needs a real date: «Invalid Date» and impossible days do not sign', () => {
-    const u: LabelUse = { dose: makeDose(known('single'), known<DoseUnit>('ml/str'), parseDecimal('0,025'), parseDecimal('')), phiDays: parsePhiDays('7'), reiHours: parseReiHours('24'), maxApps: parseMaxApps('3') };
+    const u: LabelUse = { scope: 'p|c|', dose: makeDose(known('single'), known<DoseUnit>('ml/str'), parseDecimal('0,025'), parseDecimal('')), phiDays: parsePhiDays('7'), reiHours: parseReiHours('24'), maxApps: parseMaxApps('3') };
     for (const on of ['Invalid Date', '', 'NaN', '2026-02-31', '17/11/2026', '2026-11-17T00:00:00Z']) expect(requireSignOff(u, { by: 'Agronomist', on, fingerprint: fingerprint(u) }).known, on).toBe(false);
     expect(requireSignOff(u, { by: 'Agronomist', on: '2026-11-17', fingerprint: fingerprint(u) }).known).toBe(true);
   });
@@ -76,7 +76,7 @@ describe('property: a computed PHI/REI is exact (never shorter, never rounded) f
 describe('property: editing any label value after the sign-off drops the sign-off (a PHI can never be silently shortened)', () => {
   it('every changed PHI, REI, max applications or dose changes the fingerprint', () => {
     const rnd = seeded(7);
-    const mk = (phi: number, rei: number, apps: number, dose: string): LabelUse => ({ dose: makeDose(known('single'), known<DoseUnit>('ml/str'), parseDecimal(dose), parseDecimal('')), phiDays: parsePhiDays(String(phi)), reiHours: parseReiHours(String(rei)), maxApps: parseMaxApps(String(apps)) });
+    const mk = (phi: number, rei: number, apps: number, dose: string): LabelUse => ({ scope: 'p|c|', dose: makeDose(known('single'), known<DoseUnit>('ml/str'), parseDecimal(dose), parseDecimal('')), phiDays: parsePhiDays(String(phi)), reiHours: parseReiHours(String(rei)), maxApps: parseMaxApps(String(apps)) });
     for (let i = 0; i < 300; i += 1) {
       const [phi, rei, apps] = [rnd() % 60, rnd() % 200, 1 + (rnd() % 9)];
       const base = mk(phi, rei, apps, '0,025');
