@@ -4,6 +4,10 @@ import Dexie, { type Table } from 'dexie';
 export interface Row { id: string; farm_id: string; legacy_id?: string; [k: string]: unknown }
 export interface FarmRow { id: string; name: string; is_demo: boolean; meta?: unknown }
 export interface SettingRow { key: string; value: unknown }
+export interface OutboxRow {
+  op_id: string; farm_id: string; table: string; row_id: string; op: 'insert' | 'update'; row: unknown;
+  device_id: string; actor_id: string; at: string; status: 'pending' | 'acked';
+}
 export interface WeatherRow { id: string; farm_id: string; parcel_id: string; days: unknown[] }
 
 export const FARM_TABLES = ['parcels', 'crops', 'plantings', 'products', 'jobs', 'orders_weekly', 'alerts', 'recommendations'] as const;
@@ -21,6 +25,7 @@ export class AppDB extends Dexie {
   recommendations!: Table<Row, string>;
   weather!: Table<WeatherRow, string>;
   settings!: Table<SettingRow, string>;
+  outbox!: Table<OutboxRow, string>; // what still has to reach the server (never holds demo rows)
 
   constructor(name = 'aloni') {
     super(name);
@@ -31,5 +36,6 @@ export class AppDB extends Dexie {
       weather: 'id, farm_id',
       settings: 'key', // owner settings (data controller details)
     });
+    this.version(2).stores({ outbox: 'op_id, farm_id, status' });
   }
 }

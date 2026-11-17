@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { AppDB } from '../../src/db/schema';
 import { assertCanInviteWorkers, canInviteWorkers, loadController, saveController } from '../../src/legal/controller';
 import { dictionaries } from '../../src/i18n';
+import { TEST_FARM_ID } from '../helpers/factories';
 
 let db: AppDB;
 beforeEach(async () => { db = new AppDB(`test-${Math.random()}`); await db.open(); });
@@ -11,7 +12,7 @@ const full = { name: 'Test Person', address: 'Test street 1', phone: '+30 000 00
 describe('data controller details', () => {
   it('are stored in the database and read back trimmed', async () => {
     expect(await loadController(db)).toBeUndefined();
-    await saveController(db, { name: '  Test Person ', address: ' Test street 1', phone: '+30 000 0000000 ' });
+    await saveController(db, TEST_FARM_ID, { name: '  Test Person ', address: ' Test street 1', phone: '+30 000 0000000 ' });
     expect(await loadController(db)).toEqual(full);
   });
   it('inviting workers is CLOSED until name, address and phone are all entered', () => {

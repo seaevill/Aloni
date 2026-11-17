@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
-import { db } from '../db';
+import { db, realFarmId } from '../db';
 import { t } from '../i18n';
 import { EMPTY_CONTROLLER, canInviteWorkers, loadController, saveController, type Controller } from '../legal/controller';
 
@@ -13,7 +13,7 @@ export function Info({ onBack }: { onBack: () => void }) {
   const unset = t('info.controller.unset');
   const shown = (v: string | undefined) => (v && v.trim() ? v : unset);
   const set = (k: keyof Controller) => (e: Event) => setC({ ...c, [k]: (e.target as HTMLInputElement).value });
-  const save = async () => { await saveController(db, c); setSaved(c); setMsg(t('info.controller.saved')); };
+  const save = async () => { await saveController(db, realFarmId.value, c); setSaved(c); setMsg(t('info.controller.saved')); };
   const invite = canInviteWorkers(saved);
   const field = (k: keyof Controller, label: 'info.controller.name' | 'info.controller.address' | 'info.controller.phone', mode: 'text' | 'tel') => (
     <label class="field">{t(label)}<input class="input" value={c[k]} inputMode={mode} autoComplete="off" onInput={set(k)} /></label>

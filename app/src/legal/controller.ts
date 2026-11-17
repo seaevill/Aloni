@@ -3,6 +3,7 @@
 // Settings → Information, they are stored in the database (settings table), and the notice shows them via
 // {controller_name} / {controller_address} / {controller_phone}.
 import type { AppDB } from '../db/schema';
+import { putSetting } from '../repo';
 
 export interface Controller { name: string; address: string; phone: string }
 const KEY = 'controller';
@@ -16,8 +17,8 @@ export async function loadController(db: AppDB): Promise<Controller | undefined>
   return row ? (row.value as Controller) : undefined;
 }
 
-export async function saveController(db: AppDB, c: Controller): Promise<void> {
-  await db.settings.put({ key: KEY, value: clean(c) });
+export async function saveController(db: AppDB, farmId: string, c: Controller): Promise<void> {
+  await putSetting(db, farmId, KEY, clean(c));
 }
 
 /** The ONLY gate for inviting workers (M2 must call it): closed until name, address and phone are entered. */

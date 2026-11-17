@@ -3,6 +3,7 @@ import tseslint from 'typescript-eslint';
 import { CLOCK, DEFAULTS, NO_INTL, NO_TYPED_ARRAYS, ROUND, UI, toRule, withSelector } from './eslint/bans.js';
 import noNumericDefault from './eslint/no-numeric-default.js';
 import noGlobal from './eslint/no-global.js';
+import noDirectDexieWrite from './eslint/no-direct-dexie-write.js';
 
 // ESLint does NOT merge `no-restricted-syntax` across blocks: the last matching block replaces earlier ones.
 // So each file group below gets ONE complete list, and later blocks are supersets or deliberate exceptions.
@@ -17,6 +18,7 @@ const CLOCK_GLOBALS = ['performance', 'setTimeout', 'setInterval', 'setImmediate
   'WeakRef', 'FinalizationRegistry', 'Temporal', 'AbortSignal'];
 const dose = {
   'aloni/no-numeric-default': 'error',
+  'aloni/no-direct-dexie-write': 'error',
   '@typescript-eslint/no-explicit-any': 'error', // `any` would switch the type-aware rules off
   'no-restricted-imports': ['error', { patterns: [{ group: ['lodash', 'lodash/*', 'lodash.*', 'mathjs', 'big.js', 'decimal.js', 'bignumber.js', 'numeral', 'accounting'], message: '[R08] No rounding/number libraries: numbers are shown only by i18n/format.ts.' }] }],
 };
@@ -32,7 +34,7 @@ const typed = {
     parser: tseslint.parser,
     parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
   },
-  plugins: { '@typescript-eslint': tseslint.plugin, aloni: { rules: { 'no-numeric-default': noNumericDefault, 'no-global-clock': noGlobal, 'no-global-random': noGlobal, 'no-global-dialog': noGlobal } } },
+  plugins: { '@typescript-eslint': tseslint.plugin, aloni: { rules: { 'no-numeric-default': noNumericDefault, 'no-global-clock': noGlobal, 'no-global-random': noGlobal, 'no-global-dialog': noGlobal, 'no-direct-dexie-write': noDirectDexieWrite } } },
 };
 
 export default [
@@ -46,4 +48,5 @@ export default [
   { files: ['packages/rules-core/src/**/*.test.ts'], rules: { 'no-restricted-imports': 'off' } },
   { files: ['app/src/db/uuid.ts'], ...typed, ...syntax([...ROUND.filter(NO_TYPED_ARRAYS), ...DEFAULTS], dose) }, // hashes ids with typed arrays; no dose touches it
   { files: FORMAT_FILE, ...typed, ...syntax([...ROUND.filter(NO_INTL), ...DEFAULTS], dose) },
+  { files: ['app/src/repo/**/*.ts', 'app/src/db/**/*.ts'], rules: { 'aloni/no-direct-dexie-write': 'off' } }, // the write path itself and the database setup/import/migration
 ];

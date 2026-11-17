@@ -2,10 +2,12 @@ import { signal } from '@preact/signals';
 import { AppDB, type FarmRow } from './schema';
 import { importDemo, removeDemo, type PrototypeData } from './import-demo';
 import { migrateLegacyDb } from './legacy';
+import { guardAppendOnly } from '../repo';
 import { APP_NAME, DEMO_FARM_ID } from '../config';
 import { t } from '../i18n';
 
 export const db = new AppDB();
+guardAppendOnly(db);
 
 export const realFarmId = signal('');
 export const activeFarm = signal('');
