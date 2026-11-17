@@ -244,5 +244,6 @@
   "analysis.saved": "Analiz kaydedildi.",
   "analysis.archive": "Arşivle",
   "analysis.archived": "Analiz arşivlendi.",
-  "analysis.empty": "Henüz analiz yok."
+  "analysis.empty": "Henüz analiz yok.",
+  "backup.skipped": "Telefonda daha yeni veya farklı bir sürüm olduğu için {n} kayıt değiştirilmedi: {list}"
 }

@@ -11,7 +11,7 @@ export interface OutboxRow {
 export interface WeatherRow { id: string; farm_id: string; parcel_id: string; days: unknown[] }
 
 /** A photo stored on this phone: the processed JPEG bytes (an ArrayBuffer: iPhone Safari cannot always store a Blob) and their SHA-256. Append-only; the outbox entry carries everything except the bytes. */
-export interface MediaRow extends Row { sha256: string; mime: string; data: ArrayBuffer; width: number; height: number; bytes: number; created_at: string }
+export interface MediaRow extends Row { device_id?: string; actor_id?: string; sha256: string; mime: string; data: ArrayBuffer; width: number; height: number; bytes: number; created_at: string }
 
 export const FARM_TABLES = ['parcels', 'crops', 'plantings', 'products', 'label_uses', 'stock_lots', 'stock_movements', 'soil_tests', 'water_tests', 'jobs', 'orders_weekly', 'alerts', 'recommendations'] as const;
 export type FarmTable = (typeof FARM_TABLES)[number];

@@ -3,7 +3,7 @@
 import { DEMO_FARM_ID } from '../config';
 import { FARM_TABLES, type AppDB, type Row } from '../db/schema';
 import { base64ToBlob, blobToBase64, sha256Hex } from '../db/sha256';
-import { actorId, deviceId, isAppendOnly, put, putLocal, refreshPending } from '.';
+import { actorId, deviceId, isAppendOnly, put, putLocal, putSetting, refreshPending } from '.';
 
 export const BACKUP_FORMAT = 'aloni-backup';
 export const BACKUP_VERSION = 1;
@@ -11,7 +11,7 @@ const DEVICE_ONLY = new Set(['device_id', 'actor_id', 'last_backup_at']); // nev
 export type BackupErrorCode = 'format' | 'version' | 'sha256' | 'demo' | 'conflict';
 export class BackupError extends Error { constructor(readonly code: BackupErrorCode) { super(code); } }
 
-interface MediaEntry { id: string; farm_id: string; sha256: string; mime: string; width: number; height: number; bytes: number; created_at: string; data_base64: string }
+interface MediaEntry { id: string; farm_id: string; sha256: string; mime: string; width: number; height: number; bytes: number; created_at: string; device_id?: string; actor_id?: string; data_base64: string }
 export interface Backup {
   format: typeof BACKUP_FORMAT; version: number; created_at: string; app_version: string; device_id: string;
   farm: { id: string; name: string };
@@ -23,8 +23,8 @@ export async function makeBackup(db: AppDB, farm: { id: string; name: string }, 
   for (const t of FARM_TABLES) tables[t] = await db[t].where('farm_id').equals(farm.id).toArray();
   const settings = (await db.settings.toArray()).filter((s) => !DEVICE_ONLY.has(s.key));
   const media: MediaEntry[] = [];
-  for (const m of await db.media.where('farm_id').equals(farm.id).toArray()) {
-    media.push({ id: m.id, farm_id: m.farm_id, sha256: m.sha256, mime: m.mime, width: m.width, height: m.height, bytes: m.bytes, created_at: m.created_at, data_base64: await blobToBase64(new Blob([m.data], { type: m.mime })) });
+  for (const { data, ...meta } of await db.media.where('farm_id').equals(farm.id).toArray()) {
+    media.push({ ...meta, data_base64: await blobToBase64(new Blob([data], { type: meta.mime })) });
   }
   return { format: BACKUP_FORMAT, version: BACKUP_VERSION, created_at: new Date().toISOString(), app_version: appVersion, device_id: await deviceId(db), farm, tables, settings, media };
 }
@@ -40,33 +40,61 @@ export function parseBackup(text: string): Backup {
   return b;
 }
 
-/** Restores into the real farm: same farm id, or an empty phone (then the backup's farm id is adopted). Anything else is refused. */
-export async function restoreBackup(db: AppDB, backup: Backup, localFarmId: string, appActor = actorId): Promise<{ rows: number; farmId: string }> {
+export interface Skipped { table: string; id: string; label: string }
+export interface Restored { rows: number; farmId: string; skipped: Skipped[] }
+
+const stable = (v: unknown): string => JSON.stringify(v, (_k, x: unknown) => (x && typeof x === 'object' && !Array.isArray(x) && !(x instanceof ArrayBuffer) ? Object.fromEntries(Object.entries(x).sort(([a], [b]) => a.localeCompare(b))) : x));
+const stampOf = (r: Row): string => String(r.updated_at ?? r.created_at ?? '');
+const labelOf = (r: Row): string => String(r.name ?? r.batch ?? r.sampled_on ?? r.id);
+
+/**
+ * Restores into the real farm: same farm id, or an empty phone (then the backup's farm id is adopted). Anything else is refused.
+ * NEVER overwrites newer data: a record that is already here and not older than the backup's copy is left alone and listed in `skipped`
+ * (so it is also not queued for the server). Records keep their original actor_id / device_id.
+ */
+export async function restoreBackup(db: AppDB, backup: Backup, localFarmId: string, appActor = actorId): Promise<Restored> {
   const photos: Array<{ meta: Omit<MediaEntry, 'data_base64'>; data: ArrayBuffer }> = [];
   for (const { data_base64, ...meta } of backup.media) { // verify EVERY photo before writing anything (and read the bytes now: awaiting inside a Dexie transaction would end it)
     const blob = base64ToBlob(data_base64, meta.mime);
     if ((await sha256Hex(blob)) !== meta.sha256) throw new BackupError('sha256');
     photos.push({ meta, data: await blob.arrayBuffer() });
   }
-  const localRows = (await Promise.all(FARM_TABLES.map((t) => db[t].where('farm_id').equals(localFarmId).count()))).reduce((a, b) => a + b, 0);
-  if (backup.farm.id !== localFarmId && localRows > 0) throw new BackupError('conflict');
+  const counts = await Promise.all([...FARM_TABLES.map((t) => db[t].where('farm_id').equals(localFarmId).count()), db.media.where('farm_id').equals(localFarmId).count()]);
+  if (backup.farm.id !== localFarmId && counts.some((n) => n > 0)) throw new BackupError('conflict'); // photos count too: they must not be left under a farm id that is about to disappear
   await appActor(db);
+  const origin = { device_id: backup.device_id };
+  const skipped: Skipped[] = [];
   let rows = 0;
   await db.transaction('rw', db.tables, async () => {
-    if (backup.farm.id !== localFarmId) { await db.farms.delete(localFarmId); await db.farms.put({ id: backup.farm.id, name: backup.farm.name, is_demo: false }); }
+    if (backup.farm.id !== localFarmId) {
+      const mine = (await db.settings.toArray()).filter((s) => !DEVICE_ONLY.has(s.key));
+      await db.farms.delete(localFarmId);
+      await db.outbox.where('farm_id').equals(localFarmId).delete(); // nothing may stay queued under the farm id that is gone...
+      await db.farms.put({ id: backup.farm.id, name: backup.farm.name, is_demo: false });
+      for (const s of mine) await putSetting(db, backup.farm.id, s.key, s.value); // ...so this phone's own settings are queued again under the new one
+    }
     for (const [table, list] of Object.entries(backup.tables)) {
       for (const r of list) {
-        if (isAppendOnly(table)) { if (!(await db.table(table).get(r.id))) await put(db, table, r, 'insert'); } else await put(db, table, r); // ledger rows: one already here is left alone
+        const local = await db.table<Row>(table).get(r.id);
+        if (local && stable(local) === stable(r)) continue;
+        if (local && (isAppendOnly(table) || stampOf(r) <= stampOf(local))) { skipped.push({ table, id: r.id, label: labelOf(local) }); continue; }
+        await put(db, table, r, isAppendOnly(table) ? 'insert' : 'update', origin);
         rows += 1;
       }
     }
-    for (const s of backup.settings) { if (!(await db.settings.get(s.key))) await db.settings.put(s); }
-    for (const { meta, data } of photos) { // photos are append-only: one that is already here (same id) is left alone, a new one is queued for the server
-      if (!(await db.media.get(meta.id))) await put(db, 'media', { ...meta, data }, 'insert');
+    for (const s of backup.settings) {
+      const local = await db.settings.get(s.key);
+      if (!local) await db.settings.put(s);
+      else if (stable(local.value) !== stable(s.value)) skipped.push({ table: 'settings', id: s.key, label: s.key });
+    }
+    for (const { meta, data } of photos) { // photos are append-only: one that is already here is left alone, a new one is queued for the server
+      const local = await db.media.get(meta.id);
+      if (!local) await put(db, 'media', { ...meta, data }, 'insert', origin);
+      else if (local.sha256 !== meta.sha256) skipped.push({ table: 'media', id: meta.id, label: meta.id });
     }
   });
   await refreshPending(db);
-  return { rows, farmId: backup.farm.id };
+  return { rows, farmId: backup.farm.id, skipped };
 }
 
 export const markBackupDone = (db: AppDB, atIso: string) => putLocal(db, 'last_backup_at', atIso);
