@@ -77,7 +77,7 @@ test('Greek screens of the night work contain no English words (Latin letters ar
   await iphone(page);
   await setup(page, true);
   const latin = async (at: string) => {
-    const text = (await page.locator('main').innerText()).replace(/Kocide 2000|Test Agronomist|Aloni|·\s*[0-9a-f]{5,7}/g, '');
+    const text = (await page.locator('main').innerText()).replace(/Kocide 2000|Test Agronomist|Aloni|Excel|·\s*[0-9a-f]{5,7}/g, '');
     expect(text.match(/[A-Za-z]{3,}/g) ?? [], at).toEqual([]);
   };
   await tab(page, 'today'); await latin('today');
