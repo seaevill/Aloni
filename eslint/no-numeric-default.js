@@ -1,7 +1,6 @@
 // D05: no numeric default for a missing value (CLAUDE.md safety rule 1: missing label data = unknown = blocked).
-// Decided by TYPE, not by the shape of the right-hand side, so `x ?? seven`, `x ?? helper()`, `x ?? (0 as number)`,
-// `{ dose = cfg.phi }`, `x ? x : 0`, `if (x == null) x = 0`, `{ ...DEFAULTS, ...o }`, `p.catch(() => 0)`, `Number(emptyString)` are caught.
-// Needs typed linting (projectService). Known limits are listed in CODING_STANDARDS.md.
+// Decided by TYPE, not by the shape of the right-hand side (`x ?? seven`, `x ?? helper()`, `x ? x : 0`, `{ ...DEFAULTS, ...o }`,
+// `p.catch(() => 0)`, `Number(emptyString)` ...). Needs typed linting. Known limits: CODING_STANDARDS.md.
 import { ESLintUtils } from '@typescript-eslint/utils';
 import ts from 'typescript';
 
