@@ -302,5 +302,22 @@
   "stock.reason.spray": "spray",
   "spray.phi.enter": "Enter the waiting period from the label",
   "spray.phi.entry.note": "Write the values as on the label. It is added as a new row; the original record stays.",
-  "spray.phi.manual": "Value you entered from the label"
+  "spray.phi.manual": "Value you entered from the label",
+  "harvest.title": "Harvests",
+  "harvest.add": "Record harvest",
+  "harvest.planting": "Planting",
+  "harvest.crates": "Crates",
+  "harvest.more": "+1",
+  "harvest.less": "−1",
+  "harvest.time": "Date and time of harvest",
+  "harvest.note": "Note (optional)",
+  "harvest.save": "Record",
+  "harvest.saved": "Harvest recorded.",
+  "harvest.empty": "No harvests yet.",
+  "harvest.blocked.unknown": "Harvest is blocked: waiting period unknown. Enter the waiting period from the label on the spray.",
+  "harvest.blocked.running": "Waiting until {d}: no harvest possible.",
+  "harvest.blocked.time": "Invalid time.",
+  "harvest.error.crates": "Write the number of crates as a whole number, e.g. 12.",
+  "harvest.count.one": "{n} crate",
+  "harvest.count.other": "{n} crates"
 }
