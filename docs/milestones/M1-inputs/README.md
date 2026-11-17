@@ -6,3 +6,5 @@ Advice from Bora's review team for the next milestone. Inputs, not decisions: th
 - `product.md` – Bora's first real week, minimum fields, data-entry rules, scope traps
 - `ux-qa.md` – UX quality bar, CI checks, per-PR Greek iPhone checklist
 - `accounts-security-review.md` – review of the account setup step (already applied to RUNBOOK on 2026-11-17)
+- `m1-plan-review-agro.md` – review of the M1 plan (PR #5): dose entry, photos/backup (Turkish)
+- `m1-plan-review-tech.md` – review of the M1 plan: PR split, guards, maps, git tracking refs, workers phone options
