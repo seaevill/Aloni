@@ -10,7 +10,7 @@ insert into parcels(id,farm_id,name,area_str) values
  ('44444444-4444-4444-4444-444444444444','22222222-2222-2222-2222-222222222222','Foreign',2);
 insert into products(id,farm_id,name,type,unit) values ('aaaaaaaa-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','Seed product','fungicide','kg');
 insert into workers(id,farm_id,name) values ('bbbbbbbb-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','Giorgos');
-insert into jobs(id,farm_id,parcel_id,kind) values ('55555555-5555-5555-5555-555555555555','11111111-1111-1111-1111-111111111111','33333333-3333-3333-3333-333333333333','spray');
+insert into jobs(id,farm_id,parcel_id,kind,status) values ('55555555-5555-5555-5555-555555555555','11111111-1111-1111-1111-111111111111','33333333-3333-3333-3333-333333333333','spray','done');
 insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state) values ('11111111-1111-1111-1111-111111111111','55555555-5555-5555-5555-555555555555','aaaaaaaa-0000-0000-0000-000000000001','bbbbbbbb-0000-0000-0000-000000000001','2026-11-17 08:00+00',0.19,'ml/str','unsigned');
 insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state) values ('11111111-1111-1111-1111-111111111111','55555555-5555-5555-5555-555555555555','aaaaaaaa-0000-0000-0000-000000000001','bbbbbbbb-0000-0000-0000-000000000001','2026-11-17 09:00+00',0.06,'ml/str','unsigned');
 
@@ -155,6 +155,23 @@ begin
   begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,pl,0,now()); raise exception 'zero crates accepted'; exception when check_violation then null; end;
   begin update job_harvest set crates_str = 99; raise exception 'harvest update allowed'; exception when insufficient_privilege then null; end;
   select count(*) into n from job_spray where job_id = job2; if n <> 3 then raise exception 'spray rows %', n; end if;
+end $$;
+
+-- 0008: job assignment and observations as the phone writes them (run as the table owner, before `set role`)
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; p constant uuid := '33333333-3333-3333-3333-333333333333';
+        prod constant uuid := 'aaaaaaaa-0000-0000-0000-000000000001'; w constant uuid := 'bbbbbbbb-0000-0000-0000-000000000001'; j constant uuid := 'ffffffff-0000-0000-0000-000000000001';
+begin
+  insert into jobs(id,farm_id,kind,status,product_id,worker_id,dose_str,dose_unit,planned_for) values (j,f,'spray','planned',prod,w,0.025,'ml/str','2026-11-18');
+  begin insert into jobs(farm_id,kind,status,product_id,worker_id,dose_str) values (f,'spray','planned',prod,w,0.025); raise exception 'open spray without a dose unit accepted'; exception when check_violation then null; end;
+  begin insert into jobs(farm_id,kind,status,worker_id,dose_str,dose_unit) values (f,'spray','planned',w,0.025,'ml/str'); raise exception 'open spray without a product accepted'; exception when check_violation then null; end;
+  begin insert into jobs(farm_id,kind,status,product_id,worker_id,dose_str,dose_unit) values (f,'spray','planned',prod,w,0,'ml/str'); raise exception 'job dose 0 accepted'; exception when check_violation then null; end;
+  update jobs set status = 'skipped', skip_reason = 'rain' where id = j;
+  begin update jobs set skip_reason = null where id = j; raise exception 'skipped job without a reason accepted'; exception when check_violation then null; end;
+  begin insert into jobs(farm_id,kind,status,product_id,worker_id,dose_str,dose_unit,skip_reason) values (f,'spray','planned',prod,w,0.025,'ml/str','rain'); raise exception 'reason on an open job accepted'; exception when check_violation then null; end;
+  insert into observations(farm_id,parcel_id,kind,note,observed_at,device_id,actor_id) values (f,p,'pest','aphids','2026-11-20 08:00+00','dev',w::text);
+  begin insert into observations(farm_id,parcel_id,kind) values (f,p,'rumour'); raise exception 'bad observation kind accepted'; exception when check_violation then null; end;
+  begin update observations set note = 'x'; raise exception 'observation update allowed'; exception when insufficient_privilege then null; end;
 end $$;
 
 create role app_user nologin;
