@@ -14,5 +14,8 @@
     "test": "npm run test -w app && npm run test -w @aloni/rules-core",
     "e2e": "npm run e2e -w app",
     "lint": "eslint . --max-warnings 0"
+  },
+  "devDependencies": {
+    "wrangler": "4.164.0"
   }
 }

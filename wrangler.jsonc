@@ -1,0 +1,9 @@
+{
+  // Cloudflare Workers Builds (Worker "aloni"): serves the built PWA (app/dist) as static assets. The dashboard already runs `npm run build`,
+  // so there is no build step here. `_headers` (CSP, cache rules) is copied from app/public into app/dist by the build and applies as before.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "aloni",
+  "compatibility_date": "2026-11-01",
+  "send_metrics": false,
+  "assets": { "directory": "./app/dist", "not_found_handling": "single-page-application" }
+}

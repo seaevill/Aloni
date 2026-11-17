@@ -5,7 +5,7 @@
 
 ## 1. Yayına alma (deploy)
 - Her pull request için Cloudflare Pages bir **önizleme adresi** üretir. Telefonda orayı açıp denersin.
-- Sen "Birleştir" (Merge) dediğinde `main` dalı otomatik yayına çıkar (adres: `https://aloni.pages.dev`, §8 kurulumdan sonra).
+- Sen "Birleştir" (Merge) dediğinde `main` dalı otomatik yayına çıkar (adres: `https://aloni.<hesap-adı>.workers.dev`, §8 kurulumdan sonra).
 - **Sürüm kontrolü:** uygulamada Περισσότερα ekranının altında «Έκδοση: 0.0.0 · a1b2c3d» yazar. Sondaki 7 harf yayına çıkan kodun numarasıdır. iPhone'da eski sürüm takılırsa bu numara GitHub'daki en son birleştirmeyle aynı mı bak.
 - CI (typecheck + testler + 375 px WebKit) kırmızıysa birleştirme düğmesi çalışmaz. Kırmızıyı Claude'a ilet.
 
@@ -28,7 +28,7 @@
 4. Claude'a ekran görüntüsü + ne yaptığını yaz.
 
 ## 5. Hesaplar (sahibi: Bora)
-GitHub ✔ · Cloudflare (§8, doğrulanmadı) ☐ · Supabase (Frankfurt, §9) ☐ · E-posta gönderici ☐ · Alan adı ☐ · Yedek kovası ☐
+GitHub ✔ · Cloudflare Workers (§8) ✔ · Supabase (Frankfurt, §9) ☐ · E-posta gönderici ☐ · Alan adı ☐ · Yedek kovası ☐
 
 ## 6. Hesap güvenliği ve kurtarma
 
@@ -67,21 +67,15 @@ Bilgisayarda Gmail'den **çıkış yap**, sonra zarftaki **bir yedek kodla** yen
 - Sığ klonda "gönderilmemiş commit" uyarısı çıkarsa bu **yanlış alarmdır**: `git ls-remote --heads origin <dal>` ile uzak ucu kontrol et, daha fazla tur harcama.
 - Var olan bir dal için eksik takip referansı: `git fetch --depth=20 origin <dal>:refs/remotes/origin/<dal>`
 
-## 8. Cloudflare Pages kurulumu (bir kez, sahibi: Bora)
-Ücretsiz plan yeterli. **Kart/ödeme isteyen bir ekran çıkarsa dur, atla ve Claude'a yaz.** Claude'a parola, anahtar ya da token yazma.
-1. dash.cloudflare.com → sol menü **Workers & Pages** → **Create application**.
-2. **"Create Worker" değil:** sayfada **Pages** sekmesini/bağlantısını seç → **Connect to Git** (Import an existing Git repository).
-3. GitHub hesabını seç → depo **`seaevill/Aloni`** → **Begin setup**. (Depo listede yoksa: "Configure GitHub access" ile `Aloni` deposuna erişim ver.)
-4. Proje adı: **`aloni`** → adres `aloni.pages.dev` olur. Başka biri almışsa **dur ve Claude'a yaz** (başka ad seçme).
-5. Production branch: **`main`**.
-6. Build ayarları: Framework preset **None**; Build command **`npm run build`**; Build output directory **`app/dist`**; **Root directory (advanced) boş kalsın** (depo kökü; `@aloni/rules-core` pakete lazım).
-7. Environment variables: **ekleme** (Node sürümü depodaki `.node-version` dosyasından gelir: 22). **Save and Deploy**.
-8. İlk yayın birkaç dakika sürer. Bitince `https://aloni.pages.dev` adresini aç; Περισσότερα → altta «Έκδοση: … · xxxxxxx» görünmeli.
-9. Proje → **Settings** → **Builds & deployments** → **Preview deployments**: **All non-production branches** seçili olsun (her PR kendi önizleme adresini alır; Cloudflare PR'a yorum olarak yazar).
-10. **Web Analytics KAPALI kalsın:** proje → **Metrics** sekmesinde "Enable" düğmesine **basma**. Sonradan açık görürsen kapat.
-11. Telefonda: Safari ile `https://aloni.pages.dev` → Paylaş → **Ana Ekrana Ekle**.
-
-**Önizleme adresleri hakkında (önemli):** her PR/yayın kendi adresinde çalışır (`<kod>.aloni.pages.dev` ve `<dal-adı>.aloni.pages.dev`). Tarayıcı verisi **adrese özeldir**: önizlemede girdiğin kayıtlar yalnızca o adreste ve o telefonda kalır, `aloni.pages.dev`'e **taşınmaz**, yeni bir önizleme adresinde de görünmez. Önizlemede **gerçek verini girme**, yalnızca denemek için kullan. Gerçek kayıtların için her zaman `https://aloni.pages.dev`.
+## 8. Cloudflare kurulumu (Workers, bir kez, sahibi: Bora)
+Barındırma **Cloudflare Workers** (statik dosyalar) üzerinde; paneldeki `aloni` Worker'ı kalır. Ücretsiz plan yeterli. **Kart/ödeme isteyen bir ekran çıkarsa dur ve Claude'a yaz.** Claude'a parola, anahtar ya da token yazma.
+1. Worker `aloni` → **Settings → Builds**: depo `seaevill/Aloni`, production branch `main`, **Build command `npm run build`**, **Deploy command `npx wrangler deploy`**, **Root directory boş**. (Depodaki `wrangler.jsonc` Worker'a `app/dist` klasörünü yayınlamasını söyler; `wrangler` sürümü depoda sabit.)
+2. **Web Analytics KAPALI kalsın** (Metrics → Enable'a basma). Depoda telemetri de kapalı (`send_metrics: false`).
+3. Adres: Worker sayfasında **Settings → Domains & Routes** altında `aloni.<hesap-adı>.workers.dev` yazar. Telefonda Safari ile açıp Paylaş → **Ana Ekrana Ekle**.
+4. Her PR için Cloudflare bir önizleme sürümü üretebilir (Workers Builds); önizlemedeki veri **o adrese özeldir**, gerçek veri girme.
+5. **Sürüm kontrolü:** Περισσότερα altında «Έκδοση: … · xxxxxxx» (7 harf) GitHub'daki son birleştirmeyle aynı olmalı.
+6. **Geri alma:** Worker → **Deployments** → önceki sürümün yanında **Rollback**. Sonra Claude'a söyle ki `main` de düzeltilsin.
+7. **Önemli:** `main`'e her birleştirme canlıya çıkar; bu yüzden birleştirmeden önce CI yeşil olmalı.
 
 ## 9. Supabase kurulumu (bir kez, sahibi: Bora) – M1'in sonunda, canlı eşitleme (PR 16) için
 Ücretsiz plan yeterli başlangıç. **Kart/ödeme isteyen bir ekran çıkarsa dur ve Claude'a yaz.** Claude'a **parola, `service_role`/secret anahtar, veritabanı parolası veya token yazma**; sadece aşağıda "Claude'a yaz" denen şeyi yaz.
@@ -91,7 +85,7 @@ Bilgisayarda Gmail'den **çıkış yap**, sonra zarftaki **bir yedek kodla** yen
 4. **Önemli (Free plan):** 7 gün hiç işlem olmazsa proje **durur**, panelden elle «Restore» ile açılır. Uygulama canlı kullanıma geçince bu sorun olmaz; o zamana kadar ayda bir paneli aç.
 5. Proje açılınca **Project Settings → Data API**: yalnızca **Project URL**'yi (`https://xxxxxxxx.supabase.co`) Claude'a yaz. Bu adres gizli değil, güvenlik başlığına (CSP) eklenecek. **`anon`/publishable anahtarını Claude'a YAZMA:** onu Cloudflare'e sen girersin (6. adım).
 6. Cloudflare → `aloni` projesi → **Settings → Variables and Secrets (Environment variables)** → **Production** (ve Preview) için iki değişken ekle: `VITE_SUPABASE_URL` = Project URL, `VITE_SUPABASE_ANON_KEY` = Supabase'teki **anon / publishable** anahtar. (`service_role`/secret anahtarı **hiçbir yere koyma**.) Sonra **Deployments → Retry deployment**.
-7. **Authentication → URL Configuration:** *Site URL* = `https://aloni.pages.dev`. **Authentication → Providers → Email** açık; **«Allow new users to sign up» kapalı** (kullanıcıları sen davet edeceksin; Claude bunu PR 16'da birlikte kontrol eder).
+7. **Authentication → URL Configuration:** *Site URL* = `https://aloni.<hesap-adı>.workers.dev`. **Authentication → Providers → Email** açık; **«Allow new users to sign up» kapalı** (kullanıcıları sen davet edeceksin; Claude bunu PR 16'da birlikte kontrol eder).
 8. **Veritabanı kurulumu (SQL):** Claude her migration dosyasını (`supabase/migrations/…`) sana verir; sen **SQL Editor → New query**'ye yapıştırıp **Run**'a basarsın, sırayla. Claude hangi dosyanın sırada olduğunu ve «Success» çıktısını nasıl göreceğini yazar. Bir dosya hata verirse **durup** ekran görüntüsünü Claude'a gönder.
 9. **Yedek (para sorusu):** Free planda günlük otomatik yedek **yok**. Plan: haftalık `pg_dump` (senin AB kovan) + uygulamadan JSON yedeği. Pro (25 $/ay) günlük yedek ekler; **para gerektirdiği için sen onaylamadan açılmaz**.
 10. Bittiğinde Claude'a «Supabase tamam» ve Project URL'yi yaz. Claude PR 16'ya (canlı eşitleme) başlar.
