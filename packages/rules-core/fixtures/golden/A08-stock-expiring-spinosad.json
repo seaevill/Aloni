@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "id": "A08-stock-expiring-spinosad",
+  "case_type": "golden",
+  "source_case": "A08",
+  "qa_refs": [
+    "P0-1",
+    "P2-7",
+    "P2-8"
+  ],
+  "rule_id": "STOCK",
+  "related_rules": [],
+  "farm": "demo",
+  "as_of": "2026-11-16T06:40:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {
+      "low_factor": {
+        "value": "2",
+        "basis": "v2 placeholder [SET ×]"
+      },
+      "expiring_days": {
+        "value": 30,
+        "basis": "v2 placeholder [SET]"
+      }
+    }
+  },
+  "inputs": {
+    "products": [
+      {
+        "id": "PR08",
+        "label": "Spinosad 48% SC",
+        "type": "insecticide",
+        "group_system": "IRAC",
+        "group_code": "5",
+        "unit": "L"
+      }
+    ],
+    "stock": [
+      {
+        "product_id": "PR08",
+        "qty": "0.12",
+        "unit": "L",
+        "expiry": "2026-12-15"
+      }
+    ],
+    "label_uses": [
+      {
+        "product_id": "PR08",
+        "crop_id": "rocket",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.025",
+        "dose_max_per_str": "0.025",
+        "dose_unit": "L/στρ",
+        "phi_days": 3,
+        "rei_h": 12,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      }
+    ],
+    "planned_jobs": []
+  },
+  "synthetic_inputs": null,
+  "expected": {
+    "mode": "decide",
+    "kind": "alert",
+    "category": "stock_expiring",
+    "severity": "low",
+    "targets": {
+      "product_ids": [
+        "PR08"
+      ]
+    },
+    "values": {
+      "expiry": "2026-12-15",
+      "days_left": 29,
+      "qty": "0.12",
+      "label_dose_per_str": "0.025",
+      "label_dose_el": "0,025"
+    },
+    "vetoes": [],
+    "must_not": [
+      {
+        "id": "no-low-stock",
+        "match": {
+          "category": "stock_low",
+          "product_ids": "PR08"
+        },
+        "why": "no planned use → low-stock rule does not fire (QA P2-7: one rule for UI and data)"
+      },
+      {
+        "id": "no-rounded-dose",
+        "match": {
+          "values": {
+            "label_dose_per_str": "0.03"
+          }
+        },
+        "why": "QA P0-1"
+      },
+      {
+        "id": "no-60-day-threshold",
+        "match": {
+          "category": "stock_expiring",
+          "values": {
+            "threshold_days": 60
+          }
+        },
+        "why": "QA P2-8"
+      }
+    ]
+  },
+  "source_text": {
+    "prototype_id": "A08",
+    "title": "Spinosad 48% SC expires Tue 15 Dec 2026",
+    "body": "0.12 L left (≈ 4.8 στρ of rocket at 0.025 L/στρ). Use first if caterpillars return; do not order more now.",
+    "action": "Use before 15 Dec if needed; otherwise return.",
+    "why_rule": "Warn when expiry is within 30 days.",
+    "severity": "low"
+  },
+  "notes": "0.12 ÷ 0.025 = 4.8 στρ of rocket (prototype body); not asserted as a rule output."
+}

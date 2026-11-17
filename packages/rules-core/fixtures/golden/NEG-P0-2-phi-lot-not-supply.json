@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "id": "NEG-P0-2-phi-lot-not-supply",
+  "case_type": "negative",
+  "source_case": null,
+  "qa_refs": [
+    "P0-2",
+    "P2-10"
+  ],
+  "rule_id": "GAP",
+  "related_rules": [
+    "PHI",
+    "HARV-FC"
+  ],
+  "farm": "demo",
+  "as_of": "2026-11-16T06:40:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {
+      "gap_min_pct_of_orders": {
+        "value": 10,
+        "basis": "RULES [SET ~10]"
+      },
+      "gap_min_crates": {
+        "value": 3,
+        "basis": "RULES [SET ~3]"
+      },
+      "horizon_weeks": {
+        "value": 4,
+        "basis": "test-only [SET]"
+      },
+      "supply_model": {
+        "value": "even spread of (est_crates − logged harvests) from max(as_of, harvest_from, safe_from) to harvest_to",
+        "basis": "v2 method; HARV-FC replaces it in M3+"
+      },
+      "week": {
+        "value": "ISO week, Mon–Sun",
+        "basis": "convention"
+      }
+    }
+  },
+  "inputs": {
+    "orders_weekly": [
+      {
+        "crop_id": "parsley",
+        "crates_per_week": 45
+      }
+    ],
+    "plantings": [
+      {
+        "id": "PL07",
+        "crop_id": "parsley",
+        "parcel_id": "P2",
+        "area_str": "1",
+        "sown": "2026-08-25",
+        "stage_pct": 100,
+        "harvest_from": "2026-10-25",
+        "harvest_to": "2027-01-31",
+        "est_crates": 260,
+        "status": "harvesting",
+        "family": "Apiaceae"
+      },
+      {
+        "id": "PL12",
+        "crop_id": "parsley",
+        "parcel_id": "P4",
+        "area_str": "1.5",
+        "sown": "2026-08-15",
+        "stage_pct": 100,
+        "harvest_from": "2026-10-20",
+        "harvest_to": "2027-01-31",
+        "est_crates": 390,
+        "status": "harvesting",
+        "family": "Apiaceae",
+        "safe_from": "2026-11-23T10:30:00+02:00"
+      }
+    ],
+    "label_uses": [
+      {
+        "product_id": "PR05",
+        "crop_id": "parsley",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.05",
+        "dose_max_per_str": "0.05",
+        "dose_unit": "L/στρ",
+        "phi_days": 14,
+        "rei_h": 24,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      }
+    ],
+    "jobs": [
+      {
+        "id": "J15",
+        "kind": "spray",
+        "parcel_id": "P4",
+        "planting_ids": [
+          "PL12"
+        ],
+        "product_id": "PR05",
+        "dose_per_str": "0.05",
+        "started_at": "2026-11-09T10:30:00+02:00",
+        "ended_at": null,
+        "time_source": "job notes",
+        "notes": "Septoria leaf spot (Septoria petroselini) on parsley; 50 L water/στρ; 10:30, leaves dry."
+      },
+      {
+        "id": "J20",
+        "kind": "harvest",
+        "planting_id": "PL07",
+        "date": "2026-11-15",
+        "crates": 20
+      }
+    ]
+  },
+  "synthetic_inputs": null,
+  "expected": {
+    "mode": "decide",
+    "kind": "alert",
+    "category": "supply_gap",
+    "severity": "medium",
+    "targets": {
+      "crop_ids": [
+        "parsley"
+      ]
+    },
+    "window": {
+      "start": "2026-11-16",
+      "end": "2026-11-22"
+    },
+    "values": {
+      "weeks": [
+        "2026-11-16",
+        "2026-11-23",
+        "2026-11-30",
+        "2026-12-07"
+      ],
+      "supply_by_planting": {
+        "PL07": [
+          21.8,
+          21.8,
+          21.8,
+          21.8
+        ],
+        "PL12": [
+          0.0,
+          39.0,
+          39.0,
+          39.0
+        ]
+      },
+      "supply": [
+        21.8,
+        60.8,
+        60.8,
+        60.8
+      ],
+      "gap_week1": 23.2,
+      "excluded": [
+        {
+          "planting_id": "PL12",
+          "until": "2026-11-23T10:30:00+02:00",
+          "reason": "phi"
+        }
+      ]
+    },
+    "tolerance": {
+      "crates": 1.0
+    },
+    "vetoes": [],
+    "must_not": [
+      {
+        "id": "pl12-zero-week1",
+        "match": {
+          "values": {
+            "supply_by_planting": {
+              "PL12": [
+                {
+                  "$gt": 0
+                }
+              ]
+            }
+          }
+        },
+        "why": "PL12 in PHI until Mon 23 Nov 10:30"
+      },
+      {
+        "id": "no-surplus-week1",
+        "match": {
+          "category": "supply_gap",
+          "values": {
+            "supply": [
+              {
+                "$gte": 40
+              }
+            ]
+          }
+        },
+        "why": "prototype showed 45 / surplus"
+      },
+      {
+        "id": "no-kpi-with-held-lot",
+        "match": {
+          "category": "harvest_kpi",
+          "values": {
+            "includes_planting_ids": "PL12",
+            "week_start": "2026-11-16"
+          }
+        },
+        "why": "every supply figure/KPI starts at safe_from"
+      }
+    ]
+  },
+  "source_text": {
+    "qa": "P0-2: KPIs and forecasts counted crates from PL12 inside its PHI; parsley week 16–22 Nov shown as 45 / surplus.",
+    "prototype_id": "A04",
+    "title": "Parsley Geraneia: inside PHI until Mon 23 Nov",
+    "body": "Difenoconazole (FRAC 3) sprayed Mon 9 Nov for Septoria leaf spot; PHI 14 days → safe to harvest from Mon 23 Nov. Take parsley only from Μεσαίο Χωράφι this week (~18 crates/week vs orders 45).",
+    "action": "Do not cut Geraneia parsley before Mon 23 Nov. Tell clients parsley is short this week (~27 crates).",
+    "why_rule": "Safe-to-harvest date = last spray date + PHI for that crop on the label.",
+    "severity": "medium"
+  },
+  "notes": "PL07 remaining 240 (260 − 20 logged) spread to 31 Jan ⇒ 21.8/week; QA's ~18 used no logged-harvest subtraction. Either way PL12 contributes 0 in week 1 and the shortfall is ≥ 23 crates."
+}

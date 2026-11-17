@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "id": "NEG-P0-1-dose-never-rounded",
+  "case_type": "negative",
+  "source_case": null,
+  "qa_refs": [
+    "P0-1"
+  ],
+  "rule_id": "REG",
+  "related_rules": [],
+  "farm": "demo",
+  "as_of": "2026-11-16T06:40:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {
+      "dose_check": {
+        "value": "job dose must lie in [dose_min, dose_max] (scaled-integer decimal compare)",
+        "basis": "M1 decision 1/3"
+      }
+    }
+  },
+  "inputs": {
+    "plantings": [
+      {
+        "id": "PL04",
+        "crop_id": "rocket",
+        "parcel_id": "P2",
+        "area_str": "1",
+        "status": "growing",
+        "family": "Brassicaceae"
+      },
+      {
+        "id": "PL13",
+        "crop_id": "rocket",
+        "parcel_id": "P4",
+        "area_str": "1",
+        "status": "harvesting",
+        "family": "Brassicaceae"
+      }
+    ],
+    "products": [
+      {
+        "id": "PR08",
+        "label": "Spinosad 48% SC",
+        "type": "insecticide",
+        "group_system": "IRAC",
+        "group_code": "5",
+        "unit": "L"
+      },
+      {
+        "id": "PR10",
+        "label": "Acetamiprid 20% SP",
+        "type": "insecticide",
+        "group_system": "IRAC",
+        "group_code": "4A",
+        "unit": "kg"
+      },
+      {
+        "id": "PR11",
+        "label": "Flonicamid 50% WG",
+        "type": "insecticide",
+        "group_system": "IRAC",
+        "group_code": "29",
+        "unit": "kg"
+      }
+    ],
+    "label_uses": [
+      {
+        "product_id": "PR08",
+        "crop_id": "rocket",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.025",
+        "dose_max_per_str": "0.025",
+        "dose_unit": "L/στρ",
+        "phi_days": 3,
+        "rei_h": 12,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      },
+      {
+        "product_id": "PR10",
+        "crop_id": "spinach",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.025",
+        "dose_max_per_str": "0.025",
+        "dose_unit": "kg/στρ",
+        "phi_days": 7,
+        "rei_h": 24,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      },
+      {
+        "product_id": "PR11",
+        "crop_id": "rocket",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.014",
+        "dose_max_per_str": "0.014",
+        "dose_unit": "kg/στρ",
+        "phi_days": 7,
+        "rei_h": 24,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      },
+      {
+        "product_id": "PR11",
+        "crop_id": "spinach",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.014",
+        "dose_max_per_str": "0.014",
+        "dose_unit": "kg/στρ",
+        "phi_days": 14,
+        "rei_h": 24,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      }
+    ],
+    "jobs": [
+      {
+        "id": "J14",
+        "kind": "spray",
+        "parcel_id": "P4",
+        "planting_ids": [
+          "PL13"
+        ],
+        "product_id": "PR08",
+        "dose_per_str": "0.025",
+        "started_at": "2026-11-06T17:00:00+02:00",
+        "ended_at": null,
+        "time_source": "job notes",
+        "notes": "Caterpillars (Spodoptera littoralis) on rocket; 40 L water/στρ; 17:00."
+      }
+    ]
+  },
+  "synthetic_inputs": {
+    "_synthetic": true,
+    "why": "Two draft jobs: the exact label dose, and the same dose rounded to 2 decimals as the prototype displayed it.",
+    "draft_jobs": [
+      {
+        "id": "DJ-D1",
+        "kind": "spray",
+        "planting_ids": [
+          "PL04"
+        ],
+        "area_str": "1",
+        "product_id": "PR11",
+        "dose_per_str": "0.014",
+        "target": null
+      },
+      {
+        "id": "DJ-D2",
+        "kind": "spray",
+        "planting_ids": [
+          "PL04"
+        ],
+        "area_str": "1",
+        "product_id": "PR11",
+        "dose_per_str": "0.01",
+        "target": null
+      }
+    ]
+  },
+  "expected": {
+    "mode": "decide",
+    "kind": "check",
+    "category": "label_dose",
+    "values": {
+      "label_dose_per_str": {
+        "PR08/rocket": "0.025",
+        "PR10/spinach": "0.025",
+        "PR11/rocket": "0.014",
+        "PR11/spinach": "0.014"
+      },
+      "label_dose_el": {
+        "PR08/rocket": "0,025",
+        "PR10/spinach": "0,025",
+        "PR11/rocket": "0,014"
+      },
+      "job_dose": {
+        "J14": "0.025",
+        "DJ-D1": "0.014"
+      },
+      "total_qty": {
+        "J14": "0.025",
+        "DJ-D1": "0.014"
+      },
+      "dose_in_range": {
+        "J14": true,
+        "DJ-D1": true,
+        "DJ-D2": false
+      }
+    },
+    "also": [
+      {
+        "rule_id": "REG",
+        "kind": "block",
+        "category": "dose_outside_label",
+        "values": {
+          "job_id": "DJ-D2"
+        }
+      }
+    ],
+    "vetoes": [
+      {
+        "by": "REG",
+        "vetoed": "spray",
+        "job_id": "DJ-D2",
+        "reason": "dose_below_label_min"
+      }
+    ],
+    "must_not": [
+      {
+        "id": "no-0.03",
+        "match": {
+          "values": {
+            "label_dose_per_str": {
+              "PR08/rocket": "0.03"
+            }
+          }
+        },
+        "why": "spinosad +20 %"
+      },
+      {
+        "id": "no-0.01",
+        "match": {
+          "values": {
+            "label_dose_per_str": {
+              "PR11/rocket": "0.01"
+            }
+          }
+        },
+        "why": "flonicamid −29 %"
+      },
+      {
+        "id": "no-0,03-el",
+        "match": {
+          "values": {
+            "label_dose_el": {
+              "PR10/spinach": "0,03"
+            }
+          }
+        },
+        "why": "acetamiprid +20 %"
+      }
+    ]
+  },
+  "source_text": {
+    "qa": "P0-1: 0.025 L/στρ shown as 0.03, 0.014 kg/στρ shown as 0.01; spray log J14 '0.03' vs CSV '0.025'."
+  },
+  "notes": "Label targets are null (not in prototype), so a full REG pass would be 'unknown target'; this case asserts only the dose path. Units are the prototype's (L/στρ, kg/στρ) – M1 decision 3 allows only ml/g units, so the M3 harness feeds these labels directly to rules-core as test SignedLabelUse values (no conversion)."
+}

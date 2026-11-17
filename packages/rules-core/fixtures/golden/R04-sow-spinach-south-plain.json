@@ -1,0 +1,336 @@
+{
+  "schema_version": 1,
+  "id": "R04-sow-spinach-south-plain",
+  "case_type": "golden",
+  "source_case": "R04",
+  "qa_refs": [
+    "P0-3",
+    "P2-12"
+  ],
+  "rule_id": "SOW",
+  "related_rules": [
+    "GAP",
+    "DM-SPIN"
+  ],
+  "farm": "demo",
+  "as_of": "2026-11-16T06:40:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {
+      "same_family_years": {
+        "value": 3,
+        "basis": "v2 placeholder [SET]"
+      },
+      "disease_years": {
+        "value": 3,
+        "basis": "test-only [SET]"
+      },
+      "workable_max_rain_mm": {
+        "value": 5,
+        "basis": "test-only [SET]"
+      },
+      "workable_rain_days": {
+        "value": 2,
+        "basis": "test-only [SET]"
+      },
+      "germination_c": {
+        "value": {
+          "spinach": {
+            "min": 2,
+            "opt": [
+              7,
+              24
+            ],
+            "poor_above": 30
+          },
+          "chard": {
+            "min": 5
+          }
+        },
+        "basis": "EST (chard test-only)"
+      },
+      "yield_kg_per_str": {
+        "value": {
+          "spinach": 1200
+        },
+        "basis": "v2 assumption [SET]"
+      },
+      "crate_kg": {
+        "value": {
+          "spinach": 8
+        },
+        "basis": "prototype crops.crate_kg [SET]"
+      },
+      "waste_pct": {
+        "value": 10,
+        "basis": "v2 assumption [SET]"
+      }
+    }
+  },
+  "inputs": {
+    "parcels": [
+      {
+        "id": "P1",
+        "name": "Κάτω Κάμπος (Lower Plain)",
+        "area_str": "12",
+        "elevation_m": 24
+      },
+      {
+        "id": "P2",
+        "name": "Μεσαίο Χωράφι (Middle Field)",
+        "area_str": "8",
+        "elevation_m": 34
+      },
+      {
+        "id": "P3",
+        "name": "Πάχη Παραλιακό (Pachi Coast)",
+        "area_str": "6",
+        "elevation_m": 8
+      },
+      {
+        "id": "P4",
+        "name": "Γεράνεια Πλαγιά (Geraneia Slope)",
+        "area_str": "5",
+        "elevation_m": 180
+      },
+      {
+        "id": "P5",
+        "name": "Νότιος Κάμπος (South Plain)",
+        "area_str": "7",
+        "elevation_m": 28
+      }
+    ],
+    "history": {
+      "P1": [
+        {
+          "crop_id": "spinach",
+          "family": "Amaranthaceae",
+          "season": "2026-autumn",
+          "source": "plantings PL01"
+        }
+      ],
+      "P2": [
+        {
+          "crop_id": "beetroot",
+          "family": "Amaranthaceae",
+          "season": "2026-spring",
+          "source": "parcel notes"
+        }
+      ],
+      "P3": [
+        {
+          "crop_id": "spinach",
+          "family": "Amaranthaceae",
+          "season": "2026-autumn",
+          "source": "plantings PL08"
+        },
+        {
+          "crop_id": "chard",
+          "family": "Amaranthaceae",
+          "season": "2026-autumn",
+          "source": "plantings PL09"
+        }
+      ],
+      "P4": [],
+      "P5": [
+        {
+          "crop_id": "onion",
+          "family": "Amaryllidaceae",
+          "season": "2026",
+          "harvested": "2026-10",
+          "source": "parcel notes"
+        }
+      ]
+    },
+    "disease_flags": [
+      {
+        "parcel_id": "P3",
+        "family": "Amaranthaceae",
+        "rule_id": "DM-SPIN",
+        "level": "high",
+        "see": "A02-dm-spin-pachi"
+      },
+      {
+        "parcel_id": "P3",
+        "family": "Amaranthaceae",
+        "history": "downy mildew Dec 2025"
+      }
+    ],
+    "weather_daily": {
+      "P5": [
+        {
+          "date": "2026-11-14",
+          "rain_mm": 0,
+          "kind": "observed"
+        },
+        {
+          "date": "2026-11-15",
+          "rain_mm": 0,
+          "kind": "observed"
+        },
+        {
+          "date": "2026-11-16",
+          "rain_mm": 0,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-17",
+          "rain_mm": 0,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-18",
+          "rain_mm": 0,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-19",
+          "rain_mm": 0,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-20",
+          "rain_mm": 6.5,
+          "kind": "forecast"
+        }
+      ]
+    }
+  },
+  "synthetic_inputs": {
+    "_synthetic": true,
+    "why": "Prototype gives history only as free text and no soil temperature or free-area field. Values follow R04 and parcel notes: P5 'no spinach/beet/chard since 2023' (exact date chosen: spring 2023), P4 '~2 στρ free on narrow terraces', P5 '3 στρ prepared beds free'. Soil temps plausible for mid-Nov Megara.",
+    "history_extra": {
+      "P5": [
+        {
+          "crop_id": "spinach",
+          "family": "Amaranthaceae",
+          "harvested": "2023-04-30"
+        }
+      ],
+      "P4": [
+        {
+          "note": "no Amaranthaceae in the last 3 years"
+        }
+      ]
+    },
+    "free_area_str": {
+      "P1": "0",
+      "P2": "1",
+      "P3": "0.5",
+      "P4": "2",
+      "P5": "3"
+    },
+    "soil_temp_5_10cm_c": {
+      "P1": 11.5,
+      "P2": 11.5,
+      "P3": 13.0,
+      "P4": 10.5,
+      "P5": 12.0
+    },
+    "requested": {
+      "crop_id": "spinach",
+      "area_str": "3",
+      "from_gap": "A05-gap-spinach"
+    }
+  },
+  "expected": {
+    "mode": "decide",
+    "kind": "recommendation",
+    "category": "sow",
+    "severity": null,
+    "confidence": "medium",
+    "targets": {
+      "parcel_ids": [
+        "P5"
+      ],
+      "parcel_match": "exact",
+      "crop_ids": [
+        "spinach"
+      ]
+    },
+    "window": {
+      "start": "2026-11-16",
+      "end": "2026-11-19"
+    },
+    "values": {
+      "area_str": "3",
+      "expected_crates": 405,
+      "variety_prompt": true,
+      "chosen_variety": null,
+      "rejected": {
+        "P1": [
+          "same_family_recent"
+        ],
+        "P2": [
+          "same_family_recent"
+        ],
+        "P3": [
+          "disease_flag",
+          "same_family_recent"
+        ],
+        "P4": [
+          "insufficient_free_area"
+        ]
+      }
+    },
+    "tolerance": {
+      "crates": 1.0
+    },
+    "vetoes": [
+      {
+        "by": "DM-SPIN",
+        "vetoed": "sow",
+        "parcel_id": "P3",
+        "reason": "disease_flag_family"
+      }
+    ],
+    "must_not": [
+      {
+        "id": "no-other-parcel",
+        "match": {
+          "rule_id": "SOW",
+          "kind": "recommendation",
+          "parcel_ids": {
+            "$in": [
+              "P1",
+              "P2",
+              "P3",
+              "P4"
+            ]
+          }
+        },
+        "why": "QA P0-3"
+      },
+      {
+        "id": "no-450",
+        "match": {
+          "rule_id": "SOW",
+          "values": {
+            "expected_crates": 450
+          }
+        },
+        "why": "QA P2-12: 3×1200÷8×0.9 = 405"
+      },
+      {
+        "id": "no-auto-herbicide",
+        "match": {
+          "rule_id": "SOW",
+          "values": {
+            "chosen_product_id": {
+              "$exists": true
+            }
+          }
+        },
+        "why": "lenacil is a prompt at most; app never chooses a product"
+      }
+    ]
+  },
+  "source_text": {
+    "prototype_id": "R04",
+    "action": "Sow spinach on 3 στρ of Νότιος Κάμπος (free prepared beds). Use a variety with the widest declared downy-mildew (Pe) race resistance. Optional pre-emergence lenacil (HRAC 5) 0.05 kg/στρ within 2 days of sowing – check label. NOT on Pachi Coast (mildew history, spinach already there).",
+    "window": "Tue 17 - Thu 19 Nov (before the front; rain will settle the seed)",
+    "why_rule": "Sow to close an order gap only on a parcel with: no same-family crop (spinach/chard/beet, Amaranthaceae) in the last 3 years, no disease flag for that crop, free area, workable soil.",
+    "severity": null
+  },
+  "notes": "Window start: the rule allows Mon 16 (prototype said Tue 17). Rejection reasons use 'include' semantics; P3 may list more reasons. 405 crates = 3 στρ × 1200 kg ÷ 8 kg × 0.9."
+}

@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "id": "NEG-unsigned-rule-info-only",
+  "case_type": "negative",
+  "source_case": "A01",
+  "qa_refs": [],
+  "rule_id": "FROST",
+  "related_rules": [],
+  "farm": "demo",
+  "as_of": "2026-11-16T06:40:00+02:00",
+  "rule_state": {
+    "status": "unsigned",
+    "params": {
+      "tmin_2m_max_c": {
+        "value": 2.0,
+        "basis": "v2 placeholder [SET] – NOT approved"
+      },
+      "wind_max_kmh": {
+        "value": 5,
+        "basis": "v2 placeholder [SET ~5] – NOT approved"
+      },
+      "cloud_max_oktas": {
+        "value": 2,
+        "basis": "test-only [SET] – NOT approved"
+      },
+      "elevation_max_m": {
+        "value": 50,
+        "basis": "v2 rule (topo class preferred) – NOT approved"
+      },
+      "cold_pool_offset_c": {
+        "value": {
+          "plain": 0.0,
+          "slope": 0.0,
+          "coastal": 0.0
+        },
+        "basis": "test-only [SET]; forecast already elevation-corrected – NOT approved"
+      },
+      "leaf_below_air_c": {
+        "value": [
+          1,
+          3
+        ],
+        "basis": "EST – NOT approved"
+      },
+      "damage_temp_by_crop_stage": {
+        "value": null,
+        "basis": "[SET] not set → 'frost conditions' only – NOT approved"
+      }
+    }
+  },
+  "inputs": {
+    "parcels": [
+      {
+        "id": "P1",
+        "name": "Κάτω Κάμπος (Lower Plain)",
+        "area_str": "12",
+        "elevation_m": 24
+      }
+    ],
+    "plantings": [
+      {
+        "id": "PL01",
+        "crop_id": "spinach",
+        "parcel_id": "P1",
+        "status": "harvesting",
+        "family": "Amaranthaceae"
+      }
+    ],
+    "weather_daily": {
+      "P1": [
+        {
+          "date": "2026-11-17",
+          "tmin": 1.5,
+          "wind_kmh": 4,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-18",
+          "tmin": 1.0,
+          "wind_kmh": 4,
+          "kind": "forecast"
+        },
+        {
+          "date": "2026-11-19",
+          "tmin": 0.0,
+          "wind_kmh": 5,
+          "kind": "forecast"
+        }
+      ]
+    },
+    "weather_convention": "daily row D: tmin = night ending on the morning of D; wind_kmh used as night wind (approximation, no hourly in prototype)"
+  },
+  "synthetic_inputs": {
+    "_synthetic": true,
+    "why": "Prototype has no cloud cover, topo class or cover inventory. Values follow DATA-NOTES: 'clear, calm nights 14–19 Nov; cold air pools on the plain; Geraneia above the inversion; Pachi mild (sea)'.",
+    "night_cloud_oktas": {
+      "2026-11-16/2026-11-17": 0,
+      "2026-11-17/2026-11-18": 0,
+      "2026-11-18/2026-11-19": 0
+    },
+    "topo_class": {
+      "P1": "plain"
+    }
+  },
+  "expected": {
+    "mode": "info_only",
+    "kind": "info",
+    "category": "frost_inputs",
+    "severity": null,
+    "targets": {
+      "parcel_ids": [
+        "P1"
+      ]
+    },
+    "values": {
+      "shows_inputs": true,
+      "badge": "not_signed_off",
+      "notify": false
+    },
+    "vetoes": [],
+    "must_not": [
+      {
+        "id": "no-verdict",
+        "match": {
+          "rule_id": "FROST",
+          "kind": {
+            "$in": [
+              "alert",
+              "recommendation",
+              "block"
+            ]
+          }
+        },
+        "why": "safety rule 3"
+      },
+      {
+        "id": "no-push",
+        "match": {
+          "rule_id": "FROST",
+          "notify": true
+        },
+        "why": "unsigned rules never notify"
+      },
+      {
+        "id": "no-severity",
+        "match": {
+          "rule_id": "FROST",
+          "severity": {
+            "$exists": true,
+            "$ne": null
+          }
+        },
+        "why": "no verdict"
+      }
+    ]
+  },
+  "source_text": {
+    "prototype_id": "A01",
+    "title": "Frost at leaf level on the low plain, night Wed 18 → Thu 19 Nov",
+    "body": "Clear, calm nights Tue-Thu. Cold air drains off Geraneia and pools on the plain: 2 m air min 0.5 °C at Μεσαίο Χωράφι, 0.0 °C at Κάτω Κάμπος, 0.2 °C at Νότιος Κάμπος. Leaf surfaces can be 2-3 °C colder than the air. Young coriander and dill (Μεσαίο Χωράφι) are the most exposed. Geraneia Slope is warmer (4.0 °C, above the cold layer) and Pachi (5.0 °C, sea).",
+    "action": "Wed 18 Nov before sunset: cover coriander + dill (Μεσαίο Χωράφι) with 17-19 g/m² fleece (gains ~1-2 °C). Remove Thu 19 after ~10:00 when thawed, before the windy front on Fri. Thu 19: no harvest of spinach (Κάτω Κάμπος) or chicory before leaves thaw (~10:00).",
+    "why_rule": "Warn when forecast 2 m min <= 2 °C AND night wind <= 5 km/h AND clear sky on parcels below 50 m. Leaf surface can be 2-3 °C below air on such nights. Damage temperature for each crop is NOT set by the app – your agronomist can set it.",
+    "severity": "high"
+  },
+  "notes": "Same facts as A01 (P1 only), but the rule's [SET] values are not approved."
+}

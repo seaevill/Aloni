@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "id": "A04-phi-parsley-geraneia",
+  "case_type": "golden",
+  "source_case": "A04",
+  "qa_refs": [
+    "P2-10"
+  ],
+  "rule_id": "PHI",
+  "related_rules": [],
+  "farm": "demo",
+  "as_of": "2026-11-16T06:40:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {}
+  },
+  "inputs": {
+    "plantings": [
+      {
+        "id": "PL12",
+        "crop_id": "parsley",
+        "parcel_id": "P4",
+        "area_str": "1.5",
+        "sown": "2026-08-15",
+        "stage_pct": 100,
+        "harvest_from": "2026-10-20",
+        "harvest_to": "2027-01-31",
+        "est_crates": 390,
+        "status": "harvesting",
+        "family": "Apiaceae"
+      }
+    ],
+    "label_uses": [
+      {
+        "product_id": "PR05",
+        "crop_id": "parsley",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.05",
+        "dose_max_per_str": "0.05",
+        "dose_unit": "L/στρ",
+        "phi_days": 14,
+        "rei_h": 24,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      }
+    ],
+    "jobs": [
+      {
+        "id": "J15",
+        "kind": "spray",
+        "parcel_id": "P4",
+        "planting_ids": [
+          "PL12"
+        ],
+        "product_id": "PR05",
+        "dose_per_str": "0.05",
+        "started_at": "2026-11-09T10:30:00+02:00",
+        "ended_at": null,
+        "time_source": "job notes",
+        "notes": "Septoria leaf spot (Septoria petroselini) on parsley; 50 L water/στρ; 10:30, leaves dry."
+      }
+    ]
+  },
+  "synthetic_inputs": null,
+  "expected": {
+    "mode": "decide",
+    "kind": "alert",
+    "category": "phi_hold",
+    "severity": "high",
+    "confidence": "medium",
+    "targets": {
+      "parcel_ids": [
+        "P4"
+      ],
+      "planting_ids": [
+        "PL12"
+      ],
+      "planting_match": "exact"
+    },
+    "window": {
+      "start": "2026-11-09T10:30:00+02:00",
+      "end": "2026-11-23T10:30:00+02:00"
+    },
+    "values": {
+      "safe_from": "2026-11-23T10:30:00+02:00",
+      "phi_days": 14,
+      "lot_status": "hold_phi"
+    },
+    "vetoes": [],
+    "must_not": [
+      {
+        "id": "no-harvesting-pill",
+        "match": {
+          "kind": "lot_status",
+          "planting_ids": "PL12",
+          "values": {
+            "lot_status": "harvesting"
+          }
+        },
+        "why": "QA P2-10"
+      },
+      {
+        "id": "no-date-only-midnight",
+        "match": {
+          "rule_id": "PHI",
+          "values": {
+            "safe_from": "2026-11-23T00:00:00+02:00"
+          }
+        },
+        "why": "safe_from = spray TIME + PHI"
+      }
+    ]
+  },
+  "source_text": {
+    "prototype_id": "A04",
+    "title": "Parsley Geraneia: inside PHI until Mon 23 Nov",
+    "body": "Difenoconazole (FRAC 3) sprayed Mon 9 Nov for Septoria leaf spot; PHI 14 days → safe to harvest from Mon 23 Nov. Take parsley only from Μεσαίο Χωράφι this week (~18 crates/week vs orders 45).",
+    "action": "Do not cut Geraneia parsley before Mon 23 Nov. Tell clients parsley is short this week (~27 crates).",
+    "why_rule": "Safe-to-harvest date = last spray date + PHI for that crop on the label.",
+    "severity": "medium"
+  },
+  "notes": "Severity High per RULES PHI (prototype: medium). Confidence Medium because the label is manual/illustrative ('manual' badge); High only from the official database. The ~27-crate shortfall is asserted in NEG-P0-2 (GAP)."
+}

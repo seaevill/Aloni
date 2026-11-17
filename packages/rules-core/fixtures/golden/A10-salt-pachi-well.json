@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "id": "A10-salt-pachi-well",
+  "case_type": "golden",
+  "source_case": "A10",
+  "qa_refs": [],
+  "rule_id": "SALT",
+  "related_rules": [],
+  "farm": "demo",
+  "as_of": "2026-11-16T06:40:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {
+      "water_ec_classes_dS_m": {
+        "value": {
+          "none": "<0.7",
+          "slight_moderate": "0.7–3.0",
+          "severe": ">3.0"
+        },
+        "basis": "EST FAO-29"
+      },
+      "sensitive_crops": {
+        "value": [
+          "spinach",
+          "lettuce"
+        ],
+        "basis": "EST Maas–Hoffman (spinach ~2.0, lettuce ~1.3 ECe)"
+      },
+      "tolerant_crops": {
+        "value": [
+          "chard",
+          "beet"
+        ],
+        "basis": "EST"
+      },
+      "retest_months": {
+        "value": 4,
+        "basis": "test-only [SET]"
+      }
+    }
+  },
+  "inputs": {
+    "parcels": [
+      {
+        "id": "P3",
+        "name": "Πάχη Παραλιακό (Pachi Coast)",
+        "area_str": "6",
+        "elevation_m": 8,
+        "soil_test": {
+          "date": "2026-08-28",
+          "pH": 8.0,
+          "EC_dS_m": 1.8,
+          "CaCO3_pct": 12,
+          "N_ppm": 12
+        },
+        "irrigation": {
+          "type": "Drip",
+          "source": "Coastal well",
+          "water_EC_dS_m": 2.6
+        }
+      }
+    ],
+    "water_tests": [
+      {
+        "parcel_id": "P3",
+        "sampled_on": "2026-08",
+        "EC_dS_m": 2.6,
+        "source": "Coastal well",
+        "date_note": "month only (A10: 'Aug 2026')"
+      }
+    ],
+    "plantings": [
+      {
+        "id": "PL08",
+        "crop_id": "spinach",
+        "parcel_id": "P3",
+        "status": "growing",
+        "family": "Amaranthaceae"
+      },
+      {
+        "id": "PL09",
+        "crop_id": "chard",
+        "parcel_id": "P3",
+        "status": "harvesting",
+        "family": "Amaranthaceae"
+      },
+      {
+        "id": "PL10",
+        "crop_id": "onion",
+        "parcel_id": "P3",
+        "status": "harvesting",
+        "family": "Amaryllidaceae"
+      },
+      {
+        "id": "PL11",
+        "crop_id": "coriander",
+        "parcel_id": "P3",
+        "status": "harvesting",
+        "family": "Apiaceae"
+      }
+    ]
+  },
+  "synthetic_inputs": null,
+  "expected": {
+    "mode": "decide",
+    "kind": "alert",
+    "category": "salinity",
+    "severity": "low",
+    "confidence": "high",
+    "targets": {
+      "parcel_ids": [
+        "P3"
+      ],
+      "planting_ids": [
+        "PL08"
+      ],
+      "planting_match": "include"
+    },
+    "values": {
+      "water_class": "slight_moderate",
+      "water_EC_dS_m": 2.6,
+      "retest_prompt": true,
+      "coastal_well": true
+    },
+    "vetoes": [],
+    "must_not": [
+      {
+        "id": "chard-not-sensitive",
+        "match": {
+          "rule_id": "SALT",
+          "values": {
+            "sensitive_planting_ids": "PL09"
+          }
+        },
+        "why": "chard tolerant"
+      },
+      {
+        "id": "not-severe",
+        "match": {
+          "rule_id": "SALT",
+          "values": {
+            "water_class": "severe"
+          }
+        },
+        "why": "2.6 < 3.0"
+      }
+    ]
+  },
+  "source_text": {
+    "prototype_id": "A10",
+    "title": "Pachi well water EC 2.6 dS/m",
+    "body": "Salty for spinach (sensitive); chard tolerates it. Rain of 20-22 Nov will leach salts – no irrigation needed this week.",
+    "action": "No irrigation until after the front; re-test well EC in December.",
+    "why_rule": "Warn when irrigation water EC > 2.0 dS/m on a parcel with salt-sensitive crops.",
+    "severity": "low"
+  },
+  "notes": "Confidence High per RULES (test < 6 months); prototype said Medium. Coriander/onion thresholds are [SET] and not asserted. The 'no irrigation this week' part belongs to IRR, not SALT."
+}
