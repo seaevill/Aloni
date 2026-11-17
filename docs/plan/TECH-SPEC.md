@@ -7,6 +7,8 @@
 
 ## 1. Stack, chosen for a non-developer owner
 
+> **Note 2026-11-17 (weather, meteorologist review):** ICON-D2 does not cover Greece (its domain is Germany, Switzerland, Austria). **ICON-EU (~7 km) is the main model for 0–78 h and ECMWF IFS HRES (9 km) is the fallback and covers days 4–10.** The model name and run time are stored as **data** (`model`, `model_run`), never hard-coded, because Open-Meteo changes the DWD model identifiers on **2026-11-30**. Fetch **every 6 h** (twice a day trips the staleness downgrade and frost needs an evening run). The free Open-Meteo tier is non-commercial: the pilot and the stores need a paid plan (budget it). The old wording is kept struck through below. Source: `docs/team-reviews/2026-11-17/meteorologist.md`.
+
 > **Note 2026-11-17:** Netlify yerine Cloudflare Pages, çünkü Netlify'ın ücretsiz paketi aylık yayın sayısında dar. *(Netlify was the original choice in this spec; it is kept struck through below. See `docs/DECISIONS.md`.)*
 
 **Rule:** Bora needs only a browser, his phone and Claude. Claude commits to GitHub and every change deploys automatically, so there is no terminal and no local Node install.
@@ -18,7 +20,7 @@
 | Map | **MapLibre GL** + **Terra Draw** + **turf.js** | Open source, any tile source |
 | Backend | **Supabase EU (Frankfurt)**: Postgres+PostGIS, Auth, RLS, Storage, Edge Functions, pg_cron | Managed and EU-resident; one dashboard |
 | Deploy | **GitHub → Cloudflare Pages** (~~GitHub → Netlify, already familiar to Bora~~; changed 2026-11-17, see the note at the top of this section). Each pull request gets a preview URL. A GitHub Action applies migrations and functions | No manual deploys; one-click rollback |
-| Weather | Open-Meteo (ICON-D2/ECMWF hourly, elevation API), fetched **server-side by cron**, cached per parcel | Works offline, quota under control; check the commercial licence |
+| Weather | Open-Meteo (**ICON-EU main, ECMWF IFS HRES fallback**; ~~ICON-D2/ECMWF hourly~~, see note above; elevation API), fetched **server-side by cron every 6 h**, cached per parcel | Works offline, quota under control; check the commercial licence |
 | Push | Web Push (VAPID) from an Edge Function | Android, and iOS 16.4+ installed apps |
 | Later | **Capacitor** wrapper for the stores | Same code |
 
@@ -43,7 +45,7 @@
 |---|---|
 | `farms`, `profiles` | name, tz, lang / user_id, display_name, lang, quiet hours, digest_time |
 | `farm_members` | farm_id, user_id, role `owner/worker` (`agronomist` reserved), pin_hash, active |
-| `parcels` | name, **geom Polygon 4326**, area_str (computed, override), elevation_m, opekepe_code, irrigation_type, water_source_id, weather_cell_id, legacy_id |
+| `parcels` | name, **geom Polygon 4326**, area_str (computed, override), elevation_m, opekepe_code, irrigation_type, water_source_id, weather_cell_id, **topo_class `plain/slope/coast` (nullable, chosen by Bora; M1 field)**, legacy_id |
 | `crops` | **slug shared with Κλούβες**, name_el/tr/en, family, crate_kg_default, base_temp_c |
 | `plantings` | parcel_id, crop_id, variety, lot_label (several per parcel), area_str, sown_on, harvest_from/to, est_crates + est_basis, status |
 | `products` | trade_name, reg_no, active_ingredients, type, group_system (FRAC/IRAC/HRAC), group_code, unit |
@@ -55,7 +57,7 @@
 | `job_fertilise/irrigate/sow/harvest` | N form + N/στρ / minutes, m³ / seed lot / crates, kg, waste_pct |
 | `soil_tests`, `water_tests` | sampled_on, lab, pH, EC, OM, N, P, K, CaCO3 / NO3, Cl; extra jsonb; report photo |
 | `observations` | dew, frost damage, disease, pest + photo (farmer feedback for the rules) |
-| `weather_hourly/daily` | parcel_id, time, kind `observed/forecast`, issued_at, temps, rain, wind, **gust**, rh, dewpoint, **leafwet_h_est**, et0, model, elev_corr |
+| `weather_hourly/daily` | parcel_id, time, kind **`analysis/forecast/sensor/station`** (~~`observed/forecast`~~: a model's "past" values are not observations), issued_at, **model_run, cell_elev_m**, temps, rain, wind, **gust**, rh, dewpoint, **leafwet_h_est**, et0, `model` (data, never code), elev_corr |
 | `rules`, `rule_params` | rule_id, version, definition jsonb, status, signed_off_by/at / per-farm thresholds |
 | `recommendations` | kind, severity, parcel/planting, **rule_id, rule_version**, dedupe_key, window, title_key+params, **inputs, sources, confidence+reason, data_as_of**, status, job_id |
 | `orders_weekly` | crop_id, iso_week, crates, source, synced_at |
@@ -82,12 +84,12 @@ The 17 alerts and recommendations become **golden test fixtures**. The real farm
 Bora edits thresholds per farm (`rule_params`).
 
 **Execution (server-side, deterministic).** `run-rules(farm, as_of)` evaluates the signed-off rules on a snapshot, as a pure function with no clock and no randomness. It upserts by `dedupe_key`, and a changed result supersedes the old row. It runs:
-- after each weather fetch (pg_cron, about 05:15 and 17:15);
+- after each weather fetch (pg_cron **every 6 h**; ~~about 05:15 and 17:15~~);
 - on data change (a trigger queues the farm, drained every minute).
 
 **Arbiter.** Safety rules **veto** spray, fertiliser and sowing outputs, and the veto is recorded in `inputs.vetoed_by`. They cover registration, PHI vs harvest, REI, max applications, FRAC/IRAC rotation, stock/expiry, harvest in progress, and disease/family before sowing.
 
-**Staleness.** A forecast older than 12 h means "No weather advice; data from 05:10".
+**Staleness.** A forecast older than 12 h means "No weather advice; data from 05:10". **Added 2026-11-17:** when ICON-EU and IFS HRES disagree (Tmin more than 2 °C apart, or rain yes/no), drop one confidence level.
 
 **v1 rules:** spray window (gust, dew, rain-free), PHI/REI, rotation, frost with cold-air pooling, downy mildew, N/nitrate timing, stock/expiry, supply vs orders, sowing suggestion.
 
