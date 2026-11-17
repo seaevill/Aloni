@@ -1,0 +1,13 @@
+{
+  "name": "aloni-farm",
+  "private": true,
+  "version": "0.0.0",
+  "workspaces": ["app", "packages/*"],
+  "scripts": {
+    "dev": "npm run dev -w app",
+    "build": "npm run build -w app",
+    "typecheck": "npm run typecheck -w app && npm run typecheck -w @aloni/rules-core",
+    "test": "npm run test -w app",
+    "e2e": "npm run e2e -w app"
+  }
+}
