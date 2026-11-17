@@ -10,6 +10,9 @@ export interface OutboxRow {
 }
 export interface WeatherRow { id: string; farm_id: string; parcel_id: string; days: unknown[] }
 
+/** A photo stored on this phone: the processed JPEG bytes (an ArrayBuffer: iPhone Safari cannot always store a Blob) and their SHA-256. Append-only; the outbox entry carries everything except the bytes. */
+export interface MediaRow extends Row { sha256: string; mime: string; data: ArrayBuffer; width: number; height: number; bytes: number; created_at: string }
+
 export const FARM_TABLES = ['parcels', 'crops', 'plantings', 'products', 'jobs', 'orders_weekly', 'alerts', 'recommendations'] as const;
 export type FarmTable = (typeof FARM_TABLES)[number];
 
@@ -25,6 +28,7 @@ export class AppDB extends Dexie {
   recommendations!: Table<Row, string>;
   weather!: Table<WeatherRow, string>;
   settings!: Table<SettingRow, string>;
+  media!: Table<MediaRow, string>;
   outbox!: Table<OutboxRow, string>; // what still has to reach the server (never holds demo rows)
 
   constructor(name = 'aloni') {
@@ -37,5 +41,6 @@ export class AppDB extends Dexie {
       settings: 'key', // owner settings (data controller details)
     });
     this.version(2).stores({ outbox: 'op_id, farm_id, status' });
+    this.version(3).stores({ media: 'id, farm_id, sha256' });
   }
 }

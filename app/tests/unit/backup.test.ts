@@ -1,5 +1,4 @@
 import 'fake-indexeddb/auto';
-import type { Table } from 'dexie';
 import { describe, expect, it } from 'vitest';
 import { DEMO_FARM_ID } from '../../src/config';
 import { AppDB, type Row } from '../../src/db/schema';
@@ -8,10 +7,6 @@ import { BackupError, makeBackup, parseBackup, restoreBackup } from '../../src/r
 import { TEST_FARM_ID, newDb, putParcel } from '../helpers/factories';
 import { put, putSetting } from '../../src/repo';
 
-class PhotoDB extends AppDB { // `media` arrives with the photo module (PR 11); the backup format already carries it
-  media!: Table<{ id: string; farm_id: string; sha256: string; mime: string; blob: Blob }, string>;
-  constructor() { super(`test-${crypto.randomUUID()}`); this.version(3).stores({ media: 'id, farm_id' }); }
-}
 const farm = { id: TEST_FARM_ID, name: 'Test farm' };
 const real = (over: Partial<Row> = {}): Row => ({ id: crypto.randomUUID(), farm_id: TEST_FARM_ID, name: 'Real parcel', ...over });
 const roundTrip = async (db: AppDB) => parseBackup(JSON.stringify(await makeBackup(db, farm, '0.0.0 · test')));
@@ -37,16 +32,16 @@ describe('backup and restore', () => {
   });
 
   it('photos travel inside and are checked: a damaged photo rejects the whole restore and writes nothing', async () => {
-    const a = new PhotoDB(); await a.open();
+    const a = new AppDB(`test-${crypto.randomUUID()}`); await a.open();
     const blob = new Blob(['label photo bytes'], { type: 'image/jpeg' });
-    await a.media.put({ id: crypto.randomUUID(), farm_id: TEST_FARM_ID, sha256: await sha256Hex(blob), mime: 'image/jpeg', blob });
+    await put(a, 'media', { id: crypto.randomUUID(), farm_id: TEST_FARM_ID, sha256: await sha256Hex(blob), mime: 'image/jpeg', data: await blob.arrayBuffer(), width: 4, height: 3, bytes: blob.size, created_at: '2026-11-20T10:00:00Z' }, 'insert');
     await put(a, 'parcels', real());
     const backup = await roundTrip(a);
     expect(backup.media).toHaveLength(1);
-    const b = new PhotoDB(); await b.open();
+    const b = new AppDB(`test-${crypto.randomUUID()}`); await b.open();
     await restoreBackup(b, backup, 'empty');
-    expect(await sha256Hex((await b.media.toArray())[0].blob)).toBe(backup.media[0].sha256);
-    const c = new PhotoDB(); await c.open();
+    expect(await sha256Hex(new Blob([(await b.media.toArray())[0].data]))).toBe(backup.media[0].sha256);
+    const c = new AppDB(`test-${crypto.randomUUID()}`); await c.open();
     const bad = { ...backup, media: [{ ...backup.media[0], data_base64: await blobToBase64(new Blob(['tampered'])) }] };
     await expect(restoreBackup(c, bad, 'empty')).rejects.toMatchObject({ code: 'sha256' });
     expect(await c.parcels.count()).toBe(0);
