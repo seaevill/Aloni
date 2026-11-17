@@ -17,22 +17,29 @@ export function fitWithin(width: number, height: number, max: number): { width: 
   return { width: Math.max(1, (width * max) / long), height: Math.max(1, (height * max) / long) };
 }
 
-/** Decodes a picked photo (EXIF rotation applied), shrinks it to ≤2000 px and re-encodes it as JPEG. undefined = could not be read: nothing is stored. */
+/**
+ * Decodes a picked photo through an <img> (every browser applies the phone's rotation to it; createImageBitmap options differ between
+ * Safari versions), shrinks it to ≤2000 px and re-encodes it as JPEG. undefined = could not be read: nothing is stored.
+ */
 export async function encodePhoto(file: Blob): Promise<Encoded | undefined> {
+  const url = URL.createObjectURL(file);
   try {
-    const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
-    const size = fitWithin(bmp.width, bmp.height, MAX_SIDE);
+    const img = new Image();
+    img.src = url;
+    await img.decode();
+    const size = fitWithin(img.naturalWidth, img.naturalHeight, MAX_SIDE);
     if (!size) return undefined;
     const canvas = document.createElement('canvas');
     canvas.width = size.width; canvas.height = size.height; // fractions are dropped here
     const ctx = canvas.getContext('2d');
     if (!ctx) return undefined;
-    ctx.drawImage(bmp, 0, 0, canvas.width, canvas.height);
-    bmp.close();
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     const blob = await new Promise<Blob | null>((done) => canvas.toBlob(done, 'image/jpeg', 0.85));
     return blob ? { blob, width: canvas.width, height: canvas.height } : undefined;
   } catch {
     return undefined;
+  } finally {
+    URL.revokeObjectURL(url);
   }
 }
 
