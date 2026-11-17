@@ -7,6 +7,7 @@ import { put } from '../repo';
 import type { Row } from '../db/schema';
 import { MediaThumb } from './Photos';
 import { LabelUses } from './LabelUses';
+import { StockLots } from './StockLots';
 import { ProductForm, TYPE_KEYS } from './ProductForm';
 import { nameOf, Status, Title } from './screens';
 import { UnsyncedMark } from './states';
@@ -21,8 +22,10 @@ const typeText = (v: unknown): string => { const k = (TYPE_KEYS as Record<string
 export function Stock() {
   const [adding, setAdding] = useState(false);
   const [open, setOpen] = useState<Row | undefined>(undefined);
+  const [lots, setLots] = useState<Row | undefined>(undefined);
   const q = useRows('products');
   if (adding) return <ProductForm onDone={() => setAdding(false)} />;
+  if (lots) return <StockLots product={lots} onBack={() => setLots(undefined)} />;
   if (open) return <LabelUses product={open} onBack={() => setOpen(undefined)} />;
   const demo = activeFarm.value !== realFarmId.value;
   const live = q.rows?.filter((r) => !r.deleted_at) ?? [];
@@ -41,6 +44,7 @@ export function Stock() {
           <small>{dot(typeText(r.type), text(r.reg_no), r.qty == null ? '' : `${formatQty(r.qty as number | string)} ${text(r.unit)}`)}</small>
           {text(r.label_photo_id) && <div class="photos"><MediaThumb id={text(r.label_photo_id)} /></div>}
           <UnsyncedMark id={r.id} />
+          {!demo && <button class="btn secondary" data-testid="stock-open" onClick={() => setLots(r)}>{t('stock.open')}</button>}
           {!demo && <button class="btn secondary" data-testid="labeluse-open" onClick={() => setOpen(r)}>{t('labeluse.open')}</button>}
           {!demo && <button class="btn secondary" onClick={() => void archive(r)}>{t('product.archive')}</button>}
         </div>
