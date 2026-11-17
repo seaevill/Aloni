@@ -124,7 +124,9 @@ export const UI = [
     `MemberExpression[property.name=/^(alert|confirm|prompt)$/]`,
     `ObjectPattern > Property[key.name=/^(alert|confirm|prompt)$/]`),
 ];
-export const ALL_BANS = [...ROUND, ...DEFAULTS, ...CLOCK, ...UI];
+// W01 (eslint/no-direct-dexie-write.js): the single write path. Documentary entry; the fixture proves it red.
+export const WRITES = [ban('W01', 'Dexie writes only through repo.put() (type-aware, eslint/no-direct-dexie-write.js).')];
+export const ALL_BANS = [...ROUND, ...DEFAULTS, ...CLOCK, ...UI, ...WRITES];
 
 export const toRule = (b) => ({ selector: b.selector, message: `[${b.id}] ${b.message}` });
 export const withSelector = (bans) => bans.filter((b) => b.selector);
