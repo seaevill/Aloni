@@ -15,10 +15,10 @@ test('empty state has ONE action; undo (no dialog) brings the demo back; the toa
   const dialogs: string[] = [];
   page.on('dialog', (d) => { dialogs.push(d.message()); void d.dismiss(); });
   await page.goto('/');
-  await page.locator('nav.tabs [data-tab="parcels"]').click();
+  await page.locator('nav.tabs [data-tab="crops"]').click();
   await expect(page.getByTestId('empty-state').locator('button')).toHaveCount(1);
   await page.getByTestId('empty-state').locator('button').click(); // the one action: load the demo
-  await expect(page.locator('main .card')).toHaveCount(5);
+  await expect(page.locator('main .card')).toHaveCount(10);
   await page.locator('nav.tabs [data-tab="more"]').click();
   await page.locator('main button.btn.danger').click();
   await expect(page.getByTestId('toast')).toContainText('Η επίδειξη διαγράφηκε');
