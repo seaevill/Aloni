@@ -34,5 +34,5 @@ export default defineConfig({
       workbox: { globPatterns: ['**/*.{js,css,html,png,svg,webmanifest}'], navigateFallback: '/index.html' },
     }),
   ],
-  test: { environment: 'node', include: ['tests/unit/**/*.test.ts', '../packages/**/*.test.ts'] },
+  test: { environment: 'node', include: ['tests/unit/**/*.test.ts'] },
 });

@@ -11,7 +11,7 @@
     "dev": "npm run dev -w app",
     "build": "npm run build -w app",
     "typecheck": "npm run typecheck -w app && npm run typecheck -w @aloni/rules-core",
-    "test": "npm run test -w app",
+    "test": "npm run test -w app && npm run test -w @aloni/rules-core",
     "e2e": "npm run e2e -w app",
     "lint": "eslint . --max-warnings 0"
   }

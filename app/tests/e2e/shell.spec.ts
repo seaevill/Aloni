@@ -5,7 +5,9 @@ test('shell: five tabs in Greek, 375 px, no horizontal scroll', async ({ page })
   await page.goto('/');
   const tabs = page.locator('nav.tabs button');
   await expect(tabs).toHaveCount(5);
-  await expect(tabs).toHaveText(['☀️Σήμερα', '🥬Προϊόντα', '🗺️Χωράφια', '📦Αποθήκη', '⋯Περισσότερα']);
+  // long Greek labels contain soft hyphens so they can break inside the 75 px column
+  const labels = (await tabs.allInnerTexts()).map((s) => s.replace(/[\u00ad\s]/g, ''));
+  expect(labels).toEqual(['☀️Σήμερα', '🥬Προϊόντα', '🗺️Χωράφια', '📦Αποθήκη', '⋯Περισσότερα']);
   const vw = page.viewportSize()!.width;
   expect(vw).toBe(375);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
