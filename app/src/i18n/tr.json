@@ -254,5 +254,15 @@
   "settings.soon": "Son kullanma uyarısı: bitiminden kaç gün önce",
   "settings.error": "1 ile 365 arasında bir tam sayı yazın.",
   "settings.saved": "Kaydedildi.",
-  "analysis.ecUnit.ms": "mS/cm"
+  "analysis.ecUnit.ms": "mS/cm",
+  "workers.open": "Çalışanlar",
+  "workers.title": "Çalışanlar",
+  "workers.note": "Yalnızca ad. Başka kişisel bilgi tutmuyoruz.",
+  "workers.name": "Çalışanın adı",
+  "workers.add": "Çalışan ekle",
+  "workers.empty": "Henüz çalışan yok. İlacı kimin attığını yazmak için gerekli.",
+  "workers.error.name": "Bir ad yazın.",
+  "workers.archived": "Çalışan arşivlendi.",
+  "workers.saved": "Çalışan kaydedildi.",
+  "workers.demo": "Burası demo. Çalışan eklemek için «Çiftliğim»i seçin."
 }

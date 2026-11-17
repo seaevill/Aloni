@@ -254,5 +254,15 @@
   "settings.soon": "Expiry warning: days before the expiry date",
   "settings.error": "Write a whole number from 1 to 365.",
   "settings.saved": "Saved.",
-  "analysis.ecUnit.ms": "mS/cm"
+  "analysis.ecUnit.ms": "mS/cm",
+  "workers.open": "Workers",
+  "workers.title": "Workers",
+  "workers.note": "Name only. We keep no other personal data.",
+  "workers.name": "Worker's name",
+  "workers.add": "Add worker",
+  "workers.empty": "No workers yet. They are needed to record who sprayed.",
+  "workers.error.name": "Write a name.",
+  "workers.archived": "Worker archived.",
+  "workers.saved": "Worker saved.",
+  "workers.demo": "This is the demo. Choose \"My farm\" to add workers."
 }
