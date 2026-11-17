@@ -112,15 +112,10 @@ test('the spray form meets the UX bar in el/tr/en (375 px, targets, axe)', async
     if (!(await page.getByTestId('spray-save').isVisible())) await page.getByTestId('spray-open').click();
     await page.getByRole('button', { name: /Σπανάκι|Ispanak|Spinach/ }).first().click();
     await page.getByTestId('spray-save').click();
-    const found = await page.evaluate(() => {
-      const out: string[] = [];
-      if (document.documentElement.scrollWidth > 375) out.push(`scrollWidth ${document.documentElement.scrollWidth}`);
-      for (const e of document.querySelectorAll('main button:not(:disabled), main input:not(:disabled):not([hidden])')) {
-        const r = e.getBoundingClientRect();
-        if (r.height < 56 || r.width < 44) out.push(`target ${e.tagName} ${Math.round(r.width)}×${Math.round(r.height)}`);
-      }
-      return out;
-    });
+    const found = await page.evaluate(() => [
+      ...(document.documentElement.scrollWidth > 375 ? ['scrollWidth'] : []),
+      ...[...document.querySelectorAll('main button:not(:disabled), main input:not(:disabled):not([hidden])')].filter((e) => e.getBoundingClientRect().height < 56 || e.getBoundingClientRect().width < 44).map((e) => `target ${e.tagName}`),
+    ]);
     expect(found, lang).toEqual([]);
     const axe = await new AxeBuilder({ page }).analyze();
     expect(axe.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id), lang).toEqual([]);
