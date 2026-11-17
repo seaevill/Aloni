@@ -19,6 +19,8 @@ jobs:
       - run: npm ci
       - name: Typecheck
         run: npm run typecheck
+      - name: Lint (safety bans)
+        run: npm run lint
       - name: Unit tests (Vitest)
         run: npm test
       - name: Install WebKit
