@@ -42,7 +42,7 @@ test('label details offline: values kept as typed, empty or «δεν αναγρ�
   const cards = page.getByTestId('labeluse');
   await expect(cards).toHaveCount(1);
   await expect(cards.first()).toContainText('Σπανάκι');
-  await expect(cards.first().getByTestId('labeluse-status')).toHaveText('Μη εγκεκριμένο'); // complete, but nobody approved it
+  await expect(cards.first().getByTestId('labeluse-status')).toHaveText('Χωρίς υπογραφή γεωπόνου'); // complete, but no agronomist has signed it
   await expect(cards.first()).toContainText('Δόση: 0,025 ml/στρ.'); // exactly as typed, not 0,03
   await expect(cards.first()).toContainText('Αναμονή πριν από τη συγκομιδή (ημέρες): 7 ημέρες');
 
@@ -60,7 +60,11 @@ test('label details offline: values kept as typed, empty or «δεν αναγρ�
   await expect(inputs(page).nth(2)).toBeDisabled();
   await page.getByTestId('labeluse-save').click();
   const rocket = cards.filter({ hasText: 'Ρόκα' });
-  await expect(rocket.getByTestId('labeluse-status')).toContainText('Λείπουν στοιχεία');
+  await expect(rocket.getByTestId('labeluse-status')).toContainText('ΑΠΟΚΛΕΙΣΜΕΝΟ');
+  await expect(rocket).toHaveClass(/blocked/); // blocked looks stronger than «no signature»: red frame and a red badge
+  const bg = (loc: ReturnType<Page['locator']>) => loc.evaluate((e) => getComputedStyle(e).backgroundColor);
+  expect(await bg(rocket.getByTestId('labeluse-status'))).toBe('rgb(138, 28, 28)');
+  expect(await bg(cards.filter({ hasText: 'Σπανάκι' }).getByTestId('labeluse-status'))).not.toBe('rgb(138, 28, 28)');
   await expect(rocket).toContainText('Δόση: 0,25 – 0,35 g/στρ.');
   await expect(rocket).toContainText('Αναμονή πριν από τη συγκομιδή (ημέρες): Δεν αναγράφεται');
   await expect(rocket).toContainText('Επανείσοδος στο χωράφι (ώρες): Δεν έχει συμπληρωθεί');
@@ -72,7 +76,7 @@ test('label details offline: values kept as typed, empty or «δεν αναγρ�
   await inputs(page).nth(3).fill('12');
   await inputs(page).nth(4).fill('2');
   await page.getByTestId('labeluse-save').click();
-  await expect(rocket.getByTestId('labeluse-status')).toHaveText('Μη εγκεκριμένο');
+  await expect(rocket.getByTestId('labeluse-status')).toHaveText('Χωρίς υπογραφή γεωπόνου');
   await page.reload();
   await tab(page, 'stock');
   await page.getByTestId('labeluse-open').click();
@@ -125,13 +129,13 @@ test('approval: only a complete label can be signed (name + real date); editing 
   await inputs(page).nth(2).fill('24');
   await page.getByTestId('labeluse-save').click(); // max applications still empty
   const card = page.getByTestId('labeluse');
-  await expect(card.getByTestId('labeluse-status')).toContainText('Λείπουν στοιχεία');
+  await expect(card.getByTestId('labeluse-status')).toContainText('ΑΠΟΚΛΕΙΣΜΕΝΟ');
   await expect(page.getByTestId('signoff-open')).toHaveCount(0); // an incomplete label cannot be approved
 
   await card.getByRole('button', { name: 'Επεξεργασία' }).click();
   await inputs(page).nth(3).fill('3');
   await page.getByTestId('labeluse-save').click();
-  await expect(card.getByTestId('labeluse-status')).toHaveText('Μη εγκεκριμένο');
+  await expect(card.getByTestId('labeluse-status')).toHaveText('Χωρίς υπογραφή γεωπόνου');
   await page.getByTestId('signoff-open').click();
   await page.getByTestId('signoff-save').click(); // no name
   await expect(page.locator('main .msg.error')).toHaveCount(1);
@@ -141,18 +145,18 @@ test('approval: only a complete label can be signed (name + real date); editing 
   await expect(page.locator('main .msg.error')).toContainText('Μη έγκυρη ημερομηνία');
   await page.locator('input[type=date]').fill('2026-11-17');
   await page.getByTestId('signoff-save').click();
-  await expect(card.getByTestId('labeluse-status')).toContainText('Εγκεκριμένο από Test Agronomist');
+  await expect(card.getByTestId('labeluse-status')).toContainText('Υπογραφή γεωπόνου: Test Agronomist');
   await expect(page.getByTestId('signoff-open')).toHaveCount(0);
 
   await page.reload();
   await page.locator('nav.tabs [data-tab="stock"]').click();
   await page.getByTestId('labeluse-open').click();
-  await expect(card.getByTestId('labeluse-status')).toContainText('Εγκεκριμένο από Test Agronomist'); // survives reload
+  await expect(card.getByTestId('labeluse-status')).toContainText('Υπογραφή γεωπόνου: Test Agronomist'); // survives reload
 
   await card.getByRole('button', { name: 'Επεξεργασία' }).click(); // change the PHI 7 → 3
   await inputs(page).nth(1).fill('3');
   await page.getByTestId('labeluse-save').click();
-  await expect(card.getByTestId('labeluse-status')).toHaveText('Μη εγκεκριμένο'); // the approval is gone
+  await expect(card.getByTestId('labeluse-status')).toHaveText('Χωρίς υπογραφή γεωπόνου'); // the approval is gone
   await expect(page.getByTestId('signoff-open')).toBeVisible();
 
   await card.getByRole('button', { name: 'Αρχειοθέτηση' }).click();

@@ -54,7 +54,7 @@ export function StockLots({ product, onBack }: { product: Row; onBack: () => voi
         <div class="card" key={c.lot.id} data-testid="lot">{c.title}
           <small>{c.expiry}</small>
           <small data-testid="lot-balance">{c.balance}</small>
-          {c.flags.map((k) => <span class="badge blocked" key={k} data-testid="lot-flag">{t(k)}</span>)}
+          {c.flags.map((k) => <span class="badge warn" key={k} data-testid="lot-flag">{t(k)}</span>)}
           {c.lines.map((m) => <small key={m.id} data-testid="movement">{m.line}</small>)}
           <UnsyncedMark id={c.lot.id} />
           <button class="btn secondary" data-testid="adjust-open" onClick={() => setView(c.lot)}>{t('stock.adjust')}</button>

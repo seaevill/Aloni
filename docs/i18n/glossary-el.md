@@ -13,6 +13,8 @@ Source: `docs/team-reviews/2026-11-17/greek-editor.md` (inputs, adopted by Bora'
 | dose | δόση (ανά στρέμμα / 100 L) | Δόση |
 | label | ετικέτα | – |
 | agronomist's prescription | συνταγή γεωπόνου | Συνταγή |
+| agronomist's signature on label values | υπογραφή γεωπόνου («Υπογραφή γεωπόνου: …» / «Χωρίς υπογραφή γεωπόνου») | Υπογραφή |
+| label values missing | ΑΠΟΚΛΕΙΣΜΕΝΟ: λείπουν στοιχεία ετικέτας (stronger than «χωρίς υπογραφή») | – |
 | parcel (UI) | χωράφι | Χωράφι |
 | parcel (official / ΟΣΔΕ only) | αγροτεμάχιο | – |
 | farm | κτήμα (official: εκμετάλλευση) | Κτήμα |
@@ -58,5 +60,6 @@ Format: `regex | scope | reason` (the regex itself must not contain `|`; use loo
 αγροτεμαχ | * | official/ΟΣΔΕ contexts only; UI says «χωράφι»
 αγροκτημα | * | use «κτήμα»
 δοκιμαστικ | * | «Δοκιμαστικό» = test station; use «επίδειξη»
+εγκεκριμ | labeluse.status.blocked,labeluse.status.unsigned,labeluse.status.changed,labeluse.status.signed,signoff.record,signoff.note,signoff.on,signoff.saved | «Εγκεκριμένο» reads like an official licence: say that an agronomist SIGNED («υπογραφή γεωπόνου»)
 ^παραλια$ | * | the coast class is «Παραλιακό» (an adjective, like Πεδινό), not «Παραλία» (a beach)
 ```
