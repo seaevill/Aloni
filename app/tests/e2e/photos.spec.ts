@@ -26,7 +26,6 @@ test('add photos offline: shrunk to 2000 px, the same photo only once, kept afte
 
   const big = { name: 'a.png', mimeType: 'image/png', buffer: await png(page, 3000, 1500, 1) };
   await page.locator('input[type=file]').setInputFiles(big);
-  await page.waitForTimeout(2000); console.log('DEBUG', JSON.stringify({ text: await page.locator('main').innerText(), errors }));
   await expect(page.getByTestId('photo-msg')).toHaveText('Η φωτογραφία αποθηκεύτηκε.');
   await expect(page.getByTestId('photo-count')).toContainText('1 φωτογραφία');
   await expect(page.locator('.photo').first()).toHaveAttribute('width', '2000'); // stored size, not the 3000 px original

@@ -34,13 +34,13 @@ describe('backup and restore', () => {
   it('photos travel inside and are checked: a damaged photo rejects the whole restore and writes nothing', async () => {
     const a = new AppDB(`test-${crypto.randomUUID()}`); await a.open();
     const blob = new Blob(['label photo bytes'], { type: 'image/jpeg' });
-    await put(a, 'media', { id: crypto.randomUUID(), farm_id: TEST_FARM_ID, sha256: await sha256Hex(blob), mime: 'image/jpeg', blob, width: 4, height: 3, bytes: blob.size, created_at: '2026-11-20T10:00:00Z' }, 'insert');
+    await put(a, 'media', { id: crypto.randomUUID(), farm_id: TEST_FARM_ID, sha256: await sha256Hex(blob), mime: 'image/jpeg', data: await blob.arrayBuffer(), width: 4, height: 3, bytes: blob.size, created_at: '2026-11-20T10:00:00Z' }, 'insert');
     await put(a, 'parcels', real());
     const backup = await roundTrip(a);
     expect(backup.media).toHaveLength(1);
     const b = new AppDB(`test-${crypto.randomUUID()}`); await b.open();
     await restoreBackup(b, backup, 'empty');
-    expect(await sha256Hex((await b.media.toArray())[0].blob)).toBe(backup.media[0].sha256);
+    expect(await sha256Hex(new Blob([(await b.media.toArray())[0].data]))).toBe(backup.media[0].sha256);
     const c = new AppDB(`test-${crypto.randomUUID()}`); await c.open();
     const bad = { ...backup, media: [{ ...backup.media[0], data_base64: await blobToBase64(new Blob(['tampered'])) }] };
     await expect(restoreBackup(c, bad, 'empty')).rejects.toMatchObject({ code: 'sha256' });

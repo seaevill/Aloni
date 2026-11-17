@@ -38,7 +38,7 @@ describe('addPhoto', () => {
     const ops = (await db.outbox.toArray()).filter((o) => o.table === 'media');
     expect(ops).toHaveLength(1);
     expect(ops[0].row).toMatchObject({ id: row.id, sha256: row.sha256 });
-    expect((ops[0].row as { blob?: unknown }).blob).toBeUndefined();
+    expect((ops[0].row as { data?: unknown }).data).toBeUndefined();
 
     const again = await addPhoto(db, TEST_FARM_ID, enc('photo one'), now); // same bytes
     expect(again).toEqual({ ok: true, id: row.id, duplicate: true });

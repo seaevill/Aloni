@@ -8,18 +8,18 @@ import { EmptyState } from './states';
 const MSG_KEYS: Record<'saved' | 'duplicate' | 'error', I18nKey> = { saved: 'photos.saved', duplicate: 'photos.duplicate', error: 'photos.error' };
 
 /** An object URL for a stored photo; released when the picture leaves the screen. */
-function useBlobUrl(blob: Blob): string {
+function useBlobUrl(data: ArrayBuffer, mime: string): string {
   const [url, setUrl] = useState('');
   useEffect(() => {
-    const u = URL.createObjectURL(blob);
+    const u = URL.createObjectURL(new Blob([data], { type: mime }));
     setUrl(u);
     return () => URL.revokeObjectURL(u);
-  }, [blob]);
+  }, [data, mime]);
   return url;
 }
 
 function Picture({ m, big }: { m: MediaRow; big?: boolean }) {
-  const url = useBlobUrl(m.blob);
+  const url = useBlobUrl(m.data, m.mime);
   return url ? <img class={big ? 'photo big' : 'photo'} src={url} alt={t('photos.alt')} width={m.width} height={m.height} /> : null;
 }
 
