@@ -7,6 +7,8 @@ import { formatArea, formatQty } from '../i18n/format';
 import { archived, restored } from '../parcels/parcel';
 import { put } from '../repo';
 import { Analyses } from './Analyses';
+import { SprayForm } from './SprayForm';
+import { Sprays } from './Sprays';
 import { ParcelForm } from './ParcelForm';
 import { EmptyState, ErrorState, UnsyncedMark } from './states';
 import { showUndo } from './Toast';
@@ -38,6 +40,8 @@ export function Status({ q, message, action }: { q: Rows; message: string; actio
 }
 
 export function Today() {
+  const [spraying, setSpraying] = useState(false);
+  const [recorded, setRecorded] = useState(false);
   const rows = [useRows('parcels'), useRows('plantings'), useRows('products'), useRows('stock_lots'), useRows('crops')];
   const [parcels, plantings, products, lots, crops] = rows;
   const live = (q: Rows) => q.rows?.filter((r) => !r.deleted_at) ?? [];
@@ -45,6 +49,7 @@ export function Today() {
   const cropsInUse = demo ? live(crops).length : new Set(live(plantings).map((p) => p.crop_id)).size;
   const loaded = rows.every((q) => q.rows);
   const has = live(parcels).length + live(plantings).length + live(products).length + live(lots).length + (demo ? live(crops).length : 0) > 0;
+  if (spraying) return <SprayForm onDone={(saved) => { setSpraying(false); setRecorded(saved); }} />;
   return (
     <section>
       <Title k="today.title" />
@@ -52,6 +57,9 @@ export function Today() {
       {loaded && !has && (
         <EmptyState message={t('today.empty')} actionLabel={t('parcel.add')} onAction={() => { tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
       )}
+      {loaded && has && !demo && <button class="btn" data-testid="spray-open" onClick={() => setSpraying(true)}>{t('spray.add')}</button>}
+      {recorded && <p class="msg" role="status" data-testid="spray-saved">{t('spray.saved')}</p>}
+      {loaded && has && !demo && <Sprays />}
       {loaded && has && <p class="card" data-testid="today-counts">{t('today.counts', { parcels: live(parcels).length, crops: formatQty(cropsInUse), plantings: formatQty(live(plantings).length) })}</p>}
     </section>
   );

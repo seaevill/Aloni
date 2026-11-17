@@ -28,7 +28,7 @@ export function StockLots({ product, onBack }: { product: Row; onBack: () => voi
   const today = athensToday(new Date()) ?? '';
   const mine = moves.rows?.filter((m) => m.product_id === product.id) ?? [];
   const list = effectiveLots(lots.rows?.filter((l) => l.product_id === product.id) ?? []).sort((a, b) => text(b.created_at).localeCompare(text(a.created_at)));
-  const reasonText = (r: unknown) => (r === 'receipt' ? t('stock.reason.receipt') : text(r));
+  const reasonText = (r: unknown) => (r === 'receipt' ? t('stock.reason.receipt') : r === 'spray' ? t('stock.reason.spray') : text(r));
   const cards = list.map((lot) => {
     const own = mine.filter((m) => m.lot_key === lot.lot_key).sort((a, b) => text(a.created_at).localeCompare(text(b.created_at)));
     const balance = balanceOf(own);

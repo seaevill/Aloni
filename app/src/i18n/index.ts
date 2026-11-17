@@ -57,3 +57,9 @@ export function formatDate(iso: string): string {
   return new Intl.DateTimeFormat(LOCALES[lang.value], { weekday: 'short', day: 'numeric', month: 'short', timeZone: TZ })
     .format(new Date(`${iso}T12:00:00Z`));
 }
+
+/** A UTC second «2026-11-20T08:00:00Z» -> «20 Νοε, 10:00» in Europe/Athens; an unusable value prints nothing made up (the caller shows «unknown»). */
+export function formatDateTime(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? t('value.unknown') : new Intl.DateTimeFormat(LOCALES[lang.value], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: TZ }).format(d);
+}
