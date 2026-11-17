@@ -4,9 +4,13 @@ import { DEMO_FARM_ID, REAL_FARM_ID } from '../config';
 import { APP_VERSION } from '../version';
 import { LANGS, lang, setLang, t } from '../i18n';
 
+import { Info } from './Info';
+
 export function More() {
   const [msg, setMsg] = useState('');
+  const [view, setView] = useState<'main' | 'info'>('main');
   const pick = (id: string) => { activeFarm.value = id; dataVersion.value++; };
+  if (view === 'info') return <Info onBack={() => setView('main')} />;
   return (
     <section>
       <h1>{t('more.title')}</h1>
@@ -31,6 +35,7 @@ export function More() {
       )}
       <p class="muted">{t('more.demoNote')}</p>
       {msg && <p class="msg" role="status">{msg}</p>}
+      <button class="btn secondary" onClick={() => setView('info')}>{t('more.info')}</button>
       <p class="muted">{t('more.version', { v: APP_VERSION })}</p>
     </section>
   );
