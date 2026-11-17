@@ -1,6 +1,7 @@
 // Safety rules from CLAUDE.md, enforced mechanically (see CODING_STANDARDS.md and eslint/bans.js).
 import tseslint from 'typescript-eslint';
-import { CLOCK, DEFAULTS, NO_INTL, ROUND, UI, toRule } from './eslint/bans.js';
+import { CLOCK, DEFAULTS, NO_INTL, ROUND, UI, toRule, withSelector } from './eslint/bans.js';
+import noNumericDefault from './eslint/no-numeric-default.js';
 
 // ESLint does NOT merge `no-restricted-syntax` across blocks: the last matching block replaces earlier ones.
 // So each file group below gets ONE complete list, and later blocks are supersets or deliberate exceptions.
@@ -10,13 +11,19 @@ const APP_TSX = ['app/src/**/*.tsx', `${FIX}/ui/**/*.tsx`];
 const RULES_CORE = ['packages/rules-core/src/**/*.ts', `${FIX}/rules-core/**/*.ts`];
 const FORMAT_FILE = ['app/src/i18n/format.ts']; // the ONLY file allowed to touch number formatting (R05), with its own tests
 
-const syntax = (bans) => ({ rules: { 'no-restricted-syntax': ['error', ...bans.map(toRule)] } });
+// D05 (type-aware) runs wherever a DEFAULTS ban is listed; the others are syntax selectors.
+const syntax = (bans) => ({
+  rules: {
+    'no-restricted-syntax': ['error', ...withSelector(bans).map(toRule)],
+    ...(bans.some((b) => b.id === 'D05') ? { 'aloni/no-numeric-default': 'error' } : {}),
+  },
+});
 const typed = {
   languageOptions: {
     parser: tseslint.parser,
     parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
   },
-  plugins: { '@typescript-eslint': tseslint.plugin },
+  plugins: { '@typescript-eslint': tseslint.plugin, aloni: { rules: { 'no-numeric-default': noNumericDefault } } },
 };
 
 export default [

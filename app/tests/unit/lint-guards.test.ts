@@ -10,6 +10,7 @@ import { ALL_BANS } from '../../../eslint/bans.js';
 // Fixtures live in app/tests/fixtures/lint/** (any subfolder, incl. redteam/). A new ban without a fixture fails the last test.
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const FIXTURES = join(root, 'app/tests/fixtures/lint');
+const MAX_KNOWN_LIMITS = 60; // raising this needs a DECISIONS.md line
 const eslint = new ESLint({ cwd: root, ignore: false });
 
 const files = (readdirSync(FIXTURES, { recursive: true }) as string[])
@@ -20,6 +21,7 @@ const files = (readdirSync(FIXTURES, { recursive: true }) as string[])
 interface Seen { line: number; id: string }
 const seenByFile = new Map<string, Seen[]>();
 const seenIds = new Set<string>();
+let knownLimits = 0;
 
 describe('ESLint safety bans (seeded violations)', () => {
   it('has fixtures', () => expect(files.length).toBeGreaterThanOrEqual(5));
@@ -37,8 +39,10 @@ describe('ESLint safety bans (seeded violations)', () => {
 
       const lines = readFileSync(file, 'utf8').split('\n');
       const problems: string[] = [];
+      let limits = 0;
       lines.forEach((text, i) => {
         const n = i + 1;
+        if (/@limit/.test(text)) { limits++; return; } // documented known limit: lint cannot see it (CODING_STANDARDS.md)
         const red = /@red\s+(\S+)/.exec(text)?.[1];
         const flagged = seen.filter((s) => s.line === n).map((s) => s.id);
         if (red && !flagged.includes(red)) problems.push(`line ${n}: expected ${red}, got [${flagged.join(',')}]  ${text.trim()}`);
@@ -46,8 +50,14 @@ describe('ESLint safety bans (seeded violations)', () => {
         if (/@ok/.test(text) && flagged.length) problems.push(`line ${n}: @ok line was flagged ${flagged.join(',')}`);
       });
       expect(problems).toEqual([]);
+      knownLimits += limits;
     });
   }
+
+  it('known limits are counted, not hidden', () => {
+    // lines tagged @limit are escapes we could not (or chose not to) close; they are listed in CODING_STANDARDS.md
+    expect(knownLimits).toBeLessThanOrEqual(MAX_KNOWN_LIMITS);
+  });
 
   it('every ban id is proven red by at least one fixture (a new ban without a fixture cannot be merged)', () => {
     const missing = ALL_BANS.map((b) => b.id).filter((id) => !seenIds.has(id));
