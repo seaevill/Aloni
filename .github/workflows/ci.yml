@@ -14,6 +14,8 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: No node_modules may be committed (not even as a symlink)
+        run: test -z "$(git ls-files | grep -E '(^|/)node_modules(/|$)' | head -1)"
       - run: npm ci
       - name: Typecheck
         run: npm run typecheck
