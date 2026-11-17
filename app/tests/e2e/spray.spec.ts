@@ -1,58 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
+import { setup, spray } from './helpers/farm';
 import { iphone } from './helpers/iphone';
 
 const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
 const inputs = (page: Page) => page.locator('main input.input');
-
-/** A real farm with everything a spray needs: parcel, planting, product with a COMPLETE label (optionally signed), a lot of 4,5 kg and a worker. */
-async function setup(page: Page, signed: boolean) {
-  await tab(page, 'parcels');
-  await page.getByTestId('empty-state').locator('button').click();
-  await inputs(page).nth(0).fill('Κάτω Κάμπος'); await inputs(page).nth(1).fill('0,5');
-  await page.getByTestId('parcel-save').click();
-  await tab(page, 'crops');
-  await page.getByTestId('empty-state').locator('button').click();
-  await page.getByRole('button', { name: 'Κάτω Κάμπος' }).click(); await page.getByRole('button', { name: 'Σπανάκι' }).click();
-  await inputs(page).nth(0).fill('0,25');
-  await page.getByTestId('planting-save').click();
-  await tab(page, 'stock');
-  await page.getByTestId('empty-state').locator('button').click();
-  await inputs(page).nth(0).fill('Kocide 2000');
-  await page.getByRole('button', { name: 'Μυκητοκτόνο' }).click(); await page.getByRole('button', { name: 'Κιλά (kg)' }).click();
-  await page.getByTestId('product-save').click();
-  await page.getByTestId('labeluse-open').click();
-  await page.getByTestId('labeluse-add').click();
-  await page.getByRole('button', { name: 'Σπανάκι' }).click(); await page.getByRole('button', { name: 'Μία δόση' }).click();
-  await page.getByRole('button', { name: 'ml/στρ.', exact: true }).click();
-  await inputs(page).nth(0).fill('0,025'); await inputs(page).nth(1).fill('7'); await inputs(page).nth(2).fill('24'); await inputs(page).nth(3).fill('3');
-  await page.getByTestId('labeluse-save').click();
-  if (signed) {
-    await page.getByTestId('signoff-open').click();
-    await page.locator('input.input').nth(0).fill('Test Agronomist');
-    await page.getByTestId('signoff-save').click();
-  }
-  await page.getByRole('button', { name: 'Επιστροφή' }).click();
-  await page.getByTestId('stock-open').click();
-  await page.getByTestId('receive-open').click();
-  await page.locator('input[type=date]').fill('2028-03-31'); await inputs(page).nth(2).fill('4,5');
-  await page.getByTestId('receive-save').click();
-  await tab(page, 'more');
-  await page.getByTestId('open-workers').click();
-  await page.getByTestId('worker-name').fill('Γιώργος');
-  await page.getByTestId('worker-add').click();
-  await tab(page, 'today');
-}
-
-async function spray(page: Page) {
-  await page.getByTestId('spray-open').click();
-  await page.getByRole('button', { name: 'Σπανάκι · Κάτω Κάμπος' }).click();
-  await page.getByRole('button', { name: 'Kocide 2000' }).click();
-  await page.getByRole('button', { name: 'Γιώργος' }).click();
-  await expect(page.getByTestId('spray-dose')).toHaveValue('0,025'); // the label's own single dose is offered as a start
-  await page.locator('.seg button[aria-pressed="true"]', { hasText: 'ml/στρ.' }).waitFor();
-  await page.locator('h2:has-text("Παρτίδα") + .seg button').first().click(); // the only lot
-  await page.getByTestId('spray-qty').fill('0,25');
-}
 
 test('a spray with a SIGNED label: recorded with «Ψέκασε», the exact waiting periods and the stock movement', async ({ page, context }) => {
   const dialogs: string[] = [];
