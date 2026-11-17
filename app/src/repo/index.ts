@@ -45,15 +45,24 @@ export interface Origin { device_id: string }
  * original ids and queues the record under them; it never relabels it with the restoring phone's ids.
  */
 export async function put(db: AppDB, table: string, row: Row, op: Op = 'update', origin?: Origin): Promise<void> {
-  if (isAppendOnly(table) && op !== 'insert') throw new Error(`${table} is append-only: insert an amending row instead`);
-  await db.transaction('rw', [db.table(table), db.outbox, db.settings], async () => {
+  await putMany(db, [{ table, row, op, origin }]);
+}
+
+export interface Write { table: string; row: Row; op?: Op; origin?: Origin }
+
+/** Several records written in ONE transaction: all of them, with their outbox entries, or none (e.g. a stock lot and its first movement). */
+export async function putMany(db: AppDB, writes: readonly Write[]): Promise<void> {
+  for (const w of writes) if (isAppendOnly(w.table) && (w.op ?? 'update') !== 'insert') throw new Error(`${w.table} is append-only: insert an amending row instead`);
+  await db.transaction('rw', [...new Set(writes.map((w) => db.table(w.table))), db.outbox, db.settings], async () => {
     const mine: Ids = { device_id: await deviceId(db), actor_id: await actorId(db) };
-    const ids: Ids = origin
-      ? { device_id: typeof row.device_id === 'string' ? row.device_id : origin.device_id, actor_id: typeof row.actor_id === 'string' ? row.actor_id : 'unknown' }
-      : { device_id: typeof row.device_id === 'string' ? row.device_id : mine.device_id, actor_id: typeof row.actor_id === 'string' ? row.actor_id : mine.actor_id };
-    const stamped: Row = { ...row, device_id: ids.device_id, ...(origin && typeof row.actor_id !== 'string' ? {} : { actor_id: ids.actor_id }) };
-    await (op === 'insert' ? db.table(table).add(stamped) : db.table(table).put(stamped));
-    if (row.farm_id !== DEMO_FARM_ID) await enqueue(db, row.farm_id, table, row.id, op, table === 'media' ? { ...stamped, data: undefined } : stamped, origin ? ids : { device_id: mine.device_id, actor_id: mine.actor_id }); // photo bytes stay in `media`; the upload reads them there
+    for (const { table, row, op = 'update', origin } of writes) {
+      const ids: Ids = origin
+        ? { device_id: typeof row.device_id === 'string' ? row.device_id : origin.device_id, actor_id: typeof row.actor_id === 'string' ? row.actor_id : 'unknown' }
+        : { device_id: typeof row.device_id === 'string' ? row.device_id : mine.device_id, actor_id: typeof row.actor_id === 'string' ? row.actor_id : mine.actor_id };
+      const stamped: Row = { ...row, device_id: ids.device_id, ...(origin && typeof row.actor_id !== 'string' ? {} : { actor_id: ids.actor_id }) };
+      await (op === 'insert' ? db.table(table).add(stamped) : db.table(table).put(stamped));
+      if (row.farm_id !== DEMO_FARM_ID) await enqueue(db, row.farm_id, table, row.id, op, table === 'media' ? { ...stamped, data: undefined } : stamped, origin ? ids : mine); // photo bytes stay in `media`; the upload reads them there
+    }
   });
   await refreshPending(db);
 }

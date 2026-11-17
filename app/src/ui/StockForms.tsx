@@ -2,7 +2,7 @@ import { useRef, useState } from 'preact/hooks';
 import { dataVersion, db, realFarmId } from '../db';
 import { t } from '../i18n';
 import { storePhoto } from '../media/photo';
-import { put } from '../repo';
+import { putMany } from '../repo';
 import { buildAdjustment, buildReceipt, type Direction } from '../stock/stock';
 import type { Row } from '../db/schema';
 import { MediaThumb } from './Photos';
@@ -26,8 +26,7 @@ export function ReceiveForm({ product, onDone }: { product: Row; onDone: () => v
   const save = async () => {
     const r = buildReceipt({ productId: product.id, batch, expiry, qty, photoId }, realFarmId.value, new Date().toISOString(), { lot: crypto.randomUUID(), movement: crypto.randomUUID() });
     if (!r.ok) { setBad({ expiry: r.expiry, qty: r.qty !== undefined }); return; }
-    await put(db, 'stock_lots', r.lot, 'insert');
-    await put(db, 'stock_movements', r.movement, 'insert');
+    await putMany(db, [{ table: 'stock_lots', row: r.lot, op: 'insert' }, { table: 'stock_movements', row: r.movement, op: 'insert' }]); // one step: a lot never exists without its first movement
     dataVersion.value++;
     onDone();
   };
@@ -63,7 +62,7 @@ export function AdjustForm({ lot, onDone }: { lot: Row; onDone: () => void }) {
   const save = async () => {
     const r = buildAdjustment({ lotKey: String(lot.lot_key), productId: String(lot.product_id), direction, qty, reason, amendsId: undefined }, realFarmId.value, new Date().toISOString(), crypto.randomUUID());
     if (!r.ok) { setBad({ direction: r.direction, qty: r.qty !== undefined, reason: r.reason }); return; }
-    await put(db, 'stock_movements', r.movement, 'insert');
+    await putMany(db, [{ table: 'stock_movements', row: r.movement, op: 'insert' }]);
     dataVersion.value++;
     onDone();
   };

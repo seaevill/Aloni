@@ -91,3 +91,18 @@ describe('sign-off: exactly these values, a real date, a name; any edit drops it
     }
   });
 });
+
+describe('dose 0 and the scope of the approval', () => {
+  it('a typed dose of 0 is refused; a stored 0 is blocked, never usable', () => {
+    for (const zero of ['0', '0,0', '0,000']) expect(buildLabelUse(input({ doseMin: typed(zero) }), TEST_FARM_ID, now, 'x'), zero).toMatchObject({ ok: false, invalid: new Set(['doseMin']) });
+    expect(buildLabelUse(input({ kind: 'range', doseMin: typed('1'), doseMax: typed('0') }), TEST_FARM_ID, now, 'x')).toMatchObject({ ok: false, invalid: new Set(['doseMax']) });
+    expect(statusOf({ ...build(input()), dose_min: '0' })).toBe('blocked');
+    expect(build(input({ phi: typed('0') })).phi_days).toBe('0'); // a PHI of 0 days is a real label value
+  });
+  it('the approval covers product, crop and target too: changing any of them leaves it «changed», never «signed»', () => {
+    const row = withSignOff(build(input({ target: 'mildew' })), 'Agronomist', '2026-11-17', now)!;
+    expect(statusOf(row)).toBe('signed');
+    for (const change of [{ product_id: 'prod-2' }, { crop_id: 'crop-2' }, { target: 'aphids' }]) expect(statusOf({ ...row, ...change }), JSON.stringify(change)).toBe('changed');
+    expect('sign_off' in build(input({ target: 'aphids' }))).toBe(false); // editing the target through the form drops it too
+  });
+});

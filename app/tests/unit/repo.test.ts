@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { DEMO_FARM_ID } from '../../src/config';
 import { AppDB, type Row } from '../../src/db/schema';
 import { importDemo, type PrototypeData } from '../../src/db/import-demo';
-import { actorId, deviceId, guardAppendOnly, pendingCount, pendingOps, put, putSetting, unsyncedIds } from '../../src/repo';
+import { actorId, deviceId, guardAppendOnly, pendingCount, pendingOps, put, putMany, putSetting, unsyncedIds } from '../../src/repo';
 import { readFileSync } from 'node:fs';
 import { TEST_FARM_ID, newDb } from '../helpers/factories';
 import type { Table } from 'dexie';
@@ -97,5 +97,25 @@ describe('append-only tables: insert and amend, never change or delete', () => {
     await put(db, 'stock_movements', r, 'insert');
     await put(db, 'stock_movements', row({ qty: -5, amends_id: r.id }), 'insert');
     expect(await db.stock_movements.count()).toBe(2);
+  });
+});
+
+describe('putMany: several records in ONE transaction', () => {
+  it('all of them with their outbox entries, or none (a lot is never left without its first movement)', async () => {
+    const db = await newDb();
+    const a = row(); const b = row();
+    await putMany(db, [{ table: 'parcels', row: a, op: 'insert' }, { table: 'parcels', row: b, op: 'insert' }]);
+    expect(await db.parcels.count()).toBe(2);
+    expect(await db.outbox.count()).toBe(2);
+    const c = row();
+    await expect(putMany(db, [{ table: 'parcels', row: c, op: 'insert' }, { table: 'parcels', row: a, op: 'insert' }])).rejects.toThrow(); // second one is a duplicate id
+    expect(await db.parcels.get(c.id)).toBeUndefined(); // the first one was rolled back
+    expect(await db.outbox.count()).toBe(2);
+  });
+  it('refuses an update of an append-only table before writing anything', async () => {
+    const db = await newDb();
+    const p = row();
+    await expect(putMany(db, [{ table: 'parcels', row: p, op: 'insert' }, { table: 'stock_movements', row: row(), op: 'update' }])).rejects.toThrow(/append-only/);
+    expect(await db.parcels.count()).toBe(0);
   });
 });
