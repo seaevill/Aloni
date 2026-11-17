@@ -1,6 +1,6 @@
 // Safety rules from CLAUDE.md, enforced mechanically (see CODING_STANDARDS.md and eslint/bans.js).
 import tseslint from 'typescript-eslint';
-import { CLOCK, DEFAULTS, NO_INTL, ROUND, UI, toRule, withSelector } from './eslint/bans.js';
+import { CLOCK, DEFAULTS, NO_INTL, NO_TYPED_ARRAYS, ROUND, UI, toRule, withSelector } from './eslint/bans.js';
 import noNumericDefault from './eslint/no-numeric-default.js';
 import noGlobal from './eslint/no-global.js';
 
@@ -44,5 +44,6 @@ export default [
   { files: APP_TSX, ...typed, ...syntax([...ROUND, ...DEFAULTS, ...UI], { ...dose, ...ui }) },
   { files: RULES_CORE, ...typed, ...syntax([...ROUND, ...DEFAULTS, ...CLOCK], { ...dose, ...clock }) },
   { files: ['packages/rules-core/src/**/*.test.ts'], rules: { 'no-restricted-imports': 'off' } },
+  { files: ['app/src/db/uuid.ts'], ...typed, ...syntax([...ROUND.filter(NO_TYPED_ARRAYS), ...DEFAULTS], dose) }, // hashes ids with typed arrays; no dose touches it
   { files: FORMAT_FILE, ...typed, ...syntax([...ROUND.filter(NO_INTL), ...DEFAULTS], dose) },
 ];

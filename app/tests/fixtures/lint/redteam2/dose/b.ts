@@ -2,7 +2,7 @@ import { round } from 'lodash'; // @red R08
 import Big from 'big.js'; // @red R08
 declare const v: number;
 declare const s: string;
-declare const dv: DataView;  // @red R06
+declare const dv: DataView;  // @red R09
 declare const rt: Intl.RelativeTimeFormat;  // @red R05
 export const a1 = Math.f16round(v); // @red R01
 export const a2 = +String(v).slice(0, 4); // @red R06
@@ -18,9 +18,9 @@ export const b2 = v & 0xffffffff; // @red R06
 export const b3 = (() => { let q = v; q &= -1; return q; })(); // @red R06
 export const b4 = v | zero(); // @red R06
 export const b5 = v >> zero(); // @red R06
-export const b6 = Float32Array.of(v)[0]; // @red R06
-export const b7 = Float32Array.from([v])[0]; // @red R06
-export const b8 = Int32Array.of(v)[0]; // @red R06
+export const b6 = Float32Array.of(v)[0]; // @red R09
+export const b7 = Float32Array.from([v])[0]; // @red R09
+export const b8 = Int32Array.of(v)[0]; // @red R09
 export const b9 = (() => { dv.setFloat32(0, v); return dv.getFloat32(0); })(); // @red R06
 export const c1 = rt.format(v, 'day');  // @limit method call on an Intl instance obtained elsewhere
 export const c2 = new Intl.RelativeTimeFormat('el').format(v, 'day'); // @red R05

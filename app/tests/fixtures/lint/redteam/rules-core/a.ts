@@ -27,7 +27,7 @@ export const c2 = () => Math['random'](); // @red R01
 export const c3 = () => { const M = Math; return M.random(); }; // @red R02
 export const c4 = () => globalThis.crypto.randomUUID(); // @red K03
 export const c5 = () => self.crypto; // @red K02
-export const c6 = () => new Uint8Array(4).map(() => 4);  // @red R06
+export const c6 = () => new Uint8Array(4).map(() => 4);  // @red R09
 export const c7 = () => Reflect.get(Math, 'random')(); // @red R02
 export const c8 = () => (Math as any)['ran' + 'dom'](); // @red R02
 export const c9 = () => anyv.constructor.constructor('return Date.now()')(); // @red K01

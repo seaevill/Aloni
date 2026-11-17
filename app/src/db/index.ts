@@ -1,20 +1,26 @@
 import { signal } from '@preact/signals';
-import { AppDB } from './schema';
+import { AppDB, type FarmRow } from './schema';
 import { importDemo, removeDemo, type PrototypeData } from './import-demo';
-import { APP_NAME, DEMO_FARM_ID, REAL_FARM_ID } from '../config';
+import { migrateLegacyDb } from './legacy';
+import { APP_NAME, DEMO_FARM_ID } from '../config';
 import { t } from '../i18n';
 
 export const db = new AppDB();
 
-export const activeFarm = signal<string>(REAL_FARM_ID);
+export const realFarmId = signal('');
+export const activeFarm = signal('');
 export const hasDemo = signal(false);
+/** true when an old database holding real rows was found and kept (not deleted) */
+export const legacyKept = signal(false);
 /** bumps after any data change so screens re-query */
 export const dataVersion = signal(0);
 
 export async function initDb() {
-  if (!(await db.farms.get(REAL_FARM_ID))) {
-    await db.farms.put({ id: REAL_FARM_ID, name: APP_NAME, isDemo: false });
-  }
+  legacyKept.value = (await migrateLegacyDb(db)).status === 'kept';
+  const real: FarmRow = (await db.farms.filter((f) => !f.is_demo).first()) ?? { id: crypto.randomUUID(), name: APP_NAME, is_demo: false };
+  await db.farms.put(real);
+  realFarmId.value = real.id;
+  activeFarm.value = real.id;
   hasDemo.value = !!(await db.farms.get(DEMO_FARM_ID));
   // Ask the browser not to evict our data (iOS evicts storage of non-installed sites).
   try { await navigator.storage?.persist?.(); } catch { /* ignore */ }
@@ -31,7 +37,7 @@ export async function loadDemo() {
 export async function deleteDemo() {
   await removeDemo(db);
   hasDemo.value = false;
-  if (activeFarm.value === DEMO_FARM_ID) activeFarm.value = REAL_FARM_ID;
+  if (activeFarm.value === DEMO_FARM_ID) activeFarm.value = realFarmId.value;
   dataVersion.value++;
 }
 

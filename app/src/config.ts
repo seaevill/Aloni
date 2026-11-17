@@ -9,5 +9,6 @@ export const STORE_TITLE_EN = 'Aloni: Spray Log & Crop Plan';
 export const STORE_TITLE_EL = 'Αλώνι: Βιβλίο Ψεκασμών & Σπορά';
 
 export const TZ = 'Europe/Athens';
-export const REAL_FARM_ID = 'main';
-export const DEMO_FARM_ID = 'demo';
+// Demo rows get UUIDv5 ids from this namespace + their prototype id (stable across re-imports; same ids a server can compute).
+export const DEMO_NAMESPACE = 'b4f5c3a2-1d6e-4f8a-9c7b-2e5d8a1f3c60';
+export const DEMO_FARM_ID = '2843e10d-bdc6-5886-a109-84501d373de2'; // uuidv5('farm:demo', DEMO_NAMESPACE), checked by a test

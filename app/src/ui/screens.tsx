@@ -38,7 +38,7 @@ export function Crops() {
       <Title k="crops.title" />
       {rows && !rows.length && <p class="muted">{t('list.empty')}</p>}
       {rows?.map((r) => (
-        <div class="card" key={r.uid}>{nameOf(r)}{typeof r.latin === 'string' && <small>{r.latin}</small>}</div>
+        <div class="card" key={r.id}>{nameOf(r)}{typeof r.latin === 'string' && <small>{r.latin}</small>}</div>
       ))}
     </section>
   );
@@ -51,7 +51,7 @@ export function Parcels() {
       <Title k="parcels.title" />
       {rows && !rows.length && <p class="muted">{t('list.empty')}</p>}
       {rows?.map((r) => (
-        <div class="card" key={r.uid}>{String(r.name)}{typeof r.area_str === 'number' && <small>{formatArea(r.area_str)}</small>}</div>
+        <div class="card" key={r.id}>{String(r.name)}{typeof r.area_str === 'number' && <small>{formatArea(r.area_str)}</small>}</div>
       ))}
     </section>
   );
@@ -64,7 +64,7 @@ export function Stock() {
       <Title k="stock.title" />
       {rows && !rows.length && <p class="muted">{t('list.empty')}</p>}
       {rows?.map((r) => (
-        <div class="card" key={r.uid}>{nameOf(r)}
+        <div class="card" key={r.id}>{nameOf(r)}
           <small>{r.qty == null ? t('value.unknown') : `${formatQty(r.qty as number | string)} ${typeof r.unit === 'string' ? r.unit : ''}`}</small>
         </div>
       ))}
