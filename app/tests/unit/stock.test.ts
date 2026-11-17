@@ -9,6 +9,7 @@ import { TEST_FARM_ID } from '../helpers/factories';
 
 const now = '2026-11-20T10:00:00.000Z';
 const receipt = (over: Partial<ReceiptInput> = {}): ReceiptInput => ({ productId: 'prod-1', batch: 'A123', expiry: '2028-03-31', qty: '4,5', photoId: undefined, ...over });
+const asRow = (o: Record<string, unknown>): Row => ({ id: 'x', farm_id: TEST_FARM_ID, ...o });
 const ids = { lot: 'lot-1', movement: 'mov-1' };
 const mov = (direction: 'in' | 'out', qty: string, id = crypto.randomUUID()): Row => ({ id, farm_id: TEST_FARM_ID, lot_key: 'lot-1', product_id: 'prod-1', direction, qty_str: qty, reason: 'x', created_at: now });
 
@@ -52,11 +53,11 @@ describe('balance = sum of movements, exact; a negative balance is shown, never 
   });
   it('can go negative and says so', () => {
     expect(balanceOf([mov('in', '1'), mov('out', '1.5')])).toBe('-0.5');
-    expect(flagsOf({ expiry: '2028-03-31' } as Row, '-0.5', '2026-11-20')).toMatchObject({ negative: true });
+    expect(flagsOf(asRow({ expiry: '2028-03-31' }), '-0.5', '2026-11-20')).toMatchObject({ negative: true });
   });
   it('an unreadable movement makes the balance unknown, never a quietly smaller number', () => {
     for (const bad of [{ qty_str: 'NaN' }, { qty_str: 5 }, { qty_str: undefined }, { direction: 'sideways' }]) expect(balanceOf([mov('in', '2'), { ...mov('in', '1'), ...bad }]), JSON.stringify(bad)).toBeUndefined();
-    expect(flagsOf({ expiry: '2028-03-31' } as Row, undefined, '2026-11-20')).toMatchObject({ unknown: true });
+    expect(flagsOf(asRow({ expiry: '2028-03-31' }), undefined, '2026-11-20')).toMatchObject({ unknown: true });
   });
   it('property: 2000 seeded ledgers match the integer sum and do not depend on the order', () => {
     let x = 4242;
@@ -76,7 +77,7 @@ describe('balance = sum of movements, exact; a negative balance is shown, never 
 
 describe('flags: expired and soon are information; a date nobody can read counts as expired', () => {
   const today = '2026-11-20';
-  const lot = (expiry: unknown) => ({ expiry } as Row);
+  const lot = (expiry: unknown) => asRow({ expiry });
   it('expired / soon / fine', () => {
     expect(flagsOf(lot('2026-11-19'), '1', today)).toMatchObject({ expired: true, soon: false });
     expect(flagsOf(lot('2026-11-20'), '1', today)).toMatchObject({ expired: false, soon: true }); // today is still in date
@@ -92,8 +93,8 @@ describe('flags: expired and soon are information; a date nobody can read counts
 
 describe('lots are corrected by amending rows; the ledger never changes', () => {
   it('the newest row of a lot_key is in force', () => {
-    const a = { id: 'l1', lot_key: 'l1', created_at: '2026-11-01', batch: 'A' } as Row;
-    const b = { id: 'l2', lot_key: 'l1', created_at: '2026-11-02', batch: 'B', amends_id: 'l1' } as Row;
+    const a = asRow({ id: 'l1', lot_key: 'l1', created_at: '2026-11-01', batch: 'A' });
+    const b = asRow({ id: 'l2', lot_key: 'l1', created_at: '2026-11-02', batch: 'B', amends_id: 'l1' });
     expect(effectiveLots([a, b]).map((l) => l.batch)).toEqual(['B']);
   });
   it('stock tables are append-only: a direct change or delete throws, a ledger survives backup → restore once and only once', async () => {
