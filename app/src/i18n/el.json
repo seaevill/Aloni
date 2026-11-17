@@ -249,5 +249,10 @@
   "sync.local": "Αποθηκεύτηκε στο τηλέφωνο. Θα σταλεί όταν συνδεθεί λογαριασμός.",
   "labeluse.name.phi": "Αναμονή πριν από τη συγκομιδή",
   "labeluse.name.rei": "Επανείσοδος στο χωράφι",
-  "labeluse.name.maxApps": "Μέγιστες εφαρμογές"
+  "labeluse.name.maxApps": "Μέγιστες εφαρμογές",
+  "settings.title": "Ρυθμίσεις",
+  "settings.soon": "Προειδοποίηση λήξης: ημέρες πριν από τη λήξη",
+  "settings.error": "Γράψτε ακέραιο αριθμό από 1 έως 365.",
+  "settings.saved": "Αποθηκεύτηκε.",
+  "analysis.ecUnit.ms": "mS/cm"
 }

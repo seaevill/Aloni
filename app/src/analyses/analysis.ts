@@ -6,7 +6,7 @@ import type { Row } from '../db/schema';
 
 export type Kind = 'soil' | 'water';
 export const TABLES: Record<Kind, 'soil_tests' | 'water_tests'> = { soil: 'soil_tests', water: 'water_tests' };
-export const EC_UNITS = ['dS/m', 'uS/cm'] as const; // as written on lab reports; the farmer picks the one on his report
+export const EC_UNITS = ['dS/m', 'mS/cm', 'uS/cm'] as const; // as written on lab reports; the farmer picks the one on his report; stored as printed, never converted
 export type EcUnit = (typeof EC_UNITS)[number];
 export interface AnalysisInput { parcelId: string; sampledOn: string; lab: string; ph: string; ec: string; ecUnit: EcUnit | undefined; notes: string; photoId: string | undefined }
 export type AnalysisResult =

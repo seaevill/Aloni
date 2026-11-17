@@ -1,4 +1,4 @@
-import { compareDecimal, dateAfterDays, isCalendarDate, parseDecimal, type Decimal } from '@aloni/rules-core';
+import { compareDecimal, dateAfterDays, isCalendarDate, parseDecimal, type Decimal, type Known } from '@aloni/rules-core';
 import type { Row } from '../db/schema';
 import { signOf, sumSigned } from './balance';
 
@@ -6,7 +6,6 @@ import { signOf, sumSigned } from './balance';
 // only ever added: a mistake is corrected by a new row that points at the old one (`amends_id`), never by editing or deleting.
 
 export type Direction = 'in' | 'out';
-export const SOON_DAYS = 60; // «expires soon» is information only; it decides nothing
 type Problem = 'missing' | 'invalid' | undefined;
 const qtyProblem = (s: string): { problem: Problem; value: Decimal | undefined } => {
   const q = parseDecimal(s);
@@ -62,10 +61,10 @@ export function effectiveLots(lots: readonly Row[]): Row[] {
 }
 
 export interface Flags { negative: boolean; unknown: boolean; expired: boolean; soon: boolean }
-/** Flags for one lot as of `today` (a real `YYYY-MM-DD`). A negative or unreadable balance is flagged, never hidden; an unreadable date is never «fine». */
-export function flagsOf(lot: Row, balance: string | undefined, today: string): Flags {
+/** Flags for one lot as of `today` (a real `YYYY-MM-DD`); `soonDays` is the farmer's setting («expires soon» is information only). A negative or unreadable balance is flagged, never hidden; an unreadable date is never «fine». */
+export function flagsOf(lot: Row, balance: string | undefined, today: string, soonDays: Known<number>): Flags {
   const expiry = typeof lot.expiry === 'string' && isCalendarDate(lot.expiry) ? lot.expiry : undefined;
-  const limit = dateAfterDays(today, SOON_DAYS);
+  const limit = soonDays.known ? dateAfterDays(today, soonDays.value) : soonDays; // no usable setting = no «soon» flag
   const expired = expiry === undefined || !isCalendarDate(today) || expiry < today; // no readable date counts as expired: nobody should rely on it
   return {
     negative: balance !== undefined && signOf(balance) === -1,

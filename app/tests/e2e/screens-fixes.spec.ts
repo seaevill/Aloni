@@ -47,3 +47,44 @@ test('the GPS line names latitude and longitude, and a negative balance uses a r
   await page.getByRole('button', { name: 'Θέση από το GPS' }).click();
   await expect(page.getByTestId('pin')).toHaveText('Γεωγραφικό πλάτος 38,0012 · μήκος 23,3501 (±12 μ.)');
 });
+
+test('the «expires soon» warning follows the setting in More (60 days by default, changeable); EC can be mS/cm', async ({ page }) => {
+  await iphone(page);
+  const inDays = await page.evaluate((n) => { const d = new Date(Date.now() + n * 86400000); return d.toISOString().slice(0, 10); }, 45);
+  await tab(page, 'stock');
+  await page.getByTestId('empty-state').locator('button').click();
+  await page.locator('input.input').nth(0).fill('Kocide 2000');
+  await page.getByRole('button', { name: 'Μυκητοκτόνο' }).click();
+  await page.getByRole('button', { name: 'Κιλά (kg)' }).click();
+  await page.getByTestId('product-save').click();
+  await page.getByTestId('stock-open').click();
+  await page.getByTestId('receive-open').click();
+  await page.locator('input[type=date]').fill(inDays);
+  await page.locator('main input.input').nth(2).fill('2');
+  await page.getByTestId('receive-save').click();
+  await expect(page.getByTestId('lot-flag')).toHaveText('Λήγει σύντομα'); // 45 days away, default 60
+  await tab(page, 'more');
+  await expect(page.getByTestId('soon-days')).toHaveValue('60');
+  await page.getByTestId('soon-days').fill('abc');
+  await page.getByRole('button', { name: 'Αποθήκευση' }).last().click();
+  await expect(page.locator('main .msg.error')).toBeVisible();
+  await page.getByTestId('soon-days').fill('30');
+  await page.getByRole('button', { name: 'Αποθήκευση' }).last().click();
+  await expect(page.getByTestId('settings-saved')).toBeVisible();
+  await tab(page, 'stock');
+  await page.getByTestId('stock-open').click();
+  await expect(page.getByTestId('lot')).toBeVisible();
+  await expect(page.getByTestId('lot-flag')).toHaveCount(0); // 45 days is outside 30
+  await tab(page, 'parcels');
+  await page.getByTestId('empty-state').locator('button').click();
+  await page.locator('input.input').nth(0).fill('Κάτω Κάμπος');
+  await page.locator('input.input').nth(1).fill('0,5');
+  await page.getByTestId('parcel-save').click();
+  await page.getByTestId('analysis-open').click();
+  await page.getByTestId('analysis-add-soil').click();
+  await page.locator('input[type=date]').fill('2026-11-10');
+  await page.locator('main input.input').nth(3).fill('1,2');
+  await page.getByRole('button', { name: 'mS/cm' }).click();
+  await page.getByTestId('analysis-save').click();
+  await expect(page.getByTestId('analysis')).toContainText('EC: 1,2 mS/cm');
+});

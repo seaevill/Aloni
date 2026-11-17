@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto';
 import { describe, expect, it } from 'vitest';
-import { buildAnalysis, TABLES, type AnalysisInput } from '../../src/analyses/analysis';
+import { buildAnalysis, EC_UNITS, TABLES, type AnalysisInput } from '../../src/analyses/analysis';
 import { put } from '../../src/repo';
 import { TEST_FARM_ID, newDb } from '../helpers/factories';
 
@@ -29,6 +29,10 @@ describe('buildAnalysis', () => {
     for (const bad of ['abc', '-0,5', '1.000']) expect(build(input({ ec: bad })), bad).toMatchObject({ ok: false, ec: true });
     expect(build(input({ ph: '14' })).ok).toBe(true);
     expect(build(input({ ph: '0' })).ok).toBe(true);
+  });
+  it('mS/cm is a unit too, stored exactly as printed', () => {
+    expect(build(input({ ec: '1,2', ecUnit: 'mS/cm' }))).toMatchObject({ ok: true, row: { ec: '1.2', ec_unit: 'mS/cm' } });
+    expect([...EC_UNITS]).toEqual(['dS/m', 'mS/cm', 'uS/cm']);
   });
   it('an EC needs the unit from the report (no default, no conversion)', () => {
     expect(build(input({ ecUnit: undefined }))).toMatchObject({ ok: false, ecUnit: true });

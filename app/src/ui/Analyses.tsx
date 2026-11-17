@@ -1,7 +1,7 @@
 import { useState } from 'preact/hooks';
 import { dataVersion, db } from '../db';
 import { isCalendarDate } from '@aloni/rules-core';
-import { TABLES, type Kind } from '../analyses/analysis';
+import { EC_UNITS, TABLES, type Kind } from '../analyses/analysis';
 import { formatDateLong, t, type I18nKey } from '../i18n';
 import { formatQty } from '../i18n/format';
 import { archived, restored } from '../parcels/parcel';
@@ -14,6 +14,7 @@ import { showUndo } from './Toast';
 import { useRows } from './useRows';
 
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
+const unitText = (u: unknown): string => { const k = EC_UNITS.find((x) => x === u); return k ? t(EC_UNIT_KEYS[k]) : t('value.unknown'); }; // a unit nobody can read is never guessed
 const KIND_KEYS: Record<Kind, I18nKey> = { soil: 'analysis.kind.soil', water: 'analysis.kind.water' };
 
 /** One parcel's soil and water analyses, newest first. Add (soil or water) and archive with undo; the report photo stays on the phone. */
@@ -36,7 +37,7 @@ export function Analyses({ parcel, onBack }: { parcel: Row; onBack: () => void }
     const lines = [
       ...(text(r.lab) ? [line('analysis.name.lab', text(r.lab))] : []),
       ...(text(r.ph) ? [line('analysis.name.ph', formatQty(text(r.ph)))] : []),
-      ...(text(r.ec) ? [line('analysis.name.ec', t('labeluse.dosevalue', { v: formatQty(text(r.ec)), unit: t(EC_UNIT_KEYS[r.ec_unit === 'uS/cm' ? 'uS/cm' : 'dS/m']) }))] : []),
+      ...(text(r.ec) ? [line('analysis.name.ec', t('labeluse.dosevalue', { v: formatQty(text(r.ec)), unit: unitText(r.ec_unit) }))] : []),
       ...(text(r.notes) ? [text(r.notes)] : []),
     ];
     const date = isCalendarDate(text(r.sampled_on)) ? formatDateLong(text(r.sampled_on)) : t('value.unknown');

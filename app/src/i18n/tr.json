@@ -249,5 +249,10 @@
   "sync.local": "Telefona kaydedildi. Hesap bağlanınca gönderilecek.",
   "labeluse.name.phi": "Hasattan önce bekleme süresi",
   "labeluse.name.rei": "Tarlaya yeniden giriş",
-  "labeluse.name.maxApps": "En çok uygulama sayısı"
+  "labeluse.name.maxApps": "En çok uygulama sayısı",
+  "settings.title": "Ayarlar",
+  "settings.soon": "Son kullanma uyarısı: bitiminden kaç gün önce",
+  "settings.error": "1 ile 365 arasında bir tam sayı yazın.",
+  "settings.saved": "Kaydedildi.",
+  "analysis.ecUnit.ms": "mS/cm"
 }
