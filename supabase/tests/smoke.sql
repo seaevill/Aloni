@@ -97,7 +97,7 @@ begin
   begin insert into label_uses(farm_id,product_id,crop_id,target,dose_kind,dose_unit,dose_min) values (f,prod,crop,'x','single','ml/str',0); raise exception 'dose 0 accepted'; exception when check_violation then null; end;
   begin insert into label_uses(farm_id,product_id,crop_id,target,dose_kind,dose_unit,dose_min,dose_max) values (f,prod,crop,'y','single','ml/str',1,2); raise exception 'second dose on single accepted'; exception when check_violation then null; end;
   begin insert into label_uses(farm_id,product_id,crop_id,target,dose_kind,dose_unit,dose_min,dose_max) values (f,prod,crop,'z','range','ml/str',3,2); raise exception 'min above max accepted'; exception when check_violation then null; end;
-  begin insert into label_uses(farm_id,product_id,crop_id,target,dose_unit) values (f,prod,crop,'u','%'); raise exception 'unit % accepted'; exception when check_violation then null; end;
+  begin insert into label_uses(farm_id,product_id,crop_id,target,dose_unit) values (f,prod,crop,'u','%'); raise exception 'unit percent accepted'; exception when check_violation then null; end;
   begin insert into label_uses(farm_id,product_id,crop_id,target,phi_days,phi_days_not_on_label) values (f,prod,crop,'w',7,true); raise exception 'value and not-on-label both accepted'; exception when check_violation then null; end;
   begin  -- an incomplete label (max applications «not on label») cannot be signed
     update label_uses set sign_off_by = 'Agronomist', sign_off_on = '2026-11-17', sign_off_fingerprint = 'x' where product_id = prod and target is null; raise exception 'incomplete label signed';
