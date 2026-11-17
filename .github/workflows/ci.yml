@@ -29,6 +29,14 @@ jobs:
       - name: E2E at 375 px (WebKit)
         run: npx playwright test --trace off
         working-directory: app
+      - name: Upload screenshots of every screen (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screens-${{ github.event.pull_request.number || github.run_id }}
+          path: app/screenshots
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Upload Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v4

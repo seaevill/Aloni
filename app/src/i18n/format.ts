@@ -4,6 +4,7 @@
 // ambiguous next to the Greek decimal comma, and doses/quantities/areas are small.
 // A value that is not a plain decimal (NaN, text, null) prints «— άγνωστο» = unknown = blocked,
 // never a made-up number. Tests: app/tests/unit/format.test.ts.
+import type { Decimal, Known } from '@aloni/rules-core';
 import { lang, t } from './index';
 
 const PLAIN = /^-?\d+(\.\d+)?$/;
@@ -32,15 +33,15 @@ function plain(v: string | number | null | undefined): string | null {
 const separator = () => (lang.value === 'en' ? '.' : ',');
 const localise = (s: string) => s.replace('.', separator());
 
-/** A dose exactly as stored: 0.625 → «0,625», "0.250" → «0,250» (trailing zeros are kept). */
-export function formatDose(v: string | number | null | undefined): string {
-  const s = plain(v);
-  return s === null ? t('value.unknown') : localise(s);
+/** A dose exactly as stored: «0.625» → «0,625», «0.250» → «0,250» (trailing zeros are kept). Only a Known<Decimal> is accepted: an unknown dose prints «— άγνωστο». */
+export function formatDose(v: Known<Decimal>): string {
+  return v.known ? localise(v.value) : t('value.unknown');
 }
 
 /** A stock quantity or any other plain number, exactly as stored. */
 export function formatQty(v: string | number | null | undefined): string {
-  return formatDose(v);
+  const s = plain(v);
+  return s === null ? t('value.unknown') : localise(s);
 }
 
 /** An area in στρέμματα: 0.625 → «0,625 στρ.» (never rounded to 0,63). */

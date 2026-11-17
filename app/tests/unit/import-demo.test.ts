@@ -1,12 +1,13 @@
 import 'fake-indexeddb/auto';
 import { readFileSync } from 'node:fs';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { AppDB } from '../../src/db/schema';
+import type { AppDB } from '../../src/db/schema';
+import { newDb, putParcel } from '../helpers/factories';
 import { GREEK_NAME_FIXES, importDemo, removeDemo, type PrototypeData } from '../../src/db/import-demo';
 
 const data = JSON.parse(readFileSync(new URL('../../../reference/prototype/data.json', import.meta.url), 'utf8')) as PrototypeData;
 let db: AppDB;
-beforeEach(async () => { db = new AppDB(`test-${Math.random()}`); await db.open(); });
+beforeEach(async () => { db = await newDb(); });
 
 describe('demo import', () => {
   it('loads every table into the demo farm with matching counts', async () => {
@@ -58,13 +59,13 @@ describe('demo import', () => {
 
   it('never touches the real farm, is re-runnable and removable', async () => {
     await db.farms.put({ id: 'main', name: 'Aloni', isDemo: false });
-    await db.parcels.put({ uid: 'main:X', farmId: 'main', id: 'X', name: 'Real parcel' });
+    const real = await putParcel(db, { name: 'Real parcel' });
     await importDemo(db, data);
     await importDemo(db, data); // twice: no duplicates
     expect(await db.parcels.where('farmId').equals('demo').count()).toBe(data.parcels ? (data.parcels as unknown[]).length : 0);
     await removeDemo(db);
     expect(await db.parcels.where('farmId').equals('demo').count()).toBe(0);
-    expect(await db.parcels.get('main:X')).toBeTruthy();
+    expect(await db.parcels.get(real.uid)).toBeTruthy();
     expect(await db.farms.get('main')).toBeTruthy();
   });
 });
