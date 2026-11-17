@@ -40,5 +40,5 @@ export const ok2 = (a: number | undefined, b: number) => a ?? b; // @red D05 (an
 export const ok3 = (flag: boolean) => (flag ? 1 : 0); // @ok
 export const ok4 = (list: number[] | undefined) => list ?? []; // @ok
 export const ok5 = (n: number) => (n === 1 ? 'one' : 'other'); // @ok
-export const ok6 = (rows: unknown[] | null) => (rows ? rows.length : 0); // @ok
+export const ok6 = (rows: unknown[] | null) => (rows ? rows.length : 0);  // @red D05
 export const ok7 = (a: boolean, b: boolean) => a || b; // @ok

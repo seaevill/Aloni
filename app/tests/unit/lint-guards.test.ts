@@ -33,7 +33,7 @@ describe('ESLint safety bans (seeded violations)', () => {
       const fatal = res.messages.filter((m) => m.fatal);
       expect(fatal.map((m) => m.message), `${rel} must parse`).toEqual([]);
       const errors = res.messages.filter((m) => m.severity === 2);
-      const seen: Seen[] = errors.map((m) => ({ line: m.line, id: /^\[([A-Z]\d+)\]/.exec(m.message)?.[1] ?? m.ruleId ?? '?' }));
+      const seen: Seen[] = errors.map((m) => ({ line: m.line, id: /\[([A-Z]\d+)\]/.exec(m.message)?.[1] ?? m.ruleId ?? '?' }));
       seenByFile.set(rel, seen);
       for (const s of seen) seenIds.add(s.id);
 

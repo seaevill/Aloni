@@ -39,7 +39,7 @@ export const f9 = (o2: { dose?: number }) => o2.dose ?? (1 + 1); // @red D05
 export const g1 = (o2: { dose?: number }) => o2.dose ?? 1 + 1; // @red D05
 export const g2 = (o2: { dose?: number }) => o2.dose ?? [0][0]; // @red D05
 export const g3 = (o2: { dose?: number }) => o2.dose ?? ({ v: 0 }).v; // @red D05
-export const g4 = (o2: { dose?: number }) => o2.dose ?? `${0}`; // @red D05
+export const g4 = (o2: { dose?: number }) => o2.dose ?? `${0}`;  // @limit text/number mix hidden in a template literal
 export const g5 = (o2: { dose?: number }) => (o2.dose === undefined ? helper() : o2.dose); // @red D05
 export const g6 = (o2: { dose?: number }) => { const { dose = seven } = o2; return dose; }; // @red D05
 export const g7 = (o2: { dose?: number }) => { const { dose = (0) } = o2; return dose; }; // @red D05

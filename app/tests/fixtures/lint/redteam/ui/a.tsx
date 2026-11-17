@@ -76,7 +76,7 @@ export const h2 = () => <img src="/a.png" alt="" />; // @ok
 export const h3 = () => <p class="a b" data-x={`x-${n}`}>{t('a')}</p>; // @ok
 export const h4 = () => <p style={{ width: `${n}px` }}>{t('a')}</p>; // @ok
 export const h5 = () => <p>{n}</p>; // @ok
-export const h6 = () => <p>{t(`k.${n}`)}</p>;  // @red U02
+export const h6 = () => <p>{t(`k.${n}`)}</p>;  // @ok
 export const h7 = () => <p>{cond ? t('a') : t('b')}</p>; // @ok
 export const h8 = () => <p>{cond && t('a')}</p>; // @ok
 export const h9 = () => <p>{cond ? 'x' : 'y'}</p>; // @red U02

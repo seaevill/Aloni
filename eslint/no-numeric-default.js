@@ -31,7 +31,6 @@ export default {
     const unwrap = (n) => { let x = n; while (WRAPPERS.has(x.type)) x = x.expression ?? x.argument; return x; };
     const numericText = (n) => { const u = unwrap(n); return u.type === 'Literal' && typeof u.value === 'string' && NUMERIC_TEXT.test(u.value); };
     const numeric = (n) => isNum(typeOf(n)) || isNum(typeOf(unwrap(n))) || numericText(n);
-    const anyish = (n) => (typeOf(n).flags & ANYISH) !== 0;
     const norm = (s) => s.replace(/\?\./g, '.').replace(/[\s()!]/g, '');
     const text = (n) => (n.synthetic ?? code.getText(n));
     const mentions = (branch, subject) => norm(text(branch)).includes(norm(text(subject)));
@@ -66,7 +65,7 @@ export default {
 
     const fallback = (node, left, right) => {
       const l = typeOf(left);
-      if ((isNum(l) || isGeneric(l) || (l.flags & ANYISH)) && (numeric(right) || anyish(right))) report(node);
+      if ((isNum(l) || isGeneric(l) || (l.flags & ANYISH)) && numeric(right)) report(node);
     };
     const objectsWithNumbers = (n) => {
       // an object whose TYPE has numeric properties (e.g. a DEFAULTS constant)
@@ -112,6 +111,11 @@ export default {
         if (n.callee.type === 'MemberExpression' && /^(catch|then)$/.test(n.callee.property.name)) {
           const fn = n.callee.property.name === 'catch' ? n.arguments[0] : n.arguments[1];
           if (fn && /Function/.test(fn.type) && (fn.body.type === 'BlockStatement' ? returnsNumber(fn.body.body) : numeric(fn.body))) report(n);
+        }
+        // parseFloat(s ?? '7'), Number(s || '0'): a text default that becomes a number
+        if (/^(Number|parseFloat|Number\.parseFloat)$/.test(callee) && n.arguments[0]) {
+          const a = unwrap(n.arguments[0]);
+          if (a.type === 'LogicalExpression' && /^(\?\?|\|\|)$/.test(a.operator) && numericText(a.right)) report(n);
         }
         // Number(x) of a nullable/text value is a silent 0
         if (callee === 'Number' && n.arguments.length === 1 && n.arguments[0].type !== 'Literal' && typeOf(n.arguments[0]).flags & MISSING_OR_TEXT) report(n, 'coerce');

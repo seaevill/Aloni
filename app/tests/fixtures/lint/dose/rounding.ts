@@ -40,4 +40,4 @@ export const ok2 = (a: number, b: number) => Math.min(a, b) + Math.abs(a); // @o
 export const ok3 = (iso: string) => new Intl.DateTimeFormat('el-GR').format(new Date(iso)); // @ok
 export const ok4 = (flags: number) => flags & 0xff; // @ok
 export const ok5 = (list: number[]) => list.length % 2; // @ok
-export const ok6 = (x: number) => String(x).replace('.', ','); // @ok
+export const ok6 = (x: number) => String(x).replace('.', ',');  // @red R06

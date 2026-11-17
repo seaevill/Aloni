@@ -19,7 +19,7 @@ export default {
         if (!wanted.has(node.name)) return;
         const p = node.parent;
         if (p.type === 'MemberExpression' && p.property === node && !p.computed) return; // x.alert
-        if (p.type === 'Property' && p.key === node && !p.computed && p.parent.type === 'ObjectExpression') return; // { alert: 1 }
+        if (p.key === node && !p.computed && p.type !== 'ObjectPattern' && !(p.type === 'Property' && p.parent.type === 'ObjectPattern')) return; // { alert: 1 }, type { process: () => void }, class member
         if (p.type === 'TSTypeReference' || p.type === 'TSQualifiedName') return;
         if (declared(node, node.name)) return;
         context.report({ node, messageId: 'g', data: { message } });

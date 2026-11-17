@@ -41,5 +41,6 @@ export default [
   { files: APP_TS, ...typed, ...syntax([...ROUND, ...DEFAULTS], dose) },
   { files: APP_TSX, ...typed, ...syntax([...ROUND, ...DEFAULTS, ...UI], { ...dose, ...ui }) },
   { files: RULES_CORE, ...typed, ...syntax([...ROUND, ...DEFAULTS, ...CLOCK], { ...dose, ...clock }) },
+  { files: ['packages/rules-core/src/**/*.test.ts'], rules: { 'no-restricted-imports': 'off' } },
   { files: FORMAT_FILE, ...typed, ...syntax([...ROUND.filter(NO_INTL), ...DEFAULTS], dose) },
 ];
