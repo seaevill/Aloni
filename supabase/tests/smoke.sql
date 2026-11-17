@@ -29,6 +29,20 @@ begin
   if n <> 2 then raise exception 'audit missing (%)', n; end if;
 end $$;
 
+-- 0005: weather kinds, topo class, languages (run as the table owner, before `set role`)
+do $$
+begin
+  begin insert into weather_hourly(parcel_id,farm_id,at,kind,issued_at) values ('33333333-3333-3333-3333-333333333333','11111111-1111-1111-1111-111111111111',now(),'observed',now()); raise exception 'old kind observed accepted';
+  exception when check_violation then null; end;
+  insert into weather_hourly(parcel_id,farm_id,at,kind,issued_at,model,model_run,cell_elev_m)
+    values ('33333333-3333-3333-3333-333333333333','11111111-1111-1111-1111-111111111111',now(),'forecast',now(),'icon_eu',now(),42);
+  begin update parcels set topo_class = 'ridge' where id = '33333333-3333-3333-3333-333333333333'; raise exception 'topo ridge accepted';
+  exception when check_violation then null; end;
+  update parcels set topo_class = 'plain' where id = '33333333-3333-3333-3333-333333333333';
+  begin update farms set lang = 'xx'; raise exception 'bad lang accepted'; exception when check_violation then null; end;
+  update farms set lang = 'sq' where id = '11111111-1111-1111-1111-111111111111';
+end $$;
+
 create role app_user nologin;
 grant usage on schema public, auth to app_user;
 grant all on all tables in schema public to app_user;
