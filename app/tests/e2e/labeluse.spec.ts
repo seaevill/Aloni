@@ -109,3 +109,56 @@ test('the label-details form meets the UX bar in el/tr/en (375 px, targets, axe)
   }
   expect(errors).toEqual([]);
 });
+
+test('approval: only a complete label can be signed (name + real date); editing a value removes it; archive and undo', async ({ page }) => {
+  const dialogs: string[] = [];
+  page.on('dialog', (d) => { dialogs.push(d.message()); void d.dismiss(); });
+  const errors = await iphone(page);
+  await addProduct(page);
+  await page.getByTestId('labeluse-open').click();
+  await page.getByTestId('labeluse-add').click();
+  await page.getByRole('button', { name: 'Σπανάκι' }).click();
+  await page.getByRole('button', { name: 'Μία δόση' }).click();
+  await page.getByRole('button', { name: 'ml/στρ.', exact: true }).click();
+  await inputs(page).nth(0).fill('0,025');
+  await inputs(page).nth(1).fill('7');
+  await inputs(page).nth(2).fill('24');
+  await page.getByTestId('labeluse-save').click(); // max applications still empty
+  const card = page.getByTestId('labeluse');
+  await expect(card.getByTestId('labeluse-status')).toContainText('Λείπουν στοιχεία');
+  await expect(page.getByTestId('signoff-open')).toHaveCount(0); // an incomplete label cannot be approved
+
+  await card.getByRole('button', { name: 'Επεξεργασία' }).click();
+  await inputs(page).nth(3).fill('3');
+  await page.getByTestId('labeluse-save').click();
+  await expect(card.getByTestId('labeluse-status')).toHaveText('Μη εγκεκριμένο');
+  await page.getByTestId('signoff-open').click();
+  await page.getByTestId('signoff-save').click(); // no name
+  await expect(page.locator('main .msg.error')).toHaveCount(1);
+  await page.locator('input.input').nth(0).fill('Test Agronomist');
+  await page.locator('input[type=date]').fill('');
+  await page.getByTestId('signoff-save').click(); // no date
+  await expect(page.locator('main .msg.error')).toContainText('Μη έγκυρη ημερομηνία');
+  await page.locator('input[type=date]').fill('2026-11-17');
+  await page.getByTestId('signoff-save').click();
+  await expect(card.getByTestId('labeluse-status')).toContainText('Εγκεκριμένο από Test Agronomist');
+  await expect(page.getByTestId('signoff-open')).toHaveCount(0);
+
+  await page.reload();
+  await page.locator('nav.tabs [data-tab="stock"]').click();
+  await page.getByTestId('labeluse-open').click();
+  await expect(card.getByTestId('labeluse-status')).toContainText('Εγκεκριμένο από Test Agronomist'); // survives reload
+
+  await card.getByRole('button', { name: 'Επεξεργασία' }).click(); // change the PHI 7 → 3
+  await inputs(page).nth(1).fill('3');
+  await page.getByTestId('labeluse-save').click();
+  await expect(card.getByTestId('labeluse-status')).toHaveText('Μη εγκεκριμένο'); // the approval is gone
+  await expect(page.getByTestId('signoff-open')).toBeVisible();
+
+  await card.getByRole('button', { name: 'Αρχειοθέτηση' }).click();
+  await expect(card).toHaveCount(0);
+  await page.getByTestId('toast').getByRole('button', { name: 'Αναίρεση' }).click();
+  await expect(card).toHaveCount(1);
+  expect(dialogs).toEqual([]);
+  expect(errors).toEqual([]);
+});

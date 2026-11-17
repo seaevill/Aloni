@@ -180,5 +180,15 @@
   "labeluse.hours.other": "{n} hours",
   "labeluse.status.blocked": "Details missing: cannot be used",
   "labeluse.status.unsigned": "Not approved",
-  "labeluse.status.changed": "Changed after approval: Not approved"
+  "labeluse.status.changed": "Changed after approval: Not approved",
+  "signoff.record": "Record the agronomist's approval",
+  "signoff.note": "Record only an approval you really have from an agronomist. The app does not check it; if you change any value, the approval is removed.",
+  "signoff.by": "Agronomist's name",
+  "signoff.on": "Date of approval",
+  "signoff.saved": "Approval recorded.",
+  "signoff.error.by": "Write the agronomist's name.",
+  "signoff.error.date": "Invalid date.",
+  "labeluse.status.signed": "Approved by {by} · {on}",
+  "labeluse.archive": "Archive",
+  "labeluse.archived": "Label details archived."
 }
