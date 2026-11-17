@@ -10,7 +10,7 @@ insert into parcels(id,farm_id,name,area_str) values
  ('44444444-4444-4444-4444-444444444444','22222222-2222-2222-2222-222222222222','Foreign',2);
 insert into products(id,farm_id,name,type,unit) values ('aaaaaaaa-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','Seed product','fungicide','kg');
 insert into workers(id,farm_id,name) values ('bbbbbbbb-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','Giorgos');
-insert into jobs(id,farm_id,parcel_id,kind) values ('55555555-5555-5555-5555-555555555555','11111111-1111-1111-1111-111111111111','33333333-3333-3333-3333-333333333333','spray');
+insert into jobs(id,farm_id,parcel_id,kind,status) values ('55555555-5555-5555-5555-555555555555','11111111-1111-1111-1111-111111111111','33333333-3333-3333-3333-333333333333','spray','done');
 insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state) values ('11111111-1111-1111-1111-111111111111','55555555-5555-5555-5555-555555555555','aaaaaaaa-0000-0000-0000-000000000001','bbbbbbbb-0000-0000-0000-000000000001','2026-11-17 08:00+00',0.19,'ml/str','unsigned');
 insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state) values ('11111111-1111-1111-1111-111111111111','55555555-5555-5555-5555-555555555555','aaaaaaaa-0000-0000-0000-000000000001','bbbbbbbb-0000-0000-0000-000000000001','2026-11-17 09:00+00',0.06,'ml/str','unsigned');
 
