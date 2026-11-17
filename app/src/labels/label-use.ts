@@ -56,6 +56,19 @@ export function buildLabelUse(input: LabelUseInput, farmId: string, nowIso: stri
   return { ok: true, row };
 }
 
+/** The stored row back into the form: decimals in the farmer's comma form, «not on label» as the switch, the rest as stored. */
+export function toInput(row: Row): LabelUseInput {
+  const field = (key: string): Field => {
+    const v = typeof row[key] === 'string' ? (row[key] as string) : '';
+    return v === NOT_ON_LABEL ? { notOnLabel: true, text: '' } : { notOnLabel: false, text: v.split('.').join(',') };
+  };
+  return {
+    productId: String(row.product_id), cropId: String(row.crop_id), target: typeof row.target === 'string' ? row.target : '', source: typeof row.source === 'string' ? row.source : '',
+    kind: KINDS.find((k) => k === row.dose_kind), unit: DOSE_UNITS.find((u) => u === row.dose_unit),
+    doseMin: field('dose_min'), doseMax: field('dose_max'), phi: field('phi_days'), rei: field('rei_hours'), maxApps: field('max_apps'),
+  };
+}
+
 const text = (v: unknown): string | undefined => (typeof v === 'string' ? v : undefined);
 const valueOf = <T,>(parse: (s: string) => Known<T>, v: unknown): Known<T> => {
   const s = text(v);
