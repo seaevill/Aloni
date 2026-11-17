@@ -29,6 +29,44 @@ begin
   if n <> 2 then raise exception 'audit missing (%)', n; end if;
 end $$;
 
+-- 0005: weather kinds, topo class, languages (run as the table owner, before `set role`)
+do $$
+begin
+  begin insert into weather_hourly(parcel_id,farm_id,at,kind,issued_at,model) values ('33333333-3333-3333-3333-333333333333','11111111-1111-1111-1111-111111111111',now(),'observed',now(),'x'); raise exception 'old kind observed accepted';
+  exception when check_violation then null; end;
+  -- the NEW kinds must really be insertable (they would be rejected by the old observed/forecast constraint)
+  insert into weather_hourly(parcel_id,farm_id,at,kind,issued_at,model,model_run,cell_elev_m)
+    values ('33333333-3333-3333-3333-333333333333','11111111-1111-1111-1111-111111111111','2026-11-17 06:00+00','analysis','2026-11-17 06:10+00','icon_eu','2026-11-17 03:00+00',42);
+  insert into weather_daily(parcel_id,farm_id,day,kind,issued_at,model)
+    values ('33333333-3333-3333-3333-333333333333','11111111-1111-1111-1111-111111111111','2026-11-17','station','2026-11-17 06:10+00','meteo_gr');
+  insert into weather_hourly(parcel_id,farm_id,at,kind,issued_at,model) values
+    ('33333333-3333-3333-3333-333333333333','11111111-1111-1111-1111-111111111111','2026-11-17 06:00+00','sensor','2026-11-17 06:10+00','ecowitt');
+  -- two models side by side for the same parcel/time/kind/issue
+  insert into weather_hourly(parcel_id,farm_id,at,kind,issued_at,model) values
+    ('33333333-3333-3333-3333-333333333333','11111111-1111-1111-1111-111111111111','2026-11-18 00:00+00','forecast','2026-11-17 06:10+00','icon_eu'),
+    ('33333333-3333-3333-3333-333333333333','11111111-1111-1111-1111-111111111111','2026-11-18 00:00+00','forecast','2026-11-17 06:10+00','ifs_hres');
+  begin  -- the same model twice is a duplicate
+    insert into weather_hourly(parcel_id,farm_id,at,kind,issued_at,model)
+      values ('33333333-3333-3333-3333-333333333333','11111111-1111-1111-1111-111111111111','2026-11-18 00:00+00','forecast','2026-11-17 06:10+00','icon_eu');
+    raise exception 'duplicate model row accepted';
+  exception when unique_violation then null; end;
+  begin  -- no model = rejected, no default
+    insert into weather_hourly(parcel_id,farm_id,at,kind,issued_at)
+      values ('33333333-3333-3333-3333-333333333333','11111111-1111-1111-1111-111111111111',now(),'forecast',now());
+    raise exception 'null model accepted';
+  exception when not_null_violation then null; end;
+  begin  -- an old kind on the daily table is rejected too
+    insert into weather_daily(parcel_id,farm_id,day,kind,issued_at,model)
+      values ('33333333-3333-3333-3333-333333333333','11111111-1111-1111-1111-111111111111','2026-11-19','observed',now(),'x');
+    raise exception 'old daily kind accepted';
+  exception when check_violation then null; end;
+  begin update parcels set topo_class = 'ridge' where id = '33333333-3333-3333-3333-333333333333'; raise exception 'topo ridge accepted';
+  exception when check_violation then null; end;
+  update parcels set topo_class = 'plain' where id = '33333333-3333-3333-3333-333333333333';
+  begin update farms set lang = 'xx'; raise exception 'bad lang accepted'; exception when check_violation then null; end;
+  update farms set lang = 'sq' where id = '11111111-1111-1111-1111-111111111111';
+end $$;
+
 create role app_user nologin;
 grant usage on schema public, auth to app_user;
 grant all on all tables in schema public to app_user;
