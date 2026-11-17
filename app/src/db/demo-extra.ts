@@ -19,7 +19,7 @@ export const DEMO_SIGNER = 'Γεωπόνος επίδειξης (φανταστ�
 
 export async function demoExtraRows(data: Record<string, unknown>, idOf: (table: FarmTable, legacy: string) => string): Promise<Partial<Record<FarmTable, Row[]>>> {
   const arr = (k: string) => (data[k] as Proto[] | undefined) ?? [];
-  const out: Partial<Record<FarmTable, Row[]>> = { workers: [], label_uses: [], stock_lots: [], stock_movements: [], jobs: [], job_plantings: [], job_spray: [], job_harvest: [], soil_tests: [] };
+  const out: Partial<Record<FarmTable, Row[]>> = { workers: [], label_uses: [], stock_lots: [], stock_movements: [], jobs: [], job_plantings: [], job_spray: [], job_harvest: [], soil_tests: [], observations: [] };
   const push = (t: FarmTable, r: Row) => (out[t] as Row[]).push(r);
 
   const workerIds = new Map<string, string>();
@@ -88,6 +88,19 @@ export async function demoExtraRows(data: Record<string, unknown>, idOf: (table:
     if (!s) continue;
     const a = buildAnalysis({ parcelId: idOf('parcels', String(p.id)), sampledOn: String(s.date), lab: '', ph: String(s.pH), ec: String(s.EC_dS_m), ecUnit: 'dS/m', notes: `OM ${String(s.OM_pct)} % · N ${String(s.N_ppm)} · P ${String(s.P_ppm)} · K ${String(s.K_ppm)} · CaCO3 ${String(s.CaCO3_pct)} %`, photoId: undefined }, DEMO_FARM_ID, NOW, await u(`soil:${p.id}`));
     if (a.ok) push('soil_tests', a.row);
+  }
+  // open spray jobs for the worker view: the first signed label uses (they carry a known waiting period) on a planting of that crop, one worker each in turn
+  let k = 0;
+  for (const [key, label] of labels) {
+    if (!label.sign_off || k >= 3) continue;
+    const [pid, crop] = key.split('|');
+    const planting = arr('plantings').find((x) => x.crop_id === crop);
+    if (!planting) continue;
+    const worker = ['Γιώργος', 'Ahmet', 'Γιώργος'][k];
+    const jobId = await u(`planned-job:${key}`);
+    push('jobs', { id: jobId, farm_id: DEMO_FARM_ID, kind: 'spray', status: 'planned', product_id: idOf('products', pid), label_use_id: label.id, worker_id: workerIds.get(worker), planned_for: '2026-11-18', dose_str: label.dose_min, dose_unit: label.dose_unit, created_at: NOW, updated_at: NOW, deleted_at: null });
+    push('job_plantings', { id: await u(`planned-jp:${key}`), farm_id: DEMO_FARM_ID, job_id: jobId, planting_id: idOf('plantings', String(planting.id)), area_str_treated: planting.area_str, created_at: NOW });
+    k += 1;
   }
   return out;
 }

@@ -8,6 +8,7 @@ import { Info } from './Info';
 import { Photos } from './Photos';
 import { SettingsBox } from './SettingsBox';
 import { Workers } from './Workers';
+import { workerView } from './nav';
 import { Backup } from './Backup';
 import { showUndo } from './Toast';
 
@@ -44,6 +45,7 @@ export function More() {
       {msg && <p class="msg" role="status">{msg}</p>}
       <Backup />
       <SettingsBox />
+      {activeFarm.value === DEMO_FARM_ID && <button class="btn secondary" data-testid="open-worker-view" onClick={() => { workerView.value = ''; }}>{t('more.workerView')}</button>}
       <button class="btn secondary" data-testid="open-workers" onClick={() => setView('workers')}>{t('workers.open')}</button>
       <button class="btn secondary" data-testid="open-photos" onClick={() => setView('photos')}>{t('photos.title')}</button>
       <button class="btn secondary" data-testid="open-info" onClick={() => setView('info')}>{t('more.info')}</button>

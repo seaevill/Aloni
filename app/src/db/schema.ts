@@ -13,7 +13,7 @@ export interface WeatherRow { id: string; farm_id: string; parcel_id: string; da
 /** A photo stored on this phone: the processed JPEG bytes (an ArrayBuffer: iPhone Safari cannot always store a Blob) and their SHA-256. Append-only; the outbox entry carries everything except the bytes. */
 export interface MediaRow extends Row { device_id?: string; actor_id?: string; sha256: string; mime: string; data: ArrayBuffer; width: number; height: number; bytes: number; created_at: string }
 
-export const FARM_TABLES = ['parcels', 'crops', 'plantings', 'products', 'label_uses', 'stock_lots', 'stock_movements', 'soil_tests', 'water_tests', 'workers', 'jobs', 'job_plantings', 'job_spray', 'job_harvest', 'orders_weekly', 'alerts', 'recommendations'] as const;
+export const FARM_TABLES = ['parcels', 'crops', 'plantings', 'products', 'label_uses', 'stock_lots', 'stock_movements', 'soil_tests', 'water_tests', 'workers', 'jobs', 'job_plantings', 'job_spray', 'job_harvest', 'observations', 'orders_weekly', 'alerts', 'recommendations'] as const;
 export type FarmTable = (typeof FARM_TABLES)[number];
 
 export class AppDB extends Dexie {
@@ -31,6 +31,7 @@ export class AppDB extends Dexie {
   job_plantings!: Table<Row, string>;
   job_spray!: Table<Row, string>;
   job_harvest!: Table<Row, string>;
+  observations!: Table<Row, string>;
   jobs!: Table<Row, string>;
   orders_weekly!: Table<Row, string>;
   alerts!: Table<Row, string>;
@@ -55,5 +56,6 @@ export class AppDB extends Dexie {
     this.version(5).stores({ stock_lots: 'id, farm_id, product_id, lot_key', stock_movements: 'id, farm_id, lot_key, product_id' });
     this.version(6).stores({ soil_tests: 'id, farm_id, parcel_id', water_tests: 'id, farm_id, parcel_id' });
     this.version(7).stores({ workers: 'id, farm_id', job_plantings: 'id, farm_id, job_id, planting_id', job_spray: 'id, farm_id, job_id, amends_id', job_harvest: 'id, farm_id, planting_id' });
+    this.version(8).stores({ observations: 'id, farm_id, parcel_id' });
   }
 }
