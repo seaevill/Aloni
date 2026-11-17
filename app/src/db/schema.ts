@@ -13,7 +13,7 @@ export interface WeatherRow { id: string; farm_id: string; parcel_id: string; da
 /** A photo stored on this phone: the processed JPEG bytes (an ArrayBuffer: iPhone Safari cannot always store a Blob) and their SHA-256. Append-only; the outbox entry carries everything except the bytes. */
 export interface MediaRow extends Row { sha256: string; mime: string; data: ArrayBuffer; width: number; height: number; bytes: number; created_at: string }
 
-export const FARM_TABLES = ['parcels', 'crops', 'plantings', 'products', 'label_uses', 'jobs', 'orders_weekly', 'alerts', 'recommendations'] as const;
+export const FARM_TABLES = ['parcels', 'crops', 'plantings', 'products', 'label_uses', 'stock_lots', 'stock_movements', 'jobs', 'orders_weekly', 'alerts', 'recommendations'] as const;
 export type FarmTable = (typeof FARM_TABLES)[number];
 
 export class AppDB extends Dexie {
@@ -23,6 +23,8 @@ export class AppDB extends Dexie {
   plantings!: Table<Row, string>;
   products!: Table<Row, string>;
   label_uses!: Table<Row, string>;
+  stock_lots!: Table<Row, string>;
+  stock_movements!: Table<Row, string>;
   jobs!: Table<Row, string>;
   orders_weekly!: Table<Row, string>;
   alerts!: Table<Row, string>;
@@ -44,5 +46,6 @@ export class AppDB extends Dexie {
     this.version(2).stores({ outbox: 'op_id, farm_id, status' });
     this.version(3).stores({ media: 'id, farm_id, sha256' });
     this.version(4).stores({ label_uses: 'id, farm_id, product_id, crop_id' });
+    this.version(5).stores({ stock_lots: 'id, farm_id, product_id, lot_key', stock_movements: 'id, farm_id, lot_key, product_id' });
   }
 }

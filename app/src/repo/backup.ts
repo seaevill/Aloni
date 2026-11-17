@@ -3,7 +3,7 @@
 import { DEMO_FARM_ID } from '../config';
 import { FARM_TABLES, type AppDB, type Row } from '../db/schema';
 import { base64ToBlob, blobToBase64, sha256Hex } from '../db/sha256';
-import { actorId, deviceId, put, putLocal, refreshPending } from '.';
+import { actorId, deviceId, isAppendOnly, put, putLocal, refreshPending } from '.';
 
 export const BACKUP_FORMAT = 'aloni-backup';
 export const BACKUP_VERSION = 1;
@@ -54,7 +54,12 @@ export async function restoreBackup(db: AppDB, backup: Backup, localFarmId: stri
   let rows = 0;
   await db.transaction('rw', db.tables, async () => {
     if (backup.farm.id !== localFarmId) { await db.farms.delete(localFarmId); await db.farms.put({ id: backup.farm.id, name: backup.farm.name, is_demo: false }); }
-    for (const [table, list] of Object.entries(backup.tables)) for (const r of list) { await put(db, table, r); rows += 1; }
+    for (const [table, list] of Object.entries(backup.tables)) {
+      for (const r of list) {
+        if (isAppendOnly(table)) { if (!(await db.table(table).get(r.id))) await put(db, table, r, 'insert'); } else await put(db, table, r); // ledger rows: one already here is left alone
+        rows += 1;
+      }
+    }
     for (const s of backup.settings) { if (!(await db.settings.get(s.key))) await db.settings.put(s); }
     for (const { meta, data } of photos) { // photos are append-only: one that is already here (same id) is left alone, a new one is queued for the server
       if (!(await db.media.get(meta.id))) await put(db, 'media', { ...meta, data }, 'insert');

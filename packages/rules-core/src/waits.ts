@@ -77,3 +77,9 @@ export function waitOver(now: string, end: Known<string>): boolean {
   if (!n.known || !e.known) return false;
   return n.value.day !== e.value.day ? n.value.day > e.value.day : n.value.sec > e.value.sec;
 }
+
+/** A real calendar date plus whole days → the new date (`YYYY-MM-DD`). Not a real date → unknown. */
+export function dateAfterDays(date: string, days: number): Known<string> {
+  const start = parseInstant(`${date}T00:00:00Z`);
+  return start.known ? known(formatInstant(add(start.value, days, 0)).split('T')[0]) : start;
+}

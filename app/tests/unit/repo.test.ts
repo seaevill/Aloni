@@ -65,11 +65,7 @@ describe('repo.put: one write path', () => {
 });
 
 describe('append-only tables: insert and amend, never change or delete', () => {
-  class TestDB extends AppDB {
-    stock_movements!: Table<Row, string>;
-    constructor() { super(`test-${crypto.randomUUID()}`); this.version(3).stores({ stock_movements: 'id, farm_id' }); }
-  }
-  const open = async () => { const db = new TestDB(); guardAppendOnly(db); await db.open(); return db; };
+  const open = async () => { const db = new AppDB(`test-${crypto.randomUUID()}`); guardAppendOnly(db); await db.open(); return db; };
 
   it('insert works and is queued; the same id twice is refused', async () => {
     const db = await open();
