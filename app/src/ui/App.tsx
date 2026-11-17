@@ -1,4 +1,3 @@
-import { signal } from '@preact/signals';
 import { t, type I18nKey } from '../i18n';
 import { Crops } from './Crops';
 import { Parcels, Today } from './screens';
@@ -6,10 +5,9 @@ import { Stock } from './Stock';
 import { BackupBanner } from './Backup';
 import { More } from './More';
 import { SyncChip } from './states';
+import { tab, type Tab } from './nav';
 import { Toast } from './Toast';
 
-type Tab = 'today' | 'crops' | 'parcels' | 'stock' | 'more';
-const tab = signal<Tab>('today');
 // Keys are spelled out as literals so the i18n key test can see them (no dynamic t(`tab.${id}`)).
 const TABS: Array<{ id: Tab; icon: string; label: I18nKey }> = [
   { id: 'today', icon: '☀️', label: 'tab.today' },

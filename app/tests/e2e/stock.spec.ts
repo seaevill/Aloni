@@ -52,7 +52,7 @@ test('stock offline: receive with expiry year, exact balance, adjust needs direc
   await inputs(page).nth(0).fill('5');
   await inputs(page).nth(1).fill('καταμέτρηση');
   await page.getByTestId('adjust-save').click();
-  await expect(lot.getByTestId('lot-balance')).toHaveText('Υπόλοιπο: -0,75 kg');
+  await expect(lot.getByTestId('lot-balance')).toHaveText('Υπόλοιπο: −0,75 kg');
   await expect(lot.getByTestId('lot-flag')).toContainText('Αρνητικό υπόλοιπο'); // shown, not hidden
   await expect(lot.getByTestId('movement')).toHaveCount(3); // every movement is still listed
 
@@ -64,7 +64,7 @@ test('stock offline: receive with expiry year, exact balance, adjust needs direc
   await page.getByTestId('receive-save').click();
   await expect(page.getByTestId('lot')).toHaveCount(2);
   await expect(page.getByTestId('lot').filter({ hasText: 'Χωρίς αριθμό παρτίδας' }).getByTestId('lot-flag')).toHaveText('Έληξε');
-  await expect(page.getByTestId('stock-total')).toHaveText('Σύνολο: 0,25 kg'); // -0,75 + 1
+  await expect(page.getByTestId('stock-total')).toHaveText('Σύνολο: 0,25 kg'); // −0,75 + 1
 
   await page.reload();
   await tab(page, 'stock');

@@ -31,7 +31,7 @@ function plain(v: string | number | null | undefined): string | null {
 }
 
 const separator = () => (lang.value === 'en' ? '.' : ',');
-const localise = (s: string) => s.replace('.', separator());
+const localise = (s: string) => s.replace('.', separator()).replace(/^-/, '\u2212'); // a real minus sign, not a hyphen: «−0,75»
 
 /** A dose exactly as stored: «0.625» → «0,625», «0.250» → «0,250» (trailing zeros are kept). Only a Known<Decimal> is accepted: an unknown dose prints «— άγνωστο». */
 export function formatDose(v: Known<Decimal>): string {

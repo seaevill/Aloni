@@ -36,7 +36,7 @@ test('add photos offline: shrunk to 2000 px, the same photo only once, kept afte
   await expect(page.getByTestId('photo-count')).toContainText('1 φωτογραφία');
   await page.locator('input[type=file]').setInputFiles({ name: 'b.png', mimeType: 'image/png', buffer: await png(page, 800, 600, 2) });
   await expect(page.getByTestId('photo-count')).toContainText('2 φωτογραφίες');
-  await expect(page.getByTestId('sync-chip')).toContainText('2 μη συγχρονισμένα');
+  await expect(page.getByTestId('sync-chip')).toContainText('Αποθηκεύτηκε στο τηλέφωνο');
 
   await page.locator('input[type=file]').setInputFiles({ name: 'broken.png', mimeType: 'image/png', buffer: Buffer.from('not a picture') });
   await expect(page.getByTestId('photo-msg')).toContainText('Δεν αποθηκεύτηκε'); // unreadable: nothing stored, the farmer is told

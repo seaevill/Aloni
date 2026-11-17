@@ -3,6 +3,7 @@ import { activeFarm, dataVersion, db, realFarmId } from '../db';
 import { t } from '../i18n';
 import { formatQty } from '../i18n/format';
 import { archived, restored } from '../parcels/parcel';
+import { balanceOf } from '../stock/stock';
 import { put } from '../repo';
 import type { Row } from '../db/schema';
 import { MediaThumb } from './Photos';
@@ -18,12 +19,15 @@ const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 const dot = (...xs: string[]): string => xs.filter(Boolean).join(' · ');
 const typeText = (v: unknown): string => { const k = (TYPE_KEYS as Record<string, (typeof TYPE_KEYS)[keyof typeof TYPE_KEYS]>)[text(v)]; return k ? t(k) : ''; };
 
+const stockText = (product: Row, moves: Row[]): string => { const b = balanceOf(moves.filter((m) => m.product_id === product.id)); return b === undefined ? t('value.unknown') : `${formatQty(b)} ${text(product.unit)}`; };
+
 /** Αποθήκη: the farm's products (sprays and fertilisers). Quantities and lots come with the stock PR. */
 export function Stock() {
   const [adding, setAdding] = useState(false);
   const [open, setOpen] = useState<Row | undefined>(undefined);
   const [lots, setLots] = useState<Row | undefined>(undefined);
   const q = useRows('products');
+  const moves = useRows('stock_movements');
   if (adding) return <ProductForm onDone={() => setAdding(false)} />;
   if (lots) return <StockLots product={lots} onBack={() => setLots(undefined)} />;
   if (open) return <LabelUses product={open} onBack={() => setOpen(undefined)} />;
@@ -42,6 +46,7 @@ export function Stock() {
       {live.map((r) => (
         <div class="card" key={r.id} data-testid="product">{nameOf(r)}
           <small>{dot(typeText(r.type), text(r.reg_no), r.qty == null ? '' : `${formatQty(r.qty as number | string)} ${text(r.unit)}`)}</small>
+          {!demo && moves.rows && <small data-testid="product-stock">{t('stock.balance', { qty: stockText(r, moves.rows) })}</small>}
           {text(r.label_photo_id) && <div class="photos"><MediaThumb id={text(r.label_photo_id)} /></div>}
           <UnsyncedMark id={r.id} />
           {!demo && <button class="btn secondary" data-testid="stock-open" onClick={() => setLots(r)}>{t('stock.open')}</button>}

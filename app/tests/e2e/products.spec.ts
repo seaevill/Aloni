@@ -28,7 +28,8 @@ test('add a product offline with a label photo: name kept, type and unit must be
   await expect(card).toContainText('Kocide 2000');
   await expect(card).toContainText('Μυκητοκτόνο · 1234/56');
   await expect(card.locator('.photo')).toHaveCount(1);
-  await expect(card).toContainText('μη συγχρονισμένο');
+  await expect(card).not.toContainText('μη συγχρονισμένο');
+  await expect(card.getByTestId('product-stock')).toHaveText('Υπόλοιπο: 0 kg'); // the real product shows its stock
 
   await page.reload();
   await tab(page, 'stock');

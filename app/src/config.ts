@@ -12,3 +12,6 @@ export const TZ = 'Europe/Athens';
 // Demo rows get UUIDv5 ids from this namespace + their prototype id (stable across re-imports; same ids a server can compute).
 export const DEMO_NAMESPACE = 'b4f5c3a2-1d6e-4f8a-9c7b-2e5d8a1f3c60';
 export const DEMO_FARM_ID = '2843e10d-bdc6-5886-a109-84501d373de2'; // uuidv5('farm:demo', DEMO_NAMESPACE), checked by a test
+
+/** There is no server yet (M1): nothing is sent anywhere. Screens then say «saved on this phone» instead of counting records as «unsynced». Becomes true with the live sync PR. */
+export const SYNC_CONNECTED = false;
