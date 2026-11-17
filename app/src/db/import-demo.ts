@@ -9,6 +9,24 @@ export interface PrototypeData {
   [table: string]: unknown;
 }
 
+/**
+ * Misspelled Greek active-substance names in the prototype (`reference/` is read-only, so they are
+ * corrected here at import time, in `name_el` only). Greek editor review, 2026-11-17.
+ */
+export const GREEK_NAME_FIXES: ReadonlyArray<readonly [string, string]> = [
+  ['Κυκλοξυντίμ', 'Κυκλοξυδίμ'],
+  ['Λενασίλ', 'Λενακίλ'],
+  ['Διφαινοκοναζόλη', 'Διφενοκοναζόλη'],
+  ['Μανδιπροπαμίδιο', 'Μανδιπροπαμίδη'],
+];
+
+function fixGreekName(r: Record<string, unknown>): Record<string, unknown> {
+  if (typeof r.name_el !== 'string') return r;
+  let name = r.name_el;
+  for (const [wrong, right] of GREEK_NAME_FIXES) name = name.replaceAll(wrong, right);
+  return name === r.name_el ? r : { ...r, name_el: name };
+}
+
 /** orders_weekly rows have no id in the prototype; derive a stable one from the crop. */
 function rowId(table: FarmTable, r: Record<string, unknown>, i: number): string {
   if (typeof r.id === 'string') return r.id;
@@ -31,7 +49,7 @@ export async function importDemo(db: AppDB, data: PrototypeData): Promise<void> 
       const src = (data[table] as Array<Record<string, unknown>> | undefined) ?? [];
       const rows: Row[] = src.map((r, i) => {
         const id = rowId(table, r, i);
-        return { ...r, id, farmId, uid: `${farmId}:${id}` };
+        return { ...fixGreekName(r), id, farmId, uid: `${farmId}:${id}` };
       });
       await db[table].bulkPut(rows);
     }
