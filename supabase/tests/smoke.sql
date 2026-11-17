@@ -67,6 +67,61 @@ begin
   update farms set lang = 'sq' where id = '11111111-1111-1111-1111-111111111111';
 end $$;
 
+-- 0006: the phone's data model, one to one (run as the table owner, before `set role`)
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; p constant uuid := '33333333-3333-3333-3333-333333333333';
+        prod constant uuid := '66666666-6666-6666-6666-666666666666'; crop constant uuid := '77777777-7777-7777-7777-777777777777';
+        ph constant uuid := '88888888-8888-8888-8888-888888888888'; lot constant uuid := '99999999-9999-9999-9999-999999999999';
+        v numeric;
+begin
+  -- the typed area is never rounded
+  update parcels set area_str = 0.625, lat = 38.0012, lng = 23.3501, pin_accuracy_m = 12.5, device_id = 'dev', actor_id = 'act' where id = p;
+  select area_str into v from parcels where id = p; if v <> 0.625 then raise exception 'area rounded: %', v; end if;
+  begin update parcels set lat = 95; raise exception 'bad latitude accepted'; exception when check_violation then null; end;
+  begin update parcels set lat = null; raise exception 'half a pin accepted'; exception when check_violation then null; end;
+  begin update parcels set area_str = 0; raise exception 'area 0 accepted'; exception when check_violation then null; end;
+  -- a photo, once per farm
+  insert into media(id,farm_id,sha256,mime,width,height,bytes,device_id,actor_id) values (ph,f,repeat('a',64),'image/jpeg',2000,1000,5000,'dev','act');
+  begin insert into media(farm_id,sha256,mime,width,height,bytes) values (f,repeat('a',64),'image/jpeg',1,1,1); raise exception 'same photo twice accepted'; exception when unique_violation then null; end;
+  begin update media set bytes = 1; raise exception 'media update allowed'; exception when insufficient_privilege then null; end;
+  -- crop, product, planting with the phone's words
+  insert into crops(id,farm_id,slug,name_el) values (crop,f,'spinach','Σπανάκι');
+  insert into products(id,farm_id,name,type,unit,label_photo_id) values (prod,f,'Kocide 2000','fungicide','kg',ph);
+  begin insert into products(farm_id,name,type,unit) values (f,'x','sprayer','kg'); raise exception 'bad type accepted'; exception when check_violation then null; end;
+  insert into plantings(farm_id,parcel_id,crop_id,area_str,sown_on,status) values (f,p,crop,0.25,'2026-11-17','finished');
+  begin insert into plantings(farm_id,parcel_id,crop_id,area_str,sown_on,status) values (f,p,crop,0.25,'2026-11-17','done'); raise exception 'old status accepted'; exception when check_violation then null; end;
+  -- label use: exact decimals, three states
+  insert into label_uses(farm_id,product_id,crop_id,dose_kind,dose_unit,dose_min,phi_days,rei_hours,max_apps,max_apps_not_on_label)
+    values (f,prod,crop,'single','ml/str',0.025,7,24,null,true);
+  select dose_min into v from label_uses where product_id = prod; if v::text <> '0.025' then raise exception 'dose changed: %', v; end if;
+  begin insert into label_uses(farm_id,product_id,crop_id,target,dose_kind,dose_unit,dose_min) values (f,prod,crop,'x','single','ml/str',0); raise exception 'dose 0 accepted'; exception when check_violation then null; end;
+  begin insert into label_uses(farm_id,product_id,crop_id,target,dose_kind,dose_unit,dose_min,dose_max) values (f,prod,crop,'y','single','ml/str',1,2); raise exception 'second dose on single accepted'; exception when check_violation then null; end;
+  begin insert into label_uses(farm_id,product_id,crop_id,target,dose_kind,dose_unit,dose_min,dose_max) values (f,prod,crop,'z','range','ml/str',3,2); raise exception 'min above max accepted'; exception when check_violation then null; end;
+  begin insert into label_uses(farm_id,product_id,crop_id,target,dose_unit) values (f,prod,crop,'u','%'); raise exception 'unit percent accepted'; exception when check_violation then null; end;
+  begin insert into label_uses(farm_id,product_id,crop_id,target,phi_days,phi_days_not_on_label) values (f,prod,crop,'w',7,true); raise exception 'value and not-on-label both accepted'; exception when check_violation then null; end;
+  begin  -- an incomplete label (max applications «not on label») cannot be signed
+    update label_uses set sign_off_by = 'Agronomist', sign_off_on = '2026-11-17', sign_off_fingerprint = 'x' where product_id = prod and target is null; raise exception 'incomplete label signed';
+  exception when check_violation then null; end;
+  insert into label_uses(farm_id,product_id,crop_id,target,dose_kind,dose_unit,dose_min,phi_days,rei_hours,max_apps,sign_off_by,sign_off_on,sign_off_fingerprint)
+    values (f,prod,crop,'complete','single','g/str',0.5,7,24,3,'Agronomist','2026-11-17','fp');
+  -- analyses: EC keeps the unit of the report
+  insert into soil_tests(farm_id,parcel_id,sampled_on,ph,ec,ec_unit,notes,photo_id) values (f,p,'2026-11-10',7.4,1.2,'mS/cm','OM 2,1 %',ph);
+  insert into water_tests(farm_id,parcel_id,sampled_on,ec,ec_unit) values (f,p,'2026-11-12',850,'uS/cm');
+  begin insert into soil_tests(farm_id,parcel_id,sampled_on,ec) values (f,p,'2026-11-10',1.2); raise exception 'EC without unit accepted'; exception when check_violation then null; end;
+  begin insert into soil_tests(farm_id,parcel_id,sampled_on,ph) values (f,p,'2026-11-10',15); raise exception 'pH 15 accepted'; exception when check_violation then null; end;
+  begin insert into water_tests(farm_id,sampled_on) values (f,'2026-11-10'); raise exception 'water test without parcel accepted'; exception when not_null_violation then null; end;
+  -- stock ledger: balance = sum, negative is shown, lots and movements are append-only
+  insert into stock_lots(id,lot_key,farm_id,product_id,batch,expiry) values (lot,lot,f,prod,'A123','2028-03-31');
+  begin insert into stock_lots(id,lot_key,farm_id,product_id,expiry) values (gen_random_uuid(),gen_random_uuid(),f,prod,'2028-03-31'); raise exception 'lot_key different from id accepted'; exception when check_violation then null; end;
+  insert into stock_movements(farm_id,lot_key,product_id,direction,qty_str,reason) values (f,lot,prod,'in',4.5,'receipt'),(f,lot,prod,'out',0.25,'spilled'),(f,lot,prod,'out',5,'count');
+  select qty into v from stock_balance where lot_id = lot; if v <> -0.75 then raise exception 'balance %', v; end if;
+  begin insert into stock_movements(farm_id,lot_key,product_id,direction,qty_str,reason) values (f,lot,prod,'out',0,'x'); raise exception 'quantity 0 accepted'; exception when check_violation then null; end;
+  begin update stock_movements set qty_str = 1; raise exception 'movement update allowed'; exception when insufficient_privilege then null; end;
+  begin delete from stock_lots; raise exception 'lot delete allowed'; exception when insufficient_privilege then null; end;
+  -- owner settings
+  insert into farm_settings(farm_id,key,value) values (f,'controller','{"name":"Test"}');
+end $$;
+
 create role app_user nologin;
 grant usage on schema public, auth to app_user;
 grant all on all tables in schema public to app_user;
@@ -84,8 +139,10 @@ do $$ declare n int; begin
   select count(*) into n from parcels; if n <> 1 then raise exception 'worker parcels %', n; end if;
   select count(*) into n from job_spray; if n <> 0 then raise exception 'worker can read spray records'; end if;
   select count(*) into n from jobs; if n <> 0 then raise exception 'worker sees unassigned jobs'; end if;
-  begin insert into products(farm_id,trade_name,type,unit) values ('11111111-1111-1111-1111-111111111111','x','fungicide','kg'); raise exception 'worker can insert products';
+  begin insert into products(farm_id,name,type,unit) values ('11111111-1111-1111-1111-111111111111','x','fungicide','kg'); raise exception 'worker can insert products';
   exception when insufficient_privilege then null; end;
+  select count(*) into n from media; if n <> 0 then raise exception 'worker sees photos'; end if;
+  select count(*) into n from farm_settings; if n <> 0 then raise exception 'worker sees settings'; end if;
   delete from parcels; get diagnostics n = row_count; if n <> 0 then raise exception 'worker deleted parcels'; end if;
 end $$;
 \echo 'SQL smoke test OK'
