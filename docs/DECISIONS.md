@@ -2,6 +2,8 @@
 
 | Date | Decision | Why / notes |
 |---|---|---|
+| 2026-11-17 | **Name: "Aloni" / Αλώνι – PROVISIONAL (geçici).** Replaces "Aloni Farm" in the app (one constant, `app/src/config.ts`). English appears only in the store title: `Aloni: Spray Log & Crop Plan`. **Never "Aloni Farm"** (an Israeli app "משק אלוני" = "Aloni Farm" exists) | Bora's instruction, following docs/naming/round2/debate.md + verification.md. Stays PROVISIONAL until Bora's trademark (TMview), App/Play Store, domain and handle checks are done and recorded here |
+| 2026-11-17 | TECH-SPEC: every "Netlify" (§1 Deploy, §6 GDPR, §8 M0 step 5) changed to **Cloudflare Pages**; the old wording is kept struck through with a dated note | Netlify's free plan is tight on monthly deploys. Supersedes the "TECH-SPEC still says Netlify" line below |
 | 2026-11-17 | Product working name: **Aloni Farm** (Bora: "Aloni Farm yapabilirsin"). Shown in the UI/manifest from one constant (`app/src/config.ts`). Repo is still called SunField; domain not chosen | "Aloni" ≈ αλώνι, threshing floor. Still a working name until a domain/trademark check |
 | 2026-11-17 | TECH-SPEC §1/§6/§8 still say Netlify; **Cloudflare Pages is the decision** (see line below). CI/RUNBOOK use Cloudflare | Avoid confusion for the developer reviewer |
 | 2026-11-17 | M0 (no-account part): npm workspaces, Vitest 3, Playwright WebKit 375 px in CI; SQL migrations written but NOT applied; CI checks them on a throwaway Postgres+PostGIS | docs/milestones/M0.md |

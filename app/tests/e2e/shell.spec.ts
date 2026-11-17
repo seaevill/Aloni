@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { APP_NAME } from '../../src/config';
 
 test('shell: five tabs in Greek, 375 px, no horizontal scroll', async ({ page }) => {
   await page.goto('/');
@@ -24,7 +25,9 @@ test('manifest is valid and installable', async ({ page, request }) => {
   const href = await page.locator('link[rel="manifest"]').getAttribute('href');
   const m = await (await request.get(href!)).json();
   expect(m.display).toBe('standalone');
-  expect(m.name).toBe('Aloni Farm');
+  expect(m.name).toBe(APP_NAME);
+  expect(m.short_name).toBe(APP_NAME);
+  expect(await page.title()).toBe(APP_NAME);
   expect(m.icons.map((i: { sizes: string }) => i.sizes)).toEqual(expect.arrayContaining(['192x192', '512x512']));
 });
 

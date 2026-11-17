@@ -1,4 +1,4 @@
-# RUNBOOK – Aloni Farm (Bora için tek sayfa, taslak)
+# RUNBOOK – Aloni (geçici ad) (Bora için tek sayfa, taslak)
 
 > Durum: **M0 taslağı.** Hesaplar (Cloudflare, Supabase) henüz açılmadı; aşağıdaki adımlar hesaplar açılınca doldurulacak.
 > Kural: sen hiçbir komut yazmazsın. Claude GitHub'a değişiklik gönderir, CI yeşilse yayına çıkar.
