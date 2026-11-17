@@ -22,5 +22,6 @@
   "more.demoLoaded": "Demo farm loaded.",
   "more.demoRemoved": "Demo farm removed.",
   "more.version": "Version",
-  "badge.demo": "DEMO"
+  "badge.demo": "DEMO",
+  "value.unknown": "— unknown"
 }

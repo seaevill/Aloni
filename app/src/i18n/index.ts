@@ -31,12 +31,6 @@ export function t(key: string, params?: Record<string, string | number>): string
   return s;
 }
 
-/** 0.6 -> "0,6 στρ." (Greek number format) */
-export function formatArea(str: number): string {
-  const n = new Intl.NumberFormat(LOCALES[lang.value], { maximumFractionDigits: 2 }).format(str);
-  return `${n} ${lang.value === 'el' ? 'στρ.' : lang.value === 'tr' ? 'dönüm' : 'str.'}`;
-}
-
 /** ISO date -> "Δευ 16 Νοε" in Europe/Athens */
 export function formatDate(iso: string): string {
   return new Intl.DateTimeFormat(LOCALES[lang.value], { weekday: 'short', day: 'numeric', month: 'short', timeZone: TZ })

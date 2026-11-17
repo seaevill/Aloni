@@ -22,5 +22,6 @@
   "more.demoLoaded": "Το δοκιμαστικό αγρόκτημα φορτώθηκε.",
   "more.demoRemoved": "Το δοκιμαστικό αγρόκτημα διαγράφηκε.",
   "more.version": "Έκδοση",
-  "badge.demo": "ΔΟΚΙΜΑΣΤΙΚΟ"
+  "badge.demo": "ΔΟΚΙΜΑΣΤΙΚΟ",
+  "value.unknown": "— άγνωστο"
 }
