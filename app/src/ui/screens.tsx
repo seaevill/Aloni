@@ -1,6 +1,7 @@
 import { activeFarm } from '../db';
 import { DEMO_FARM_ID } from '../config';
-import { formatArea, lang, t } from '../i18n';
+import { lang, t } from '../i18n';
+import { formatArea, formatQty } from '../i18n/format';
 import { useRows } from './useRows';
 
 function Title({ k }: { k: string }) {
@@ -64,7 +65,7 @@ export function Stock() {
       {rows && !rows.length && <p class="muted">{t('list.empty')}</p>}
       {rows?.map((r) => (
         <div class="card" key={r.uid}>{nameOf(r)}
-          <small>{r.qty == null ? '—' : `${String(r.qty)} ${String(r.unit ?? '')}`}</small>
+          <small>{r.qty == null ? t('value.unknown') : `${formatQty(r.qty as number | string)} ${typeof r.unit === 'string' ? r.unit : ''}`}</small>
         </div>
       ))}
     </section>
