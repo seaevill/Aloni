@@ -2,6 +2,9 @@
 
 | Date | Decision | Why / notes |
 |---|---|---|
+| 2026-11-17 | Product working name: **Aloni Farm** (Bora: "Aloni Farm yapabilirsin"). Shown in the UI/manifest from one constant (`app/src/config.ts`). Repo is still called SunField; domain not chosen | "Aloni" ≈ αλώνι, threshing floor. Still a working name until a domain/trademark check |
+| 2026-11-17 | TECH-SPEC §1/§6/§8 still say Netlify; **Cloudflare Pages is the decision** (see line below). CI/RUNBOOK use Cloudflare | Avoid confusion for the developer reviewer |
+| 2026-11-17 | M0 (no-account part): npm workspaces, Vitest 3, Playwright WebKit 375 px in CI; SQL migrations written but NOT applied; CI checks them on a throwaway Postgres+PostGIS | docs/milestones/M0.md |
 | 2026-11-17 | Repository created by Bora as **SunField** (public, by Bora's choice); plan, prototype and history added; code starts with M0 | Whether "SunField" is the new product name is not yet confirmed |
 | 2026-11-17 | Hosting: Cloudflare Pages instead of Netlify | Netlify free plan allows only about 20 deploys a month |
 | 2026-11-17 | Phase 1 built and maintained by Bora + Claude; users = Bora + workers | Bora's decision |
