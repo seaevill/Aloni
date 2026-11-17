@@ -25,7 +25,7 @@ function show<T>(k: Known<T>, shown: (v: T) => string): string {
   return k.reason === 'missing' ? t('labeluse.notFilled') : t('value.unknown');
 }
 
-function Lines({ row }: { row: Row }) {
+export function Lines({ row }: { row: Row }) {
   const u = readUse(row);
   const dose = show(u.dose, (d) => t('labeluse.dosevalue', { v: d.kind === 'single' ? formatDose(known(d.min)) : t('labeluse.range', { min: formatDose(known(d.min)), max: formatDose(known(d.max)) }), unit: t(UNIT_KEYS[d.unit]) }));
   const line = (name: I18nKey, value: string) => <small>{t('labeluse.line', { name: t(name), value })}</small>;
@@ -37,6 +37,13 @@ function Lines({ row }: { row: Row }) {
       {line('labeluse.name.maxApps', show(u.maxApps, (n) => formatQty(n)))}
     </>
   );
+}
+
+/** The badge text of a label use: who signed, no signature, changed after the signature, or blocked (missing values). */
+export function badgeText(r: Row, st: Status): string {
+  const so = r.sign_off as { by?: unknown; on?: unknown } | undefined;
+  const on = typeof so?.on === 'string' && isCalendarDate(so.on) ? formatDate(so.on) : t('value.unknown');
+  return st === 'signed' ? t('labeluse.status.signed', { by: String(so?.by), on }) : t(STATUS_KEYS[st]);
 }
 
 /** One product's label uses, per crop: the values, and «Μη εγκεκριμένο» / blocked until an agronomist's approval is recorded. */
@@ -56,11 +63,6 @@ export function LabelUses({ product, onBack }: { product: Row; onBack: () => voi
     dataVersion.value++;
     showUndo(t('labeluse.archived'), async () => { await put(db, 'label_uses', restored(r, new Date().toISOString())); dataVersion.value++; });
   };
-  const badge = (r: Row, st: Status): string => {
-    const so = r.sign_off as { by?: unknown; on?: unknown } | undefined;
-    const on = typeof so?.on === 'string' && isCalendarDate(so.on) ? formatDate(so.on) : t('value.unknown');
-    return st === 'signed' ? t('labeluse.status.signed', { by: String(so?.by), on }) : t(STATUS_KEYS[st]);
-  };
   return (
     <section>
       <h1>{nameOf(product)}</h1>
@@ -73,7 +75,7 @@ export function LabelUses({ product, onBack }: { product: Row; onBack: () => voi
         const crop = cropOf(r.crop_id);
         return (
           <div class={st === 'blocked' ? 'card blocked' : 'card'} key={r.id} data-testid="labeluse">{crop ? nameOf(crop) : t('value.unknown')}
-            <span class={`badge ${st}`} data-testid="labeluse-status">{badge(r, st)}</span>
+            <span class={`badge ${st}`} data-testid="labeluse-status">{badgeText(r, st)}</span>
             <Lines row={r} />
             <UnsyncedMark id={r.id} />
             {(st === 'unsigned' || st === 'changed') && signing !== r.id && <button class="btn secondary" data-testid="signoff-open" onClick={() => setSigning(r.id)}>{t('signoff.record')}</button>}
