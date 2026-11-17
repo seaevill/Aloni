@@ -21,6 +21,8 @@
   "more.demoNote": "Demo veriler hayalidir ve gerçek verilerinizle asla karışmaz.",
   "more.demoLoaded": "Demo çiftlik yüklendi.",
   "more.demoRemoved": "Demo çiftlik silindi.",
-  "more.version": "Sürüm",
-  "badge.demo": "DEMO"
+  "more.version": "Sürüm: {v}",
+  "badge.demo": "DEMO",
+  "nav.main": "Ana gezinme",
+  "value.unknown": "— bilinmiyor"
 }

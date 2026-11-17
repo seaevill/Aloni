@@ -3,7 +3,12 @@ import preact from '@preact/preset-vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import { APP_NAME } from './src/config';
 
+import { readFileSync } from 'node:fs';
+
+const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string };
+
 export default defineConfig({
+  define: { __APP_VERSION__: JSON.stringify(pkg.version) },
   plugins: [
     preact(),
     { name: 'app-name', transformIndexHtml: (html: string) => html.replaceAll('%APP_NAME%', APP_NAME) },

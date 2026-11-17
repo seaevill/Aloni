@@ -7,4 +7,4 @@ import { lang } from './i18n';
 
 document.documentElement.lang = lang.value;
 registerSW({ immediate: true });
-initDb().finally(() => render(<App />, document.getElementById('app')!));
+void initDb().finally(() => render(<App />, document.getElementById('app')!));

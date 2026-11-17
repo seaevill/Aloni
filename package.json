@@ -2,12 +2,17 @@
   "name": "aloni",
   "private": true,
   "version": "0.0.0",
-  "workspaces": ["app", "packages/*"],
+  "type": "module",
+  "workspaces": [
+    "app",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "npm run dev -w app",
     "build": "npm run build -w app",
     "typecheck": "npm run typecheck -w app && npm run typecheck -w @aloni/rules-core",
     "test": "npm run test -w app",
-    "e2e": "npm run e2e -w app"
+    "e2e": "npm run e2e -w app",
+    "lint": "eslint ."
   }
 }

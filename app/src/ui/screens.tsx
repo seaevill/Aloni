@@ -64,7 +64,7 @@ export function Stock() {
       {rows && !rows.length && <p class="muted">{t('list.empty')}</p>}
       {rows?.map((r) => (
         <div class="card" key={r.uid}>{nameOf(r)}
-          <small>{r.qty == null ? '—' : `${String(r.qty)} ${String(r.unit ?? '')}`}</small>
+          <small>{r.qty == null ? t('value.unknown') : `${String(r.qty)} ${String(r.unit ?? '')}`}</small>
         </div>
       ))}
     </section>

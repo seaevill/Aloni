@@ -2,6 +2,7 @@
 
 | Date | Decision | Why / notes |
 |---|---|---|
+| 2026-11-17 | **M1 PR 1 (guardrails):** ESLint safety bans in CI (rounding, numeric defaults, clock/randomness in rules-core, hard-coded UI text, floating promises), proven by seeded-violation tests; i18n key/dead-key/placeholder tests; `CODING_STANDARDS.md` (incl. git notes); PR template with the 8-step Greek iPhone checklist (step 1 = Add to Home Screen); app version comes from the build, not a literal | docs/milestones/M1.md §5 PR 1. The `repo/`-only Dexie-write ban lands with PR 4b, when `repo/` exists |
 | 2026-11-17 | **Environment/git:** run once `git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'`; send new branches with `git push -u origin HEAD`. The "unpushed commits" hook warning on shallow single-branch clones is a false alarm and is not chased any more | docs/milestones/M1.md decision 12; written into CODING_STANDARDS.md and RUNBOOK dev notes |
 | 2026-11-17 | **Worker phones: NOT decided** (own phones vs shared farm phone); Bora decides before M2. `actor_id` and `device_id` are separate fields from M1 on, so both stay possible | Bora; M1.md decision 8 |
 | 2026-11-17 | **Photos stay on the phone in M1, with safeguards:** JSON backup/restore incl. photos, "only on this phone · last backup" warning (strong after 7 days), photos queued with UUID + sha256 for later upload, warning if not on Home Screen or persistent storage refused; checklist step 1 = Add to Home Screen | Bora; AGRO §2, TECH2 §1.5 |
