@@ -19,3 +19,4 @@ nav.tabs .ico { font-size:20px; line-height:1; }
 .seg button[aria-pressed="true"] { border-color:var(--green); font-weight:700; color:var(--green); }
 .msg { color:var(--green); font-weight:600; }
 .muted { color:#4a4f47; }
+.draft { background:#fff3cd; border:2px solid var(--warn); color:#4a2500; border-radius:12px; padding:10px 14px; font-weight:600; }

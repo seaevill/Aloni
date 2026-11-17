@@ -62,3 +62,15 @@ test('service worker registers (offline shell)', async ({ page }) => {
   });
   expect(ok).toBe(true);
 });
+
+test('Information screen: draft legal texts, offline-safe, marked for lawyer review', async ({ page, context }) => {
+  await page.goto('/');
+  await page.locator('nav.tabs [data-tab="more"]').click();
+  await page.getByRole('button', { name: 'Πληροφορίες' }).click();
+  await expect(page.locator('.draft')).toContainText('προς έλεγχο από δικηγόρο');
+  await expect(page.getByTestId('info-privacy')).toContainText('Δεν παρακολουθούμε τη θέση σας');
+  await expect(page.getByTestId('info-disclaimer')).toContainText('Δεν αποτελούν συνταγή');
+  await context.setOffline(true);
+  await page.getByRole('button', { name: 'Επιστροφή' }).click();
+  await expect(page.locator('h1')).toHaveText('Περισσότερα');
+});
