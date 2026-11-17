@@ -2,6 +2,7 @@
 
 | Date | Decision | Why / notes |
 |---|---|---|
+| 2026-11-17 | Naming council (7 experts, 2 rounds) recommends **Aloni / Αλώνι**; English only in store titles ("Aloni: Spray Log & Crop Plan"); runner-up Bostani Farm; AloniField as fallback domain/handle | docs/naming/round2/debate.md – NOT final until Bora's TMview, store, domain and handle checks |
 | 2026-11-17 | Repository created by Bora as **SunField** (public, by Bora's choice); plan, prototype and history added; code starts with M0 | Whether "SunField" is the new product name is not yet confirmed |
 | 2026-11-17 | Hosting: Cloudflare Pages instead of Netlify | Netlify free plan allows only about 20 deploys a month |
 | 2026-11-17 | Phase 1 built and maintained by Bora + Claude; users = Bora + workers | Bora's decision |
