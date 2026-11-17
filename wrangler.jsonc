@@ -1,0 +1,8 @@
+{
+  // Cloudflare Workers Builds (project "aloni"): serves the built PWA as static assets. `_headers` in app/public (copied into app/dist) still sets the CSP and cache rules.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "aloni",
+  "compatibility_date": "2026-11-01",
+  "build": { "command": "npm run build" },
+  "assets": { "directory": "./app/dist", "not_found_handling": "single-page-application" }
+}
