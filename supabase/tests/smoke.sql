@@ -8,9 +8,11 @@ insert into farm_members(farm_id,user_id,role) values
 insert into parcels(id,farm_id,name,area_str) values
  ('33333333-3333-3333-3333-333333333333','11111111-1111-1111-1111-111111111111','P',1.5),
  ('44444444-4444-4444-4444-444444444444','22222222-2222-2222-2222-222222222222','Foreign',2);
+insert into products(id,farm_id,name,type,unit) values ('aaaaaaaa-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','Seed product','fungicide','kg');
+insert into workers(id,farm_id,name) values ('bbbbbbbb-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','Giorgos');
 insert into jobs(id,farm_id,parcel_id,kind) values ('55555555-5555-5555-5555-555555555555','11111111-1111-1111-1111-111111111111','33333333-3333-3333-3333-333333333333','spray');
-insert into job_spray(farm_id,job_id,dose_per_str) values ('11111111-1111-1111-1111-111111111111','55555555-5555-5555-5555-555555555555',0.19);
-insert into job_spray(farm_id,job_id,dose_per_str) values ('11111111-1111-1111-1111-111111111111','55555555-5555-5555-5555-555555555555',0.06);
+insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state) values ('11111111-1111-1111-1111-111111111111','55555555-5555-5555-5555-555555555555','aaaaaaaa-0000-0000-0000-000000000001','bbbbbbbb-0000-0000-0000-000000000001','2026-11-17 08:00+00',0.19,'ml/str','unsigned');
+insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state) values ('11111111-1111-1111-1111-111111111111','55555555-5555-5555-5555-555555555555','aaaaaaaa-0000-0000-0000-000000000001','bbbbbbbb-0000-0000-0000-000000000001','2026-11-17 09:00+00',0.06,'ml/str','unsigned');
 
 do $$
 declare n int; ok boolean;
@@ -19,7 +21,7 @@ begin
   select (select hash from job_spray order by server_seq limit 1) = (select prev_hash from job_spray order by server_seq desc limit 1) into ok;
   if not ok then raise exception 'hash chain broken'; end if;
   -- spray records are append-only
-  begin update job_spray set dose_per_str = 1; raise exception 'update allowed'; exception when insufficient_privilege then null; end;
+  begin update job_spray set dose_str = 1; raise exception 'update allowed'; exception when insufficient_privilege then null; end;
   begin delete from job_spray; raise exception 'delete allowed'; exception when insufficient_privilege then null; end;
   -- unknown label data stays NULL (never defaulted)
   select count(*) into n from job_spray where phi_until is not null or rei_until is not null;
@@ -122,6 +124,39 @@ begin
   insert into farm_settings(farm_id,key,value) values (f,'controller','{"name":"Test"}');
 end $$;
 
+-- 0007: spray, harvest and roster, as the phone writes them (run as the table owner, before `set role`)
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; p constant uuid := '33333333-3333-3333-3333-333333333333';
+        prod constant uuid := 'aaaaaaaa-0000-0000-0000-000000000001'; w constant uuid := 'bbbbbbbb-0000-0000-0000-000000000001'; crop2 constant uuid := 'cccccccc-0000-0000-0000-000000000002';
+        pl constant uuid := 'dddddddd-0000-0000-0000-000000000001'; job2 constant uuid := 'eeeeeeee-0000-0000-0000-000000000002'; sp1 uuid; n int;
+begin
+  insert into crops(id,farm_id,slug,name_el) values (crop2,f,'rocket','Ρόκα');
+  insert into plantings(id,farm_id,parcel_id,crop_id,area_str,sown_on,status) values (pl,f,p,crop2,0.25,'2026-11-17','growing');
+  begin insert into workers(farm_id,name) values (f,'  '); raise exception 'blank worker name accepted'; exception when check_violation then null; end;
+  -- a job without a parcel of its own, its plantings, a spray with a SIGNED label (waiting periods from the label)
+  insert into jobs(id,farm_id,kind,status,worker_id,product_id,done_at,device_id,actor_id) values (job2,f,'spray','done',w,prod,'2026-11-20 08:00+00','dev','act');
+  insert into job_plantings(farm_id,job_id,planting_id,area_str_treated) values (f,job2,pl,0.25);
+  begin insert into job_plantings(farm_id,job_id,planting_id) values (f,job2,pl); raise exception 'same planting twice accepted'; exception when unique_violation then null; end;
+  insert into job_spray(id,farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,qty_str,flags,device_id,actor_id)
+    values (gen_random_uuid(),f,job2,prod,w,'2026-11-20 08:00+00',0.025,'ml/str','signed',7,24,'label','2026-11-27 08:00+00','2026-11-21 08:00+00',0.25,array['dose_outside_label'],'dev','act') returning id into sp1;
+  -- an UNSIGNED label leaves the waiting period NULL (unknown); it cannot claim a label PHI
+  insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state) values (f,job2,prod,w,'2026-11-20 09:00+00',0.025,'ml/str','unsigned');
+  begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,phi_source,phi_until) values (f,job2,prod,w,now(),0.025,'ml/str','unsigned',7,'label',now()); raise exception 'label PHI on an unsigned label accepted'; exception when check_violation then null; end;
+  begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,phi_source) values (f,job2,prod,w,now(),0.025,'ml/str','signed',7,'label'); raise exception 'PHI without its end accepted'; exception when check_violation then null; end;
+  begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state) values (f,job2,prod,w,now(),0,'ml/str','signed'); raise exception 'dose 0 accepted'; exception when check_violation then null; end;
+  begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state) values (f,job2,prod,w,now(),1,'%','signed'); raise exception 'unit percent accepted'; exception when check_violation then null; end;
+  -- Bora's entry of the label's PHI: a NEW row that amends the original; the original is untouched (append-only)
+  insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,amends_id)
+    select f,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,7,24,'manual',sprayed_at + interval '7 days',sprayed_at + interval '24 hours',id from job_spray where label_state = 'unsigned' and phi_days is null and job_id = job2;
+  begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,amends_id) values (f,job2,prod,w,now(),0.025,'ml/str','unsigned',sp1); raise exception 'amending row that is not a manual entry accepted'; exception when check_violation then null; end;
+  begin update job_spray set note = 'x'; raise exception 'spray update allowed'; exception when insufficient_privilege then null; end;
+  -- harvest: crates as a whole number above zero
+  insert into job_harvest(farm_id,planting_id,crates_str,harvested_at,note,device_id,actor_id) values (f,pl,12,'2026-11-28 08:00+00','x','dev','act');
+  begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,pl,0,now()); raise exception 'zero crates accepted'; exception when check_violation then null; end;
+  begin update job_harvest set crates_str = 99; raise exception 'harvest update allowed'; exception when insufficient_privilege then null; end;
+  select count(*) into n from job_spray where job_id = job2; if n <> 3 then raise exception 'spray rows %', n; end if;
+end $$;
+
 create role app_user nologin;
 grant usage on schema public, auth to app_user;
 grant all on all tables in schema public to app_user;
@@ -141,6 +176,7 @@ do $$ declare n int; begin
   select count(*) into n from jobs; if n <> 0 then raise exception 'worker sees unassigned jobs'; end if;
   begin insert into products(farm_id,name,type,unit) values ('11111111-1111-1111-1111-111111111111','x','fungicide','kg'); raise exception 'worker can insert products';
   exception when insufficient_privilege then null; end;
+  select count(*) into n from workers; if n <> 0 then raise exception 'worker sees the roster'; end if;
   select count(*) into n from media; if n <> 0 then raise exception 'worker sees photos'; end if;
   select count(*) into n from farm_settings; if n <> 0 then raise exception 'worker sees settings'; end if;
   delete from parcels; get diagnostics n = row_count; if n <> 0 then raise exception 'worker deleted parcels'; end if;

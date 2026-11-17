@@ -23,7 +23,7 @@ describe('a spray with a SIGNED label', () => {
     const r = build(input(), ctx());
     expect(r.spray).toMatchObject({ job_id: 'job1', applicator_id: 'w1', dose_str: '0.025', dose_unit: 'ml/str', qty_str: '0.25', label_state: 'signed', phi_days: '7', rei_hours: '24', phi_source: 'label', phi_until: '2026-11-27T08:00:00Z', rei_until: '2026-11-21T08:00:00Z' });
     expect(r.flags).toEqual([]);
-    expect(r.job).toMatchObject({ kind: 'spray', status: 'done', assigned_to: 'w1' });
+    expect(r.job).toMatchObject({ kind: 'spray', status: 'done', worker_id: 'w1' });
     expect(r.jobPlantings).toMatchObject([{ planting_id: 'pl1', job_id: 'job1', area_str_treated: '0.5' }]);
     expect(r.movement).toMatchObject({ direction: 'out', qty_str: '0.25', reason: 'spray', job_id: 'job1', lot_key: 'lot' });
   });
