@@ -8,10 +8,19 @@ Scope: leafy greens and herbs, Megara plain. Replaces the v2 "why" texts.
 - **Confidence** has three levels:
   - **High:** logged data plus the official label.
   - **Medium:** forecast or estimated inputs.
-  - **Low:** missing data, or a station more than 10 km away or more than 100 m higher or lower than the parcel.
+  - **Low:** missing data, or ~~a station more than 10 km away or more than 100 m higher or lower than the parcel~~ (superseded 2026-11-17, gridded data has no station: see "Weather inputs" below).
   - Drop one level for each estimated key input (for example, leaf wetness taken from RH) and for any lead time over 72 h.
 - **Why? sheet:** rule text, thresholds, inputs, station distance, forecast or measured.
 - **Blocking order:** registration → PHI/harvest status → REI → rotation → stock/expiry → weather window.
+
+---
+
+## Weather inputs (added 2026-11-17, meteorologist review)
+- **Source:** ICON-EU (main, 0–78 h) with ECMWF IFS HRES as fallback and for days 4–10; model name and run time are stored as data. When the two disagree (Tmin > 2 °C apart, rain yes/no) drop one confidence level. Fetched every 6 h; older than 12 h = no weather advice.
+- **Confidence for gridded data** (replaces the station-distance rule): Low when the parcel elevation differs from the weather cell's by more than 100 m, when the cell is coastal, or for a `plain` or `slope` parcel on a radiative night (the grid does not model cold pooling).
+- **Wind is a 10 m value.** State thresholds at 10 m or convert (boom height u2 ≈ 0.75 × u10). Block on the gust.
+- **Leaf-wet hour** (shared by SPRAY-WIN, DM-SPIN, LWD): an hour counts as wet if any of: RH ≥ [SET, 87–90] %; dew-point depression ≤ [SET, ~2 °C] with light wind; rain ≥ 0.2 mm; **sprinkler irrigation running**, plus a drying tail [SET]. Calibrate with dew observations or a leaf-wetness sensor. Open-Meteo's own leaf-wetness probability is daily only and is not used.
+- **Confidence wording (Greek UI):** High «μετρημένο/ετικέτα» · Medium «πρόγνωση μοντέλου ~7 km» · Low «εκτίμηση – ελέγξτε στο χωράφι». Always show «Πρόγνωση ΗΗ:ΜΜ».
 
 ---
 
@@ -23,9 +32,9 @@ Scope: leafy greens and herbs, Megara plain. Replaces the v2 "why" texts.
   1. **Wind** is 3–10 km/h [EST]. The farm maximum is [SET].
   2. **Gust** is below [SET]. The v2 value of 20 is a placeholder, and one constant must feed both the UI legend and the rule.
   3. **No inversion:** block when wind is below about 3 km/h, the sky is clear, and the hour falls between sunset and [SET 1–3] h after sunrise [EST].
-  4. **Leaves dry** for at least [SET] h. Dew burn-off comes from the forecast, never from a fixed clock time.
+  4. **Leaves dry** for at least [SET] h, using the leaf-wet-hour rule above (so rain **and sprinkler irrigation** count as wet). Dew burn-off comes from the forecast, never from a fixed clock time.
   5. **Rain-free** after application for the label's rainfast time. If the label is silent, use [SET], typically 1–6 h. Also block when rain over [SET] mm is forecast within 24 h.
-  6. **Delta-T** is 2–8 °C, and above 10 °C means no spraying [EST]. The maximum temperature is [SET, commonly 25–30 °C]. Label limits override all of this.
+  6. **Delta-T** is 2–8 °C, 8–10 °C is marginal, below 2 °C is poor, and above 10 °C means no spraying [EST]. Within ±1 °C of a threshold show "borderline". The maximum temperature is [SET, commonly 25–30 °C]. Label limits override all of this.
 - **Output:** recommendation with the first OK run at least as long as the job, else "no window" plus the reason per day. A front closing every window raises a Medium alert.
 - **Confidence:** Medium. It drops to Low when leaf wetness is estimated and an input is within 10 % of its threshold.
 
@@ -79,11 +88,12 @@ Scope: leafy greens and herbs, Megara plain. Replaces the v2 "why" texts.
 ## B. Weather risk and disease
 
 ### FROST: Frost and cold-air pooling
-- **Inputs:** hourly 2 m Tmin, wind, cloud, dew point; parcel elevation and **topo class** (plain/valley floor, slope, ridge, coastal); crop and stage; covers on hand.
+- **Inputs:** hourly 2 m Tmin, wind, cloud, dew point; parcel elevation and **topo class** (**plain, slope, coast**; ~~plain/valley floor, slope, ridge, coastal~~ reduced to three classes on 2026-11-17); crop and stage; covers on hand.
 - **Logic:**
   - **Radiative night:** clear sky (cloud below [SET] oktas), wind below [SET, ~5 km/h], and 2 m Tmin at or below [SET, v2 used 2 °C].
-  - **Cold-air pooling:** on radiative nights, plain and valley-floor parcels get a **colder** offset and slopes above the cold layer a warmer one. The offsets are [SET], calibrated against the farmer's frost/no-frost taps and any sensor.
-  - **Leaf surface:** typically 1–3 °C below 2 m air on such nights [EST]. Show it as a range.
+  - **Parcel Tmin = cell Tmin + R × offset[topo class]** where R (0–1) comes from cloud and wind and the topo class is plain / slope / coast. Starting offsets, all [SET]: plain −1 to −3 °C; slope 0 to +2 °C; coast +1 to +2 °C. **Do not stack** the Open-Meteo lapse-rate correction with this pooling offset.
+  - **Cold-air pooling:** on radiative nights, `plain` parcels (~~plain and valley-floor~~) get a **colder** offset and `slope` parcels above the cold layer a warmer one; `coast` parcels get a milder one. The offsets are [SET], calibrated against the farmer's frost/no-frost taps and any sensor.
+  - **Leaf surface:** typically 1–3 °C below 2 m air on such nights [EST]. **Always show a range** (for example «1 έως −2 °C») with its basis («μοντέλο + διόρθωση εδάφους, μη βαθμονομημένο») and the run time, never a single number.
   - **Damage:** the damage temperature and duration for each crop and stage are **[SET]**. Until then, the alert says "frost conditions" only.
 - **Output:** High alert listing **every** affected parcel, lot and night (QA P1-3, P1-4). Actions: cover if fleece on hand (gain ~1–2 °C [EST]); no harvest until thawed.
 - **Confidence:** Medium up to 48 h, otherwise Low. Uncalibrated parcels are Low.
@@ -91,7 +101,7 @@ Scope: leafy greens and herbs, Megara plain. Replaces the v2 "why" texts.
 ### DM-SPIN: Spinach downy mildew (*Peronospora effusa*)
 - **Inputs:** hourly leaf wetness (estimated or sensor), temperature while wet, 5-day rain forecast, disease history, variety and declared Pe races, scouting.
 - **Logic:**
-  - A night is favourable when wetness lasts at least [SET, v2 10] h at temperatures in the cool band that favours sporulation and infection. The literature puts that band at roughly 5–20 °C with an optimum near 10–15 °C [EST, studies vary]. The exact band is [SET].
+  - A night is favourable when wetness (counted with the **leaf-wet-hour rule** under "Weather inputs") lasts at least [SET, v2 10] h at temperatures in the cool band that favours sporulation and infection. The literature puts that band at roughly 5–20 °C with an optimum near 10–15 °C [EST, studies vary]. The exact band is [SET].
   - The risk level comes from favourable nights in the last [SET] nights, forecast wet weather and history. The scoring is [SET].
   - Resistance lowers the risk only for the declared races.
 - **Output:**
@@ -102,7 +112,7 @@ Scope: leafy greens and herbs, Megara plain. Replaces the v2 "why" texts.
 
 ### LWD: General leaf-wetness disease risk (other crops)
 - **Coverage:** a wet-period counter for Septoria on parsley, *Bremia* on lettuce, downy mildew on rocket and Alternaria.
-- **Logic:** count wet hours within a [SET temperature band for each pathogen] and warn above [SET] h.
+- **Logic:** count wet hours (leaf-wet-hour rule under "Weather inputs") within a [SET temperature band for each pathogen] and warn above [SET] h.
 - **Default:** off until the agronomist enables it; until then, wet-period info and a scouting prompt. Low or Medium.
 
 ---
@@ -121,7 +131,7 @@ Scope: leafy greens and herbs, Megara plain. Replaces the v2 "why" texts.
 
 ### IRR: Irrigation water balance
 - **Logic:**
-  - Daily ET0 comes from FAO-56 Penman-Monteith, and `ETc = Kc × ET0`.
+  - Daily ET0 comes from FAO-56 Penman-Monteith (Open-Meteo `et0_fao_evapotranspiration`), and `ETc = Kc × ET0`. **Added 2026-11-17:** use past-day analysis values, not old forecasts, for the water balance; show ET0 as a range (about ±15 %, wind is the main error) and re-anchor with the water meter.
   - Root-zone deficit `D = D_prev + ETc − effective rain − net irrigation`.
   - Irrigate when D reaches [SET, commonly 30–50 % of available water for shallow-rooted greens].
   - Kc for spinach and lettuce is about 0.7 at the start, 1.0 mid-season and 0.95 at the end [EST, FAO-56]. Kc for herbs is [SET].
@@ -157,7 +167,7 @@ Scope: leafy greens and herbs, Megara plain. Replaces the v2 "why" texts.
 
 ### HARV-FC: Harvest forecast (thermal time)
 - **Logic:**
-  - Degree-days: `GDD = Σ max(0, Tmean − Tb)` from sowing, using observed data, then the forecast, then the 25th–75th percentile of climatology.
+  - Degree-days: `GDD = Σ max(0, Tmean − Tb)` from sowing, using analysis data (~~observed~~), then the forecast, then the 25th–75th percentile of climatology (**added 2026-11-17:** climatology from the ERA5 API).
   - The result is a **date range**, with a short-day winter factor [SET].
   - **Base temperature (Tb) must be validated.** Values often cited for spinach and lettuce are about 0–5 °C. Rocket, parsley, coriander and dill are [SET]. The GDD needed to reach harvest for each crop and variety is [SET], calibrated from the farm's own records of sowing to first cut.
   - The UI shows the base, for example "412 of ~520 °C·d, base X °C".
