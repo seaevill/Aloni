@@ -77,7 +77,7 @@ export const s2 = (v: number) => Intl.NumberFormat; // @red R05
 export const s3 = (v: number) => v.toLocaleString; // @red R04
 export const s4 = (v: number) => (v as any)['toLo' + 'caleString']();  // @limit computed non-literal property name on an any-typed receiver
 export const s5 = (v: number) => Number(v.toFixed); // @red R03
-export const s6 = (v: number) => new Float32Array([v])[0]; // @red R06
+export const s6 = (v: number) => new Float32Array([v])[0]; // @red R09
 export const s7 = (v: number) => Math.fround; // @red R01
 export const s9 = (v: number) => Number.parseFloat(v.toFixed); // @red R03
 export const t1 = (v: number) => Number.isInteger(v); // @ok
@@ -101,9 +101,9 @@ export const u9 = (v: number) => ~-~v; // @red R06
 export const w1 = (v: number) => (v >> 0n as never); // @red R06
 export const w2 = (v: number) => Math.imul(v, 1); // @red R01
 export const w3 = (v: number) => Math.clz32(v); // @ok
-export const w4 = (v: number) => new Int32Array([v])[0]; // @red R06
-export const w5 = (v: number) => new Uint8Array([v])[0]; // @red R06
-export const w6 = (v: number) => Number(BigInt.asIntN(32, BigInt(v))); // @red R06
+export const w4 = (v: number) => new Int32Array([v])[0]; // @red R09
+export const w5 = (v: number) => new Uint8Array([v])[0]; // @red R09
+export const w6 = (v: number) => Number(BigInt.asIntN(32, BigInt(v))); // @red R09
 export const w7 = (v: number) => v.toString().padEnd(3); // @ok
 export const w8 = (v: number) => (v as number).toFixed(); // @red R03
 export const w9 = (v: number) => Intl.NumberFormat.supportedLocalesOf('el');  // @red R05

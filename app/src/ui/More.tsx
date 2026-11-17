@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks';
-import { activeFarm, dataVersion, deleteDemo, farmLabel, hasDemo, loadDemo } from '../db';
-import { DEMO_FARM_ID, REAL_FARM_ID } from '../config';
+import { activeFarm, dataVersion, deleteDemo, farmLabel, hasDemo, legacyKept, loadDemo, realFarmId } from '../db';
+import { DEMO_FARM_ID } from '../config';
 import { APP_VERSION } from '../version';
 import { LANGS, lang, setLang, t } from '../i18n';
 
@@ -24,7 +24,7 @@ export function More() {
 
       <h2>{t('more.activeFarm')}</h2>
       <div class="seg two">
-        {[REAL_FARM_ID, ...(hasDemo.value ? [DEMO_FARM_ID] : [])].map((id) => (
+        {[realFarmId.value, ...(hasDemo.value ? [DEMO_FARM_ID] : [])].map((id) => (
           <button key={id} aria-pressed={activeFarm.value === id} onClick={() => pick(id)}>{farmLabel(id)}</button>
         ))}
       </div>
@@ -36,6 +36,7 @@ export function More() {
       <p class="muted">{t('more.demoNote')}</p>
       {msg && <p class="msg" role="status">{msg}</p>}
       <button class="btn secondary" onClick={() => setView('info')}>{t('more.info')}</button>
+      {legacyKept.value && <p class="draft" role="note">{t('more.legacyKept')}</p>}
       <p class="muted">{t('more.version', { v: APP_VERSION })}</p>
     </section>
   );

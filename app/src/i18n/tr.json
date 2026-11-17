@@ -42,5 +42,6 @@
   "info.controller.saved": "Kaydedildi.",
   "info.controller.unset": "[girilmedi]",
   "info.invite.closed": "Bilgileri girene kadar işçi daveti kapalı.",
-  "info.invite.open": "İşçi davet etmek serbest."
+  "info.invite.open": "İşçi davet etmek serbest.",
+  "more.legacyKept": "Bu telefonda eski veriler bulundu. Silinmediler; dışa aktarma (yedek) yakında gelecek."
 }

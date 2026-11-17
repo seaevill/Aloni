@@ -42,5 +42,6 @@
   "info.controller.saved": "Saved.",
   "info.controller.unset": "[not set]",
   "info.invite.closed": "Inviting workers is closed until you enter these details.",
-  "info.invite.open": "Inviting workers is allowed."
+  "info.invite.open": "Inviting workers is allowed.",
+  "more.legacyKept": "Old data was found on this phone. It was not deleted; exporting it (a copy) is coming soon."
 }

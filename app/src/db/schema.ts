@@ -1,10 +1,10 @@
 import Dexie, { type Table } from 'dexie';
 
-/** Every row belongs to exactly one farm (real or demo). `uid` = `${farmId}:${id}` so ids never collide. */
-export interface Row { uid: string; farmId: string; id: string; [k: string]: unknown }
-export interface FarmRow { id: string; name: string; isDemo: boolean; meta?: unknown }
+// Local schema v2: client-made UUID ids, snake_case, `farm_id` on every row (real farm or demo farm), `legacy_id` = id in the v2 prototype.
+export interface Row { id: string; farm_id: string; legacy_id?: string; [k: string]: unknown }
+export interface FarmRow { id: string; name: string; is_demo: boolean; meta?: unknown }
 export interface SettingRow { key: string; value: unknown }
-export interface WeatherRow { uid: string; farmId: string; parcelId: string; days: unknown[] }
+export interface WeatherRow { id: string; farm_id: string; parcel_id: string; days: unknown[] }
 
 export const FARM_TABLES = ['parcels', 'crops', 'plantings', 'products', 'jobs', 'orders_weekly', 'alerts', 'recommendations'] as const;
 export type FarmTable = (typeof FARM_TABLES)[number];
@@ -22,20 +22,14 @@ export class AppDB extends Dexie {
   weather!: Table<WeatherRow, string>;
   settings!: Table<SettingRow, string>;
 
-  constructor(name = 'aloni-farm') {
+  constructor(name = 'aloni') {
     super(name);
+    const rows = 'id, farm_id, legacy_id';
     this.version(1).stores({
       farms: 'id',
-      parcels: 'uid, farmId',
-      crops: 'uid, farmId',
-      plantings: 'uid, farmId',
-      products: 'uid, farmId',
-      jobs: 'uid, farmId',
-      orders_weekly: 'uid, farmId',
-      alerts: 'uid, farmId',
-      recommendations: 'uid, farmId',
-      weather: 'uid, farmId',
+      parcels: rows, crops: rows, plantings: rows, products: rows, jobs: rows, orders_weekly: rows, alerts: rows, recommendations: rows,
+      weather: 'id, farm_id',
+      settings: 'key', // owner settings (data controller details)
     });
-    this.version(2).stores({ settings: 'key' }); // owner settings (data controller details); migrated by M1 PR 4a
   }
 }

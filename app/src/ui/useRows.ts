@@ -8,7 +8,7 @@ export function useRows(table: FarmTable): Row[] | null {
   const ver = dataVersion.value;
   useEffect(() => {
     let live = true;
-    void db[table].where('farmId').equals(farm).toArray().then((r) => live && setRows(r));
+    void db[table].where('farm_id').equals(farm).toArray().then((r) => live && setRows(r));
     return () => { live = false; };
   }, [table, farm, ver]);
   return rows;
