@@ -56,11 +56,9 @@ export const ROUND = [
     `:matches(TSAsExpression, TSTypeAssertion, TSNonNullExpression) > Identifier[name=/^(globalThis|window|self)$/]`),
   ban('R08', 'No rounding/number libraries (lodash, mathjs, big.js, decimal.js, ...) in app code.'), // no-restricted-imports in eslint.config.js
 ];
-
 export const DEFAULTS = [
   ban('D05', 'No numeric default for a missing value; no silent 0 from Number()/+x (type-aware, eslint/no-numeric-default.js).'),
 ];
-
 export const CLOCK = [
   ban('K01', 'rules-core is pure: no clock. Take `as_of` as an argument (Date.now / Date() / new Date() / bare Date / .constructor / format() without a date).',
     `MemberExpression[object.name='Date'][property.name='now']`,
@@ -90,13 +88,11 @@ export const CLOCK = [
     `ImportExpression > :not(Literal).source`,
     `MetaProperty`),
 ];
-
 const child = ':matches(JSXElement, JSXFragment) > JSXExpressionContainer';
 // A text literal whose parent is one of these is "a value that ends up on screen" (not a comparison, a call argument or a key).
 const SHOWN = '/^(JSXExpressionContainer|ConditionalExpression|LogicalExpression|ArrowFunctionExpression|ArrayExpression|SequenceExpression|TSAsExpression|TSNonNullExpression|TSSatisfiesExpression|TSTypeAssertion|ReturnStatement|SpreadElement)$/';
 const NOT_IN_ATTR = ':not(JSXAttribute *)'; // class/key/aria-current inside nested elements are not text
 const DOM_TEXT = '/^(innerHTML|outerHTML|textContent|innerText|outerText|ariaLabel|placeholder|title|alt|nodeValue|data)$/';
-
 export const UI = [
   ban('U01', 'User-facing text must go through t() (el/tr/en): no JSX text.',
     `JSXText[value=${TEXT}]`),
@@ -131,7 +127,6 @@ export const UI = [
     `MemberExpression[property.name=/^(alert|confirm|prompt)$/]`,
     `ObjectPattern > Property[key.name=/^(alert|confirm|prompt)$/]`),
 ];
-
 export const ALL_BANS = [...ROUND, ...DEFAULTS, ...CLOCK, ...UI];
 
 export const toRule = (b) => ({ selector: b.selector, message: `[${b.id}] ${b.message}` });

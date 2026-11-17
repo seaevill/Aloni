@@ -26,6 +26,7 @@ export default {
       if (t.flags & ts.TypeFlags.TypeParameter) { const c = checker.getBaseConstraintOfType(t); return c && c !== t ? isNum(c) : false; }
       return (t.flags & NUMERIC) !== 0;
     };
+    const missingOrText = (t) => (t.flags & MISSING_OR_TEXT) !== 0 || (t.isUnion() && t.types.some(missingOrText));
     const hasText = (t) => (t.isUnion() ? t.types.some(hasText) : (t.flags & (ts.TypeFlags.StringLike | ANYISH)) !== 0);
     const isGeneric = (t) => (t.isUnion() ? t.types.some(isGeneric) : (t.flags & ts.TypeFlags.TypeParameter) !== 0);
     const unwrap = (n) => { let x = n; while (WRAPPERS.has(x.type)) x = x.expression ?? x.argument; return x; };
@@ -35,7 +36,6 @@ export default {
     const text = (n) => (n.synthetic ?? code.getText(n));
     const mentions = (branch, subject) => norm(text(branch)).includes(norm(text(subject)));
     const report = (node, messageId = 'd05') => context.report({ node, messageId });
-
     const isNullish = (n) => (n.type === 'Literal' && (n.raw === 'null' || n.value === 'undefined')) || (n.type === 'Identifier' && n.name === 'undefined') || (n.type === 'UnaryExpression' && n.operator === 'void');
     /** the expression a test checks for "missing / not there", or null */
     const subjectOf = (test) => {
@@ -67,7 +67,6 @@ export default {
     };
     const returnsNumber = (stmts) => stmts.some((st) => st.type === 'ReturnStatement' && st.argument && numeric(st.argument));
     const assignsNumber = (st, s) => st.type === 'ExpressionStatement' && st.expression.type === 'AssignmentExpression' && st.expression.operator === '=' && (!s || mentions(st.expression.left, s)) && numeric(st.expression.right);
-
     const fallback = (node, left, right) => {
       const l = typeOf(left);
       if ((isNum(l) || isGeneric(l) || (l.flags & ANYISH)) && numeric(right)) report(node);
@@ -79,7 +78,6 @@ export default {
       return checker.getPropertiesOfType(t).some((p) => isNum(checker.getTypeOfSymbolAtLocation(p, services.esTreeNodeToTSNodeMap.get(n))));
     };
     const numericProps = (o) => o.properties.filter((p) => p.type === 'Property' && numeric(p.value));
-
     return {
       LogicalExpression(n) {
         if (n.operator === '??' || n.operator === '||') fallback(n, n.left, n.right);
@@ -124,18 +122,14 @@ export default {
           if (a.type === 'LogicalExpression' && /^(\?\?|\|\|)$/.test(a.operator) && numericText(a.right)) report(n);
         }
         // Number(x) of a nullable/text value is a silent 0
-        if (callee === 'Number' && n.arguments.length === 1 && n.arguments[0].type !== 'Literal' && typeOf(n.arguments[0]).flags & MISSING_OR_TEXT) report(n, 'coerce');
-        else if (callee === 'Number' && n.arguments.length === 1 && n.arguments[0].type !== 'Literal' && typeOf(n.arguments[0]).isUnion() && typeOf(n.arguments[0]).types.some((t) => t.flags & MISSING_OR_TEXT)) report(n, 'coerce');
+        if (callee === 'Number' && n.arguments.length === 1 && n.arguments[0].type !== 'Literal' && missingOrText(typeOf(n.arguments[0]))) report(n, 'coerce');
         // Object.assign({}, DEFAULTS, o): a defaults object that is not the last argument
         if (callee === 'Object.assign' && n.arguments.length > 1) {
           n.arguments.slice(0, -1).forEach((a) => { if ((a.type === 'ObjectExpression' && numericProps(a).length) || (a.type !== 'ObjectExpression' && objectsWithNumbers(a))) report(a); });
         }
       },
       UnaryExpression(n) {
-        if (n.operator === '+' && n.argument.type !== 'Literal') {
-          const t = typeOf(n.argument);
-          if ((t.flags & MISSING_OR_TEXT) || (t.isUnion() && t.types.some((x) => x.flags & MISSING_OR_TEXT))) report(n, 'coerce');
-        }
+        if (n.operator === '+' && n.argument.type !== 'Literal' && missingOrText(typeOf(n.argument))) report(n, 'coerce');
       },
       ObjectExpression(n) {
         const spreads = n.properties.map((p, i) => (p.type === 'SpreadElement' ? i : -1)).filter((i) => i >= 0);
