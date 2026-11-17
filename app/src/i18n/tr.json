@@ -51,5 +51,20 @@
   "sync.unsynced": "eşitlenmedi",
   "state.error": "Bir şeyler ters gitti. Tekrar deneyin.",
   "state.retry": "Tekrar dene",
-  "toast.undo": "Geri al"
+  "toast.undo": "Geri al",
+  "backup.title": "Veri yedeği",
+  "backup.note": "Yalnızca bu telefonda · son yedek: {when}",
+  "backup.never": "hiç",
+  "backup.export": "Yedeği dışa aktar",
+  "backup.restore": "Yedekten geri yükle",
+  "backup.exported": "Yedek kaydedildi ({n} kayıt).",
+  "backup.restored": "Geri yüklendi ({n} kayıt).",
+  "backup.stale": "Güncel yedek yok (7 günden eski ya da hiç). «Diğer» sekmesinden dışa aktarın.",
+  "backup.error.format": "Bu dosya uygulamanın yedeği değil.",
+  "backup.error.version": "Yedek başka bir sürümden ve okunamıyor.",
+  "backup.error.sha256": "Yedekteki bir fotoğraf bozuk. Hiçbir değişiklik yapılmadı.",
+  "backup.error.demo": "Yedek demo veri içeriyor ve reddedildi.",
+  "backup.error.conflict": "Bu telefonda zaten başka veri var. Geri yükleme yapılmadı.",
+  "warn.homescreen": "Uygulamayı Ana Ekrana ekleyin: yoksa iPhone verilerini silebilir.",
+  "warn.persist": "Tarayıcı verilerin kalacağını garanti etmiyor. Sık sık yedek alın."
 }
