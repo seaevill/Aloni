@@ -25,16 +25,13 @@ export function setLang(l: Lang) {
   document.documentElement.lang = l;
 }
 
-export function t(key: string, params?: Record<string, string | number>): string {
+/** Every translation key, typed from the Greek file: a typo or a missing key is a compile error. */
+export type I18nKey = keyof typeof el;
+
+export function t(key: I18nKey, params?: Record<string, string | number>): string {
   let s = dictionaries[lang.value][key] ?? dictionaries.el[key] ?? key;
   if (params) for (const [k, v] of Object.entries(params)) s = s.replace(`{${k}}`, String(v));
   return s;
-}
-
-/** 0.6 -> "0,6 στρ." (Greek number format) */
-export function formatArea(str: number): string {
-  const n = new Intl.NumberFormat(LOCALES[lang.value], { maximumFractionDigits: 2 }).format(str);
-  return `${n} ${lang.value === 'el' ? 'στρ.' : lang.value === 'tr' ? 'dönüm' : 'str.'}`;
 }
 
 /** ISO date -> "Δευ 16 Νοε" in Europe/Athens */

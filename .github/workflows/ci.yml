@@ -58,3 +58,14 @@ jobs:
           for f in supabase/migrations/*.sql; do echo "== $f"; psql -v ON_ERROR_STOP=1 -f "$f"; done
       - name: Smoke test (append-only, hash chain, RLS)
         run: psql -v ON_ERROR_STOP=1 -f supabase/tests/smoke.sql
+
+  pr-size:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: PR must stay small (450 changed lines)
+        run: scripts/pr-size.sh "origin/${{ github.base_ref }}"
