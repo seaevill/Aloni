@@ -1,5 +1,6 @@
 import { compareDecimal, parseWhole, type Brand, type Decimal } from './decimal';
 import { known, unknown, type Known } from './known';
+import { isCalendarDate } from './waits';
 
 export type DoseKind = 'single' | 'range';
 export type DoseUnit = 'ml/str' | 'g/str' | 'l/str' | 'kg/str' | 'ml/100l' | 'g/100l'; // provisional list (DECISIONS.md); never converted
@@ -32,7 +33,7 @@ declare const signed: unique symbol;
 export type SignedLabelUse = { readonly [signed]: true; readonly dose: Dose; readonly phiDays: PhiDays; readonly reiHours: ReiHours; readonly maxApps: MaxApps };
 
 export function requireSignOff(use: LabelUse, signOff: SignOff | undefined): Known<SignedLabelUse> {
-  if (!signOff || signOff.by.trim() === '' || signOff.on.trim() === '') return unknown('missing'); // «Μη εγκεκριμένο»
+  if (!signOff || signOff.by.trim() === '' || !isCalendarDate(signOff.on)) return unknown('missing'); // «Μη εγκεκριμένο»: no name, or no real date («Invalid Date»)
   if (signOff.fingerprint !== fingerprint(use)) return unknown('invalid'); // values edited after sign-off: the sign-off dropped
   if (!use.dose.known || !use.phiDays.known || !use.reiHours.known || !use.maxApps.known) return unknown('missing'); // any unknown value = blocked
   return known({ dose: use.dose.value, phiDays: use.phiDays.value, reiHours: use.reiHours.value, maxApps: use.maxApps.value } as SignedLabelUse);

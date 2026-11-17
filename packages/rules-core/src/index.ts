@@ -3,3 +3,4 @@ export const RULES_CORE_VERSION = '0.0.0';
 export * from './known';
 export * from './decimal';
 export * from './label';
+export * from './waits';
