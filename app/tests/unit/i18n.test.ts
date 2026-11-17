@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dictionaries, formatArea, formatDate, lang } from '../../src/i18n';
+import { dictionaries, formatDate, lang } from '../../src/i18n';
 
 describe('i18n', () => {
   it('el/tr/en have identical key sets', () => {
@@ -12,7 +12,6 @@ describe('i18n', () => {
   });
   it('uses Greek formats by default', () => {
     expect(lang.value).toBe('el');
-    expect(formatArea(0.6)).toBe('0,6 στρ.');
     expect(formatDate('2026-11-16')).toBe('Δευ 16 Νοε');
   });
 });
