@@ -55,3 +55,9 @@ Güvendiğim **bir aile üyesi** zarfın yerini bilir (içini okumasına gerek y
 
 ### 6.4 Kurtarma tatbikatı (kurulumdan sonra bir kez)
 Bilgisayarda Gmail'den **çıkış yap**, sonra zarftaki **bir yedek kodla** yeniden gir. Çalıştıysa o kodu zarfta çiz. Çalışmadıysa hemen Claude'a haber ver (kodlar yenilenir).
+
+## 7. Geliştirici notları (Claude için, Bora'nın yapacağı bir şey yok)
+- Bir kez çalıştır: `git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'`
+- Yeni dalı her zaman `git push -u origin HEAD` ile gönder.
+- Sığ klonda "gönderilmemiş commit" uyarısı çıkarsa bu **yanlış alarmdır**: `git ls-remote --heads origin <dal>` ile uzak ucu kontrol et, daha fazla tur harcama.
+- Var olan bir dal için eksik takip referansı: `git fetch --depth=20 origin <dal>:refs/remotes/origin/<dal>`
