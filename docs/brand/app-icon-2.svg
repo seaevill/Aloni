@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+<title>Aloni app icon</title>
+<rect width="1024" height="1024" fill="#17201A"/>
+<g transform="translate(512 512) scale(2.3011)">
+<circle r="178" fill="#17201A"/>
+<circle r="160" fill="none" stroke="#D9CCB0" stroke-width="12"/>
+<path d="M0.00,-14.00 C66.00,-24.00 104.00,-80.00 70.00,-128.00 C26.00,-112.00 -18.00,-58.00 0.00,-14.00Z" fill="#8CCB6E" stroke="#17201A" stroke-width="6" stroke-linejoin="round"/>
+<path d="M12.12,-7.00 C53.78,45.16 121.28,50.07 145.85,-3.38 C109.99,-33.48 41.23,-44.59 12.12,-7.00Z" fill="#4FA35A" stroke="#17201A" stroke-width="6" stroke-linejoin="round"/>
+<path d="M12.12,7.00 C-12.22,69.16 17.28,130.07 75.85,124.62 C83.99,78.52 59.23,13.41 12.12,7.00Z" fill="#8CCB6E" stroke="#17201A" stroke-width="6" stroke-linejoin="round"/>
+<path d="M0.00,14.00 C-66.00,24.00 -104.00,80.00 -70.00,128.00 C-26.00,112.00 18.00,58.00 0.00,14.00Z" fill="#4FA35A" stroke="#17201A" stroke-width="6" stroke-linejoin="round"/>
+<path d="M-12.12,7.00 C-53.78,-45.16 -121.28,-50.07 -145.85,3.38 C-109.99,33.48 -41.23,44.59 -12.12,7.00Z" fill="#8CCB6E" stroke="#17201A" stroke-width="6" stroke-linejoin="round"/>
+<path d="M-12.12,-7.00 C12.22,-69.16 -17.28,-130.07 -75.85,-124.62 C-83.99,-78.52 -59.23,-13.41 -12.12,-7.00Z" fill="#4FA35A" stroke="#17201A" stroke-width="6" stroke-linejoin="round"/>
+<circle r="20" fill="#D9CCB0"/>
+</g>
+</svg>
