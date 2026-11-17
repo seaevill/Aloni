@@ -7,7 +7,7 @@ test('shell: five tabs in Greek, 375 px, no horizontal scroll', async ({ page })
   await expect(tabs).toHaveCount(5);
   // long Greek labels contain soft hyphens so they can break inside the 75 px column
   const labels = (await tabs.allInnerTexts()).map((s) => s.replace(/[\u00ad\s]/g, ''));
-  expect(labels).toEqual(['☀️Σήμερα', '🥬Προϊόντα', '🗺️Χωράφια', '📦Αποθήκη', '⋯Περισσότερα']);
+  expect(labels).toEqual(['☀️Σήμερα', '🥬Καλλιέργειες', '🗺️Χωράφια', '📦Αποθήκη', '⋯Περισσότερα']);
   const vw = page.viewportSize()!.width;
   expect(vw).toBe(375);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
@@ -16,7 +16,7 @@ test('shell: five tabs in Greek, 375 px, no horizontal scroll', async ({ page })
 
 test('tabs switch screens', async ({ page }) => {
   await page.goto('/');
-  for (const [id, title] of [['crops', 'Προϊόντα'], ['parcels', 'Χωράφια'], ['stock', 'Αποθήκη'], ['more', 'Περισσότερα'], ['today', 'Σήμερα']]) {
+  for (const [id, title] of [['crops', 'Καλλιέργειες'], ['parcels', 'Χωράφια'], ['stock', 'Αποθήκη'], ['more', 'Περισσότερα'], ['today', 'Σήμερα']]) {
     await page.locator(`nav.tabs [data-tab="${id}"]`).click();
     await expect(page.locator('h1')).toContainText(title);
   }
@@ -37,10 +37,10 @@ test('demo farm: load, see data, switch language, remove', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('today-empty')).toBeVisible();
   await page.locator('nav.tabs [data-tab="more"]').click();
-  await page.getByRole('button', { name: 'Φόρτωση δοκιμαστικού αγροκτήματος' }).click();
+  await page.getByRole('button', { name: 'Φόρτωση επίδειξης' }).click();
   await expect(page.getByRole('status')).toContainText('φορτώθηκε');
   await page.locator('nav.tabs [data-tab="today"]').click();
-  await expect(page.getByTestId('today-counts')).toContainText('Χωράφια: 5 · Προϊόντα: 10 · Φυτεύσεις: 16');
+  await expect(page.getByTestId('today-counts')).toContainText('Χωράφια: 5 · Καλλιέργειες: 10 · Φυτεύσεις: 16');
   await expect(page.locator('h1 .badge')).toBeVisible();
   await page.locator('nav.tabs [data-tab="parcels"]').click();
   await expect(page.locator('.card')).toHaveCount(5);

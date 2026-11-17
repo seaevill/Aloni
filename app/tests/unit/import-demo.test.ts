@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto';
 import { readFileSync } from 'node:fs';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { AppDB } from '../../src/db/schema';
-import { importDemo, removeDemo, type PrototypeData } from '../../src/db/import-demo';
+import { GREEK_NAME_FIXES, importDemo, removeDemo, type PrototypeData } from '../../src/db/import-demo';
 
 const data = JSON.parse(readFileSync(new URL('../../../reference/prototype/data.json', import.meta.url), 'utf8')) as PrototypeData;
 let db: AppDB;
@@ -37,6 +37,23 @@ describe('demo import', () => {
     expect(withNull.length).toBeGreaterThan(0);
     const row = (await db.products.get(`demo:${withNull[0]}`)) as unknown as { registered: Array<Record<string, unknown>> };
     expect(row.registered.some((r) => r.phi_days === null)).toBe(true);
+  });
+
+  it('corrects the 4 misspelled Greek substance names, only in name_el, and nothing else changes', async () => {
+    await importDemo(db, data);
+    const rows = await db.products.where('farmId').equals('demo').toArray();
+    const all = JSON.stringify(rows.map((r) => r.name_el));
+    for (const [wrong, right] of GREEK_NAME_FIXES) {
+      expect(all, `${wrong} should be gone`).not.toContain(wrong);
+      expect(all, `${right} should appear`).toContain(right);
+    }
+    // the source file keeps the old spelling (reference/ is read-only) and doses are untouched
+    expect(JSON.stringify(data.products)).toContain('Μανδιπροπαμίδιο');
+    for (const src of data.products as Array<{ id: string; name_en: string; registered: unknown }>) {
+      const row = await db.products.get(`demo:${src.id}`);
+      expect(row?.name_en).toBe(src.name_en);
+      expect(row?.registered).toEqual(src.registered);
+    }
   });
 
   it('never touches the real farm, is re-runnable and removable', async () => {

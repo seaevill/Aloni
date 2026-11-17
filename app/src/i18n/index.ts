@@ -2,11 +2,13 @@ import { signal } from '@preact/signals';
 import el from './el.json';
 import tr from './tr.json';
 import en from './en.json';
+import sq from './sq.json';
 import { TZ } from '../config';
 
 export type Lang = 'el' | 'tr' | 'en';
 export const LANGS: Lang[] = ['el', 'tr', 'en'];
-export const dictionaries: Record<Lang, Record<string, string>> = { el, tr, en };
+// `sq` (Albanian) is an empty file for now (workers choose el/tr/sq in M2); missing keys fall back to Greek.
+export const dictionaries: Record<Lang | 'sq', Record<string, string>> = { el, tr, en, sq };
 const LOCALES: Record<Lang, string> = { el: 'el-GR', tr: 'tr-TR', en: 'en-GB' };
 
 function initialLang(): Lang {
@@ -32,6 +34,12 @@ export function t(key: I18nKey, params?: Record<string, string | number>): strin
   let s = dictionaries[lang.value][key] ?? dictionaries.el[key] ?? key;
   if (params) for (const [k, v] of Object.entries(params)) s = s.replace(`{${k}}`, String(v));
   return s;
+}
+
+/** ISO date -> "Δευτέρα 16 Νοεμβρίου 2026" (month in the genitive in Greek) */
+export function formatDateLong(iso: string): string {
+  return new Intl.DateTimeFormat(LOCALES[lang.value], { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: TZ })
+    .format(new Date(`${iso}T12:00:00Z`));
 }
 
 /** ISO date -> "Δευ 16 Νοε" in Europe/Athens */
