@@ -7,14 +7,16 @@ import { LANGS, lang, setLang, t } from '../i18n';
 import { Info } from './Info';
 import { Photos } from './Photos';
 import { SettingsBox } from './SettingsBox';
+import { Workers } from './Workers';
 import { Backup } from './Backup';
 import { showUndo } from './Toast';
 
 export function More() {
   const [msg, setMsg] = useState('');
-  const [view, setView] = useState<'main' | 'info' | 'photos'>('main');
+  const [view, setView] = useState<'main' | 'info' | 'photos' | 'workers'>('main');
   const pick = (id: string) => { activeFarm.value = id; dataVersion.value++; };
   if (view === 'info') return <Info onBack={() => setView('main')} />;
+  if (view === 'workers') return <Workers onBack={() => setView('main')} />;
   if (view === 'photos') return <Photos onBack={() => setView('main')} />;
   return (
     <section>
@@ -42,6 +44,7 @@ export function More() {
       {msg && <p class="msg" role="status">{msg}</p>}
       <Backup />
       <SettingsBox />
+      <button class="btn secondary" data-testid="open-workers" onClick={() => setView('workers')}>{t('workers.open')}</button>
       <button class="btn secondary" data-testid="open-photos" onClick={() => setView('photos')}>{t('photos.title')}</button>
       <button class="btn secondary" data-testid="open-info" onClick={() => setView('info')}>{t('more.info')}</button>
       {legacyKept.value && <p class="draft" role="note">{t('more.legacyKept')}</p>}
