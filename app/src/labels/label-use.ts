@@ -1,6 +1,6 @@
 import {
   compareDecimal, fingerprint, isCalendarDate, known, makeDose, notOnLabel, parseDecimal, parseMaxApps, parsePhiDays, parseReiHours, requireSignOff, unknown,
-  type Decimal, type DoseKind, type DoseUnit, type Known, type LabelUse, type SignOff,
+  type Decimal, type DoseKind, type DoseUnit, type Known, type LabelUse, type SignedLabelUse, type SignOff,
 } from '@aloni/rules-core';
 import type { Row } from '../db/schema';
 
@@ -103,6 +103,9 @@ export function statusOf(row: Row): Status {
   if (!so) return 'unsigned';
   return requireSignOff(use, so).known ? 'signed' : 'changed';
 }
+
+/** The ONLY way for deciding code to get label values: signed, complete and unchanged, or unknown (blocked). */
+export const signedUseOf = (row: Row): Known<SignedLabelUse> => requireSignOff(readUse(row), signOffOf(row));
 
 /** Records the agronomist's sign-off for exactly the values in the row. Only a complete, unsigned label with a name and a real date can be signed. */
 export function withSignOff(row: Row, by: string, on: string, nowIso: string): Row | undefined {
