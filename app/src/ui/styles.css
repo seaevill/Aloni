@@ -22,3 +22,4 @@ nav.tabs .ico { font-size:20px; line-height:1; }
 .draft { background:#fff3cd; border:2px solid var(--warn); color:#4a2500; border-radius:12px; padding:10px 14px; font-weight:600; }
 .field { display:block; margin:0 0 12px; font-weight:600; }
 .input { display:block; width:100%; min-height:56px; margin-top:4px; padding:0 12px; font:inherit; font-weight:400; color:var(--fg); background:var(--card); border:2px solid var(--field); border-radius:12px; }
+.seg.two { grid-template-columns:1fr 1fr; }

@@ -1,15 +1,17 @@
 # RUNBOOK – Aloni (geçici ad) (Bora için tek sayfa, taslak)
 
-> Durum: **M0 taslağı.** Hesaplar (Cloudflare, Supabase) henüz açılmadı; aşağıdaki adımlar hesaplar açılınca doldurulacak.
+> Durum: Cloudflare hesabı açıldı; Pages kurulumu §8'de. Supabase henüz yok.
 > Kural: sen hiçbir komut yazmazsın. Claude GitHub'a değişiklik gönderir, CI yeşilse yayına çıkar.
 
 ## 1. Yayına alma (deploy)
 - Her pull request için Cloudflare Pages bir **önizleme adresi** üretir. Telefonda orayı açıp denersin.
-- Sen "Birleştir" (Merge) dediğinde `main` dalı otomatik yayına çıkar. *(Cloudflare hesabı açılınca etkinleşir.)*
+- Sen "Birleştir" (Merge) dediğinde `main` dalı otomatik yayına çıkar (adres: `https://aloni.pages.dev`, §8 kurulumdan sonra).
+- **Sürüm kontrolü:** uygulamada Περισσότερα ekranının altında «Έκδοση: 0.0.0 · a1b2c3d» yazar. Sondaki 7 harf yayına çıkan kodun numarasıdır. iPhone'da eski sürüm takılırsa bu numara GitHub'daki en son birleştirmeyle aynı mı bak.
 - CI (typecheck + testler + 375 px WebKit) kırmızıysa birleştirme düğmesi çalışmaz. Kırmızıyı Claude'a ilet.
 
 ## 2. Geri alma (rollback)
-- Cloudflare Pages → projen → **Deployments** → önceki yayının yanındaki **Rollback to this deployment**. Bir tık, veri kaybı yok.
+- Cloudflare → **Workers & Pages** → `aloni` → **Deployments** → **Production** listesinde, çalıştığını bildiğin önceki yayını bul → sağdaki **⋯** → **Rollback to this deployment** → onayla. Bir tık, birkaç saniye.
+- Geri aldıktan sonra Claude'a hangi sürüme döndüğünü söyle: `main` dalını da düzeltmesi (hatalı değişikliği geri alan yeni bir pull request) gerekir; yoksa bir sonraki birleştirmede hata geri gelir.
 - Veriler telefonda (yerel) tutulduğu için uygulama sürümünü geri almak kayıtlarını silmez.
 
 ## 3. Yedekten dönme
@@ -61,3 +63,20 @@ Bilgisayarda Gmail'den **çıkış yap**, sonra zarftaki **bir yedek kodla** yen
 - Yeni dalı her zaman `git push -u origin HEAD` ile gönder.
 - Sığ klonda "gönderilmemiş commit" uyarısı çıkarsa bu **yanlış alarmdır**: `git ls-remote --heads origin <dal>` ile uzak ucu kontrol et, daha fazla tur harcama.
 - Var olan bir dal için eksik takip referansı: `git fetch --depth=20 origin <dal>:refs/remotes/origin/<dal>`
+
+## 8. Cloudflare Pages kurulumu (bir kez, sahibi: Bora)
+Ücretsiz plan yeterli. **Kart/ödeme isteyen bir ekran çıkarsa dur, atla ve Claude'a yaz.** Claude'a parola, anahtar ya da token yazma.
+1. dash.cloudflare.com → sol menü **Workers & Pages** → **Create application**.
+2. **"Create Worker" değil:** sayfada **Pages** sekmesini/bağlantısını seç → **Connect to Git** (Import an existing Git repository).
+3. GitHub hesabını seç → depo **`seaevill/Aloni`** → **Begin setup**. (Depo listede yoksa: "Configure GitHub access" ile `Aloni` deposuna erişim ver.)
+4. Proje adı: **`aloni`** → adres `aloni.pages.dev` olur. Başka biri almışsa **dur ve Claude'a yaz** (başka ad seçme).
+5. Production branch: **`main`**.
+6. Build ayarları: Framework preset **None**; Build command **`npm run build`**; Build output directory **`app/dist`**; **Root directory (advanced) boş kalsın** (depo kökü; `@aloni/rules-core` pakete lazım).
+7. Environment variables: **ekleme** (Node sürümü depodaki `.node-version` dosyasından gelir: 22). **Save and Deploy**.
+8. İlk yayın birkaç dakika sürer. Bitince `https://aloni.pages.dev` adresini aç; Περισσότερα → altta «Έκδοση: … · xxxxxxx» görünmeli.
+9. Proje → **Settings** → **Builds & deployments** → **Preview deployments**: **All non-production branches** seçili olsun (her PR kendi önizleme adresini alır; Cloudflare PR'a yorum olarak yazar).
+10. **Web Analytics KAPALI kalsın:** proje → **Metrics** sekmesinde "Enable" düğmesine **basma**. Sonradan açık görürsen kapat.
+11. Telefonda: Safari ile `https://aloni.pages.dev` → Paylaş → **Ana Ekrana Ekle**.
+
+**Önizleme adresleri hakkında (önemli):** her PR/yayın kendi adresinde çalışır (`<kod>.aloni.pages.dev` ve `<dal-adı>.aloni.pages.dev`). Tarayıcı verisi **adrese özeldir**: önizlemede girdiğin kayıtlar yalnızca o adreste ve o telefonda kalır, `aloni.pages.dev`'e **taşınmaz**, yeni bir önizleme adresinde de görünmez. Önizlemede **gerçek verini girme**, yalnızca denemek için kullan. Gerçek kayıtların için her zaman `https://aloni.pages.dev`.
+

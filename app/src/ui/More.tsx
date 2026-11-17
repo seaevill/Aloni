@@ -23,7 +23,7 @@ export function More() {
       </div>
 
       <h2>{t('more.activeFarm')}</h2>
-      <div class="seg" style="grid-template-columns:1fr 1fr">
+      <div class="seg two">
         {[REAL_FARM_ID, ...(hasDemo.value ? [DEMO_FARM_ID] : [])].map((id) => (
           <button key={id} aria-pressed={activeFarm.value === id} onClick={() => pick(id)}>{farmLabel(id)}</button>
         ))}
