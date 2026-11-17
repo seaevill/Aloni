@@ -43,7 +43,7 @@ export async function put(db: AppDB, table: string, row: Row, op: Op = 'update')
   if (isAppendOnly(table) && op !== 'insert') throw new Error(`${table} is append-only: insert an amending row instead`);
   await db.transaction('rw', [db.table(table), db.outbox, db.settings], async () => {
     await (op === 'insert' ? db.table(table).add(row) : db.table(table).put(row));
-    if (row.farm_id !== DEMO_FARM_ID) await enqueue(db, row.farm_id, table, row.id, op, row);
+    if (row.farm_id !== DEMO_FARM_ID) await enqueue(db, row.farm_id, table, row.id, op, table === 'media' ? { ...row, blob: undefined } : row); // photo bytes stay in `media`; the upload reads them there
   });
   await refreshPending(db);
 }

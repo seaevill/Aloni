@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 
 // 375 px WebKit helper: every screen × language × state (empty farm, demo farm). Console errors fail the run.
 export const LANGS = ['EL', 'TR', 'EN'] as const;
-export const ROUTES = ['today', 'crops', 'parcels', 'stock', 'more', 'info', 'parcel-form'] as const;
+export const ROUTES = ['today', 'crops', 'parcels', 'stock', 'more', 'info', 'photos', 'parcel-form'] as const;
 export type Lang = (typeof LANGS)[number];
 export type Route = (typeof ROUTES)[number];
 export type State = 'empty' | 'demo';
@@ -18,7 +18,7 @@ export async function iphone(page: Page): Promise<string[]> {
 const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
 
 export async function goTo(page: Page, route: Route): Promise<void> {
-  if (route === 'parcel-form') { await tab(page, 'parcels'); await page.getByTestId('empty-state').locator('button').click(); } else if (route === 'info') { await tab(page, 'more'); await page.getByTestId('open-info').click(); } else await tab(page, route);
+  if (route === 'parcel-form') { await tab(page, 'parcels'); await page.getByTestId('empty-state').locator('button').click(); } else if (route === 'photos') { await tab(page, 'today'); await tab(page, 'more'); await page.getByTestId('open-photos').click(); } else if (route === 'info') { await tab(page, 'more'); await page.getByTestId('open-info').click(); } else await tab(page, route);
 }
 
 /** Visits every screen in every language, first with an empty farm, then with the demo farm loaded. */

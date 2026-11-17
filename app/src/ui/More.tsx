@@ -5,14 +5,16 @@ import { APP_VERSION } from '../version';
 import { LANGS, lang, setLang, t } from '../i18n';
 
 import { Info } from './Info';
+import { Photos } from './Photos';
 import { Backup } from './Backup';
 import { showUndo } from './Toast';
 
 export function More() {
   const [msg, setMsg] = useState('');
-  const [view, setView] = useState<'main' | 'info'>('main');
+  const [view, setView] = useState<'main' | 'info' | 'photos'>('main');
   const pick = (id: string) => { activeFarm.value = id; dataVersion.value++; };
   if (view === 'info') return <Info onBack={() => setView('main')} />;
+  if (view === 'photos') return <Photos onBack={() => setView('main')} />;
   return (
     <section>
       <h1>{t('more.title')}</h1>
@@ -38,6 +40,7 @@ export function More() {
       <p class="muted">{t('more.demoNote')}</p>
       {msg && <p class="msg" role="status">{msg}</p>}
       <Backup />
+      <button class="btn secondary" data-testid="open-photos" onClick={() => setView('photos')}>{t('photos.title')}</button>
       <button class="btn secondary" data-testid="open-info" onClick={() => setView('info')}>{t('more.info')}</button>
       {legacyKept.value && <p class="draft" role="note">{t('more.legacyKept')}</p>}
       <p class="muted">{t('more.version', { v: APP_VERSION })}</p>

@@ -108,5 +108,16 @@
   "planting.error.date": "Geçersiz ekim tarihi.",
   "planting.warn.bigger": "Dikkat: alan parselden büyük ({parcel}). Yine de kaydedebilirsiniz.",
   "planting.noParcels": "Önce «Parseller» sekmesinden bir parsel ekleyin.",
-  "planting.demoActive": "Burası demo. Ekim eklemek için «Diğer» sekmesinde «Çiftliğim»i seçin."
+  "planting.demoActive": "Burası demo. Ekim eklemek için «Diğer» sekmesinde «Çiftliğim»i seçin.",
+  "photos.title": "Fotoğraflar",
+  "photos.add": "Fotoğraf ekle",
+  "photos.count.one": "{n} fotoğraf",
+  "photos.count.other": "{n} fotoğraf",
+  "photos.empty": "Henüz fotoğraf yok. Yalnızca bu telefonda durur; «Diğer» sekmesinden yedek alın.",
+  "photos.saved": "Fotoğraf kaydedildi.",
+  "photos.duplicate": "Bu fotoğraf zaten var.",
+  "photos.error": "Fotoğraf kaydedilemedi. Telefonun boş yerini kontrol edip tekrar deneyin.",
+  "photos.alt": "Fotoğraf",
+  "photos.close": "Kapat",
+  "photos.demoActive": "Burası demo. Fotoğraf eklemek için «Diğer» sekmesinde «Çiftliğim»i seçin."
 }

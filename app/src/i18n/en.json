@@ -108,5 +108,16 @@
   "planting.error.date": "Invalid sowing date.",
   "planting.warn.bigger": "Careful: the area is larger than the parcel ({parcel}). You can still save.",
   "planting.noParcels": "Add a parcel first in the Parcels tab.",
-  "planting.demoActive": "This is the demo. Choose \"My farm\" in More to add a planting."
+  "planting.demoActive": "This is the demo. Choose \"My farm\" in More to add a planting.",
+  "photos.title": "Photos",
+  "photos.add": "Add photo",
+  "photos.count.one": "{n} photo",
+  "photos.count.other": "{n} photos",
+  "photos.empty": "No photos yet. They stay on this phone only; make a backup from More.",
+  "photos.saved": "Photo saved.",
+  "photos.duplicate": "This photo is already stored.",
+  "photos.error": "The photo was not saved. Check the phone's free space and try again.",
+  "photos.alt": "Photo",
+  "photos.close": "Close",
+  "photos.demoActive": "This is the demo. Choose \"My farm\" in More to add a photo."
 }
