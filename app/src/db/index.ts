@@ -2,7 +2,7 @@ import { signal } from '@preact/signals';
 import { AppDB, type FarmRow } from './schema';
 import { importDemo, removeDemo, type PrototypeData } from './import-demo';
 import { migrateLegacyDb } from './legacy';
-import { guardAppendOnly } from '../repo';
+import { guardAppendOnly, refreshPending } from '../repo';
 import { APP_NAME, DEMO_FARM_ID } from '../config';
 import { t } from '../i18n';
 
@@ -24,6 +24,7 @@ export async function initDb() {
   realFarmId.value = real.id;
   activeFarm.value = real.id;
   hasDemo.value = !!(await db.farms.get(DEMO_FARM_ID));
+  await refreshPending(db);
   // Ask the browser not to evict our data (iOS evicts storage of non-installed sites).
   try { await navigator.storage?.persist?.(); } catch { /* ignore */ }
 }

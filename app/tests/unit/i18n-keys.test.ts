@@ -32,6 +32,11 @@ describe('i18n checks go red on bad input (negative tests)', () => {
     const withDead: Dicts = { el: { ...dicts.el, dead: 'x' }, tr: { ...dicts.tr, dead: 'x' }, en: { ...dicts.en, dead: 'x' } };
     expect(findI18nProblems(withDead, code).deadKeys).toEqual(['dead']);
   });
+  it('plural forms count as used through their base key, and are dead without it', () => {
+    const plural: Dicts = { el: { 'n.one': '1', 'n.other': '{n}' }, tr: { 'n.one': '1', 'n.other': '{n}' }, en: { 'n.one': '1', 'n.other': '{n}' } };
+    expect(findI18nProblems(plural, "tn('n', 2)").deadKeys).toEqual([]);
+    expect(findI18nProblems(plural, 'nothing').deadKeys).toEqual(['n.one', 'n.other']);
+  });
   it('a key that only tr or en has', () => {
     const extra: Dicts = { ...dicts, en: { ...dicts.en, only_en: 'x' } };
     expect(findI18nProblems(extra, code).keySetMismatch).toEqual(['el:only_en', 'tr:only_en']);

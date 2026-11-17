@@ -43,5 +43,13 @@
   "info.controller.unset": "[not set]",
   "info.invite.closed": "Inviting workers is closed until you enter these details.",
   "info.invite.open": "Inviting workers is allowed.",
-  "more.legacyKept": "Old data was found on this phone. It was not deleted; exporting it (a copy) is coming soon."
+  "more.legacyKept": "Old data was found on this phone. It was not deleted; exporting it (a copy) is coming soon.",
+  "sync.offline": "Offline",
+  "sync.pending.one": "{n} not synced",
+  "sync.pending.other": "{n} not synced",
+  "sync.both": "{offline} · {pending}",
+  "sync.unsynced": "not synced",
+  "state.error": "Something went wrong. Try again.",
+  "state.retry": "Try again",
+  "toast.undo": "Undo"
 }
