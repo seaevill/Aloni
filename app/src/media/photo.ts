@@ -36,7 +36,8 @@ export async function encodePhoto(file: Blob): Promise<Encoded | undefined> {
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     const blob = await new Promise<Blob | null>((done) => canvas.toBlob(done, 'image/jpeg', 0.85));
     return blob ? { blob, width: canvas.width, height: canvas.height } : undefined;
-  } catch {
+  } catch (e) {
+    console.error('photo-debug encode', String(e)); // TEMP
     return undefined;
   } finally {
     URL.revokeObjectURL(url);
@@ -55,7 +56,8 @@ export async function addPhoto(db: AppDB, farmId: string, enc: Encoded, nowIso: 
     const row: MediaRow = { id, farm_id: farmId, sha256, mime: 'image/jpeg', blob: enc.blob, width: enc.width, height: enc.height, bytes: enc.blob.size, created_at: nowIso };
     await put(db, 'media', row, 'insert');
     return { ok: true, id, duplicate: false };
-  } catch {
+  } catch (e) {
+    console.error('photo-debug add', String(e)); // TEMP
     return { ok: false }; // e.g. storage full: the caller says so, nothing half-written (one transaction)
   }
 }

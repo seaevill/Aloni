@@ -26,8 +26,8 @@ test('add photos offline: shrunk to 2000 px, the same photo only once, kept afte
 
   const big = { name: 'a.png', mimeType: 'image/png', buffer: await png(page, 3000, 1500, 1) };
   await page.locator('input[type=file]').setInputFiles(big);
+  await page.waitForTimeout(2000); console.log('DEBUG', JSON.stringify({ text: await page.locator('main').innerText(), errors }));
   await expect(page.getByTestId('photo-msg')).toHaveText('Η φωτογραφία αποθηκεύτηκε.');
-  await page.waitForTimeout(2000); console.log('DEBUG', JSON.stringify({ text: await page.locator('main').innerText(), errors, info: await page.evaluate(async () => { const r = indexedDB.open('aloni'); return await new Promise((res) => { r.onsuccess = () => { const tx = r.result.transaction('media'); const q = tx.objectStore('media').getAll(); q.onsuccess = () => res(q.result.map((m: { width: number; blob: unknown }) => [m.width, Object.prototype.toString.call(m.blob)])); q.onerror = () => res('getAll error'); }; }); }) }));
   await expect(page.getByTestId('photo-count')).toContainText('1 φωτογραφία');
   await expect(page.locator('.photo').first()).toHaveAttribute('width', '2000'); // stored size, not the 3000 px original
   await expect(page.locator('.photo').first()).toHaveAttribute('height', '1000');
