@@ -23,15 +23,15 @@ const stockText = (product: Row, moves: Row[]): string => { const b = balanceOf(
 
 /** Αποθήκη: the farm's products (sprays and fertilisers). Quantities and lots come with the stock PR. */
 export function Stock() {
+  const demo = activeFarm.value !== realFarmId.value;
   const [adding, setAdding] = useState(false);
   const [open, setOpen] = useState<Row | undefined>(undefined);
   const [lots, setLots] = useState<Row | undefined>(undefined);
   const q = useRows('products');
   const moves = useRows('stock_movements');
   if (adding) return <ProductForm onDone={() => setAdding(false)} />;
-  if (lots) return <StockLots product={lots} onBack={() => setLots(undefined)} />;
-  if (open) return <LabelUses product={open} onBack={() => setOpen(undefined)} />;
-  const demo = activeFarm.value !== realFarmId.value;
+  if (lots) return <StockLots product={lots} readOnly={demo} onBack={() => setLots(undefined)} />;
+  if (open) return <LabelUses product={open} readOnly={demo} onBack={() => setOpen(undefined)} />;
   const live = q.rows?.filter((r) => !r.deleted_at) ?? [];
   const archive = async (r: Row) => {
     await put(db, 'products', archived(r, new Date().toISOString()));
@@ -46,11 +46,11 @@ export function Stock() {
       {live.map((r) => (
         <div class="card" key={r.id} data-testid="product">{nameOf(r)}
           <small>{dot(typeText(r.type), text(r.reg_no), r.qty == null ? '' : `${formatQty(r.qty as number | string)} ${text(r.unit)}`)}</small>
-          {!demo && moves.rows && <small data-testid="product-stock">{t('stock.balance', { qty: stockText(r, moves.rows) })}</small>}
+          {moves.rows && <small data-testid="product-stock">{t('stock.balance', { qty: stockText(r, moves.rows) })}</small>}
           {text(r.label_photo_id) && <div class="photos"><MediaThumb id={text(r.label_photo_id)} /></div>}
           <UnsyncedMark id={r.id} />
-          {!demo && <button class="btn secondary" data-testid="stock-open" onClick={() => setLots(r)}>{t('stock.open')}</button>}
-          {!demo && <button class="btn secondary" data-testid="labeluse-open" onClick={() => setOpen(r)}>{t('labeluse.open')}</button>}
+          <button class="btn secondary" data-testid="stock-open" onClick={() => setLots(r)}>{t('stock.open')}</button>
+          <button class="btn secondary" data-testid="labeluse-open" onClick={() => setOpen(r)}>{t('labeluse.open')}</button>
           {!demo && <button class="btn secondary" onClick={() => void archive(r)}>{t('product.archive')}</button>}
         </div>
       ))}

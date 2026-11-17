@@ -47,7 +47,7 @@ export function badgeText(r: Row, st: Status): string {
 }
 
 /** One product's label uses, per crop: the values, and «Μη εγκεκριμένο» / blocked until an agronomist's approval is recorded. */
-export function LabelUses({ product, onBack }: { product: Row; onBack: () => void }) {
+export function LabelUses({ product, onBack, readOnly = false }: { product: Row; onBack: () => void; readOnly?: boolean }) {
   const [editing, setEditing] = useState<Row | 'new' | undefined>(undefined);
   const [signing, setSigning] = useState('');
   const uses = useRows('label_uses');
@@ -68,7 +68,7 @@ export function LabelUses({ product, onBack }: { product: Row; onBack: () => voi
       <h1>{nameOf(product)}</h1>
       <button class="btn secondary" onClick={onBack}>{t('info.back')}</button>
       <h2>{t('labeluse.title')}</h2>
-      <button class="btn" data-testid="labeluse-add" onClick={() => setEditing('new')}>{t('labeluse.add')}</button>
+      {!readOnly && <button class="btn" data-testid="labeluse-add" onClick={() => setEditing('new')}>{t('labeluse.add')}</button>}
       {uses.rows && mine.length === 0 && <p class="muted" data-testid="labeluse-empty">{t('labeluse.empty')}</p>}
       {mine.map((r) => {
         const st = statusOf(r);
@@ -78,10 +78,10 @@ export function LabelUses({ product, onBack }: { product: Row; onBack: () => voi
             <span class={`badge ${st}`} data-testid="labeluse-status">{badgeText(r, st)}</span>
             <Lines row={r} />
             <UnsyncedMark id={r.id} />
-            {(st === 'unsigned' || st === 'changed') && signing !== r.id && <button class="btn secondary" data-testid="signoff-open" onClick={() => setSigning(r.id)}>{t('signoff.record')}</button>}
-            {signing === r.id && <SignOff row={r} onDone={() => setSigning('')} />}
-            <button class="btn secondary" onClick={() => setEditing(r)}>{t('labeluse.edit')}</button>
-            <button class="btn secondary" onClick={() => void archive(r)}>{t('labeluse.archive')}</button>
+            {!readOnly && (st === 'unsigned' || st === 'changed') && signing !== r.id && <button class="btn secondary" data-testid="signoff-open" onClick={() => setSigning(r.id)}>{t('signoff.record')}</button>}
+            {!readOnly && signing === r.id && <SignOff row={r} onDone={() => setSigning('')} />}
+            {!readOnly && <button class="btn secondary" onClick={() => setEditing(r)}>{t('labeluse.edit')}</button>}
+            {!readOnly && <button class="btn secondary" onClick={() => void archive(r)}>{t('labeluse.archive')}</button>}
           </div>
         );
       })}

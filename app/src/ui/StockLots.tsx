@@ -16,7 +16,7 @@ const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 const qtyText = (balance: string | undefined, unit: string): string => (balance === undefined ? t('value.unknown') : `${formatQty(balance)} ${unit}`);
 
 /** One product's stock: the lots (expiry with year, balance, flags) and their movements, newest lot first. The ledger is only ever added to. */
-export function StockLots({ product, onBack }: { product: Row; onBack: () => void }) {
+export function StockLots({ product, onBack, readOnly = false }: { product: Row; onBack: () => void; readOnly?: boolean }) {
   const [view, setView] = useState<'list' | 'receive' | Row>('list');
   const [soon, setSoon] = useState(parseSoonDays(undefined));
   useEffect(() => { void db.settings.get(SOON_SETTING).then((r) => setSoon(parseSoonDays(r?.value))); }, []);
@@ -51,7 +51,7 @@ export function StockLots({ product, onBack }: { product: Row; onBack: () => voi
       <h1>{nameOf(product)}</h1>
       <button class="btn secondary" onClick={onBack}>{t('info.back')}</button>
       {lots.rows && <p class="card" data-testid="stock-total">{t('stock.total', { qty: qtyText(balanceOf(mine), unit) })}</p>}
-      <button class="btn" data-testid="receive-open" onClick={() => setView('receive')}>{t('stock.receive')}</button>
+      {!readOnly && <button class="btn" data-testid="receive-open" onClick={() => setView('receive')}>{t('stock.receive')}</button>}
       {lots.rows && list.length === 0 && <p class="muted" data-testid="stock-empty">{t('stock.empty')}</p>}
       <p class="muted">{t('stock.note')}</p>
       {cards.map((c) => (
@@ -61,7 +61,7 @@ export function StockLots({ product, onBack }: { product: Row; onBack: () => voi
           {c.flags.map((k) => <span class="badge warn" key={k} data-testid="lot-flag">{t(k)}</span>)}
           {c.lines.map((m) => <small key={m.id} data-testid="movement">{m.line}</small>)}
           <UnsyncedMark id={c.lot.id} />
-          <button class="btn secondary" data-testid="adjust-open" onClick={() => setView(c.lot)}>{t('stock.adjust')}</button>
+          {!readOnly && <button class="btn secondary" data-testid="adjust-open" onClick={() => setView(c.lot)}>{t('stock.adjust')}</button>}
         </div>
       ))}
     </section>

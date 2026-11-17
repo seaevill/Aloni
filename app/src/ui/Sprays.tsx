@@ -50,7 +50,7 @@ function WaitEntry({ spray, onDone }: { spray: Row; onDone: () => void }) {
 }
 
 /** The sprays that were recorded, newest first: who sprayed, what, when, the marks, and the waiting periods (unknown ones in red: the harvest is blocked). */
-export function Sprays() {
+export function Sprays({ readOnly = false }: { readOnly?: boolean }) {
   const [entering, setEntering] = useState('');
   const sprays = useRows('job_spray'); const links = useRows('job_plantings'); const plantings = useRows('plantings');
   const crops = useRows('crops'); const products = useRows('products'); const workers = useRows('workers');
@@ -75,7 +75,7 @@ export function Sprays() {
           {c.flags.map((f) => <span key={f} class={RED.includes(f) ? 'badge blocked' : 'badge warn'}>{t(FLAG_KEYS[f] as I18nKey)}</span>)}
           {c.phi ? <small data-testid="spray-phi">{c.phi}</small> : <span class="badge blocked" data-testid="spray-phi-unknown">{t('spray.phi.unknown')}</span>}
           {c.phi && c.r.phi_source === 'manual' && <small data-testid="spray-manual">{t('spray.phi.manual')}</small>}
-          {!c.phi && entering !== c.r.id && <button class="btn secondary" data-testid="wait-open" onClick={() => setEntering(c.r.id)}>{t('spray.phi.enter')}</button>}
+          {!readOnly && !c.phi && entering !== c.r.id && <button class="btn secondary" data-testid="wait-open" onClick={() => setEntering(c.r.id)}>{t('spray.phi.enter')}</button>}
           {entering === c.r.id && <WaitEntry spray={c.r} onDone={() => setEntering('')} />}
           {c.rei && <small data-testid="spray-rei">{c.rei}</small>}
           <UnsyncedMark id={c.r.id} />

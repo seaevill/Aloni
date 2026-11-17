@@ -33,21 +33,22 @@ export function Workers({ onBack }: { onBack: () => void }) {
       <h1>{t('workers.title')}</h1>
       <button class="btn secondary" onClick={onBack}>{t('info.back')}</button>
       <p class="muted">{t('workers.note')}</p>
-      {demo ? <p class="muted" data-testid="workers-demo">{t('workers.demo')}</p> : (
+      {demo && <p class="muted" data-testid="workers-demo">{t('workers.demo')}</p>}
+      {!demo && (
         <>
           <label class="field">{t('workers.name')}
             <input class="input" value={name} autoComplete="off" data-testid="worker-name" onInput={(e) => setName((e.target as HTMLInputElement).value)} />
           </label>
           {bad && <p class="msg error" role="alert">{t('workers.error.name')}</p>}
           <button class="btn" data-testid="worker-add" onClick={() => void add()}>{t('workers.add')}</button>
-          {q.rows && live.length === 0 && <p class="muted" data-testid="workers-empty">{t('workers.empty')}</p>}
-          {live.map((w) => (
-            <div class="card" key={w.id} data-testid="worker">{String(w.name)}
-              <button class="btn secondary" onClick={() => void archive(w)}>{t('product.archive')}</button>
-            </div>
-          ))}
         </>
       )}
+      {q.rows && live.length === 0 && <p class="muted" data-testid="workers-empty">{t('workers.empty')}</p>}
+      {live.map((w) => (
+        <div class="card" key={w.id} data-testid="worker">{String(w.name)}
+          {!demo && <button class="btn secondary" onClick={() => void archive(w)}>{t('product.archive')}</button>}
+        </div>
+      ))}
     </section>
   );
 }
