@@ -1,12 +1,14 @@
 import 'fake-indexeddb/auto';
 import { describe, expect, it } from 'vitest';
 import { sumSigned } from '../../src/stock/balance';
-import { balanceOf, buildAdjustment, buildReceipt, effectiveLots, flagsOf, SOON_DAYS, type ReceiptInput } from '../../src/stock/stock';
+import { balanceOf, buildAdjustment, buildReceipt, effectiveLots, flagsOf, type ReceiptInput } from '../../src/stock/stock';
+import { parseSoonDays, soonTextOf } from '../../src/settings/soon';
 import { guardAppendOnly, put } from '../../src/repo';
 import { AppDB, type Row } from '../../src/db/schema';
 import { makeBackup, parseBackup, restoreBackup } from '../../src/repo/backup';
 import { TEST_FARM_ID } from '../helpers/factories';
 
+const SIXTY = parseSoonDays(undefined); // the default setting
 const now = '2026-11-20T10:00:00.000Z';
 const receipt = (over: Partial<ReceiptInput> = {}): ReceiptInput => ({ productId: 'prod-1', batch: 'A123', expiry: '2028-03-31', qty: '4,5', photoId: undefined, ...over });
 const asRow = (o: Record<string, unknown>): Row => ({ id: 'x', farm_id: TEST_FARM_ID, ...o });
@@ -53,11 +55,11 @@ describe('balance = sum of movements, exact; a negative balance is shown, never 
   });
   it('can go negative and says so', () => {
     expect(balanceOf([mov('in', '1'), mov('out', '1.5')])).toBe('-0.5');
-    expect(flagsOf(asRow({ expiry: '2028-03-31' }), '-0.5', '2026-11-20')).toMatchObject({ negative: true });
+    expect(flagsOf(asRow({ expiry: '2028-03-31' }), '-0.5', '2026-11-20', SIXTY)).toMatchObject({ negative: true });
   });
   it('an unreadable movement makes the balance unknown, never a quietly smaller number', () => {
     for (const bad of [{ qty_str: 'NaN' }, { qty_str: 5 }, { qty_str: undefined }, { direction: 'sideways' }]) expect(balanceOf([mov('in', '2'), { ...mov('in', '1'), ...bad }]), JSON.stringify(bad)).toBeUndefined();
-    expect(flagsOf(asRow({ expiry: '2028-03-31' }), undefined, '2026-11-20')).toMatchObject({ unknown: true });
+    expect(flagsOf(asRow({ expiry: '2028-03-31' }), undefined, '2026-11-20', SIXTY)).toMatchObject({ unknown: true });
   });
   it('property: 2000 seeded ledgers match the integer sum and do not depend on the order', () => {
     let x = 4242;
@@ -79,15 +81,19 @@ describe('flags: expired and soon are information; a date nobody can read counts
   const today = '2026-11-20';
   const lot = (expiry: unknown) => asRow({ expiry });
   it('expired / soon / fine', () => {
-    expect(flagsOf(lot('2026-11-19'), '1', today)).toMatchObject({ expired: true, soon: false });
-    expect(flagsOf(lot('2026-11-20'), '1', today)).toMatchObject({ expired: false, soon: true }); // today is still in date
-    expect(flagsOf(lot('2027-01-19'), '1', today)).toMatchObject({ expired: false, soon: true }); // exactly SOON_DAYS (60) away
-    expect(SOON_DAYS).toBe(60);
-    expect(flagsOf(lot('2027-01-20'), '1', today)).toMatchObject({ expired: false, soon: false });
+    expect(flagsOf(lot('2026-11-19'), '1', today, SIXTY)).toMatchObject({ expired: true, soon: false });
+    expect(flagsOf(lot('2026-11-20'), '1', today, SIXTY)).toMatchObject({ expired: false, soon: true }); // today is still in date
+    expect(flagsOf(lot('2027-01-19'), '1', today, SIXTY)).toMatchObject({ expired: false, soon: true }); // exactly SOON_DAYS (60) away
+    expect(SIXTY).toEqual({ known: true, value: 60 });
+    expect(flagsOf(lot('2027-01-19'), '1', today, parseSoonDays('30'))).toMatchObject({ soon: false }); // Bora can change it
+    expect(flagsOf(lot('2026-12-20'), '1', today, parseSoonDays('30'))).toMatchObject({ soon: true });
+    expect(flagsOf(lot('2026-12-21'), '1', today, parseSoonDays('30'))).toMatchObject({ soon: false });
+    expect(flagsOf(lot('2026-11-25'), '1', today, parseSoonDays('0'))).toMatchObject({ soon: false }); // an unusable setting gives no «soon» flag
+    expect(flagsOf(lot('2027-01-20'), '1', today, SIXTY)).toMatchObject({ expired: false, soon: false });
   });
   it('an unreadable expiry or unreadable «today» is never «fine»', () => {
-    for (const bad of [undefined, '', 'Invalid Date', '2028-02-31', 5]) expect(flagsOf(lot(bad), '1', today), String(bad)).toMatchObject({ expired: true });
-    expect(flagsOf(lot('2030-01-01'), '1', 'Invalid Date')).toMatchObject({ expired: true });
+    for (const bad of [undefined, '', 'Invalid Date', '2028-02-31', 5]) expect(flagsOf(lot(bad), '1', today, SIXTY), String(bad)).toMatchObject({ expired: true });
+    expect(flagsOf(lot('2030-01-01'), '1', 'Invalid Date', SIXTY)).toMatchObject({ expired: true });
   });
 });
 
@@ -114,5 +120,17 @@ describe('lots are corrected by amending rows; the ledger never changes', () => 
     expect(await b.stock_movements.count()).toBe(1);
     expect(balanceOf(await b.stock_movements.toArray())).toBe('4.5');
     expect((await b.outbox.toArray()).filter((o) => o.table === 'stock_movements')).toHaveLength(1);
+  });
+});
+
+describe('the «expires soon» setting', () => {
+  it('nothing stored = 60; 1–365 whole days are accepted; anything else is unusable, never guessed', () => {
+    expect(parseSoonDays(undefined)).toEqual({ known: true, value: 60 });
+    expect(parseSoonDays('45')).toEqual({ known: true, value: 45 });
+    for (const bad of ['0', '366', '-5', '4,5', 'abc', '', 7, null]) expect(parseSoonDays(bad).known, String(bad)).toBe(false);
+  });
+  it('what the farmer types is stored only when it is a whole number from 1 to 365', () => {
+    expect(soonTextOf(' 90 ')).toBe('90');
+    for (const bad of ['', '0', '400', '1.5', 'x']) expect(soonTextOf(bad), bad).toBeUndefined();
   });
 });

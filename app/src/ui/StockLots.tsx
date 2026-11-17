@@ -1,8 +1,10 @@
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { t, formatDateLong, type I18nKey } from '../i18n';
 import { formatQty } from '../i18n/format';
 import { athensToday } from '../plantings/planting';
+import { parseSoonDays, SOON_SETTING } from '../settings/soon';
 import { balanceOf, effectiveLots, flagsOf } from '../stock/stock';
+import { db } from '../db';
 import type { Row } from '../db/schema';
 import { nameOf } from './screens';
 import { AdjustForm, ReceiveForm } from './StockForms';
@@ -16,6 +18,8 @@ const qtyText = (balance: string | undefined, unit: string): string => (balance 
 /** One product's stock: the lots (expiry with year, balance, flags) and their movements, newest lot first. The ledger is only ever added to. */
 export function StockLots({ product, onBack }: { product: Row; onBack: () => void }) {
   const [view, setView] = useState<'list' | 'receive' | Row>('list');
+  const [soon, setSoon] = useState(parseSoonDays(undefined));
+  useEffect(() => { void db.settings.get(SOON_SETTING).then((r) => setSoon(parseSoonDays(r?.value))); }, []);
   const lots = useRows('stock_lots');
   const moves = useRows('stock_movements');
   if (view === 'receive') return <ReceiveForm product={product} onDone={() => setView('list')} />;
@@ -28,7 +32,7 @@ export function StockLots({ product, onBack }: { product: Row; onBack: () => voi
   const cards = list.map((lot) => {
     const own = mine.filter((m) => m.lot_key === lot.lot_key).sort((a, b) => text(a.created_at).localeCompare(text(b.created_at)));
     const balance = balanceOf(own);
-    const f = flagsOf(lot, balance, today);
+    const f = flagsOf(lot, balance, today, soon);
     const flags: I18nKey[] = [];
     if (f.negative) flags.push('stock.flag.negative');
     if (f.unknown) flags.push('stock.flag.unknown');

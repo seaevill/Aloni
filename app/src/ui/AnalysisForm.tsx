@@ -9,7 +9,7 @@ import type { Row } from '../db/schema';
 import { MediaThumb } from './Photos';
 import { showUndo } from './Toast';
 
-export const EC_UNIT_KEYS: Record<EcUnit, I18nKey> = { 'dS/m': 'analysis.ecUnit.ds', 'uS/cm': 'analysis.ecUnit.us' };
+export const EC_UNIT_KEYS: Record<EcUnit, I18nKey> = { 'dS/m': 'analysis.ecUnit.ds', 'mS/cm': 'analysis.ecUnit.ms', 'uS/cm': 'analysis.ecUnit.us' };
 const NONE = { date: false, ph: false, ec: false, ecUnit: false };
 
 /** Add a soil or water analysis for a parcel: date (chosen), optional lab / pH / EC (with the report's unit) / notes / report photo. Offline, saves at once. */
@@ -54,7 +54,7 @@ export function AnalysisForm({ parcel, kind, onDone }: { parcel: Row; kind: Kind
       </label>
       {bad.ec && <p class="msg error" role="alert">{t('analysis.error.ec')}</p>}
       <h2>{t('analysis.ecUnit.title')}</h2>
-      <div class="seg two">
+      <div class="seg">
         {EC_UNITS.map((u) => <button key={u} aria-pressed={ecUnit === u} onClick={() => setEcUnit(u)}>{t(EC_UNIT_KEYS[u])}</button>)}
       </div>
       {bad.ecUnit && <p class="msg error" role="alert">{t('analysis.error.ecUnit')}</p>}

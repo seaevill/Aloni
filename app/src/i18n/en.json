@@ -249,5 +249,10 @@
   "sync.local": "Saved on this phone. It will be sent when an account is connected.",
   "labeluse.name.phi": "Wait before harvest",
   "labeluse.name.rei": "Re-entry to the field",
-  "labeluse.name.maxApps": "Maximum applications"
+  "labeluse.name.maxApps": "Maximum applications",
+  "settings.title": "Settings",
+  "settings.soon": "Expiry warning: days before the expiry date",
+  "settings.error": "Write a whole number from 1 to 365.",
+  "settings.saved": "Saved.",
+  "analysis.ecUnit.ms": "mS/cm"
 }
