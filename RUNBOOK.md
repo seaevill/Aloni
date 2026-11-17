@@ -1,6 +1,6 @@
 # RUNBOOK – Aloni (geçici ad) (Bora için tek sayfa, taslak)
 
-> Durum: Cloudflare hesabı açıldı; Pages kurulumu §8'de. Supabase henüz yok.
+> Durum (2026-11-17): M1 kayıt ekranları bitti (parsel, ekim, ürün/ilaç, etiket, stok, analiz, fotoğraf, yedek). Pages kurulumu §8'de, Supabase kurulumu §9'da. Veriler şimdilik yalnızca telefonda.
 > Kural: sen hiçbir komut yazmazsın. Claude GitHub'a değişiklik gönderir, CI yeşilse yayına çıkar.
 
 ## 1. Yayına alma (deploy)
@@ -15,7 +15,10 @@
 - Veriler telefonda (yerel) tutulduğu için uygulama sürümünü geri almak kayıtlarını silmez.
 
 ## 3. Yedekten dönme
-- **Şu an (M0):** veriler yalnızca telefonda. Demo çiftlik gerçek verinden ayrıdır; "Diğer → Demo çiftliği sil" gerçek verine dokunmaz.
+- **Şu an (M1):** veriler ve fotoğraflar yalnızca bu telefonda. **Yedek al:** Περισσότερα → «Εξαγωγή αντιγράφου» tek bir dosya kaydeder (fotoğraflar dahil); 7 günden eskiyse uygulama kırmızı uyarı gösterir. Dosyayı e-postana ya da iCloud'a koy.
+- **Yeni telefona/silinen uygulamaya dönmek:** boş telefonda Περισσότερα → «Επαναφορά» → dosyayı seç. Aynı dosyayı ikinci kez yüklemek hiçbir şeyi çoğaltmaz; bozuk fotoğraf varsa hiçbir şey yazılmaz ve uygulama söyler. Başka veri olan telefona yüklemeyi reddeder.
+- Demo çiftlik gerçek verinden ayrıdır; "Diğer → Demo çiftliği sil" gerçek verine dokunmaz.
+- **Hiçbir kayıt silinmez:** stok hareketleri ve fotoğraflar yalnızca eklenir, hata yeni bir kayıtla düzeltilir; parsel, ekim, ürün ve analiz «Αρχειοθέτηση» ile saklanır (5 sn «Αναίρεση»).
 - **Supabase sonrası:** günlük otomatik yedek + haftalık `pg_dump` (senin sahip olduğun AB kovası) + uygulamadan JSON dışa aktarma. Geri yükleme tatbikatı M5'te.
 
 ## 4. Sorun olursa
@@ -25,7 +28,7 @@
 4. Claude'a ekran görüntüsü + ne yaptığını yaz.
 
 ## 5. Hesaplar (sahibi: Bora)
-GitHub ✔ · Cloudflare ☐ · Supabase (Frankfurt) ☐ · E-posta gönderici ☐ · Alan adı ☐ · Yedek kovası ☐
+GitHub ✔ · Cloudflare (§8, doğrulanmadı) ☐ · Supabase (Frankfurt, §9) ☐ · E-posta gönderici ☐ · Alan adı ☐ · Yedek kovası ☐
 
 ## 6. Hesap güvenliği ve kurtarma
 
@@ -80,3 +83,15 @@ Bilgisayarda Gmail'den **çıkış yap**, sonra zarftaki **bir yedek kodla** yen
 
 **Önizleme adresleri hakkında (önemli):** her PR/yayın kendi adresinde çalışır (`<kod>.aloni.pages.dev` ve `<dal-adı>.aloni.pages.dev`). Tarayıcı verisi **adrese özeldir**: önizlemede girdiğin kayıtlar yalnızca o adreste ve o telefonda kalır, `aloni.pages.dev`'e **taşınmaz**, yeni bir önizleme adresinde de görünmez. Önizlemede **gerçek verini girme**, yalnızca denemek için kullan. Gerçek kayıtların için her zaman `https://aloni.pages.dev`.
 
+## 9. Supabase kurulumu (bir kez, sahibi: Bora) – M1'in sonunda, canlı eşitleme (PR 16) için
+Ücretsiz plan yeterli başlangıç. **Kart/ödeme isteyen bir ekran çıkarsa dur ve Claude'a yaz.** Claude'a **parola, `service_role`/secret anahtar, veritabanı parolası veya token yazma**; sadece aşağıda "Claude'a yaz" denen şeyi yaz.
+1. supabase.com → **Start your project** → GitHub hesabınla giriş (en kolayı). Giriş sonrası hesap güvenliği ayarlarından **iki adımlı doğrulamayı** (2FA) aç; kurtarma kodlarını §6'daki zarfa koy.
+2. **New organization** (ad: `aloni`), plan **Free**. Kart isteyen bir seçenek görürsen **Free**'de kal.
+3. **New project:** ad `aloni`. **Database password:** *Generate a password* ile üret, **Şifreler uygulamasına (parola yöneticine) kaydet**; kimseye, Claude'a bile yazma. **Region:** **Europe → Central EU (Frankfurt)**, yani `eu-central-1`. (Londra/Zürih'e giden genel «Central EU» değil, Frankfurt'u adıyla seç.) «Enable automatic RLS» seçeneği varsa **açık** bırak. **Create new project** (birkaç dakika sürer).
+4. **Önemli (Free plan):** 7 gün hiç işlem olmazsa proje **durur**, panelden elle «Restore» ile açılır. Uygulama canlı kullanıma geçince bu sorun olmaz; o zamana kadar ayda bir paneli aç.
+5. Proje açılınca **Project Settings → Data API**: yalnızca **Project URL**'yi (`https://xxxxxxxx.supabase.co`) Claude'a yaz. Bu adres gizli değil, güvenlik başlığına (CSP) eklenecek. **`anon`/publishable anahtarını Claude'a YAZMA:** onu Cloudflare'e sen girersin (6. adım).
+6. Cloudflare → `aloni` projesi → **Settings → Variables and Secrets (Environment variables)** → **Production** (ve Preview) için iki değişken ekle: `VITE_SUPABASE_URL` = Project URL, `VITE_SUPABASE_ANON_KEY` = Supabase'teki **anon / publishable** anahtar. (`service_role`/secret anahtarı **hiçbir yere koyma**.) Sonra **Deployments → Retry deployment**.
+7. **Authentication → URL Configuration:** *Site URL* = `https://aloni.pages.dev`. **Authentication → Providers → Email** açık; **«Allow new users to sign up» kapalı** (kullanıcıları sen davet edeceksin; Claude bunu PR 16'da birlikte kontrol eder).
+8. **Veritabanı kurulumu (SQL):** Claude her migration dosyasını (`supabase/migrations/…`) sana verir; sen **SQL Editor → New query**'ye yapıştırıp **Run**'a basarsın, sırayla. Claude hangi dosyanın sırada olduğunu ve «Success» çıktısını nasıl göreceğini yazar. Bir dosya hata verirse **durup** ekran görüntüsünü Claude'a gönder.
+9. **Yedek (para sorusu):** Free planda günlük otomatik yedek **yok**. Plan: haftalık `pg_dump` (senin AB kovan) + uygulamadan JSON yedeği. Pro (25 $/ay) günlük yedek ekler; **para gerektirdiği için sen onaylamadan açılmaz**.
+10. Bittiğinde Claude'a «Supabase tamam» ve Project URL'yi yaz. Claude PR 16'ya (canlı eşitleme) başlar.
