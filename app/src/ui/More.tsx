@@ -1,6 +1,7 @@
 import { useState } from 'preact/hooks';
 import { activeFarm, dataVersion, deleteDemo, farmLabel, hasDemo, loadDemo } from '../db';
 import { DEMO_FARM_ID, REAL_FARM_ID } from '../config';
+import { APP_VERSION } from '../version';
 import { LANGS, lang, setLang, t } from '../i18n';
 
 export function More() {
@@ -30,7 +31,7 @@ export function More() {
       )}
       <p class="muted">{t('more.demoNote')}</p>
       {msg && <p class="msg" role="status">{msg}</p>}
-      <p class="muted">{t('more.version')}: 0.0.0 (M0)</p>
+      <p class="muted">{t('more.version', { v: APP_VERSION })}</p>
     </section>
   );
 }

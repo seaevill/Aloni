@@ -17,7 +17,7 @@ function numberToPlain(n: number): string | null {
   if (!m) return s;
   const [, sign, int, frac = '', exp] = m;
   const digits = int + frac;
-  const shift = Number(exp) + int.length;
+  const shift = parseFloat(exp) + int.length;
   if (shift <= 0) return `${sign}0.${'0'.repeat(-shift)}${digits}`;
   if (shift >= digits.length) return `${sign}${digits}${'0'.repeat(shift - digits.length)}`;
   return `${sign}${digits.slice(0, shift)}.${digits.slice(shift)}`;

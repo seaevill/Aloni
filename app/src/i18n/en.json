@@ -21,7 +21,8 @@
   "more.demoNote": "Demo data is fictional and never mixed with your real data.",
   "more.demoLoaded": "Demo farm loaded.",
   "more.demoRemoved": "Demo farm removed.",
-  "more.version": "Version",
+  "more.version": "Version: {v}",
   "badge.demo": "DEMO",
+  "nav.main": "Main navigation",
   "value.unknown": "— unknown"
 }

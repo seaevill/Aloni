@@ -20,7 +20,7 @@ export function App() {
   return (
     <>
       <main><Screen /></main>
-      <nav class="tabs" aria-label="Main">
+      <nav class="tabs" aria-label={t('nav.main')}>
         {TABS.map(({ id, icon, label }) => (
           <button key={id} data-tab={id} aria-current={tab.value === id ? 'page' : undefined} onClick={() => (tab.value = id)}>
             <span class="ico" aria-hidden="true">{icon}</span>
