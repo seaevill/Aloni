@@ -69,7 +69,7 @@ export function buildSpray(input: SprayInput, ctx: SprayContext, farmId: string,
     if (ctx.lotBalance === undefined || sumSigned([{ qty: ctx.lotBalance.replace('-', ''), sign: ctx.lotBalance.startsWith('-') ? -1 : 1 }, { qty, sign: -1 }]).startsWith('-')) flags.push('stock_negative');
   }
   spray.flags = flags;
-  const job: Row = { id: ids.job, farm_id: farmId, kind: 'spray', status: 'done', product_id: input.productId, assigned_to: input.applicatorId, done_at: input.sprayedAt, created_at: nowIso, updated_at: nowIso, deleted_at: null, ...(label ? { label_use_id: label.id } : {}) };
+  const job: Row = { id: ids.job, farm_id: farmId, kind: 'spray', status: 'done', product_id: input.productId, worker_id: input.applicatorId, done_at: input.sprayedAt, created_at: nowIso, updated_at: nowIso, deleted_at: null, ...(label ? { label_use_id: label.id } : {}) };
   const jobPlantings = input.plantingIds.map((pid, i) => ({ id: ids.plantingLinks[i], farm_id: farmId, job_id: ids.job, planting_id: pid, area_str_treated: ctx.plantings.find((p) => p.id === pid)?.area_str, created_at: nowIso }));
   return { ok: true, job, jobPlantings, spray, movement, flags };
 }
