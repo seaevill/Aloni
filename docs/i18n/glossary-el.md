@@ -31,6 +31,7 @@ Source: `docs/team-reviews/2026-11-17/greek-editor.md` (inputs, adopted by Bora'
 | IACS | ΟΣΔΕ | – |
 | worker | εργάτης | – |
 | demo data | επίδειξη | Επίδειξη |
+| topography class: plain / slope / coast | **Πεδινό** (proposed) / Πλαγιά / **Παραλιακό** (Bora) | – |
 | available crates | διαθέσιμες κλούβες | Διαθέσιμα |
 
 «Προϊόν» means only a spray or fertiliser, never a crop. The crops tab is «Καλλιέργειες».
@@ -57,4 +58,5 @@ Format: `regex | scope | reason` (the regex itself must not contain `|`; use loo
 αγροτεμαχ | * | official/ΟΣΔΕ contexts only; UI says «χωράφι»
 αγροκτημα | * | use «κτήμα»
 δοκιμαστικ | * | «Δοκιμαστικό» = test station; use «επίδειξη»
+^παραλια$ | * | the coast class is «Παραλιακό» (an adjective, like Πεδινό), not «Παραλία» (a beach)
 ```

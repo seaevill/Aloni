@@ -13,7 +13,7 @@ const rules = block.split('\n').filter((l) => l.trim()).map((l) => {
 });
 
 describe('Greek glossary', () => {
-  it('has banned patterns', () => expect(rules.length).toBeGreaterThanOrEqual(7));
+  it('has banned patterns', () => expect(rules.length).toBeGreaterThanOrEqual(8));
   for (const r of rules) {
     it(`no ${r.re.source} in ${r.scope}`, () => {
       const keys = r.scope === '*' ? Object.keys(dictionaries.el).filter((k) => !k.startsWith('why.')) : r.scope.split(',').map((k) => k.trim());
