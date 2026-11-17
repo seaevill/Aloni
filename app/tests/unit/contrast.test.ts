@@ -19,7 +19,7 @@ const TEXT: Array<[string, string, string]> = [
   ['text on page', FG, BG], ['text on card', FG, CARD],
   ['muted text on page', '#4a4f47', BG], ['muted text on card', '#4a4f47', CARD],
   ['tab label', '#3d423b', CARD], ['active tab / secondary button / message', GREEN, CARD], ['message on page', GREEN, BG],
-  ['primary button', '#fff', GREEN], ['danger button', WARN, CARD], ['badge', '#fff', WARN], ['draft banner and sync chip', '#4a2500', '#fff3cd'], ['toast', '#fff', FG],
+  ['primary button', '#fff', GREEN], ['danger button', WARN, CARD], ['badge', '#fff', WARN], ['draft banner and sync chip', '#4a2500', '#fff3cd'], ['toast', '#fff', FG], ['blocked badge', '#fff', '#8a1c1c'],
 ];
 
 describe('colour contrast', () => {

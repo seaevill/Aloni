@@ -46,7 +46,7 @@ describe('typed values are kept exactly', () => {
 });
 
 describe('blocked: anything missing, not on the label, or not chosen', () => {
-  it('a complete label is «unsigned» (Μη εγκεκριμένο), never «signed» on its own', () => expect(statusOf(build(input()))).toBe('unsigned'));
+  it('a complete label is «unsigned» (Χωρίς υπογραφή γεωπόνου), never «signed» on its own', () => expect(statusOf(build(input()))).toBe('unsigned'));
   it.each([
     ['no dose kind chosen', { kind: undefined }],
     ['no dose unit chosen', { unit: undefined }],

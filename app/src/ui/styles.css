@@ -36,4 +36,6 @@ nav.tabs .ico { font-size:20px; line-height:1; }
 .photo { display:block; width:100%; height:96px; object-fit:cover; }
 .photo.big { height:auto; max-width:100%; border-radius:12px; margin-top:12px; }
 .btn[aria-pressed="true"] { border:2px solid var(--green); font-weight:700; }
-.badge.blocked, .badge.unsigned, .badge.changed { background:#fff3cd; color:#4a2500; }
+.badge.unsigned, .badge.changed, .badge.warn { background:#fff3cd; color:#4a2500; }
+.badge.blocked { background:#8a1c1c; color:#fff; display:block; border-radius:8px; padding:8px 10px; margin:6px 0; }
+.card.blocked { border:2px solid #8a1c1c; }

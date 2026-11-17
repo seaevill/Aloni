@@ -72,7 +72,7 @@ export function LabelUses({ product, onBack }: { product: Row; onBack: () => voi
         const st = statusOf(r);
         const crop = cropOf(r.crop_id);
         return (
-          <div class="card" key={r.id} data-testid="labeluse">{crop ? nameOf(crop) : t('value.unknown')}
+          <div class={st === 'blocked' ? 'card blocked' : 'card'} key={r.id} data-testid="labeluse">{crop ? nameOf(crop) : t('value.unknown')}
             <span class={`badge ${st}`} data-testid="labeluse-status">{badge(r, st)}</span>
             <Lines row={r} />
             <UnsyncedMark id={r.id} />
