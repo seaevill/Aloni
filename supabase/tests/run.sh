@@ -18,4 +18,5 @@ for f in supabase/migrations/*.sql; do echo "== $f"; psql -X -q -v ON_ERROR_STOP
 psql -X -q -c "select 1" >/dev/null
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/smoke.sql
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/review.sql && echo "SQL review tests OK"
+psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/agri.sql && echo "SQL agricultural record tests OK"
 bash supabase/tests/concurrency.sh
