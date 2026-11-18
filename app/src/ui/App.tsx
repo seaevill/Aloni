@@ -4,7 +4,7 @@ import { Parcels, Today } from './screens';
 import { Stock } from './Stock';
 import { BackupBanner } from './Backup';
 import { More } from './More';
-import { SyncChip } from './states';
+import { RejectedList, SyncChip } from './states';
 import { tab, workerView, type Tab } from './nav';
 import { WorkerApp } from './WorkerApp';
 import { DemoBanner } from './DemoBanner';
@@ -25,7 +25,7 @@ export function App() {
   if (workerView.value !== undefined) return <><WorkerApp /><Toast /></>;
   return (
     <>
-      <main><DemoBanner /><SyncChip /><BackupBanner /><Screen /></main>
+      <main><DemoBanner /><SyncChip /><RejectedList /><BackupBanner /><Screen /></main>
       <Toast />
       <nav class="tabs" aria-label={t('nav.main')}>
         {TABS.map(({ id, icon, label }) => (

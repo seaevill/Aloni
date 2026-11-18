@@ -1,6 +1,8 @@
 import { SYNC_CONNECTED } from '../config';
-import { pendingOps, unsyncedIds } from '../repo';
-import { t, tn } from '../i18n';
+import { db } from '../db';
+import { pendingOps, rejectedOps, unsyncedIds } from '../repo';
+import { dismissRejected } from '../repo/sync-apply';
+import { t, tn, type I18nKey } from '../i18n';
 import { online } from './sync';
 
 /**
@@ -18,6 +20,26 @@ export function SyncChip() {
   if (!text) return null;
   return <p class={SYNC_CONNECTED ? 'chip' : 'chip calm'} role="status" data-testid="sync-chip">{text}</p>;
 }
+
+/** The records the server REFUSED (only with a live sync): they stay here until the owner has seen them. Never a silent loss. */
+export function RejectedList() {
+  const rows = rejectedOps.value;
+  if (!SYNC_CONNECTED || rows.length === 0) return null;
+  return (
+    <section class="card blocked" role="alert" data-testid="sync-rejected">
+      <strong>{t('sync.rejected.title')}</strong>
+      {rows.map((o) => (
+        <div class="line" key={o.op_id}>
+          <small>{t('sync.rejected.line', { table: o.table, reason: o.reason ?? '' })}</small>
+          <button class="btn secondary" onClick={() => void dismissRejected(db, o.op_id)}>{t('sync.rejected.dismiss')}</button>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+/** The wording under a saved worker record: with a live sync «saved, will be sent when there is signal»; without it the older, calmer line. */
+export function queuedKey(live: boolean): I18nKey { if (live) return 'sync.queuedSignal'; return 'worker.queued'; }
 
 /** The marker on a record that has not reached the server yet: a dot AND a word (colour is never the only signal). */
 export function UnsyncedMark({ id }: { id: string }) {

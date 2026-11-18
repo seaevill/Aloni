@@ -401,5 +401,9 @@
   "cut.source.label": "Kaynak: imzalı etiket",
   "cut.source.manual": "Kaynak: etiketten – sahibin girdiği değer",
   "worker.lock.running": "{d} tarihine kadar tarlaya girmeyin: yeni ilaçlama yapıldı.",
-  "worker.lock.unknown": "Bu tarlada tarlaya giriş süresi bilinmiyor: sorumlu girene kadar girmeyin."
+  "worker.lock.unknown": "Bu tarlada tarlaya giriş süresi bilinmiyor: sorumlu girene kadar girmeyin.",
+  "sync.queuedSignal": "Kaydedildi · sinyal gelince gönderilecek",
+  "sync.rejected.title": "Sunucu bu kayıtları kabul etmedi",
+  "sync.rejected.dismiss": "Gördüm",
+  "sync.rejected.line": "{table} — {reason}"
 }

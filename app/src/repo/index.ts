@@ -3,7 +3,7 @@
 // is a NEW row that points at the old one (`amends_id`). Nothing outside src/repo and src/db may write to Dexie (ESLint W01).
 import { signal } from '@preact/signals';
 import { DEMO_FARM_ID } from '../config';
-import type { AppDB, Row } from '../db/schema';
+import type { AppDB, OutboxRow, Row } from '../db/schema';
 
 /** Records that are never changed or deleted once written (spray, harvest, stock movements, ...). */
 export const APPEND_ONLY = ['job_spray', 'job_harvest', 'job_fertilise', 'job_irrigate', 'job_sow', 'stock_lots', 'stock_movements', 'observations', 'media'] as const;
@@ -35,8 +35,8 @@ export const actorId = (db: AppDB) => localId(db, 'actor_id');
 export type Op = 'insert' | 'update';
 
 interface Ids { device_id: string; actor_id: string }
-async function enqueue(db: AppDB, farmId: string, table: string, rowId: string, op: Op, row: unknown, ids: Ids): Promise<void> {
-  await db.outbox.add({ op_id: crypto.randomUUID(), farm_id: farmId, table, row_id: rowId, op, row, ...ids, at: new Date().toISOString(), status: 'pending' });
+async function enqueue(db: AppDB, farmId: string, table: string, rowId: string, op: Op, row: unknown, ids: Ids, group?: { id: string; size: number }): Promise<void> {
+  await db.outbox.add({ op_id: crypto.randomUUID(), farm_id: farmId, table, row_id: rowId, op, row, ...ids, at: new Date().toISOString(), status: 'pending', ...(group ? { group_id: group.id, group_size: group.size } : {}) });
 }
 
 /** Where a restored record came from: its own device_id/actor_id are kept; only a record that never had one gets the backup's phone (never the restoring phone). */
@@ -57,13 +57,15 @@ export async function putMany(db: AppDB, writes: readonly Write[]): Promise<void
   for (const w of writes) if (isAppendOnly(w.table) && (w.op ?? 'update') !== 'insert') throw new Error(`${w.table} is append-only: insert an amending row instead`);
   await db.transaction('rw', [...new Set(writes.map((w) => db.table(w.table))), db.outbox, db.settings], async () => {
     const mine: Ids = { device_id: await deviceId(db), actor_id: await actorId(db) };
+    const queued = writes.filter((w) => w.row.farm_id !== DEMO_FARM_ID).length;
+    const group = queued > 1 ? { id: crypto.randomUUID(), size: queued } : undefined; // one phone transaction = one group: all or none on the server
     for (const { table, row, op = 'update', origin } of writes) {
       const ids: Ids = origin
         ? { device_id: typeof row.device_id === 'string' ? row.device_id : origin.device_id, actor_id: typeof row.actor_id === 'string' ? row.actor_id : 'unknown' }
         : { device_id: typeof row.device_id === 'string' ? row.device_id : mine.device_id, actor_id: typeof row.actor_id === 'string' ? row.actor_id : mine.actor_id };
       const stamped: Row = { ...row, device_id: ids.device_id, ...(origin && typeof row.actor_id !== 'string' ? {} : { actor_id: ids.actor_id }) };
       await (op === 'insert' ? db.table(table).add(stamped) : db.table(table).put(stamped));
-      if (row.farm_id !== DEMO_FARM_ID) await enqueue(db, row.farm_id, table, row.id, op, table === 'media' ? { ...stamped, data: undefined } : stamped, origin ? ids : mine); // photo bytes stay in `media`; the upload reads them there
+      if (row.farm_id !== DEMO_FARM_ID) await enqueue(db, row.farm_id, table, row.id, op, table === 'media' ? { ...stamped, data: undefined } : stamped, origin ? ids : mine, group); // photo bytes stay in `media`; the upload reads them there
     }
   });
   await refreshPending(db);
@@ -83,10 +85,13 @@ export const pendingCount = (db: AppDB): Promise<number> => db.outbox.where('sta
 /** What the screens show: how many records have not reached the server yet, and which ones (the unsynced dot). */
 export const pendingOps = signal(0);
 export const unsyncedIds = signal<ReadonlySet<string>>(new Set());
+/** Records the server REFUSED: they stay on the phone and on the screen until the owner has seen them (never silently dropped). */
+export const rejectedOps = signal<readonly OutboxRow[]>([]);
 export async function refreshPending(db: AppDB): Promise<void> {
   const rows = await db.outbox.where('status').equals('pending').toArray();
   pendingOps.value = rows.length;
   unsyncedIds.value = new Set(rows.map((r) => r.row_id));
+  rejectedOps.value = await db.outbox.where('status').equals('rejected').toArray();
 }
 
 /** Device-local settings (e.g. when the last backup was made): written here, NOT queued for the server. */

@@ -6,7 +6,11 @@ export interface FarmRow { id: string; name: string; is_demo: boolean; meta?: un
 export interface SettingRow { key: string; value: unknown }
 export interface OutboxRow {
   op_id: string; farm_id: string; table: string; row_id: string; op: 'insert' | 'update'; row: unknown;
-  device_id: string; actor_id: string; at: string; status: 'pending' | 'acked';
+  device_id: string; actor_id: string; at: string; status: 'pending' | 'acked' | 'rejected';
+  /** Ops written in ONE phone transaction share a group_id (and say how many they are): the server applies them all or none. */
+  group_id?: string; group_size?: number;
+  /** Why the server refused the op (its own words) and the error code; only on a rejected op. */
+  code?: string; reason?: string;
 }
 export interface WeatherRow { id: string; farm_id: string; parcel_id: string; days: unknown[] }
 

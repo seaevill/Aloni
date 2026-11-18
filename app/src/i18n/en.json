@@ -401,5 +401,9 @@
   "cut.source.label": "Source: signed label",
   "cut.source.manual": "Source: from the label – entered by the owner",
   "worker.lock.running": "Do not enter the field until {d}: it was just sprayed.",
-  "worker.lock.unknown": "Re-entry period unknown in this field: do not enter until the manager has entered it."
+  "worker.lock.unknown": "Re-entry period unknown in this field: do not enter until the manager has entered it.",
+  "sync.queuedSignal": "Saved · will be sent when there is signal",
+  "sync.rejected.title": "The server did not accept these records",
+  "sync.rejected.dismiss": "I have seen it",
+  "sync.rejected.line": "{table} — {reason}"
 }
