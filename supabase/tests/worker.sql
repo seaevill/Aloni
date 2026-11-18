@@ -1,7 +1,7 @@
 -- M2-c: the worker's «Έγινε» is written by the SERVER (complete_spray_job), from the job's fixed values and the verified session. Runs AFTER smoke/review/agri/phone
 -- on the same database (it reuses the farm, the signed label use, the roster worker whose account is b2, and a second product).
 \set ON_ERROR_STOP on
-reset role;
+reset role; set test.uid = '';
 insert into auth.users(id) values ('00000000-0000-0000-0000-0000000000c3');
 insert into farm_members(farm_id,user_id,role) values ('11111111-1111-1111-1111-111111111111','00000000-0000-0000-0000-0000000000c3','worker');
 insert into products(id,farm_id,name,type,unit) values ('aaaaaaaa-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111','Nobody''s product','fungicide','kg');
@@ -69,7 +69,7 @@ begin
 end $$;
 
 -- what was recorded, and by whom
-reset role;
+reset role; set test.uid = '';
 do $$
 declare f constant uuid := '11111111-1111-1111-1111-111111111111'; b2 constant uuid := '00000000-0000-0000-0000-0000000000b2'; s job_spray%rowtype; j jobs%rowtype; n int; o jsonb;
 begin
@@ -111,7 +111,7 @@ do $$ begin
   if not exists (select 1 from job_spray where job_id = 'eeeeeeee-0000-0000-0000-000000000207') then raise exception 'worker b2 cannot see the spray that locks her field'; end if;
   begin insert into products(farm_id,name,type,unit) values ('11111111-1111-1111-1111-111111111111','x','fungicide','kg'); raise exception 'worker wrote a product'; exception when insufficient_privilege then null; end;
 end $$;
-reset role;
+reset role; set test.uid = '';
 do $$ begin
   if has_function_privilege('anon', 'complete_spray_job(uuid,timestamptz,text,text)', 'execute') or has_function_privilege('public', 'complete_spray_job(uuid,timestamptz,text,text)', 'execute') then raise exception 'anon/PUBLIC can call complete_spray_job'; end if;
 end $$;

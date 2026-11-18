@@ -42,7 +42,10 @@ describe('phone ↔ server contract', () => {
     const worker = ok(buildWorker('Γιώργος', F, now, id(10))).row;
     const spray = ok(buildSpray({ plantingIds: [id(2)], productId: id(3), applicatorId: id(10), sprayedAt: '2026-11-10T08:00:00Z', dose: '0,025', doseUnit: 'ml/str', lotKey: id(6), qty: '0,25', water: '1', note: 'n' },
       { label, plantings: [{ ...planting, crop_id: crop.id }], lot: rec.lot, lotBalance: '4.5', today: '2026-11-10' }, F, now, { job: id(11), spray: id(12), movement: id(13), plantingLinks: [id(14)] }));
-    const wait = ok(buildWaitEntry({ ...spray.spray, label_state: 'unsigned', phi_days: undefined, phi_until: undefined, rei_hours: undefined, rei_until: undefined, phi_source: undefined }, '7', '24', now, id(15), 'label values entered'));
+    // a spray with NO usable label (waiting period unknown) and Bora's correction of it: the server accepts a correction only for such a spray
+    const bare = ok(buildSpray({ plantingIds: [id(2)], productId: id(3), applicatorId: id(10), sprayedAt: '2026-11-10T08:30:00Z', dose: '0,025', doseUnit: 'ml/str', lotKey: undefined, qty: '', water: '', note: '' },
+      { label: undefined, plantings: [{ ...planting, crop_id: crop.id }], lot: undefined, lotBalance: undefined, today: '2026-11-10' }, F, now, { job: id(22), spray: id(23), movement: id(24), plantingLinks: [id(25)] }));
+    const wait = ok(buildWaitEntry(bare.spray, '7', '24', now, id(15), 'label values entered'));
     const harvest = ok(buildHarvest({ plantingId: id(2), crates: '12', harvestedAt: '2026-11-10T09:00:00Z', note: 'n' }, [], [], F, now, id(16))).row;
     const obs = buildObservation(id(1), 'pest', 'aphids', worker, F, now, id(17)) as Row;
     const planned: Row = { id: id(18), farm_id: F, kind: 'spray', status: 'planned', product_id: id(3), label_use_id: id(5), worker_id: id(10), planned_for: '2026-11-11', dose_str: '0.025', dose_unit: 'ml/str', created_at: now, updated_at: now, deleted_at: null };
@@ -53,7 +56,8 @@ describe('phone ↔ server contract', () => {
       { table: 'media', row: photo, op: 'insert' }, { table: 'parcels', row: parcel, op: 'insert' }, { table: 'crops', row: crop, op: 'insert' }, { table: 'plantings', row: planting, op: 'insert' }, { table: 'products', row: product, op: 'insert' },
       { table: 'label_uses', row: label, op: 'insert' }, { table: 'label_uses', row: odd, op: 'insert' }, { table: 'stock_lots', row: rec.lot, op: 'insert' }, { table: 'stock_movements', row: rec.movement, op: 'insert' }, { table: 'stock_movements', row: adj.movement, op: 'insert' },
       { table: 'soil_tests', row: soil, op: 'insert' }, { table: 'workers', row: worker, op: 'insert' }, { table: 'jobs', row: spray.job, op: 'insert' }, { table: 'jobs', row: planned, op: 'insert' }, { table: 'jobs', row: skipped, op: 'insert' },
-      { table: 'job_plantings', row: spray.jobPlantings[0], op: 'insert' }, { table: 'job_spray', row: spray.spray, op: 'insert' }, { table: 'job_spray', row: wait.row, op: 'insert' },
+      { table: 'job_plantings', row: spray.jobPlantings[0], op: 'insert' }, { table: 'job_spray', row: spray.spray, op: 'insert' },
+      { table: 'jobs', row: bare.job, op: 'insert' }, { table: 'job_plantings', row: bare.jobPlantings[0], op: 'insert' }, { table: 'job_spray', row: bare.spray, op: 'insert' }, { table: 'job_spray', row: wait.row, op: 'insert' },
       { table: 'job_harvest', row: harvest, op: 'insert' }, { table: 'observations', row: obs, op: 'insert' },
       ...(done.ok ? [{ table: 'jobs', row: done.job, op: 'update' as const }, { table: 'job_spray', row: done.spray, op: 'insert' as const }] : []),
     ] as const;

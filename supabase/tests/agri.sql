@@ -5,7 +5,7 @@ set time zone 'Europe/Athens';   -- the farm's own zone: the waiting periods mus
 do $$
 declare f constant uuid := '11111111-1111-1111-1111-111111111111'; p constant uuid := '33333333-3333-3333-3333-333333333333';
         prod constant uuid := 'aaaaaaaa-0000-0000-0000-000000000001'; w constant uuid := 'bbbbbbbb-0000-0000-0000-000000000001'; crop2 constant uuid := 'cccccccc-0000-0000-0000-000000000002';
-        lu constant uuid := 'cccccccc-1111-0000-0000-000000000001'; j constant uuid := gen_random_uuid(); sp uuid; t timestamptz;
+        lu constant uuid := 'cccccccc-1111-0000-0000-000000000001'; j constant uuid := gen_random_uuid(); sp uuid; unk uuid; t timestamptz;
 begin
   insert into jobs(id,farm_id,kind,status,worker_id,product_id,done_at) values (j,f,'spray','done',w,prod,'2026-10-24 22:00+00');
   -- PHI/REI are absolute hours from the entered end time. The spraying ended 2026-10-24 22:00 UTC = 25 Oct 01:00 Athens; the clocks go back that morning.
@@ -35,14 +35,13 @@ begin
   -- the end of a spraying cannot be in the future
   begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state) values (f,j,prod,w,now() + interval '1 hour',0.025,'ml/str','unsigned'); raise exception 'a spraying that ends in the future accepted';
   exception when check_violation then null; end;
-  -- late entries: strictly more than 7 days between the end and the record needs the flag AND a reason; exactly 7 days does not
-  insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,created_at) values (f,j,prod,w,'2026-10-01 08:00+00',0.025,'ml/str','unsigned','2026-10-08 08:00+00');
-  begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,created_at) values (f,j,prod,w,'2026-10-01 08:00+00',0.025,'ml/str','unsigned','2026-10-08 08:00:01+00'); raise exception 'an unflagged late entry accepted';
-  exception when check_violation then null; end;
+  -- late entries are judged by the SERVER's clock (received_at; 0015): kept and marked, never refused (the details are in final.sql, block e)
   insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,created_at,flags,late_reason) values (f,j,prod,w,'2026-10-01 08:00+00',0.025,'ml/str','unsigned','2026-10-08 08:00:01+00',array['late_entry'],'Forgot to write it down');
+  -- an UNSIGNED spray (waiting period unknown) to be corrected, written long ago
+  insert into job_spray(id,farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,created_at) values (gen_random_uuid(),f,j,prod,w,t,0.025,'ml/str','unsigned',t + interval '1 hour') returning id into unk;
   -- a correction written long after the spraying is NOT a late entry (it names the label's values whenever they are found)
   insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,amends_id,amend_reason,created_at)
-    values (f,j,prod,w,t,0.025,'ml/str','unsigned',7,24,'manual', t + interval '168 hours', t + interval '24 hours', sp, 'values read from the label', t + interval '30 days');
+    values (f,j,prod,w,t,0.025,'ml/str','unsigned',7,24,'manual', t + interval '168 hours', t + interval '24 hours', unk, 'values read from the label', t + interval '30 days');
   -- a correction says WHY, and a «manual» waiting period exists only as a correction
   begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,amends_id,created_at)
     values (f,j,prod,w,t,0.025,'ml/str','signed',7,24,'manual', t + interval '168 hours', t + interval '24 hours', sp, t + interval '2 hours'); raise exception 'an amending row without a reason accepted';
