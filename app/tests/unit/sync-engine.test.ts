@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto';
 import { describe, expect, it } from 'vitest';
 import type { OutboxRow, Row } from '../../src/db/schema';
-import { putMany } from '../../src/repo';
+import { putMany, putRpc } from '../../src/repo';
 import { dismissRejected } from '../../src/repo/sync-apply';
 import { batches, pull, push, syncOnce, toWire, type PullAnswer, type Transport } from '../../src/sync/engine';
 import { httpTransport } from '../../src/sync/http';
@@ -13,7 +13,7 @@ type Answer = { op_id: string; status: 'applied' | 'duplicate' | 'rejected'; cod
 const accept = (ops: readonly Record<string, unknown>[]): Answer[] => ops.map((o) => ({ op_id: String(o.op_id), status: 'applied' }));
 const server = (over: Partial<Transport> = {}): Transport & { sent: Array<readonly Record<string, unknown>[]> } => {
   const sent: Array<readonly Record<string, unknown>[]> = [];
-  return { sent, applyOps: async (ops) => { sent.push(ops); return accept(ops); }, pull: async () => ({ rows: [], more: false, reset: false, cursor: { x: '1', s: 1, g: 'g1', v: 'owner' } }), ...over };
+  return { sent, applyOps: async (ops) => { sent.push(ops); return accept(ops); }, pull: async () => ({ rows: [], more: false, reset: false, cursor: { x: '1', s: 1, g: 'g1', v: 'owner' } }), rpc: async () => ({ ok: true }), ...over };
 };
 const outbox = (id: string, at: string, group?: string): OutboxRow => ({ op_id: id, farm_id: F, table: 'parcels', row_id: id, op: 'insert', row: {}, device_id: 'd', actor_id: 'a', at, status: 'pending', ...(group ? { group_id: group, group_size: 2 } : {}) });
 
@@ -58,6 +58,33 @@ describe('the outbox goes to the server', () => {
     expect((await db.outbox.toArray()).map((o) => o.status)).toEqual(['pending']);
     expect(await push(db, server({ applyOps: async () => [] }), F)).toEqual({ sent: 0, rejected: 1 });
     expect((await db.outbox.toArray())[0]).toMatchObject({ status: 'rejected', code: 'no_answer' });
+  });
+});
+
+describe('queued server calls (the worker\'s «Έγινε»)', () => {
+  it('are sent one by one, in order, outside the apply_ops batches; ok = acked, refused = kept with the server\'s words, a failure keeps them pending', async () => {
+    const db = await newDb();
+    await putRpc(db, F, 'complete_spray_job', 'job1', { p_job: 'job1', p_ended_at: '2026-11-20T08:00:00Z' });
+    await putRpc(db, F, 'complete_spray_job', 'job2', { p_job: 'job2', p_ended_at: '2026-11-20T08:05:00Z' });
+    const calls: string[] = [];
+    const tr = server({ rpc: async (n, a) => { calls.push(`${n}:${String(a.p_job)}`); return a.p_job === 'job2' ? { ok: false, code: '23514', reason: 'the field is locked' } : { ok: true }; } });
+    expect(await push(db, tr, F)).toEqual({ sent: 1, rejected: 1 });
+    expect(calls).toEqual(['complete_spray_job:job1', 'complete_spray_job:job2']);
+    expect(tr.sent).toHaveLength(0); // nothing went through apply_ops
+    const by = new Map((await db.outbox.toArray()).map((o) => [o.row_id, o]));
+    expect(by.get('job1')!.status).toBe('acked');
+    expect(by.get('job2')).toMatchObject({ status: 'rejected', code: '23514', reason: 'the field is locked' });
+    await putRpc(db, F, 'complete_spray_job', 'job3', { p_job: 'job3' });
+    await expect(push(db, server({ rpc: async () => { throw new Error('offline'); } }), F)).rejects.toThrow('offline');
+    expect((await db.outbox.toArray()).find((o) => o.row_id === 'job3')).toMatchObject({ status: 'pending' });
+  });
+
+  it('the HTTP transport turns a 4xx answer into a refusal and a 5xx or a network error into a retry', async () => {
+    const mk = (status: number, json: unknown) => httpTransport({ url: 'https://x.example', apiKey: 'pub', token: async () => 't' }, (async () => ({ ok: status < 400, status, json: async () => json })) as unknown as typeof fetch);
+    expect(await mk(200, {}).rpc('complete_spray_job', {})).toEqual({ ok: true });
+    expect(await mk(400, { code: '23514', message: 'locked' }).rpc('complete_spray_job', {})).toEqual({ ok: false, code: '23514', reason: 'locked' });
+    await expect(mk(503, {}).rpc('complete_spray_job', {})).rejects.toThrow('HTTP 503');
+    await expect(mk(429, {}).rpc('complete_spray_job', {})).rejects.toThrow('HTTP 429');
   });
 });
 

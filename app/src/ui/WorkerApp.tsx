@@ -1,6 +1,10 @@
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { activeFarm, dataVersion, db } from '../db';
-import { DEMO_FARM_ID, SYNC_CONNECTED } from '../config';
+import { AUTH_ENABLED, DEMO_FARM_ID, SYNC_CONNECTED } from '../config';
+import { session } from '../auth/gotrue';
+import { pendingOps } from '../repo';
+import { queueCompletion, COMPLETE } from '../worker/remote';
+import { RPC_PREFIX } from '../repo';
 import { formatDateTime, t, type I18nKey } from '../i18n';
 import { UNIT_KEYS } from './LabelUseForm';
 import { formatDose } from '../i18n/format';
@@ -31,20 +35,25 @@ const KIND_KEYS: Record<ObservationKind, I18nKey> = { dew: 'worker.kind.dew', fr
 export function WorkerApp() {
   const workers = useRows('workers'); const jobs = useRows('jobs'); const links = useRows('job_plantings'); const plantings = useRows('plantings');
   const sprays = useRows('job_spray'); const crops = useRows('crops'); const products = useRows('products'); const labels = useRows('label_uses'); const parcels = useRows('parcels');
-  const people = workers.rows?.filter((w) => !w.deleted_at && w.name !== 'Bora') ?? [];
+  const real = activeFarm.value !== DEMO_FARM_ID; // a signed-in WORKER on the real farm (Έγινε = a call to the server); otherwise the Demo farm's practice view
+  const farm = activeFarm.value;
+  const people = workers.rows?.filter((w) => !w.deleted_at && (real ? w.user_id === session.value?.user_id : w.name !== 'Bora')) ?? [];
   const me = people.find((w) => w.id === workerView.value) ?? people[0];
   const [tabId, setTabId] = useState<'jobs' | 'harvest' | 'observe'>('jobs');
   const [lateReason, setLateReason] = useState(''); // «λόγος καθυστέρησης» for a time more than 7 days back
   const [harvestSaved, setHarvestSaved] = useState(false); // the «saved on the phone» line after a harvest record
   const [open, setOpen] = useState<{ job: string; mode: 'done' | 'skip' } | undefined>(undefined);
   const [held, setHeld] = useState<string[]>([]);
+  const [queued, setQueued] = useState<string[]>([]); // jobs whose «Έγινε» waits in the outbox for the signal
+  useEffect(() => { void db.outbox.where('status').equals('pending').toArray().then((r) => setQueued(r.filter((o) => o.table === `${RPC_PREFIX}${COMPLETE}`).map((o) => o.row_id))); }, [pendingOps.value, dataVersion.value]);
   const [when, setWhen] = useState(athensLocalNow(new Date()) ?? '');
   const [note, setNote] = useState('');
   const [parcel, setParcel] = useState(''); const [kind, setKind] = useState<ObservationKind | undefined>(undefined);
-  if (activeFarm.value !== DEMO_FARM_ID || !me) return null;
+  if (!me || (real && !(AUTH_ENABLED && session.value))) return null;
 
   const mine = (jobs.rows ?? []).filter((j) => j.kind === 'spray' && j.worker_id === me.id && !held.includes(j.id));
-  const open_ = mine.filter((j) => j.status === 'planned');
+  const open_ = mine.filter((j) => j.status === 'planned' && !queued.includes(j.id));
+  const waiting = mine.filter((j) => j.status === 'planned' && queued.includes(j.id));
   const finished = mine.filter((j) => j.status !== 'planned');
   const plantingsOf = (job: Row) => (links.rows ?? []).filter((l) => l.job_id === job.id).map((l) => plantings.rows?.find((p) => p.id === l.planting_id)).filter((p): p is Row => !!p);
   const plantingName = (p: Row) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) });
@@ -59,6 +68,7 @@ export function WorkerApp() {
   };
   const confirmDone = (job: Row) => {
     const at = athensInstant(when);
+    if (real) { if (at) hold(job, () => queueCompletion(db, farm, job.id, at, note, lateReason)); return; }
     const label = (labels.rows ?? []).find((l) => l.id === job.label_use_id);
     const c = at ? completeSprayJob(job, label, plantingsOf(job), me, at, note, new Date().toISOString(), crypto.randomUUID(), lateReason) : undefined;
     if (c?.ok) hold(job, () => putMany(db, [{ table: 'jobs', row: c.job }, { table: 'job_spray', row: c.spray, op: 'insert' }]));
@@ -68,7 +78,7 @@ export function WorkerApp() {
     if (row) hold(job, () => putMany(db, [{ table: 'jobs', row }]));
   };
   const saveObservation = () => {
-    const row = buildObservation(parcel, kind, note, me, DEMO_FARM_ID, new Date().toISOString(), crypto.randomUUID());
+    const row = buildObservation(parcel, kind, note, me, farm, new Date().toISOString(), crypto.randomUUID());
     if (!row) return;
     showHeldUndo(t('worker.committed'), () => undefined, async () => { await putMany(db, [{ table: 'observations', row, op: 'insert' }]); dataVersion.value++; }, HOLD_MS);
     setNote(''); setKind(undefined);
@@ -77,11 +87,11 @@ export function WorkerApp() {
 
   return (
     <main data-testid="worker-app">
-      <h1>{t('worker.title')}<span class="badge">{t('badge.demo')}</span></h1>
-      <DemoBanner />
-      <p class="muted">{t('worker.demoNote')}</p>
-      <h2>{t('worker.choose')}</h2>
-      <div class="seg two big">{people.map((w) => <button key={w.id} aria-pressed={w.id === me.id} onClick={() => workerView.value = w.id}>{text(w.name)}</button>)}</div>
+      <h1>{t('worker.title')}{!real && <span class="badge">{t('badge.demo')}</span>}</h1>
+      {!real && <DemoBanner />}
+      {!real && <p class="muted">{t('worker.demoNote')}</p>}
+      {!real && <h2>{t('worker.choose')}</h2>}
+      {!real && <div class="seg two big">{people.map((w) => <button key={w.id} aria-pressed={w.id === me.id} onClick={() => workerView.value = w.id}>{text(w.name)}</button>)}</div>}
       <div class="seg big">{TABS.map(([id, k]) => <button key={id} aria-pressed={tabId === id} data-testid={`worker-tab-${id}`} onClick={() => { setHarvestSaved(false); setTabId(id); }}>{t(k)}</button>)}</div>
 
       {tabId === 'jobs' && (
@@ -98,7 +108,7 @@ export function WorkerApp() {
               {open?.job !== j.id && (
                 <div class="seg two big">
                   <button class="go" data-testid="job-done" disabled={doneBlocked(lockOf(j))} onClick={() => setOpen({ job: j.id, mode: 'done' })}>{t('worker.done')}</button>
-                  <button class="stop" data-testid="job-skip" onClick={() => setOpen({ job: j.id, mode: 'skip' })}>{t('worker.notdone')}</button>
+                  {!real && <button class="stop" data-testid="job-skip" onClick={() => setOpen({ job: j.id, mode: 'skip' })}>{t('worker.notdone')}</button>}
                 </div>
               )}
               {open?.job === j.id && open.mode === 'done' && (
@@ -119,7 +129,12 @@ export function WorkerApp() {
               )}
             </div>
           ))}
-          {finished.length > 0 && <h2>{t('worker.doneList')}</h2>}
+          {(finished.length > 0 || waiting.length > 0) && <h2>{t('worker.doneList')}</h2>}
+          {waiting.map((j) => (
+            <div class="card" key={j.id} data-testid="worker-waiting">{nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {})}
+              <small class="status-line">{t(queuedKey(SYNC_CONNECTED))}</small>
+            </div>
+          ))}
           {finished.map((j) => (
             <div class="card" key={j.id} data-testid="worker-finished">{nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {})}
               <small>{finishedLine(j)}</small>
@@ -128,7 +143,7 @@ export function WorkerApp() {
           ))}
         </>
       )}
-      {tabId === 'harvest' && <HarvestForm farmId={DEMO_FARM_ID} actorId={me.id} big onDone={(saved) => { setHarvestSaved(saved); setTabId('jobs'); }} />}
+      {tabId === 'harvest' && <HarvestForm farmId={farm} actorId={me.id} big onDone={(saved) => { setHarvestSaved(saved); setTabId('jobs'); }} />}
       {tabId === 'observe' && (
         <>
           <h2>{t('worker.observe.parcel')}</h2>
