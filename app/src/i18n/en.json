@@ -419,5 +419,6 @@
   "invite.send": "Save invitation",
   "invite.closed": "To invite workers, first enter the data controller's details (Information).",
   "invite.sent": "Invitation saved. The worker signs in with this email.",
-  "invite.error": "The invitation was not saved. Check the email and the connection."
+  "invite.error": "The invitation was not saved. Check the email and the connection.",
+  "sync.error": "Not sent. We will try again."
 }

@@ -419,5 +419,6 @@
   "invite.send": "Daveti kaydet",
   "invite.closed": "İşçi davet etmek için önce veri sorumlusu bilgilerini girin (Bilgiler).",
   "invite.sent": "Davet kaydedildi. İşçi bu e-postayla giriş yapar.",
-  "invite.error": "Davet kaydedilemedi. E-postayı ve bağlantıyı kontrol edin."
+  "invite.error": "Davet kaydedilemedi. E-postayı ve bağlantıyı kontrol edin.",
+  "sync.error": "Gönderilemedi. Yeniden denenecek."
 }
