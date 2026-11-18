@@ -9,24 +9,28 @@ Q() { psql -X -q -At -v ON_ERROR_STOP=1 "$@"; }
 TABLES="parcels crops plantings products label_uses soil_tests water_tests stock_lots stock_movements media workers jobs job_plantings job_spray job_harvest observations farm_settings"
 count_sql=$(for t in $TABLES; do printf "select count(*) c from %s where farm_id = '%s' union all " "$t" "$F"; done; echo "select 0")
 owner() { # $1 database, $2 sql returning one value, run as the signed-in OWNER (stub auth)
-  psql -X -q -At -v ON_ERROR_STOP=1 -d "$1" -c "set role app_user" -c "select set_config('test.uid','00000000-0000-0000-0000-0000000000a1',false)" -c "$2" | tail -1; }
+  psql -X -q -At -v ON_ERROR_STOP=1 -d "$1" -c "set role authenticated" -c "select set_config('test.uid','00000000-0000-0000-0000-0000000000a1',false)" -c "$2" | tail -1; }
 old_cursor=$(owner "$src" "select pull('$F', null, 1000)->'cursor'")
 n_src=$(Q -d "$src" -c "select sum(c) from ($count_sql) x")
 Q -d "$src" -c "select 1" >/dev/null
-pg_dump --no-owner --no-privileges "$src" > /tmp/aloni_restore_dump.sql
+# WITH privileges (no --no-privileges), as the RUNBOOK says: the restored database must give `authenticated` exactly the rights of the source
+pg_dump --no-owner "$src" > /tmp/aloni_restore_dump.sql
 # A newer pg_dump (CI) writes settings an older server does not know (transaction_timeout, PG 17): drop them so the dump loads on any server version.
 sed -i "/^SET transaction_timeout/d" /tmp/aloni_restore_dump.sql
 Q -d postgres -c "drop database if exists $dst" -c "create database $dst" >/dev/null
 psql -X -q -v ON_ERROR_STOP=1 -d "$dst" -f /tmp/aloni_restore_dump.sql >/dev/null 2>/tmp/aloni_restore_err.txt || { echo "FAIL: the restore itself failed"; head -5 /tmp/aloni_restore_err.txt; exit 1; }
-psql -X -q -d "$dst" -c "grant all on all tables in schema public to app_user; grant execute on all functions in schema public to app_user; revoke execute on function bump_sync_generation() from app_user; grant usage on schema public, auth to app_user" >/dev/null 2>&1 || true
 [ "$(Q -d "$dst" -c "select sum(c) from ($count_sql) x")" = "$n_src" ] || { echo "FAIL: the restored database does not hold the same number of rows"; exit 1; }
 # simulate the new server: its transaction counter is behind the dump's
 for t in $TABLES; do Q -d "$dst" -c "set session_replication_role = replica; update $t set sync_xid = ((select pg_snapshot_xmax(pg_current_snapshot())::text::bigint) + 1000000)::text::xid8" >/dev/null; done
 out=$(owner "$dst" "select pull('$F', '$old_cursor'::jsonb, 1000)" 2>&1 || true)
 echo "$out" | grep -q "bump_sync_generation" || { echo "FAIL: pull did not refuse loudly on a restored dump (it would have skipped rows silently): $out" | cut -c1-300; exit 1; }
 # a signed-in user cannot repair it; the administrator does
-if psql -X -q -At -d "$dst" -c "set role app_user" -c "select set_config('test.uid','00000000-0000-0000-0000-0000000000a1',false)" -c "select bump_sync_generation()" >/dev/null 2>&1; then echo "FAIL: an ordinary user could run bump_sync_generation()"; exit 1; fi
+# a dump restored on ANOTHER server carries the old server's identity; verify_applied.sql must say so until the administrator step was done (RUNBOOK 10.3)
+Q -d "$dst" -c "update sync_meta set system_id = 'another-server'" >/dev/null
+psql -X -At -d "$dst" -f supabase/tests/verify_applied.sql 2>&1 | grep -q "run bump_sync_generation" || { echo "FAIL: verify_applied.sql did not demand the restore step on a restored server"; exit 1; }
+if psql -X -q -At -d "$dst" -c "set role authenticated" -c "select set_config('test.uid','00000000-0000-0000-0000-0000000000a1',false)" -c "select bump_sync_generation()" >/dev/null 2>&1; then echo "FAIL: an ordinary user could run bump_sync_generation()"; exit 1; fi
 Q -d "$dst" -c "select bump_sync_generation()" >/dev/null
+psql -X -At -d "$dst" -f supabase/tests/verify_applied.sql 2>&1 | grep -q "run bump_sync_generation" && { echo "FAIL: verify_applied.sql still demands the restore step after bump_sync_generation()"; exit 1; }
 # the phone's OLD cursor: reset, then ALL rows exactly once, paged
 cur="$old_cursor"; total=0; first=1; ids=/tmp/aloni_restore_ids.txt; : > "$ids"
 while :; do

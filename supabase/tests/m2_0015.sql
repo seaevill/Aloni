@@ -29,6 +29,11 @@ begin
     values (f,'eeeeeeee-0000-0000-0000-000000000901',prod,w1,lu_unsigned,t,0.025,'ml/str','unsigned',1,1,'manual',t + interval '1 day',t + interval '1 hour','55555555-0000-0000-0000-000000000901','x');
     raise exception '(1a) a correction pointed at another label use and lost the signed floor';
   exception when check_violation then null; end;
+  -- a') a correction with NO label use of its own still has the floor of the original's: PHI 1 against a signed 7 is refused
+  begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,amends_id,amend_reason)
+    values (f,'eeeeeeee-0000-0000-0000-000000000901',prod,w1,t,0.025,'ml/str','unsigned',1,1,'manual',t + interval '1 day',t + interval '1 hour','55555555-0000-0000-0000-000000000901','x');
+    raise exception '(1a'') a correction without a label use escaped the signed floor';
+  exception when check_violation then null; end;
 end $$;
 do $$
 declare f constant uuid := '11111111-1111-1111-1111-111111111111'; prod constant uuid := 'aaaaaaaa-0000-0000-0000-000000000001'; lu constant uuid := 'cccccccc-1111-0000-0000-000000000001'; w1 constant uuid := 'bbbbbbbb-0000-0000-0000-000000000001'; t timestamptz := (select sprayed_at from job_spray where id = '55555555-0000-0000-0000-000000000901');

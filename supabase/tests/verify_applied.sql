@@ -25,6 +25,7 @@ problems as (
   union all select 'trigger missing: ' || x.tg from (values ('zz_job_spray_chain'),('job_harvest_phi'),('job_spray_check'),('jobs_worker_guard'),('jobs_identity'),('job_spray_append_only'),('job_harvest_append_only'),('stock_movements_append_only'),('media_guard')) x(tg)
     where not exists (select 1 from pg_trigger where tgname = x.tg and not tgisinternal)
   union all select 'migration 0013 not applied (complete_spray_job is missing)' where not exists (select 1 from pg_proc where proname = 'complete_spray_job')
+  union all select 'restored server: run bump_sync_generation() once (RUNBOOK 10.3); the stored server identity is not this server''s' where exists (select 1 from pg_proc where proname = 'server_identity') and exists (select 1 from sync_meta where server_identity() is not null and system_id is distinct from server_identity())
   union all select 'migration 0017 not applied (server_identity is missing)' where not exists (select 1 from pg_proc where proname = 'server_identity')
   union all select 'migration 0016 not applied (sync_generation is missing)' where not exists (select 1 from pg_proc where proname = 'sync_generation')
   union all select 'migration 0015 not applied (forbid_truncate is missing)' where not exists (select 1 from pg_proc where proname = 'forbid_truncate')

@@ -3,8 +3,6 @@
 \set ON_ERROR_STOP on
 reset role; set test.uid = '';
 -- (b) the pull cursor survives a restore into a NEW database: dump → restore → the rows are not lost, a phone that held a cursor starts from the beginning
-\set dumpfile /tmp/aloni_final_dump.sql
-\! pg_dump --no-owner --no-privileges --data-only --disable-triggers --inserts -t public.parcels -t public.sync_meta "$PGDATABASE" > /tmp/aloni_final_data.sql 2>/dev/null || true
 do $$
 declare f constant uuid := '11111111-1111-1111-1111-111111111111'; g1 text; res jsonb; cur jsonb;
 begin

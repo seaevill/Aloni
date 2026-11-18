@@ -34,7 +34,7 @@ begin
     if o.job_id is distinct from new.job_id or o.product_id is distinct from new.product_id or o.sprayed_at is distinct from new.sprayed_at or o.applicator_id is distinct from new.applicator_id then
       raise exception 'a correction must be of the same job, product, applicator and end time as the spray it corrects' using errcode = 'check_violation';
     end if;
-    if new.label_use_id is distinct from o.label_use_id then raise exception 'a correction keeps the label use of the spray it corrects' using errcode = 'check_violation'; end if;
+    if new.label_use_id is not null and new.label_use_id is distinct from o.label_use_id then raise exception 'a correction names no label use of its own, or the one of the spray it corrects' using errcode = 'check_violation'; end if;
     if o.phi_until is not null then raise exception 'only a spray whose waiting period is unknown can be corrected (a correction could only shorten it)' using errcode = 'check_violation'; end if;
     if new.phi_source = 'manual' then
       if new.phi_days is null or new.phi_days < 1 or new.rei_hours is null or new.rei_hours < 1 then raise exception 'a manual waiting period must be above zero' using errcode = 'check_violation'; end if;
@@ -72,7 +72,7 @@ begin
   return new;
 end $$;
 
--- ---------------------------------------------------------------- 3: the identity of this server
+-- ---------------------------------------------------------------- 3: the identity of this server (RUNBOOK 10.3: after a restore the step is MANDATORY and verify_applied.sql fails until it was done)
 create function server_identity() returns text language plpgsql stable security definer set search_path = public as $$
 begin return (select system_identifier::text from pg_control_system()); exception when others then return null; end $$;
 alter table sync_meta add column system_id text;
