@@ -6,3 +6,4 @@ export * from './label';
 export * from './waits';
 export * from './engine';
 export * from './sprayWindow';
+export * from './frost';

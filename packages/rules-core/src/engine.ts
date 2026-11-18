@@ -1,3 +1,4 @@
+import { frostNights, type FrostFacts, type FrostHit } from './frost';
 import { known, type Known } from './known';
 import type { SignedLabelUse } from './label';
 import { summariseDays, type Hour, type SprayParams, type Sun } from './sprayWindow';
@@ -16,7 +17,7 @@ export interface DraftJob { id: string; kind: string; plantingIds: readonly stri
 export interface TaskFact { id: string; plantingIds: readonly string[]; at: string }
 export interface Veto { by: string; vetoed: string; reason: string; planting_id?: string; task_id?: string; product_id?: string }
 export interface Output {
-  rule_id: string; kind: 'alert' | 'block' | 'info'; category: string; severity?: 'high' | 'medium' | 'low'; confidence?: 'high' | 'medium' | 'low'; notify: boolean;
+  rule_id: string; kind: 'alert' | 'block' | 'info' | 'recommendation'; category: string; severity?: 'high' | 'medium' | 'low'; confidence?: 'high' | 'medium' | 'low'; notify: boolean;
   parcel_ids: string[]; planting_ids: string[]; product_ids: string[]; crop_ids: string[];
   window?: { start: string; end: string }; values: Record<string, unknown>; vetoes: Veto[];
 }
@@ -26,6 +27,8 @@ export interface Snapshot {
   /** Hourly forecast per parcel (from the server later), sun times per local day, daily rain per parcel, and the SPRAY-WIN thresholds. */
   weather?: { hours: Readonly<Record<string, readonly Hour[]>>; sun: Readonly<Record<string, Sun>>; rainDaily: Readonly<Record<string, Readonly<Record<string, number>>>> };
   sprayParams?: SprayParams;
+  /** Forecast nights per parcel with topo class, and the FROST thresholds (from the server later). */
+  frost?: FrostFacts;
 }
 
 const blank = (o: Pick<Output, 'rule_id' | 'kind' | 'category'> & Partial<Output>): Output => ({ notify: false, parcel_ids: [], planting_ids: [], product_ids: [], crop_ids: [], values: {}, vetoes: [], ...o });
@@ -122,6 +125,45 @@ function sprayWindowClosed(s: Snapshot): Output[] {
     values: { closed_days: closed, ok_hours: 0, rain_mm: w.rainDaily[parcels[0]] ?? {}, max_gust_kmh: gust } })];
 }
 
+/** FROST: one alert listing EVERY affected parcel and night (never just the last night), plus «cover» (tender crops, only when fleece is on hand) and «no harvest before thaw» (guarded crops). Confidence is LOW: no parcel is calibrated. Never a damage claim. */
+function frost(s: Snapshot): Output[] {
+  const f = s.frost;
+  if (s.ruleStatus.FROST !== 'signed' || !f) return [];
+  const out: Output[] = [];
+  const hit: { id: string; hits: FrostHit[] }[] = [];
+  for (const [id, parcel] of Object.entries(f.parcels)) {
+    const r = frostNights(parcel, f.params);
+    if (r.missing.length > 0) out.push(blank({ rule_id: 'FROST', kind: 'info', category: 'frost_inputs_missing', parcel_ids: [id], values: { missing: r.missing, badge: 'unknown' } }));
+    if (r.hits.length > 0) hit.push({ id, hits: r.hits });
+  }
+  if (hit.length === 0) return out;
+  const nightsOf = (ids: readonly string[]) => {
+    const rows = new Map<string, { from: string; to: string; row: Record<string, unknown>; leaf: Record<string, unknown> }>();
+    for (const h of hit.filter((x) => ids.includes(x.id))) for (const x of h.hits) {
+      const r = rows.get(x.night.night) ?? { from: x.night.from, to: x.night.to, row: { night: x.night.night }, leaf: { night: x.night.night } };
+      r.row[h.id] = x.parcelTminC; r.leaf[h.id] = [...x.leafRangeC];
+      rows.set(x.night.night, r);
+    }
+    const all = [...rows.values()].sort((a, b) => (a.from < b.from ? -1 : a.from > b.from ? 1 : 0));
+    return { nights: all.map((r) => r.row), leaf: all.map((r) => r.leaf), window: { start: all[0].from, end: all.reduce((m, r) => (r.to > m ? r.to : m), all[0].to) } };
+  };
+  const plantsOf = (ids: readonly string[], crops: readonly string[]) => s.plantings.filter((p) => ids.includes(p.parcelId) && crops.includes(p.cropId));
+  const ids = hit.map((x) => x.id);
+  const base = nightsOf(ids);
+  const tender = plantsOf(ids, f.tenderCrops); const guard = plantsOf(ids, f.guardCrops);
+  const values = (n: ReturnType<typeof nightsOf>) => ({ nights: n.nights, leaf_range_c: n.leaf, leaf_basis: 'EST', damage_claimed: false });
+  out.push(blank({ rule_id: 'FROST', kind: 'alert', category: 'frost_conditions', severity: 'high', confidence: 'low', parcel_ids: ids, planting_ids: [...tender, ...guard].map((p) => p.id), window: base.window, values: values(base) }));
+  if (f.coversOnHand && tender.length > 0) {
+    const pids = [...new Set(tender.map((p) => p.parcelId))]; const n = nightsOf(pids);
+    out.push(blank({ rule_id: 'FROST', kind: 'recommendation', category: 'cover', confidence: 'low', parcel_ids: pids, planting_ids: tender.map((p) => p.id), window: n.window, values: { ...values(n), cover_gain_range_c: [...f.params.coverGainC], cover_gain_basis: 'EST' } }));
+  }
+  if (guard.length > 0) {
+    const pids = [...new Set(guard.map((p) => p.parcelId))]; const n = nightsOf(pids);
+    out.push(blank({ rule_id: 'FROST', kind: 'recommendation', category: 'no_harvest_before_thaw', confidence: 'low', parcel_ids: pids, planting_ids: guard.map((p) => p.id), window: n.window, values: values(n) }));
+  }
+  return out;
+}
+
 /** A rule with unsigned thresholds only shows what it would look at. Never an alert, never a severity, never a notification. */
 function infoOnly(s: Snapshot): Output[] {
   const frost = s.ruleStatus.FROST === 'unsigned' ? s.parcelsForInfo.map((id) => blank({ rule_id: 'FROST', kind: 'info', category: 'frost_inputs', parcel_ids: [id], values: { shows_inputs: true, badge: 'not_signed_off', notify: false } })) : [];
@@ -131,5 +173,5 @@ function infoOnly(s: Snapshot): Output[] {
 
 export function runRules(s: Snapshot): Output[] {
   if (!parseInstant(s.asOf).known) return []; // no readable «now»: nothing is decided
-  return [...phi(s), ...rei(s), ...reg(s), ...rot(s), ...sprayWindowClosed(s), ...infoOnly(s)];
+  return [...phi(s), ...rei(s), ...reg(s), ...rot(s), ...sprayWindowClosed(s), ...frost(s), ...infoOnly(s)];
 }
