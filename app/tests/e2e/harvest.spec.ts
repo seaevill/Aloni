@@ -59,7 +59,7 @@ test('after an UNSIGNED spray the PHI is unknown: blocked even far in the future
   await expect(page.getByTestId('harvest-save')).toBeDisabled();
   await page.getByRole('button', { name: 'Ακύρωση' }).click();
   await page.getByTestId('wait-open').click();
-  await page.getByTestId('wait-phi').fill('7'); await page.getByTestId('wait-rei').fill('24');
+  await page.getByTestId('wait-phi').fill('7'); await page.getByTestId('wait-rei').fill('24'); await page.getByTestId('wait-reason').fill('τιμές από την ετικέτα');
   await page.getByTestId('wait-save').click();
   await page.getByTestId('harvest-open').click();
   await page.getByRole('button', { name: 'Σπανάκι · Κάτω Κάμπος' }).click();

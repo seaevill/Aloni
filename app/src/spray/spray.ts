@@ -90,15 +90,16 @@ export function effectiveSprays(rows: readonly Row[]): Row[] {
 }
 
 /** A waiting period typed by Bora from the label, for a spray whose PHI is unknown: a NEW row, the original stays. Only offered while the PHI is unknown, so it can never shorten a known one. */
-export type WaitEntry = { ok: true; row: Row } | { ok: false; phi: boolean; rei: boolean; known: boolean };
-export function buildWaitEntry(original: Row, phiText: string, reiText: string, nowIso: string, id: string): WaitEntry {
+export type WaitEntry = { ok: true; row: Row } | { ok: false; phi: boolean; rei: boolean; known: boolean; reason: boolean };
+/** Bora's entry of the label's waiting periods is a NEW row that amends the original; it says WHY (a correction always has a reason: who, when and why stay traceable). */
+export function buildWaitEntry(original: Row, phiText: string, reiText: string, nowIso: string, id: string, reason: string): WaitEntry {
   const phi = parsePhiDays(phiText);
   const rei = parseReiHours(reiText);
   const hasPhi = typeof original.phi_days === 'string' && original.phi_days !== NOT_ON_LABEL;
-  if (hasPhi || !phi.known || !rei.known) return { ok: false, phi: !phi.known, rei: !rei.known, known: hasPhi };
+  if (hasPhi || !phi.known || !rei.known || reason.trim() === '') return { ok: false, phi: !phi.known, rei: !rei.known, known: hasPhi, reason: reason.trim() === '' };
   const sprayedAt = String(original.sprayed_at);
   const pe = phiEnd(sprayedAt, phi);
   const re = reiEnd(sprayedAt, rei);
   const { phi_until: _a, rei_until: _b, ...rest } = original;
-  return { ok: true, row: { ...rest, id, amends_id: original.id, phi_days: phiText.trim(), rei_hours: reiText.trim(), phi_source: 'manual', created_at: nowIso, ...(pe.known ? { phi_until: pe.value } : {}), ...(re.known ? { rei_until: re.value } : {}) } };
+  return { ok: true, row: { ...rest, id, amends_id: original.id, phi_days: phiText.trim(), rei_hours: reiText.trim(), phi_source: 'manual', amend_reason: reason.trim(), created_at: nowIso, ...(pe.known ? { phi_until: pe.value } : {}), ...(re.known ? { rei_until: re.value } : {}) } };
 }

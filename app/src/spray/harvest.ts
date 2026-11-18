@@ -7,7 +7,7 @@ import { effectiveSprays } from './spray';
 // enters the label's value as an amending row). There is no override and no button that lifts the block by hand.
 
 export type Source = 'label' | 'manual';
-export type Gate = { ok: true } | { ok: false; reason: 'unknown' | 'running' | 'time'; until?: string; source?: Source; late?: true };
+export type Gate = { ok: true } | { ok: false; reason: 'unknown' | 'running' | 'time'; until?: string; source?: Source; late?: true; by?: 'phi' | 'rei' };
 const isLateRow = (r: Row): boolean => Array.isArray(r.flags) && r.flags.includes('late_entry');
 
 /** Can this planting be harvested at `at` (a UTC second)? Recomputed from the stored PHI days and spray time through phiEnd, never from a stored end. */
@@ -17,13 +17,19 @@ export function harvestGate(plantingId: string, at: string, links: readonly Row[
   let until: string | undefined;
   let source: Source | undefined;
   let late = false;
+  let by: 'phi' | 'rei' = 'phi';
   for (const sp of effectiveSprays(sprayRows).filter((r) => jobs.has(r.job_id))) {
     const days = typeof sp.phi_days === 'string' && sp.phi_days !== NOT_ON_LABEL ? parsePhiDays(sp.phi_days) : parsePhiDays('');
     const end = phiEnd(String(sp.sprayed_at), days);
     if (!end.known) return { ok: false, reason: 'unknown' };
-    if (!waitOver(at, end) && (until === undefined || end.value > until)) { until = end.value; source = sp.phi_source === 'manual' ? 'manual' : 'label'; late = isLateRow(sp); } // ISO seconds sort like time; the LATEST end names its source
+    // a harvest means entering the field: the re-entry period (REI) must be over too, and an unknown REI blocks like an unknown PHI
+    const hours = typeof sp.rei_hours === 'string' && sp.rei_hours !== NOT_ON_LABEL ? parseReiHours(sp.rei_hours) : parseReiHours('');
+    const re = reiEnd(String(sp.sprayed_at), hours);
+    if (!re.known) return { ok: false, reason: 'unknown' };
+    const [last, kind] = re.value > end.value ? ([re, 'rei'] as const) : ([end, 'phi'] as const);
+    if (!waitOver(at, last) && (until === undefined || last.value > until)) { until = last.value; by = kind; source = sp.phi_source === 'manual' ? 'manual' : 'label'; late = isLateRow(sp); } // ISO seconds sort like time; the LATEST end names its source
   }
-  return until === undefined ? { ok: true } : { ok: false, reason: 'running', until, source, ...(late ? { late: true as const } : {}) };
+  return until === undefined ? { ok: true } : { ok: false, reason: 'running', until, source, by, ...(late ? { late: true as const } : {}) };
 }
 
 export interface HarvestInput { plantingId: string; crates: string; harvestedAt: string; note: string }

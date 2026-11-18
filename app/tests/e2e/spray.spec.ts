@@ -60,8 +60,11 @@ test('a spray with an UNSIGNED label is still recorded, marked, and its waiting 
   await card.getByTestId('wait-open').click(); // Bora types the label's values: a NEW row, the original stays
   await page.getByTestId('wait-phi').fill('7,5'); await page.getByTestId('wait-rei').fill('24');
   await page.getByTestId('wait-save').click();
-  await expect(page.locator('main .msg.error')).toHaveCount(1); // a PHI of 7,5 is refused, never rounded
+  await expect(page.locator('main .msg.error')).toHaveCount(2); // a PHI of 7,5 is refused, never rounded; and no reason was written
   await page.getByTestId('wait-phi').fill('7');
+  await page.getByTestId('wait-save').click();
+  await expect(page.getByTestId('wait-reason-error')).toBeVisible(); // a correction without a reason is refused
+  await page.getByTestId('wait-reason').fill('τιμές από την ετικέτα');
   await page.getByTestId('wait-save').click();
   await expect(page.getByTestId('spray')).toHaveCount(1); // still one spray on the screen
   await expect(card.getByTestId('spray-phi')).toContainText('Αναμονή λήγει');
