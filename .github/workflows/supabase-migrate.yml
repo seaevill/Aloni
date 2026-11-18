@@ -7,7 +7,7 @@ name: Supabase migrate (manual)
 #   2. the GitHub ENVIRONMENT `supabase-production`: the job `migrate` cannot start (so no step can read a secret) until the environment's required reviewer approves.
 #      The workflow file only NAMES the environment; that the reviewer rule is really switched on is a GitHub setting this file cannot enforce (RUNBOOK §10.1);
 #   3. the word APPLY (mode=apply AND confirm=APPLY): checked in `guard` and again right before `supabase db push`.
-# The first run must be `dry-run`. Secrets (environment `supabase-production`): SUPABASE_ACCESS_TOKEN, SUPABASE_DB_PASSWORD, SUPABASE_PROJECT_REF. Nothing prints them.
+# The first run must be `dry-run`. Secrets (environment `supabase-production`; the token needs Connection Pooling = Read): SUPABASE_ACCESS_TOKEN, SUPABASE_DB_PASSWORD, SUPABASE_PROJECT_REF. Nothing prints them.
 on:
   workflow_dispatch:
     inputs:
@@ -104,40 +104,37 @@ jobs:
           jq -r '"target project: name=\(.name) region=\(.region) status=\(.status)"' project.json
           rm -f project.json
 
-      - name: Link the project
+      - name: The database address (IPv4 session pooler named by the Management API; the runner has no IPv6)
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
-        run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
+        run: |
+          set -euo pipefail
+          echo "::add-mask::$(jq -rn --arg p "$SUPABASE_DB_PASSWORD" '$p | @uri')"
+          code=$(curl -sS -o pooler.json -w '%{http_code}' -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF/config/database/pooler" || true)
+          [ "$code" = 200 ] || { rm -f pooler.json; echo "::error::API call «read the connection pooler address» (GET /v1/projects/{ref}/config/database/pooler) answered HTTP $code. 401/403 = the token lacks the right «Connection Pooling = Read» (add only that right, RUNBOOK 10.1a); 404 = wrong project reference. Nothing was changed."; exit 1; }
+          umask 077
+          bash scripts/pooler-url.sh "$SUPABASE_PROJECT_REF" < pooler.json > "$RUNNER_TEMP/dburl"
+          rm -f pooler.json
+          echo "pooler: $(sed -E 's#^postgresql://([^:]+):[^@]*@([^/]+)/.*#user=\1 host=\2#' "$RUNNER_TEMP/dburl")"
 
       - name: What would be applied (changes nothing)
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-        run: supabase db push --linked --dry-run
+        run: supabase db push --db-url "$(cat "$RUNNER_TEMP/dburl")" --dry-run
 
       - name: Apply the migrations in order
         if: inputs.mode == 'apply'
         env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
           CONFIRM: ${{ inputs.confirm }}
         run: |
           set -euo pipefail
           [ "$CONFIRM" = APPLY ] || { echo "::error::mode=apply needs the confirm field to be exactly APPLY. Nothing was applied."; exit 1; }
-          supabase db push --linked
+          supabase db push --db-url "$(cat "$RUNNER_TEMP/dburl")"
 
-      - name: Verify (read-only supabase/tests/verify_applied.sql, through the Management API)
+      - name: Verify (read-only supabase/tests/verify_applied.sql, same pooler address)
         if: inputs.mode == 'apply'
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
         run: |
           set -euo pipefail
-          jq -Rs '{query: .}' supabase/tests/verify_applied.sql > query.json
-          code=$(curl -sS -o answer.json -w '%{http_code}' -X POST -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H 'Content-Type: application/json' --data @query.json \
-            "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF/database/query" || true)
-          [ "$code" = 200 ] || [ "$code" = 201 ] || { echo "::error::API call «run the verification query» (POST /v1/projects/{ref}/database/query) answered HTTP $code. 401/403 = the token lacks the right to run a read-only database query (add only that right, RUNBOOK 10.1a). The migrations themselves were applied before this step."; rm -f query.json answer.json; exit 1; }
+          psql "$(cat "$RUNNER_TEMP/dburl")" -X -q -At -v ON_ERROR_STOP=1 -f supabase/tests/verify_applied.sql | jq -R '{problem: .}' | jq -s . > answer.json
           bash scripts/verify-result.sh < answer.json
-          rm -f query.json answer.json
+          rm -f answer.json

@@ -22,4 +22,12 @@ expect stop "verify: a problem row" bash -c "echo '[{\"problem\":\"RLS is OFF on
 expect stop "verify: a problem row next to an OK row" bash -c "echo '[{\"problem\":\"RLS is OFF on x\"},{\"problem\":\"OK: 3 tables\"}]' | ./verify-result.sh"
 expect stop "verify: empty answer" bash -c "echo '[]' | ./verify-result.sh"
 expect stop "verify: an error object instead of rows" bash -c "echo '{\"message\":\"nope\"}' | ./verify-result.sh"
+R=abcdefghijklmnopqrst
+P='[{"database_type":"PRIMARY","db_host":"aws-0-eu-central-1.pooler.supabase.com","db_name":"postgres","db_port":6543,"db_user":"postgres.abcdefghijklmnopqrst","pool_mode":"transaction"},{"database_type":"PRIMARY","db_host":"aws-0-eu-central-1.pooler.supabase.com","db_name":"postgres","db_port":5432,"db_user":"postgres.abcdefghijklmnopqrst","pool_mode":"session"}]'
+expect pass "pooler: the session entry, password encoded" bash -c "export SUPABASE_DB_PASSWORD='a b/c@d'; echo '$P' | ./pooler-url.sh $R | grep -qx 'postgresql://postgres.$R:a%20b%2Fc%40d@aws-0-eu-central-1.pooler.supabase.com:5432/postgres?sslmode=require'"
+expect stop "pooler: no session entry" bash -c "export SUPABASE_DB_PASSWORD=x; echo '[]' | ./pooler-url.sh $R"
+expect stop "pooler: an error object (no right)" bash -c "export SUPABASE_DB_PASSWORD=x; echo '{\"message\":\"forbidden\"}' | ./pooler-url.sh $R"
+expect stop "pooler: a host that is not a Supabase pooler" bash -c "export SUPABASE_DB_PASSWORD=x; echo '$P' | sed 's/aws-0-eu-central-1.pooler.supabase.com/evil.example.com/g' | ./pooler-url.sh $R"
+expect stop "pooler: a user of another project" bash -c "export SUPABASE_DB_PASSWORD=x; echo '$P' | ./pooler-url.sh aaaaaaaaaaaaaaaaaaaa"
+expect stop "pooler: no password" bash -c "unset SUPABASE_DB_PASSWORD; echo '$P' | ./pooler-url.sh $R"
 exit $bad
