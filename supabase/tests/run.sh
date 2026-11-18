@@ -16,13 +16,13 @@ fi
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/auth_stub.sql >/dev/null
 for f in supabase/migrations/*.sql; do echo "== $f"; psql -X -q -v ON_ERROR_STOP=1 -f "$f" >/dev/null; done
 psql -X -q -c "select 1" >/dev/null
-psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/smoke.sql
-psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/review.sql && echo "SQL review tests OK"
-psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/agri.sql && echo "SQL agricultural record tests OK"
-psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/phone.sql && echo "SQL phone-records tests OK"
-psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/worker.sql && echo "SQL worker-completion tests OK"
-psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/worker_retry.sql && echo "SQL worker-retry tests OK"
+psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/smoke.sql || { echo "FAILED: smoke.sql"; exit 1; }
+psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/review.sql || { echo "FAILED: supabase/tests/review.sql"; exit 1; }; echo "SQL review tests OK"
+psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/agri.sql || { echo "FAILED: supabase/tests/agri.sql"; exit 1; }; echo "SQL agricultural record tests OK"
+psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/phone.sql || { echo "FAILED: supabase/tests/phone.sql"; exit 1; }; echo "SQL phone-records tests OK"
+psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/worker.sql || { echo "FAILED: supabase/tests/worker.sql"; exit 1; }; echo "SQL worker-completion tests OK"
+psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/worker_retry.sql || { echo "FAILED: supabase/tests/worker_retry.sql"; exit 1; }; echo "SQL worker-retry tests OK"
 bash supabase/tests/worker_concurrency.sh
 bash supabase/tests/contract.sh
-out=$(psql -X -At -f supabase/tests/verify_applied.sql); echo "$out"; echo "$out" | grep -q "^OK:" || { echo "verify_applied.sql found problems"; exit 1; }
+out=$(psql -X -At -v ON_ERROR_STOP=1 -f supabase/tests/verify_applied.sql) || { echo "FAILED: verify_applied.sql"; exit 1; }; echo "$out"; echo "$out" | grep -q "^OK:" || { echo "verify_applied.sql found problems"; exit 1; }
 bash supabase/tests/concurrency.sh
