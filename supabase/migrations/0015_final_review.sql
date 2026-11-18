@@ -6,7 +6,7 @@
 --  e   «late» is judged by the server's received_at, not by the phone's created_at: a late record is kept and marked (never lost), with a reason or an honest «not stated»;
 --  f   TRUNCATE is taken away from anon/authenticated (RLS does not cover it), the append-only tables refuse it for everyone, table rights are explicit;
 --  g   verify_spray_chain never says «sound» to someone who cannot read the sprays.
--- The spray hash no longer covers server_seq / sync_xid (a later migration re-stamps them after a restore; the record itself is what the chain protects).
+-- The spray hash no longer covers server_seq / sync_xid (0016 re-stamps them after a restore; the record itself is what the chain protects).
 
 -- ---------------------------------------------------------------- f: rights
 do $$ begin
