@@ -1,5 +1,6 @@
 import { frostNights, type FrostFacts, type FrostHit } from './frost';
 import { known, type Known } from './known';
+import { stockHits, type StockFacts } from './stock';
 import type { SignedLabelUse } from './label';
 import { paramsValid, summariseDays, type Hour, type SprayParams, type Sun } from './sprayWindow';
 import { parseInstant, phiEnd, reiEnd, waitOver } from './waits';
@@ -29,6 +30,8 @@ export interface Snapshot {
   sprayParams?: SprayParams;
   /** Forecast nights per parcel with topo class, and the FROST thresholds (from the server later). */
   frost?: FrostFacts;
+  /** Shelf, planned uses and the STOCK thresholds. */
+  stock?: StockFacts;
 }
 
 const blank = (o: Pick<Output, 'rule_id' | 'kind' | 'category'> & Partial<Output>): Output => ({ notify: false, parcel_ids: [], planting_ids: [], product_ids: [], crop_ids: [], values: {}, vetoes: [], ...o });
@@ -177,15 +180,23 @@ function frost(s: Snapshot): Output[] {
   return out;
 }
 
+/** STOCK: low stock before the next planned spray (a block when it is not even enough), expired and soon-to-expire lots. Needs signed thresholds; never notifies yet. */
+function stock(s: Snapshot): Output[] {
+  if (s.ruleStatus.STOCK !== 'signed' || !s.stock) return [];
+  const sev = { stock_low: 'medium', stock_insufficient: 'high', stock_expired: 'low', stock_expiring: 'low' } as const;
+  return stockHits(s.stock, s.asOf).map((h) => blank({ rule_id: 'STOCK', kind: h.category === 'stock_insufficient' ? 'block' : 'alert', category: h.category, severity: sev[h.category], product_ids: [h.productId], values: h.values }));
+}
+
 /** A rule with unsigned thresholds only shows what it would look at. Never an alert, never a severity, never a notification. */
 function infoOnly(s: Snapshot): Output[] {
   const frost = s.ruleStatus.FROST === 'unsigned' ? s.parcelsForInfo.map((id) => blank({ rule_id: 'FROST', kind: 'info', category: 'frost_inputs', parcel_ids: [id], values: { shows_inputs: true, badge: 'not_signed_off', notify: false } })) : [];
   const spray = s.ruleStatus['SPRAY-WIN'] === 'unsigned' ? Object.keys(s.weather?.hours ?? {}).map((id) => blank({ rule_id: 'SPRAY-WIN', kind: 'info', category: 'spray_window_inputs', parcel_ids: [id], values: { shows_inputs: true, badge: 'not_signed_off', notify: false } })) : [];
-  return [...frost, ...spray];
+  const stockInfo = s.ruleStatus.STOCK === 'unsigned' ? [...new Set((s.stock?.lots ?? []).map((l) => l.productId))].map((id) => blank({ rule_id: 'STOCK', kind: 'info', category: 'stock_inputs', product_ids: [id], values: { shows_inputs: true, badge: 'not_signed_off', notify: false } })) : [];
+  return [...frost, ...spray, ...stockInfo];
 }
 
 export function runRules(s: Snapshot): Output[] {
   // no readable «now»: everything is blocked, said out loud; never an empty list that reads as «all clear»
   if (!parseInstant(s.asOf).known) return [blank({ rule_id: 'ENGINE', kind: 'block', category: 'now_unreadable', severity: 'high', vetoes: [{ by: 'ENGINE', vetoed: 'everything', reason: 'unreadable_now' }] })];
-  return [...phi(s), ...rei(s), ...reg(s), ...rot(s), ...sprayWindowClosed(s), ...frost(s), ...infoOnly(s)];
+  return [...phi(s), ...rei(s), ...reg(s), ...rot(s), ...sprayWindowClosed(s), ...frost(s), ...stock(s), ...infoOnly(s)];
 }
