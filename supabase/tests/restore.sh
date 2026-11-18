@@ -14,6 +14,8 @@ old_cursor=$(owner "$src" "select pull('$F', null, 1000)->'cursor'")
 n_src=$(Q -d "$src" -c "select sum(c) from ($count_sql) x")
 Q -d "$src" -c "select 1" >/dev/null
 pg_dump --no-owner --no-privileges "$src" > /tmp/aloni_restore_dump.sql
+# A newer pg_dump (CI) writes settings an older server does not know (transaction_timeout, PG 17): drop them so the dump loads on any server version.
+sed -i "/^SET transaction_timeout/d" /tmp/aloni_restore_dump.sql
 Q -d postgres -c "drop database if exists $dst" -c "create database $dst" >/dev/null
 psql -X -q -v ON_ERROR_STOP=1 -d "$dst" -f /tmp/aloni_restore_dump.sql >/dev/null 2>/tmp/aloni_restore_err.txt || { echo "FAIL: the restore itself failed"; head -5 /tmp/aloni_restore_err.txt; exit 1; }
 psql -X -q -d "$dst" -c "grant all on all tables in schema public to app_user; grant execute on all functions in schema public to app_user; revoke execute on function bump_sync_generation() from app_user; grant usage on schema public, auth to app_user" >/dev/null 2>&1 || true
