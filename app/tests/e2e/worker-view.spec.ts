@@ -35,6 +35,7 @@ test('worker view (demo only): assigned sprays «Έγινε / Δεν έγινε�
   await expect(page.getByTestId('toast')).toContainText('10 δευτερόλεπτα');
   await page.clock.fastForward(10500); // the 10 seconds pass
   await expect(page.getByTestId('worker-finished')).toHaveCount(1);
+  await expect(page.getByTestId('worker-status')).toContainText('Αποθηκεύτηκε · θα σταλεί όταν έχει σήμα'); // under «Έγινε»
   expect(await count(page, 'job_spray')).toBe(sprays + 1);
 
   await jobs.first().getByTestId('job-skip').click();
@@ -101,4 +102,25 @@ test('worker view: an UNKNOWN re-entry period keeps «Έγινε» closed too, a
   await expect(page.getByTestId('worker-lock').first()).toContainText('Άγνωστο διάστημα επανεισόδου');
   for (const b of await page.getByTestId('job-done').all()) await expect(b).toBeDisabled();
   await expect(page.getByTestId('job-skip').first()).toBeEnabled();
+});
+
+test('worker view: the big crate counter (72 px buttons, a number of at least 40 px, «crates cut» under it) and the «saved, will be sent when there is signal» line', async ({ page }) => {
+  await iphone(page);
+  await page.getByTestId('empty-state').locator('button').nth(1).click();
+  await expect(page.getByTestId('today-counts')).toBeVisible();
+  await page.evaluate(() => new Promise<void>((done) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const tx = r.result.transaction(['job_spray'], 'readwrite'); tx.objectStore('job_spray').clear(); tx.oncomplete = () => done(); }; })); // no waiting period in the way
+  await page.locator('nav.tabs [data-tab="more"]').click();
+  await page.getByTestId('open-worker-view').click();
+  await page.getByTestId('worker-tab-harvest').click();
+  const h = (id: string) => page.getByTestId(id).evaluate((e) => e.getBoundingClientRect().height);
+  expect(await h('harvest-less')).toBeGreaterThanOrEqual(72);
+  expect(await h('harvest-more')).toBeGreaterThanOrEqual(72);
+  expect(await page.getByTestId('harvest-count').evaluate((e) => parseFloat(getComputedStyle(e).fontSize))).toBeGreaterThanOrEqual(40);
+  await expect(page.getByText('κλούβες κομμένες')).toBeVisible();
+  await page.getByRole('button', { name: 'Σπανάκι · Κάτω Κάμπος' }).click(); // a planting
+  for (let i = 0; i < 3; i += 1) await page.getByTestId('harvest-more').click();
+  await page.getByTestId('harvest-less').click();
+  await expect(page.getByTestId('harvest-count')).toHaveText('2');
+  await page.getByTestId('harvest-save').click();
+  await expect(page.getByTestId('worker-status-harvest')).toContainText('Αποθηκεύτηκε · θα σταλεί όταν έχει σήμα');
 });
