@@ -44,4 +44,16 @@ describe('the sync runner', () => {
     release();
     expect(await first).toBe('ok');
   });
+
+  it('a request that came during a round is not lost: one more round follows it', async () => {
+    const db = await newDb(); let rounds = 0; let release: () => void = () => undefined;
+    const gate = new Promise<void>((r) => { release = r; });
+    const run = createRunner({ db, transport: async () => tr({ pull: async () => { rounds++; if (rounds === 1) await gate; return { rows: [], more: false, reset: false, cursor: null }; } }), farm: () => F, online: () => true, changed: () => undefined });
+    const first = run.tick();
+    await new Promise((r) => setTimeout(r, 10));
+    await run.tick();
+    release(); await first;
+    await new Promise((r) => setTimeout(r, 50));
+    expect(rounds).toBe(2);
+  });
 });
