@@ -5,6 +5,7 @@ import { iphone } from './helpers/iphone';
 test('the spray register (demo): marked «ΠΡΟΣΧΕΔΙΟ», every field, CSV with the draft notice, printable, no sideways scroll at 375 px', async ({ page }) => {
   const errors = await iphone(page);
   await page.getByTestId('empty-state').locator('button').nth(1).click();
+  await expect(page.getByTestId('today-counts')).toBeVisible(); // the demo is loaded before the register is opened
   await page.locator('nav.tabs [data-tab="more"]').click();
   await page.getByTestId('open-register').click();
   await expect(page.getByTestId('register-draft')).toContainText('ΠΡΟΣΧΕΔΙΟ');
