@@ -8,14 +8,18 @@ import { buildAdjustment, flagsOf } from '../stock/stock';
 // marked on the record and the waiting period (PHI) of an unsigned or incomplete label is UNKNOWN until Bora enters the label's values (amending row).
 // PHI/REI come only from phiEnd/reiEnd and only from a SignedLabelUse. Typed quantities are kept as typed; nothing is converted or rounded.
 
-export type Flag = 'label_none' | 'label_blocked' | 'label_unsigned' | 'label_changed' | 'dose_outside_label' | 'dose_unit_differs' | 'lot_expired' | 'stock_negative';
+export type Flag = 'label_none' | 'label_blocked' | 'label_unsigned' | 'label_changed' | 'dose_outside_label' | 'dose_unit_differs' | 'lot_expired' | 'stock_negative' | 'late_entry';
 export interface SprayInput {
   plantingIds: readonly string[]; productId: string; applicatorId: string; sprayedAt: string;
   dose: string; doseUnit: DoseUnit | undefined; lotKey: string | undefined; qty: string; water: string; note: string;
+  /** «Λόγος καθυστέρησης»: required when the end time is more than LATE_AFTER_DAYS before the record. */
+  lateReason?: string;
 }
-export interface SprayContext { label: Row | undefined; plantings: readonly Row[]; lot: Row | undefined; lotBalance: string | undefined; today: string; /** Demo seed only: history is allowed. A real record can never be written further back than MAX_BACKDATE_DAYS. */ historic?: true }
-export const MAX_BACKDATE_DAYS = 7;
-export interface SprayErrors { plantings: boolean; product: boolean; applicator: boolean; time: boolean; dose: boolean; doseUnit: boolean; qty: boolean; water: boolean }
+export interface SprayContext { label: Row | undefined; plantings: readonly Row[]; lot: Row | undefined; lotBalance: string | undefined; today: string; /** Demo seed only: history is written without a reason. */ historic?: true }
+/** An end time older than this (before the record) is a LATE entry: allowed (a forgotten spraying must still reach the legal record), but it needs a reason and is marked. */
+export const LATE_AFTER_DAYS = 7;
+export const isLate = (sprayedAt: string, nowIso: string): boolean => Date.parse(sprayedAt) < Date.parse(nowIso) - LATE_AFTER_DAYS * 86400000;
+export interface SprayErrors { plantings: boolean; product: boolean; applicator: boolean; time: boolean; dose: boolean; doseUnit: boolean; qty: boolean; water: boolean; lateReason: boolean }
 export type SprayResult =
   | { ok: true; job: Row; jobPlantings: Row[]; spray: Row; movement: Row | undefined; flags: Flag[] }
   | { ok: false; errors: SprayErrors };
@@ -29,17 +33,20 @@ export function buildSpray(input: SprayInput, ctx: SprayContext, farmId: string,
   const qty = input.qty.trim() === '' ? undefined : positive(input.qty);
   const water = input.water.trim() === '' ? undefined : parseDecimal(input.water);
   const errors: SprayErrors = {
-    plantings: input.plantingIds.length === 0, product: !input.productId, applicator: !input.applicatorId, time: !parseInstant(input.sprayedAt).known || (!ctx.historic && Date.parse(input.sprayedAt) < Date.parse(nowIso) - MAX_BACKDATE_DAYS * 86400000),
+    plantings: input.plantingIds.length === 0, product: !input.productId, applicator: !input.applicatorId, time: !parseInstant(input.sprayedAt).known,
     dose: !dose, doseUnit: !input.doseUnit || !DOSE_UNITS.includes(input.doseUnit),
     qty: (input.qty.trim() !== '' && !qty) || (input.lotKey !== undefined && !qty), // a lot needs the quantity taken from it; a typed quantity must be readable
     water: water !== undefined && !water.known,
+    lateReason: !ctx.historic && parseInstant(input.sprayedAt).known && isLate(input.sprayedAt, nowIso) && (input.lateReason ?? '').trim() === '',
   };
+  const late = !ctx.historic && parseInstant(input.sprayedAt).known && isLate(input.sprayedAt, nowIso);
   if (Object.values(errors).some(Boolean) || !dose || !input.doseUnit) return { ok: false, errors };
 
   const flags: Flag[] = [];
   const label = ctx.label && ctx.label.product_id === input.productId && ctx.plantings.every((p) => p.crop_id === ctx.label?.crop_id) ? ctx.label : undefined;
   const state = label ? statusOf(label) : 'none';
   if (state !== 'signed') flags.push(LABEL_FLAG[state]);
+  if (late) flags.push('late_entry');
   const signed = label ? signedUseOf(label) : undefined;
 
   if (label) { // dose against the label's own dose, when the label has one in the same unit
@@ -54,6 +61,7 @@ export function buildSpray(input: SprayInput, ctx: SprayContext, farmId: string,
     dose_str: dose, dose_unit: input.doseUnit, label_state: state, created_at: nowIso,
     ...(label ? { label_use_id: label.id } : {}), ...(input.lotKey ? { lot_key: input.lotKey } : {}), ...(qty ? { qty_str: qty } : {}),
     ...(water?.known ? { water_l: water.value } : {}), ...(input.note.trim() ? { note: input.note.trim() } : {}),
+    ...(late ? { late_reason: (input.lateReason ?? '').trim() } : {}),
   };
   if (signed?.known) { // only a SignedLabelUse feeds the waiting periods
     const end = phiEnd(input.sprayedAt, known(signed.value.phiDays));
