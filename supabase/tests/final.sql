@@ -93,23 +93,23 @@ do $$ begin
   insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values ('11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-000000000704',3,now() - interval '2 hours');
 end $$;
 
--- (e) «late» is judged by the SERVER's clock (received_at): a spraying that reached the server more than 7 days after it ended is kept and marked, whatever the phone's clock said
+-- (e) «late» is judged by the SERVER's clock (the server's clock, now()): a spraying that reached the server more than 7 days after it ended is kept and marked, whatever the phone's clock said
 reset role;
 do $$
 declare f constant uuid := '11111111-1111-1111-1111-111111111111'; prod constant uuid := 'aaaaaaaa-0000-0000-0000-000000000001'; w1 constant uuid := 'bbbbbbbb-0000-0000-0000-000000000001'; s job_spray%rowtype;
 begin
-  insert into job_spray(id,farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,created_at,received_at)
-    values ('55555555-0000-0000-0000-000000000721',f,'eeeeeeee-0000-0000-0000-000000000702',prod,w1,now() - interval '9 days',0.025,'ml/str','unsigned',now() - interval '9 days' + interval '1 hour',now() - interval '1 day');
+  insert into job_spray(id,farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,created_at)
+    values ('55555555-0000-0000-0000-000000000721',f,'eeeeeeee-0000-0000-0000-000000000702',prod,w1,now() - interval '9 days',0.025,'ml/str','unsigned',now() - interval '9 days' + interval '1 hour');
   select * into s from job_spray where id = '55555555-0000-0000-0000-000000000721';
   if 'late_entry' <> all (s.flags) or length(btrim(coalesce(s.late_reason, ''))) = 0 then raise exception '(e) a spraying received 8 days late was not marked: %', to_jsonb(s); end if;
-  insert into job_spray(id,farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,created_at,received_at)
-    values ('55555555-0000-0000-0000-000000000722',f,'eeeeeeee-0000-0000-0000-000000000702',prod,w1,now() - interval '8 days',0.025,'ml/str','unsigned',now() - interval '8 days',now() - interval '1 day');
+  insert into job_spray(id,farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,created_at)
+    values ('55555555-0000-0000-0000-000000000722',f,'eeeeeeee-0000-0000-0000-000000000702',prod,w1,now() - interval '7 days',0.025,'ml/str','unsigned',now() - interval '7 days');
   select * into s from job_spray where id = '55555555-0000-0000-0000-000000000722'; if 'late_entry' = any (s.flags) then raise exception '(e) exactly 7 days was called late'; end if;
-  insert into job_spray(id,farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,created_at,received_at)
-    values ('55555555-0000-0000-0000-000000000723',f,'eeeeeeee-0000-0000-0000-000000000702',prod,w1,now() - interval '20 days',0.025,'ml/str','unsigned',now() - interval '20 days',now() - interval '1 day');
+  insert into job_spray(id,farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,created_at)
+    values ('55555555-0000-0000-0000-000000000723',f,'eeeeeeee-0000-0000-0000-000000000702',prod,w1,now() - interval '20 days',0.025,'ml/str','unsigned',now() - interval '20 days');
   select * into s from job_spray where id = '55555555-0000-0000-0000-000000000723'; if 'late_entry' <> all (s.flags) then raise exception '(e) a backdated created_at hid a late entry'; end if;
-  insert into job_spray(id,farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,created_at,received_at,flags,late_reason)
-    values ('55555555-0000-0000-0000-000000000724',f,'eeeeeeee-0000-0000-0000-000000000702',prod,w1,now() - interval '30 days',0.025,'ml/str','unsigned',now() - interval '29 days',now() - interval '1 day',array['late_entry'],'forgot');
+  insert into job_spray(id,farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,created_at,flags,late_reason)
+    values ('55555555-0000-0000-0000-000000000724',f,'eeeeeeee-0000-0000-0000-000000000702',prod,w1,now() - interval '30 days',0.025,'ml/str','unsigned',now() - interval '29 days',array['late_entry'],'forgot');
   select * into s from job_spray where id = '55555555-0000-0000-0000-000000000724'; if s.late_reason <> 'forgot' then raise exception '(e) the phone''s own reason was overwritten'; end if;
 end $$;
 

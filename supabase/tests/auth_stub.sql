@@ -9,6 +9,10 @@ do $$ begin
   if not exists (select 1 from pg_roles where rolname = 'authenticated') then create role authenticated nologin; end if;
 end $$;
 
+-- Supabase lets anon/authenticated use the auth schema (auth.uid()) and the public schema.
+grant usage on schema auth, public to anon, authenticated;
+grant execute on function auth.uid() to anon, authenticated;
+
 -- What Supabase does by default (a stub of it, not the real thing): every new object in `public` is open to anon / authenticated / service_role, TRUNCATE included.
 -- RLS does NOT protect against TRUNCATE; migration 0015 takes it away explicitly.
 alter default privileges in schema public grant all on tables to anon, authenticated;
