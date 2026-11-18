@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { fingerprint, known, makeDose, parseDecimal, parseMaxApps, parsePhiDays, parseReiHours, requireSignOff, runRules, type DoseUnit, type Hour, type LabelUse, type Sun, type Output, type Snapshot, type UseFact } from '../src/index';
+import { fingerprint, known, makeDose, parseDecimal, parseMaxApps, parsePhiDays, parseReiHours, requireSignOff, runRules, type DoseUnit, type Hour, type LabelUse, type Sun, type Output, type Snapshot, type UseFact, type FrostParcel, type Topo } from '../src/index';
 
 // The golden cases (Demo farm, `fixtures/golden/`): each JSON file is one case. A case is either LANDED (its rule is built: it must pass) or PENDING
 // (its rule is not built yet: skipped, with the reason). Every file must be in exactly one list, so a new case cannot be forgotten, and a landed case can
@@ -8,7 +8,7 @@ import { fingerprint, known, makeDose, parseDecimal, parseMaxApps, parsePhiDays,
 type J = Record<string, any>;
 const DIR = new URL('../fixtures/golden/', import.meta.url);
 const cases: J[] = readdirSync(DIR).filter((f) => f.endsWith('.json')).sort().map((f) => JSON.parse(readFileSync(new URL(f, DIR), 'utf8')) as J);
-export const LANDED = ['A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'REI-after-r01-spray'];
+export const LANDED = ['A01-frost-low-plain', 'A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'R05-frost-cover-herbs', 'REI-after-r01-spray'];
 
 const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[+-]\d{2}:\d{2}|Z)$/;
 const ms = (v: unknown): unknown => (typeof v === 'string' && ISO.test(v) ? Date.parse(v) : v); // times compare as instants, whatever their offset
@@ -29,6 +29,25 @@ function weatherOf(c: J): Pick<Snapshot, 'weather' | 'sprayParams'> {
   return { weather: { hours, sun, rainDaily }, sprayParams: { windMin: v('wind_min_kmh'), windMax: v('wind_max_kmh'), gustMax: v('gust_max_kmh'), dryBeforeH: v('dry_before_h'), rainLookaheadH: v('rain_lookahead_h'), rainMaxMm: v('rain_max_mm'), deltaTMin: v('delta_t_min'), deltaTMax: v('delta_t_max'), tempMax: v('temp_max_c'), inversionAfterSunriseH: v('inversion_after_sunrise_h') } };
 }
 
+/** Frost thresholds, nights and topo classes of a case. The crop lists are TEST-ONLY (the case text names them); the real ones are [SET] by the agronomist. */
+function frostOf(c: J): Pick<Snapshot, 'frost'> {
+  const syn: J = c.synthetic_inputs ?? {};
+  if (c.rule_id !== 'FROST' || !syn.topo_class || !syn.night_cloud_oktas) return {};
+  const v = (k: string) => (c.rule_state.params[k]?.value as number);
+  const off = c.rule_state.params.cold_pool_offset_c.value as Record<Topo, number>;
+  const parcels: Record<string, FrostParcel> = {};
+  for (const [pid, rows] of Object.entries((c.inputs.weather_daily ?? {}) as J)) {
+    const elevationM = ((c.inputs.parcels as J[]).find((p) => p.id === pid) as J).elevation_m as number;
+    const nights = Object.entries(syn.night_cloud_oktas as J).map(([night, cloud]) => {
+      const [from, to] = night.split('/'); const row = (rows as J[]).find((r) => r.date === to) as J;
+      return { night, from, to, tminC: row.tmin as number, windKmh: row.wind_kmh as number, cloudOktas: cloud as number };
+    });
+    parcels[pid] = { elevationM, topo: syn.topo_class[pid] as Topo, nights };
+  }
+  return { frost: { parcels, tenderCrops: ['coriander', 'dill'], guardCrops: ['spinach', 'chicory', 'endive'], coversOnHand: !!syn.covers_on_hand,
+    params: { tminMaxC: v('tmin_2m_max_c'), windMaxKmh: v('wind_max_kmh'), cloudMaxOktas: v('cloud_max_oktas'), elevationMaxM: v('elevation_max_m'), offsetC: { plain: off.plain, slope: off.slope, coastal: off.coastal }, leafBelowAirC: c.rule_state.params.leaf_below_air_c.value, coverGainC: [1, 2] /* EST, test-only */ } } };
+}
+
 function snapshot(c: J): Snapshot {
   const syn: J = c.synthetic_inputs ?? {};
   const uses: UseFact[] = ((c.inputs.label_uses ?? []) as J[]).map((l) => {
@@ -43,7 +62,7 @@ function snapshot(c: J): Snapshot {
     tasks: ((syn.worker_tasks ?? []) as J[]).map((t) => ({ id: t.id, plantingIds: t.planting_ids, at: utc(t.at) })),
     draftJobs: ([...(syn.draft_job ? [syn.draft_job] : []), ...(syn.draft_jobs ?? [])] as J[]).map((j) => ({ id: j.id, kind: j.kind, plantingIds: j.planting_ids, productId: j.product_id })),
     products: ((c.inputs.products ?? []) as J[]).map((p) => ({ id: p.id, groupCode: p.group_code ?? undefined })),
-    ...weatherOf(c),
+    ...weatherOf(c), ...frostOf(c),
     ruleStatus: { [c.rule_id]: c.rule_state.status === 'unsigned' ? 'unsigned' : 'signed' },
   };
 }
@@ -82,7 +101,13 @@ function check(c: J, outs: Output[]): void {
   if (e.confidence) expect(o.confidence).toBe(e.confidence);
   for (const k of ['parcel_ids', 'planting_ids', 'product_ids', 'crop_ids'] as const) if (e.targets?.[k]) expect(sameSet(o[k], e.targets[k]), `${k}: ${o[k]}`).toBe(true);
   if (e.window) { expect(ms(o.window?.start)).toBe(ms(e.window.start)); expect(ms(o.window?.end)).toBe(ms(e.window.end)); }
-  for (const [k, v] of Object.entries((e.values ?? {}) as J)) expect(matches(o.values[k], v), `values.${k}: ${JSON.stringify(o.values[k])} vs ${JSON.stringify(v)}`).toBe(true);
+  // These two expected values are prose in the fixture («range = tmin − 3 … tmin − 1», «1–2 (EST)»): the structured values are checked instead.
+  const PROSE = ['leaf_surface_estimate_c', 'cover_gain_c'];
+  if (e.values?.leaf_surface_estimate_c) for (const [i, n] of (o.values.nights as J[]).entries()) for (const [pid, t] of Object.entries(n).filter(([k]) => k !== 'night')) {
+    const r = (o.values.leaf_range_c as J[])[i][pid] as number[]; expect(r[0], `${pid} lo`).toBeCloseTo((t as number) - 3, 9); expect(r[1], `${pid} hi`).toBeCloseTo((t as number) - 1, 9);
+  }
+  if (e.values?.cover_gain_c) expect(o.values.cover_gain_range_c).toEqual([1, 2]);
+  for (const [k, v] of Object.entries((e.values ?? {}) as J).filter(([k]) => !PROSE.includes(k))) expect(matches(o.values[k], v), `values.${k}: ${JSON.stringify(o.values[k])} vs ${JSON.stringify(v)}`).toBe(true);
   for (const a of (e.also ?? []) as J[]) expect(outs.some((x) => matches(x, a)), `also ${JSON.stringify(a)}`).toBe(true);
   for (const v of (e.vetoes ?? []) as J[]) expect(outs.some((x) => x.vetoes.some((y) => matches(y, v))), `veto ${JSON.stringify(v)}`).toBe(true);
   for (const m of (e.must_not ?? []) as J[]) expect(outs.filter((x) => matches(x, m.match)), `must_not ${m.id}`).toEqual([]);

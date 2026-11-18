@@ -116,3 +116,40 @@ describe('SPRAY-WIN: unsigned thresholds only show data', () => {
     expect(runRules(snap({ ruleStatus: { 'SPRAY-WIN': 'signed' } })).filter((x) => x.rule_id === 'SPRAY-WIN')).toEqual([]);
   });
 });
+
+describe('FROST: only positively known inputs make an alert; never a damage claim', () => {
+  const params = { tminMaxC: 2, windMaxKmh: 5, cloudMaxOktas: 2, elevationMaxM: 50, offsetC: { plain: 0, slope: 0, coastal: 0 }, leafBelowAirC: [1, 3] as const, coverGainC: [1, 2] as const };
+  const calm = { night: '2026-11-17/2026-11-18', from: '2026-11-17', to: '2026-11-18', tminC: 1, windKmh: 3, cloudOktas: 0 as number | undefined };
+  const night = (edit: (n: typeof calm) => void) => { const n = { ...calm }; edit(n); return n; };
+  const frostSnap = (n: ReturnType<typeof night>, status: 'signed' | 'unsigned', elevationM: number, topo: 'plain' | undefined): Snapshot => snap({
+    ruleStatus: { FROST: status }, parcelsForInfo: ['p'], jobs: [], plantings: [{ id: 'pl', parcelId: 'p', cropId: 'coriander' }],
+    frost: { params, parcels: { p: { elevationM, topo, nights: [n] } }, tenderCrops: ['coriander'], guardCrops: [], coversOnHand: true },
+  });
+  const low = (edit: (n: typeof calm) => void, status: 'signed' | 'unsigned') => frostSnap(night(edit), status, 20, 'plain');
+  const of = (s: Snapshot) => runRules(s).filter((x) => x.rule_id === 'FROST');
+  it('a clear calm cold night on a low plain parcel: a high, LOW-confidence alert that claims no damage and notifies nobody', () => {
+    const o = of(low(() => undefined, 'signed'));
+    expect(o[0]).toMatchObject({ kind: 'alert', category: 'frost_conditions', severity: 'high', confidence: 'low', notify: false, values: { damage_claimed: false } });
+    expect(o.map((x) => x.category)).toContain('cover');
+  });
+  it('UNSIGNED: only an info line, no alert, no recommendation, no severity', () => {
+    const o = of(low(() => undefined, 'unsigned'));
+    expect(o.map((x) => [x.kind, x.category])).toEqual([['info', 'frost_inputs']]);
+  });
+  it('missing cloud, NaN temperature, missing topo class or NaN elevation: no alert, and the gap is said out loud (never «no frost»)', () => {
+    for (const s of [low((n) => { n.cloudOktas = undefined; }, 'signed'), low((n) => { n.tminC = NaN; }, 'signed'), low((n) => { n.windKmh = NaN; }, 'signed'), frostSnap(night(() => undefined), 'signed', 20, undefined), frostSnap(night(() => undefined), 'signed', NaN, 'plain')]) {
+      const o = of(s);
+      expect(o.some((x) => x.kind === 'alert')).toBe(false);
+      expect(o).toEqual([expect.objectContaining({ kind: 'info', category: 'frost_inputs_missing' })]);
+    }
+  });
+  it('every limit is inclusive and a night just outside it is quiet: 2.0 °C, 5 km/h, 2 oktas, 50 m are in; 2.1, 5.1, 3, 50.1 are out', () => {
+    for (const over of [(n: typeof calm) => { n.tminC = 2; }, (n: typeof calm) => { n.windKmh = 5; }, (n: typeof calm) => { n.cloudOktas = 2; }]) expect(of(low(over, 'signed')).some((x) => x.kind === 'alert')).toBe(true);
+    expect(of(frostSnap(night(() => undefined), 'signed', 50, 'plain')).some((x) => x.kind === 'alert')).toBe(true);
+    for (const over of [(n: typeof calm) => { n.tminC = 2.1; }, (n: typeof calm) => { n.windKmh = 5.1; }, (n: typeof calm) => { n.cloudOktas = 3; }]) expect(of(low(over, 'signed')).some((x) => x.kind === 'alert')).toBe(false);
+    expect(of(frostSnap(night(() => undefined), 'signed', 50.1, 'plain')).some((x) => x.kind === 'alert')).toBe(false);
+  });
+  it('the leaf surface is always a range (2 m air − 3 … − 1), never a single number', () => {
+    expect(of(low(() => undefined, 'signed'))[0].values.leaf_range_c).toEqual([{ night: '2026-11-17/2026-11-18', p: [-2, 0] }]);
+  });
+});
