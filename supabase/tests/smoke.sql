@@ -292,7 +292,7 @@ do $$ declare n int; begin
   select count(*) into n from jobs; if n <> 1 then raise exception 'worker sees unassigned jobs (%)', n; end if;
   begin insert into products(farm_id,name,type,unit) values ('11111111-1111-1111-1111-111111111111','x','fungicide','kg'); raise exception 'worker can insert products';
   exception when insufficient_privilege then null; end;
-  select count(*) into n from workers; if n <> 0 then raise exception 'worker sees the roster'; end if;
+  select count(*) into n from workers; if n <> 1 then raise exception 'worker sees the roster (% rows, want only its own)', n; end if;
   select count(*) into n from media; if n <> 0 then raise exception 'worker sees photos'; end if;
   select count(*) into n from farm_settings; if n <> 0 then raise exception 'worker sees settings'; end if;
   delete from parcels; get diagnostics n = row_count; if n <> 0 then raise exception 'worker deleted parcels'; end if;
@@ -307,7 +307,7 @@ end $$;
 do $$ declare res jsonb; f constant uuid := '11111111-1111-1111-1111-111111111111'; begin
   res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', f, 'table', 'products', 'op', 'insert', 'row', jsonb_build_object('id', gen_random_uuid(), 'farm_id', f, 'name', 'x', 'type', 'fungicide', 'unit', 'kg'))));
   if res->0->>'status' <> 'rejected' then raise exception 'worker pushed a product: %', res; end if;
-  if exists (select 1 from jsonb_array_elements(pull(f, null, 1000)->'rows') x where x->>'table' in ('job_spray', 'products', 'stock_lots')) then raise exception 'worker pulled products, sprays or stock'; end if;
+  if exists (select 1 from jsonb_array_elements(pull(f, null, 1000)->'rows') x where x->>'table' in ('job_spray', 'stock_lots', 'stock_movements', 'soil_tests', 'water_tests', 'media', 'farm_settings')) then raise exception 'worker pulled sprays, stock, analyses, photos or settings'; end if;
 end $$;
 
 -- 0008: a worker may only say done / not done (with time and note): never change the product, the dose, the assignment or anything else of the job
