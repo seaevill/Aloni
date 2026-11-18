@@ -70,7 +70,7 @@ export async function demoExtraRows(data: Record<string, unknown>, idOf: (table:
     const plantingRow: Row = { id: idOf('plantings', String(planting.id)), farm_id: DEMO_FARM_ID, crop_id: idOf('crops', String(planting.crop_id)), area_str: planting.area_str };
     const ids = { job: await u(`spray-job:${j.id}`), spray: await u(`spray:${j.id}`), movement: await u(`spray-mv:${j.id}`), plantingLinks: [await u(`spray-jp:${j.id}`)] };
     const r = buildSpray({ plantingIds: [plantingRow.id], productId: idOf('products', String(j.product_id)), applicatorId: workerIds.get(String(j.by)) ?? workerIds.get('Bora') as string, sprayedAt: `${String(j.date)}T07:00:00Z`, dose: String(j.dose), doseUnit: unit as 'kg/str' | 'l/str', lotKey: undefined, qty: '', water: '', note: '' },
-      { label, plantings: [plantingRow], lot: undefined, lotBalance: undefined, today: '2026-11-17' }, DEMO_FARM_ID, NOW, ids);
+      { label, plantings: [plantingRow], lot: undefined, lotBalance: undefined, today: '2026-11-17', historic: true }, DEMO_FARM_ID, NOW, ids);
     if (!r.ok) continue;
     push('jobs', r.job); r.jobPlantings.forEach((x) => push('job_plantings', x)); push('job_spray', r.spray);
   }
