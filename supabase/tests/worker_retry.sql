@@ -1,6 +1,6 @@
 -- 0014: a RETRIED «Έγινε» creates nothing new; record vs permission for the re-entry period. Runs after worker.sql (reuses its farm, label use and workers b2 = w1, c3 = w2).
 \set ON_ERROR_STOP on
-reset role;
+reset role; set test.uid = '';
 do $$
 declare f constant uuid := '11111111-1111-1111-1111-111111111111'; p constant uuid := '33333333-3333-3333-3333-333333333333'; prod constant uuid := 'aaaaaaaa-0000-0000-0000-000000000001';
         crop2 constant uuid := 'cccccccc-0000-0000-0000-000000000002'; lu constant uuid := 'cccccccc-1111-0000-0000-000000000001'; w1 constant uuid := 'bbbbbbbb-0000-0000-0000-000000000001'; w2 constant uuid := 'bbbbbbbb-0000-0000-0000-000000000002'; i int;
@@ -42,7 +42,7 @@ set test.uid = '00000000-0000-0000-0000-0000000000c3';
 do $$ begin
   begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000401', now() - interval '30 minutes'); raise exception 'another account used the retry path'; exception when insufficient_privilege then null; end;
 end $$;
-reset role;
+reset role; set test.uid = '';
 do $$
 declare n int; m int; s job_spray%rowtype;
 begin
@@ -56,7 +56,7 @@ end $$;
 -- permission: a spraying that ends NOW in a field under a running REI is still refused
 set role app_user;
 set test.uid = '00000000-0000-0000-0000-0000000000b2';
-reset role;
+reset role; set test.uid = '';
 insert into jobs(id,farm_id,kind,status,worker_id,product_id,label_use_id,dose_str,dose_unit,planned_for) values ('eeeeeeee-0000-0000-0000-000000000405','11111111-1111-1111-1111-111111111111','spray','planned','bbbbbbbb-0000-0000-0000-000000000001','aaaaaaaa-0000-0000-0000-000000000001','cccccccc-1111-0000-0000-000000000001',0.025,'ml/str','2026-11-18');
 insert into job_plantings(farm_id,job_id,planting_id) values ('11111111-1111-1111-1111-111111111111','eeeeeeee-0000-0000-0000-000000000405','dddddddd-0000-0000-0000-000000000203');
 set role app_user;
