@@ -274,7 +274,7 @@
   "spray.plantings": "Plantings sprayed",
   "spray.product": "Product",
   "spray.worker": "Who sprayed",
-  "spray.time": "Date and time of spraying",
+  "spray.time": "Date and time the spraying ended",
   "spray.dose": "Dose applied",
   "spray.unit": "Dose unit",
   "spray.lot": "Lot (optional)",
@@ -334,7 +334,7 @@
   "worker.done": "Done",
   "worker.notdone": "Not done",
   "worker.fixed": "The product and the dose are set by the manager. They cannot be changed here.",
-  "worker.time": "Time of spraying",
+  "worker.time": "Time the spraying ended",
   "worker.note": "Note (optional)",
   "worker.confirm": "Confirm",
   "worker.skip.title": "Why not done?",
@@ -384,5 +384,10 @@
   "register.col.flags": "Marks",
   "register.col.note": "Note",
   "register.col.record": "Record id",
-  "register.col.amends": "Amends record"
+  "register.col.amends": "Amends record",
+  "demo.banner": "Demo – fictional data",
+  "cut.source.label": "Source: signed label",
+  "cut.source.manual": "Source: from the label – entered by the owner",
+  "worker.lock.running": "Do not enter the field until {d}: it was just sprayed.",
+  "worker.lock.unknown": "Re-entry period unknown in this field: do not enter until the manager has entered it."
 }

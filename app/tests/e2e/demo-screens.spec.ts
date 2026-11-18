@@ -9,6 +9,7 @@ test('the demo farm fills every screen, read-only, in Greek at 375 px without ov
   const noSideways = async (at: string) => expect(await page.evaluate(() => document.documentElement.scrollWidth), at).toBeLessThanOrEqual(375);
 
   await expect(page.getByTestId('today-counts')).toBeVisible();
+  await expect(page.getByTestId('demo-banner')).toHaveText('Επίδειξη – φανταστικά στοιχεία');
   await expect(page.getByTestId('spray').first()).toBeVisible();
   expect(await page.getByTestId('spray').count()).toBeGreaterThan(3);
   await expect(page.getByTestId('spray-phi-unknown').first()).toBeVisible(); // some sprays have an unknown waiting period
@@ -48,5 +49,9 @@ test('the demo farm fills every screen, read-only, in Greek at 375 px without ov
   await page.getByTestId('open-workers').click();
   await expect(page.getByTestId('worker')).toHaveCount(3);
   await noSideways('workers');
+  await expect(page.getByTestId('demo-banner')).toBeVisible(); // on every screen while the demo is active
+  await page.getByRole('button', { name: 'Επιστροφή' }).click();
+  await page.getByTestId('open-register').click();
+  await expect(page.getByTestId('demo-banner')).toBeVisible();
   expect(errors).toEqual([]);
 });

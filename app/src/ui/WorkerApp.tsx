@@ -8,7 +8,9 @@ import { known, type Decimal } from '@aloni/rules-core';
 import { putMany } from '../repo';
 import { buildObservation, completeSprayJob, OBSERVATION_KINDS, SKIP_REASONS, skipSprayJob, type ObservationKind, type SkipReason } from '../worker/jobs';
 import { instantOf } from '../spray/time';
+import { reiLockParcel, type Lock } from '../spray/harvest';
 import type { Row } from '../db/schema';
+import { DemoBanner } from './DemoBanner';
 import { HarvestForm } from './HarvestForm';
 import { nameOf } from './screens';
 import { showHeldUndo } from './Toast';
@@ -27,7 +29,7 @@ const localNow = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60
  */
 export function WorkerApp() {
   const workers = useRows('workers'); const jobs = useRows('jobs'); const links = useRows('job_plantings'); const plantings = useRows('plantings');
-  const crops = useRows('crops'); const products = useRows('products'); const labels = useRows('label_uses'); const parcels = useRows('parcels');
+  const sprays = useRows('job_spray'); const crops = useRows('crops'); const products = useRows('products'); const labels = useRows('label_uses'); const parcels = useRows('parcels');
   const people = workers.rows?.filter((w) => !w.deleted_at && w.name !== 'Bora') ?? [];
   const me = people.find((w) => w.id === workerView.value) ?? people[0];
   const [tabId, setTabId] = useState<'jobs' | 'harvest' | 'observe'>('jobs');
@@ -43,7 +45,9 @@ export function WorkerApp() {
   const finished = mine.filter((j) => j.status !== 'planned');
   const plantingsOf = (job: Row) => (links.rows ?? []).filter((l) => l.job_id === job.id).map((l) => plantings.rows?.find((p) => p.id === l.planting_id)).filter((p): p is Row => !!p);
   const plantingName = (p: Row) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) });
+  const lockOf = (job: Row): Lock => { const first = plantingsOf(job)[0]; return first ? reiLockParcel(text(first.parcel_id), instantOf(new Date()) ?? '', plantings.rows ?? [], links.rows ?? [], sprays.rows ?? []) : { state: 'none' }; };
   const finishedLine = (j: Row): string => [j.status === 'done' ? t('worker.status.done') : t('worker.status.skipped'), j.done_at ? formatDateTime(text(j.done_at)) : ''].filter(Boolean).join(' · ');
+  const lockText = (l: Lock): string => (l.state === 'running' ? t('worker.lock.running', { d: formatDateTime(l.until) }) : t('worker.lock.unknown'));
   const doseText = (j: Row) => t('labeluse.dosevalue', { v: formatDose(known(text(j.dose_str) as Decimal)), unit: t(UNIT_KEYS[j.dose_unit as keyof typeof UNIT_KEYS]) });
 
   const hold = (job: Row, write: () => Promise<void>) => { // the job disappears at once; the record is written only after 10 s, unless taken back
@@ -71,6 +75,7 @@ export function WorkerApp() {
   return (
     <main data-testid="worker-app">
       <h1>{t('worker.title')}<span class="badge">{t('badge.demo')}</span></h1>
+      <DemoBanner />
       <p class="muted">{t('worker.demoNote')}</p>
       <h2>{t('worker.choose')}</h2>
       <div class="seg two big">{people.map((w) => <button key={w.id} aria-pressed={w.id === me.id} onClick={() => workerView.value = w.id}>{text(w.name)}</button>)}</div>
@@ -85,9 +90,10 @@ export function WorkerApp() {
               {plantingsOf(j).map((p) => <small key={p.id}>{plantingName(p)}</small>)}
               <small data-testid="worker-dose">{t('labeluse.line', { name: t('labeluse.dose'), value: doseText(j) })}</small>
               <small>{t('worker.fixed')}</small>
+              {lockOf(j).state !== 'none' && <p class="badge blocked" role="alert" data-testid="worker-lock">{lockText(lockOf(j))}</p>}
               {open?.job !== j.id && (
                 <div class="seg two big">
-                  <button data-testid="job-done" onClick={() => setOpen({ job: j.id, mode: 'done' })}>{t('worker.done')}</button>
+                  <button data-testid="job-done" disabled={lockOf(j).state === 'running'} onClick={() => setOpen({ job: j.id, mode: 'done' })}>{t('worker.done')}</button>
                   <button data-testid="job-skip" onClick={() => setOpen({ job: j.id, mode: 'skip' })}>{t('worker.notdone')}</button>
                 </div>
               )}

@@ -7,6 +7,7 @@ import { More } from './More';
 import { SyncChip } from './states';
 import { tab, workerView, type Tab } from './nav';
 import { WorkerApp } from './WorkerApp';
+import { DemoBanner } from './DemoBanner';
 import { Toast } from './Toast';
 
 // Keys are spelled out as literals so the i18n key test can see them (no dynamic t(`tab.${id}`)).
@@ -24,7 +25,7 @@ export function App() {
   if (workerView.value !== undefined) return <><WorkerApp /><Toast /></>;
   return (
     <>
-      <main><SyncChip /><BackupBanner /><Screen /></main>
+      <main><DemoBanner /><SyncChip /><BackupBanner /><Screen /></main>
       <Toast />
       <nav class="tabs" aria-label={t('nav.main')}>
         {TABS.map(({ id, icon, label }) => (

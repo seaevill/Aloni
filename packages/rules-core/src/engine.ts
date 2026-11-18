@@ -27,7 +27,7 @@ export interface Snapshot {
 const blank = (o: Pick<Output, 'rule_id' | 'kind' | 'category'> & Partial<Output>): Output => ({ notify: false, parcel_ids: [], planting_ids: [], product_ids: [], crop_ids: [], values: {}, vetoes: [], ...o });
 const doneSprays = (s: Snapshot) => s.jobs.filter((j) => j.kind === 'spray' && j.status === 'done');
 
-/** PHI: a sprayed planting is on hold until spray time + the label's PHI (exact seconds); no label row or an unsigned one = BLOCKED with no date at all. */
+/** PHI: a sprayed planting is on hold until the END of the spraying + the label's PHI (exact seconds); no label row or an unsigned one = BLOCKED with no date at all. */
 function phi(s: Snapshot): Output[] {
   const out: Output[] = [];
   for (const j of doneSprays(s)) for (const pid of j.plantingIds) {
@@ -39,7 +39,7 @@ function phi(s: Snapshot): Output[] {
       if (!use) out.push(blank({ rule_id: 'REG', kind: 'alert', category: 'unregistered_use', severity: 'high', planting_ids: [pid], parcel_ids: [p.parcelId], product_ids: [j.productId] }));
       continue;
     }
-    const end = phiEnd(j.startedAt, known(use.signed.value.phiDays));
+    const end = phiEnd(j.endedAt ?? j.startedAt, known(use.signed.value.phiDays)); // counted from the END of the spraying (the start is used only when no end is known)
     if (end.known && !waitOver(s.asOf, end)) {
       out.push(blank({ rule_id: 'PHI', kind: 'alert', category: 'phi_hold', severity: 'high', confidence: 'medium', planting_ids: [pid], parcel_ids: [p.parcelId], product_ids: [j.productId], window: { start: j.startedAt, end: end.value }, values: { safe_from: end.value, phi_days: use.signed.value.phiDays, lot_status: 'hold_phi' } }));
     }
