@@ -88,11 +88,15 @@ declare f constant uuid := '11111111-1111-1111-1111-111111111111'; n int; first_
 begin
   select count(*) into n from verify_spray_chain(f); if n <> 0 then raise exception 'an honest chain reported % problems: %', n, (select string_agg(problem, '; ') from verify_spray_chain(f)); end if;
   select id into first_id from job_spray where farm_id = f order by chain_no limit 1;
-  alter table job_spray disable trigger job_spray_append_only;
-  update job_spray set dose_str = 9 where id = first_id;
-  alter table job_spray enable trigger job_spray_append_only;
-  select count(*) into n from verify_spray_chain(f) where problem like 'the row was changed%'; if n <> 1 then raise exception 'tampering not detected (%)', n; end if;
-  alter table job_spray disable trigger job_spray_append_only;
-  update job_spray set dose_str = 0.025 where id = first_id;
-  alter table job_spray enable trigger job_spray_append_only;
+  -- change a row behind the chain's back, look, and undo it (the sub-transaction rolls the change and the trigger switch back)
+  begin
+    alter table job_spray disable trigger job_spray_append_only;
+    update job_spray set dose_str = 9 where id = first_id;
+    alter table job_spray enable trigger job_spray_append_only;
+    select count(*) into n from verify_spray_chain(f) where problem like 'the row was changed%';
+    raise exception 'undo';
+  exception when others then if sqlerrm <> 'undo' then raise; end if;
+  end;
+  if n <> 1 then raise exception 'tampering not detected (%)', n; end if;
+  if (select count(*) from verify_spray_chain(f)) <> 0 then raise exception 'the undo did not restore the chain'; end if;
 end $$;
