@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { fingerprint, known, makeDose, parseDecimal, parseMaxApps, parsePhiDays, parseReiHours, requireSignOff, runRules, type DoseUnit, type LabelUse, type Output, type Snapshot, type UseFact } from '../src/index';
+import { fingerprint, known, makeDose, parseDecimal, parseMaxApps, parsePhiDays, parseReiHours, requireSignOff, runRules, type DoseUnit, type Hour, type LabelUse, type Sun, type Output, type Snapshot, type UseFact } from '../src/index';
 
 // The golden cases (Demo farm, `fixtures/golden/`): each JSON file is one case. A case is either LANDED (its rule is built: it must pass) or PENDING
 // (its rule is not built yet: skipped, with the reason). Every file must be in exactly one list, so a new case cannot be forgotten, and a landed case can
@@ -8,12 +8,26 @@ import { fingerprint, known, makeDose, parseDecimal, parseMaxApps, parsePhiDays,
 type J = Record<string, any>;
 const DIR = new URL('../fixtures/golden/', import.meta.url);
 const cases: J[] = readdirSync(DIR).filter((f) => f.endsWith('.json')).sort().map((f) => JSON.parse(readFileSync(new URL(f, DIR), 'utf8')) as J);
-export const LANDED = ['A04-phi-parsley-geraneia', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'REI-after-r01-spray'];
+export const LANDED = ['A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'REI-after-r01-spray'];
 
 const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[+-]\d{2}:\d{2}|Z)$/;
 const ms = (v: unknown): unknown => (typeof v === 'string' && ISO.test(v) ? Date.parse(v) : v); // times compare as instants, whatever their offset
 const utc = (iso: string) => new Date(Date.parse(iso)).toISOString().replace(/\.\d{3}Z$/, 'Z');
 const UNIT: Record<string, DoseUnit> = { 'L/στρ': 'l/str', 'kg/στρ': 'kg/str', 'ml/στρ': 'ml/str', 'g/στρ': 'g/str' };
+
+/** Hourly forecast, sun times and thresholds of a case (Athens in November = +02:00). */
+function weatherOf(c: J): Pick<Snapshot, 'weather' | 'sprayParams'> {
+  const syn: J = c.synthetic_inputs ?? {};
+  if (!syn.weather_hourly) return {};
+  const v = (k: string) => (c.rule_state.params[k]?.value as number);
+  const hours: Record<string, Hour[]> = {};
+  for (const [p, list] of Object.entries(syn.weather_hourly as J)) hours[p] = (list as J[]).map((h) => ({ time: utc(h.time), day: String(h.time).slice(0, 10), tempC: h.temp_c, rhPct: h.rh_pct, windKmh: h.wind_kmh, gustKmh: h.gust_kmh, rainMm: h.rain_mm, cloudOktas: h.cloud_oktas, leafWet: h.leafwet_est }));
+  const sun: Record<string, Sun> = {};
+  for (const [d, t] of Object.entries((syn.sun ?? {}) as J)) sun[d] = { sunrise: utc(`${d}T${t.sunrise}:00+02:00`), sunset: utc(`${d}T${t.sunset}:00+02:00`) };
+  const rainDaily: Record<string, Record<string, number>> = {};
+  for (const [p, rows] of Object.entries((c.inputs.weather_daily ?? {}) as J)) rainDaily[p] = Object.fromEntries((rows as J[]).map((r) => [r.date, r.rain_mm]));
+  return { weather: { hours, sun, rainDaily }, sprayParams: { windMin: v('wind_min_kmh'), windMax: v('wind_max_kmh'), gustMax: v('gust_max_kmh'), dryBeforeH: v('dry_before_h'), rainLookaheadH: v('rain_lookahead_h'), rainMaxMm: v('rain_max_mm'), deltaTMin: v('delta_t_min'), deltaTMax: v('delta_t_max'), tempMax: v('temp_max_c'), inversionAfterSunriseH: v('inversion_after_sunrise_h') } };
+}
 
 function snapshot(c: J): Snapshot {
   const syn: J = c.synthetic_inputs ?? {};
@@ -29,6 +43,7 @@ function snapshot(c: J): Snapshot {
     tasks: ((syn.worker_tasks ?? []) as J[]).map((t) => ({ id: t.id, plantingIds: t.planting_ids, at: utc(t.at) })),
     draftJobs: ([...(syn.draft_job ? [syn.draft_job] : []), ...(syn.draft_jobs ?? [])] as J[]).map((j) => ({ id: j.id, kind: j.kind, plantingIds: j.planting_ids, productId: j.product_id })),
     products: ((c.inputs.products ?? []) as J[]).map((p) => ({ id: p.id, groupCode: p.group_code ?? undefined })),
+    ...weatherOf(c),
     ruleStatus: { [c.rule_id]: c.rule_state.status === 'unsigned' ? 'unsigned' : 'signed' },
   };
 }
