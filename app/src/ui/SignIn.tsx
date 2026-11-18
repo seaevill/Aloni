@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
 import { AUTH_ENABLED, BACKEND } from '../config';
-import { db } from '../db';
+import { adoptFarm } from '../db/adopt';
+import { activeFarm, dataVersion, db, realFarmId } from '../db';
 import { t } from '../i18n';
 import { claimInvitations, requestCode, session, tokenFor, verifyCode, type Session } from '../auth/gotrue';
 import { loadSession, saveSession } from '../auth/store';
@@ -21,10 +22,14 @@ export function SignIn() {
   if (!AUTH_ENABLED) return null;
   const ask = async () => { try { await requestCode(BACKEND, email); setSent(true); setFailed(false); } catch { setFailed(true); } };
   const enter = async () => {
-    try { const s = await verifyCode(BACKEND, email, code, Date.now()); await save(s); await claimInvitations(BACKEND, s.access_token); setFailed(false); setSent(false); setCode(''); } catch { setFailed(true); }
+    try { const s = await verifyCode(BACKEND, email, code, Date.now()); await save(s);
+      const farms = await claimInvitations(BACKEND, s.access_token);
+      if (farms[0] && (await adoptFarm(db, farms[0])) === 'adopted') { realFarmId.value = farms[0]; activeFarm.value = farms[0]; dataVersion.value++; } // a worker's fresh phone takes the farm's id
+      setFailed(false); setSent(false); setCode(''); } catch { setFailed(true); }
   };
   if (session.value) return (
     <section class="card" data-testid="signed-in">{t('signin.as', { email: session.value.email })}
+      <small data-testid="farm-id">{t('signin.farmId', { id: realFarmId.value })}</small>
       <button class="btn secondary" onClick={() => void save(undefined)}>{t('signin.out')}</button>
     </section>
   );

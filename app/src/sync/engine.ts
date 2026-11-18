@@ -2,6 +2,7 @@
 // tested against a fake server. Nothing here runs unless config.SYNC_CONNECTED is true and a Transport exists (the live switch is Bora's, after the
 // 0001–0017 migrations and a real account trial). Every call is safe to repeat: ops carry their op_id, pull is a cursor.
 import type { AppDB, OutboxRow, Row } from '../db/schema';
+import { RPC_PREFIX } from '../repo';
 import { applyPulled, getCursor, markAcked, markRejected, setCursor, type ServerAnswer } from '../repo/sync-apply';
 
 export interface PulledRow { table: string; x: string; seq: number; row: Row }
@@ -10,6 +11,8 @@ export interface Transport {
   /** One call = one batch of ops; the answer lists one entry per op (op_id, status, and for a refusal code + reason). */
   applyOps(ops: readonly Record<string, unknown>[]): Promise<Array<ServerAnswer & { op_id: string }>>;
   pull(farmId: string, cursor: unknown, limit: number): Promise<PullAnswer>;
+  /** A queued server call (rpc:<name> in the outbox). ok:false = the server REFUSED it (final); a network or server failure THROWS (the op stays pending). */
+  rpc(name: string, args: Record<string, unknown>): Promise<{ ok: true } | { ok: false; code: string; reason: string }>;
 }
 
 const BATCH = 50;
@@ -33,8 +36,13 @@ export function batches(pending: readonly OutboxRow[]): OutboxRow[][] {
 
 /** Sends everything pending for one farm. Accepted (or already known) ops leave the queue; refused ones stay, with the server's reason. A network error stops quietly: the ops stay pending. */
 export async function push(db: AppDB, tr: Transport, farmId: string): Promise<{ sent: number; rejected: number }> {
-  const pending = await db.outbox.where('farm_id').equals(farmId).and((o) => o.status === 'pending').toArray();
+  const all = await db.outbox.where('farm_id').equals(farmId).and((o) => o.status === 'pending').toArray();
+  const pending = all.filter((o) => !o.table.startsWith(RPC_PREFIX));
   let sent = 0; let rejected = 0;
+  for (const o of [...all.filter((x) => x.table.startsWith(RPC_PREFIX))].sort((a, b) => (a.at < b.at ? -1 : 1))) { // queued server calls, one by one, in the order they were made
+    const r = await tr.rpc(o.table.slice(RPC_PREFIX.length), o.row as Record<string, unknown>);
+    if (r.ok) { await markAcked(db, [o.op_id]); sent++; } else { await markRejected(db, new Map([[o.op_id, { status: 'rejected', code: r.code, reason: r.reason }]])); rejected++; }
+  }
   for (const b of batches(pending)) {
     const answers = new Map((await tr.applyOps(b.map(toWire))).map((a) => [a.op_id, a] as const));
     const ok: string[] = []; const bad = new Map<string, ServerAnswer>();
