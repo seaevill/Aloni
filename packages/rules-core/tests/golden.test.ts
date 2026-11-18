@@ -8,7 +8,7 @@ import { fingerprint, known, makeDose, parseDecimal, parseMaxApps, parsePhiDays,
 type J = Record<string, any>;
 const DIR = new URL('../fixtures/golden/', import.meta.url);
 const cases: J[] = readdirSync(DIR).filter((f) => f.endsWith('.json')).sort().map((f) => JSON.parse(readFileSync(new URL(f, DIR), 'utf8')) as J);
-export const LANDED = ['A01-frost-low-plain', 'A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-end-time-blocks', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'R05-frost-cover-herbs', 'REI-after-r01-spray'];
+export const LANDED = ['A06-stock-low-mandipropamid', 'A07-stock-expired-acetamiprid', 'A08-stock-expiring-spinosad', 'A01-frost-low-plain', 'A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-end-time-blocks', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'R05-frost-cover-herbs', 'REI-after-r01-spray'];
 
 const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[+-]\d{2}:\d{2}|Z)$/;
 const ms = (v: unknown): unknown => (typeof v === 'string' && ISO.test(v) ? Date.parse(v) : v); // times compare as instants, whatever their offset
@@ -48,6 +48,19 @@ function frostOf(c: J): Pick<Snapshot, 'frost'> {
     params: { tminMaxC: v('tmin_2m_max_c'), windMaxKmh: v('wind_max_kmh'), cloudMaxOktas: v('cloud_max_oktas'), elevationMaxM: v('elevation_max_m'), offsetC: { plain: off.plain, slope: off.slope, coastal: off.coastal }, leafBelowAirC: c.rule_state.params.leaf_below_air_c.value, coverGainC: [1, 2] /* EST, test-only */ } } };
 }
 
+/** Shelf, the next planned uses and the thresholds of a STOCK case. */
+function stockOf(c: J): Pick<Snapshot, 'stock'> {
+  if (c.rule_id !== 'STOCK') return {};
+  const syn: J = c.synthetic_inputs ?? {};
+  const labelDose: Record<string, string> = {};
+  for (const l of (c.inputs.label_uses ?? []) as J[]) if (!(l.product_id in labelDose)) labelDose[l.product_id] = l.dose_min_per_str as string;
+  const planned = [...(c.inputs.planned_jobs ?? []), ...(syn.planned_jobs ?? [])] as J[];
+  return { stock: {
+    lots: ((c.inputs.stock ?? []) as J[]).map((l) => ({ productId: l.product_id, qty: parseDecimal(l.qty), unit: l.unit, expiry: l.expiry ?? undefined })),
+    planned: planned.map((j) => ({ id: j.id, productId: j.product_id, areaStr: parseDecimal(j.area_str), dosePerStr: parseDecimal(j.dose_per_str), doseUnit: String(((c.inputs.products as J[]).find((p) => p.id === j.product_id) as J).unit) })),
+    labelDose, lowFactor: parseDecimal(c.rule_state.params.low_factor.value as string), expiringDays: c.rule_state.params.expiring_days.value as number } };
+}
+
 function snapshot(c: J): Snapshot {
   const syn: J = c.synthetic_inputs ?? {};
   const uses: UseFact[] = ((c.inputs.label_uses ?? []) as J[]).map((l) => {
@@ -62,7 +75,7 @@ function snapshot(c: J): Snapshot {
     tasks: ((syn.worker_tasks ?? []) as J[]).map((t) => ({ id: t.id, plantingIds: t.planting_ids, at: utc(t.at) })),
     draftJobs: ([...(syn.draft_job ? [syn.draft_job] : []), ...(syn.draft_jobs ?? [])] as J[]).map((j) => ({ id: j.id, kind: j.kind, plantingIds: j.planting_ids, productId: j.product_id })),
     products: ((c.inputs.products ?? []) as J[]).map((p) => ({ id: p.id, groupCode: p.group_code ?? undefined })),
-    ...weatherOf(c), ...frostOf(c),
+    ...weatherOf(c), ...frostOf(c), ...stockOf(c),
     ruleStatus: { [c.rule_id]: c.rule_state.status === 'unsigned' ? 'unsigned' : 'signed' },
   };
 }

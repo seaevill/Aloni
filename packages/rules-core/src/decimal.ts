@@ -31,6 +31,20 @@ export function compareDecimal(a: Decimal, b: Decimal): -1 | 0 | 1 {
   return x < y ? -1 : x > y ? 1 : 0;
 }
 
+const scaled = (d: Decimal) => { const [i, f = ''] = d.split('.'); return { n: BigInt(i + f), scale: f.length }; };
+const canonical = (n: bigint, scale: number): Decimal => {
+  const digits = n.toString().padStart(scale + 1, '0');
+  const int = digits.slice(0, digits.length - scale); const frac = digits.slice(digits.length - scale).replace(/0+$/, '');
+  return (frac === '' ? int : `${int}.${frac}`) as Decimal;
+};
+/** Exact product (no floating point, no rounding): «1.5» × «0.06» = «0.09». */
+export function mulDecimal(a: Decimal, b: Decimal): Decimal { const x = scaled(a); const y = scaled(b); return canonical(x.n * y.n, x.scale + y.scale); }
+/** Exact sum. */
+export function addDecimal(a: Decimal, b: Decimal): Decimal {
+  const x = scaled(a); const y = scaled(b); const scale = Math.max(x.scale, y.scale);
+  return canonical(x.n * 10n ** BigInt(scale - x.scale) + y.n * 10n ** BigInt(scale - y.scale), scale);
+}
+
 /** A whole, non-negative number (PHI days, REI hours, max applications). */
 export function parseWhole<B extends string>(input: string): Known<Brand<number, B>> {
   const s = input.trim();
