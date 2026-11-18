@@ -14,9 +14,10 @@ url="postgresql://${PGUSER:-postgres}:${PGPASSWORD:-}@${PGHOST:-localhost}:${PGP
 sb() { npx --yes "supabase@$ver" "$@"; }
 echo "supabase CLI $(sb --version)"
 files=$(ls supabase/migrations/*.sql | wc -l)
-dry=$(sb db push --db-url "$url" --dry-run 2>&1); echo "$dry" | grep -c '^ • ' | grep -qx "$files" || { echo "FAIL: dry-run does not list all $files migrations"; echo "$dry"; exit 1; }
+dry=$(sb db push --db-url "$url" --dry-run 2>&1) || { echo "FAIL: dry-run exited with an error:"; echo "$dry" | sed -E "s#://[^@]*@#://***@#"; exit 1; }
+echo "$dry" | grep -c '^ • ' | grep -qx "$files" || { echo "FAIL: dry-run does not list all $files migrations"; echo "$dry"; exit 1; }
 [ "$(psql -X -At -d "$db" -c "select to_regclass('supabase_migrations.schema_migrations') is not null and (select count(*) from supabase_migrations.schema_migrations) > 0" 2>/dev/null || echo f)" != t ] || { echo "FAIL: the dry-run changed the database"; exit 1; }
-sb db push --db-url "$url" >/dev/null
+sb db push --db-url "$url" >/tmp/cli_push.out 2>&1 || { echo "FAIL: push:"; sed -E "s#://[^@]*@#://***@#" /tmp/cli_push.out; exit 1; }
 [ "$(psql -X -At -d "$db" -c "select count(*) from supabase_migrations.schema_migrations")" = "$files" ] || { echo "FAIL: the history table does not hold all $files migrations"; exit 1; }
 sb db push --db-url "$url" 2>&1 | grep -q 'up to date' || { echo "FAIL: a second push is not «up to date»"; exit 1; }
 out=$(psql -X -At -d "$db" -f supabase/tests/verify_applied.sql); echo "$out"; echo "$out" | grep -q '^OK:' || { echo "FAIL: verify_applied.sql"; exit 1; }
