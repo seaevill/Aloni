@@ -73,7 +73,6 @@ Barındırma **Cloudflare Workers** (statik dosyalar) üzerinde; paneldeki `alon
 2. **Web Analytics KAPALI kalsın** (Metrics → Enable'a basma). Depoda telemetri de kapalı (`send_metrics: false`).
 3. Adres: Worker sayfasında **Settings → Domains & Routes** altında `aloni.<hesap-adı>.workers.dev` yazar. Telefonda Safari ile açıp Paylaş → **Ana Ekrana Ekle**.
 4. Her PR için Cloudflare bir önizleme sürümü üretebilir (Workers Builds); önizlemedeki veri **o adrese özeldir**, gerçek veri girme.
-5. **Bilinen durum (2026-11-18, Bora):** yalnızca **`main`** dalının «Workers Builds» kontrolü sayılır. Başka dallarda (PR dalları) bu kontrol kırmızı çıkabilir; bu birleştirmeyi engellemez. **Her birleştirmeden sonra `main`'in Workers Builds kontrolünün yeşil olduğu doğrulanır; `main` kırmızıysa başka her iş durur ve önce o düzeltilir.**
 5. **Sürüm kontrolü:** Περισσότερα altında «Έκδοση: … · xxxxxxx» (7 harf) GitHub'daki son birleştirmeyle aynı olmalı.
 6. **Geri alma:** Worker → **Deployments** → önceki sürümün yanında **Rollback**. Sonra Claude'a söyle ki `main` de düzeltilsin.
 7. **Önemli:** `main`'e her birleştirme canlıya çıkar; bu yüzden birleştirmeden önce CI yeşil olmalı.

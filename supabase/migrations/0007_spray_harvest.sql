@@ -42,15 +42,12 @@ alter table job_spray
   add column phi_days integer check (phi_days is null or phi_days >= 0), add column rei_hours integer check (rei_hours is null or rei_hours >= 0),
   add column phi_source text check (phi_source in ('label','manual')),                            -- label = from a SIGNED label use; manual = typed by Bora from the label (amending row)
   add column flags text[] not null default '{}',
-  add column late_reason text,                                                                    -- «λόγος καθυστέρησης»: required when the end time was entered more than 7 days late
   add column amends_id uuid references job_spray(id),
   add column device_id text, add column actor_id text;
 alter table job_spray
   add constraint job_spray_wait_known check ((phi_days is null) = (phi_source is null) and (phi_days is null) = (phi_until is null) and (rei_hours is null) = (rei_until is null)),
   -- only a signed label or Bora's own entry may give a waiting period; an unsigned / changed / incomplete label leaves it NULL = unknown = harvest blocked
   add constraint job_spray_label_wait check (phi_source is distinct from 'label' or label_state = 'signed'),
-  -- a late entry is allowed (a forgotten spraying must reach the legal record) but never without its reason; the waiting periods are counted from the entered end time as always
-  add constraint job_spray_late_reason check (not ('late_entry' = any(flags)) or length(btrim(coalesce(late_reason, ''))) > 0),
   add constraint job_spray_amends_manual check (amends_id is null or coalesce(phi_source, '') = 'manual');
 
 -- ---- job_harvest: the crate counter (no job of its own on the phone) ----

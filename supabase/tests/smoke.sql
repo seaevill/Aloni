@@ -155,11 +155,7 @@ begin
   insert into job_harvest(farm_id,planting_id,crates_str,harvested_at,note,device_id,actor_id) values (f,'dddddddd-0000-0000-0000-000000000009',12,now(),'x','dev','act');
   begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,pl,0,now()); raise exception 'zero crates accepted'; exception when check_violation then null; end;
   begin update job_harvest set crates_str = 99; raise exception 'harvest update allowed'; exception when insufficient_privilege then null; end;
-  -- a LATE entry must carry its reason (the phone checks it too; the server does not trust the phone)
-  insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,flags,late_reason) values (f,job2,prod,w,'2026-10-01 08:00+00',0.025,'ml/str','unsigned',array['late_entry'],'Forgot to write it');
-  begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,flags) values (f,job2,prod,w,'2026-10-02 08:00+00',0.025,'ml/str','unsigned',array['late_entry']); raise exception 'late entry without a reason accepted'; exception when check_violation then null; end;
-  begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,flags,late_reason) values (f,job2,prod,w,'2026-10-02 08:00+00',0.025,'ml/str','unsigned',array['late_entry'],'   '); raise exception 'late entry with a blank reason accepted'; exception when check_violation then null; end;
-  select count(*) into n from job_spray where job_id = job2; if n <> 4 then raise exception 'spray rows %', n; end if;
+  select count(*) into n from job_spray where job_id = job2; if n <> 3 then raise exception 'spray rows %', n; end if;
 end $$;
 
 -- 0009: the server refuses a harvest inside a waiting period, whatever the phone says (checked at NOW, never at the typed harvest time)

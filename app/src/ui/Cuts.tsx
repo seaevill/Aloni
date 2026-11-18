@@ -9,16 +9,15 @@ export function Cuts() {
   const now = instantOf(new Date()) ?? '';
   const cards = (parcels.rows ?? []).filter((p) => !p.deleted_at).map((p) => {
     const c = cutFromParcel(p.id, now, plantings.rows ?? [], links.rows ?? [], sprays.rows ?? []);
-    return { p, state: c.state, source: c.state === 'from' ? t(c.source === 'manual' ? 'cut.source.manual' : 'cut.source.label') : '', late: c.state === 'from' && c.late === true, line: c.state === 'free' ? t('cut.free') : c.state === 'unknown' ? t('cut.unknown') : t('cut.from', { d: formatDateTime(c.at) }) };
+    return { p, state: c.state, source: c.state === 'from' ? t(c.source === 'manual' ? 'cut.source.manual' : 'cut.source.label') : '', line: c.state === 'free' ? t('cut.free') : c.state === 'unknown' ? t('cut.unknown') : t('cut.from', { d: formatDateTime(c.at) }) };
   });
   return (
     <>
       <h2>{t('cut.title')}</h2>
-      {cards.map(({ p, state, line, source, late }) => (
+      {cards.map(({ p, state, line, source }) => (
         <div class={state === 'unknown' ? 'card blocked' : 'card'} key={p.id} data-testid="cut" data-state={state}>{String(p.name)}
           <span class={state === 'unknown' ? 'badge blocked' : state === 'from' ? 'badge unsigned' : 'badge calm'} data-testid="cut-line">{line}</span>
           {source && <small data-testid="cut-source">{source}</small>}
-          {late && <span class="badge warn" data-testid="cut-late">{t('cut.late')}</span>}
         </div>
       ))}
     </>

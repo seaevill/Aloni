@@ -93,17 +93,3 @@ test('the spray form meets the UX bar in el/tr/en (375 px, targets, axe)', async
   }
   expect(errors).toEqual([]);
 });
-
-test('a spraying entered 10 days late: refused without «Λόγος καθυστέρησης», recorded and marked with it', async ({ page }) => {
-  await iphone(page);
-  await setup(page, true);
-  await spray(page);
-  const tenDaysAgo = await page.evaluate(() => new Date(Date.now() - new Date().getTimezoneOffset() * 60000 - 10 * 86400000).toISOString().replace(/:\d{2}\.\d{3}Z$/, ''));
-  await page.locator('input[type=datetime-local]').fill(tenDaysAgo);
-  await expect(page.getByTestId('spray-late-reason')).toBeVisible();
-  await page.getByTestId('spray-save').click();
-  await expect(page.getByTestId('spray-late-error')).toBeVisible(); // nothing saved without the reason
-  await page.getByTestId('spray-late-reason').fill('Ξέχασα να το γράψω');
-  await page.getByTestId('spray-save').click();
-  await expect(page.getByText('καθυστερημένη καταχώριση')).toBeVisible();
-});

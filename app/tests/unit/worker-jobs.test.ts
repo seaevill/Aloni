@@ -36,11 +36,4 @@ describe('the worker completes an assigned spray', () => {
     expect(buildObservation('', 'pest', '', worker, F, now, 'o')).toBeUndefined();
     expect(buildObservation('p1', undefined, '', worker, F, now, 'o')).toBeUndefined();
   });
-  it('a LATE end time (more than 7 days before the record) needs a reason from the worker too, and the record is marked', () => {
-    const at = '2026-11-01T08:00:00Z';
-    expect(completeSprayJob(job(), label(), [planting], worker, at, '', now, 'sp1')).toEqual({ ok: false });
-    expect(completeSprayJob(job(), label(), [planting], worker, at, '', now, 'sp1', '  ')).toEqual({ ok: false });
-    const c = completeSprayJob(job(), label(), [planting], worker, at, '', now, 'sp1', 'Ξέχασα');
-    expect(c.ok && [c.spray.flags, c.spray.late_reason, c.spray.phi_until]).toEqual([['late_entry'], 'Ξέχασα', '2026-11-08T08:00:00Z']);
-  });
 });

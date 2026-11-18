@@ -7,8 +7,7 @@ import { effectiveSprays } from './spray';
 // enters the label's value as an amending row). There is no override and no button that lifts the block by hand.
 
 export type Source = 'label' | 'manual';
-export type Gate = { ok: true } | { ok: false; reason: 'unknown' | 'running' | 'time'; until?: string; source?: Source; late?: true };
-const isLateRow = (r: Row): boolean => Array.isArray(r.flags) && r.flags.includes('late_entry');
+export type Gate = { ok: true } | { ok: false; reason: 'unknown' | 'running' | 'time'; until?: string; source?: Source };
 
 /** Can this planting be harvested at `at` (a UTC second)? Recomputed from the stored PHI days and spray time through phiEnd, never from a stored end. */
 export function harvestGate(plantingId: string, at: string, links: readonly Row[], sprayRows: readonly Row[]): Gate {
@@ -16,14 +15,13 @@ export function harvestGate(plantingId: string, at: string, links: readonly Row[
   const jobs = new Set(links.filter((l) => l.planting_id === plantingId).map((l) => l.job_id));
   let until: string | undefined;
   let source: Source | undefined;
-  let late = false;
   for (const sp of effectiveSprays(sprayRows).filter((r) => jobs.has(r.job_id))) {
     const days = typeof sp.phi_days === 'string' && sp.phi_days !== NOT_ON_LABEL ? parsePhiDays(sp.phi_days) : parsePhiDays('');
     const end = phiEnd(String(sp.sprayed_at), days);
     if (!end.known) return { ok: false, reason: 'unknown' };
-    if (!waitOver(at, end) && (until === undefined || end.value > until)) { until = end.value; source = sp.phi_source === 'manual' ? 'manual' : 'label'; late = isLateRow(sp); } // ISO seconds sort like time; the LATEST end names its source
+    if (!waitOver(at, end) && (until === undefined || end.value > until)) { until = end.value; source = sp.phi_source === 'manual' ? 'manual' : 'label'; } // ISO seconds sort like time; the LATEST end names its source
   }
-  return until === undefined ? { ok: true } : { ok: false, reason: 'running', until, source, ...(late ? { late: true as const } : {}) };
+  return until === undefined ? { ok: true } : { ok: false, reason: 'running', until, source };
 }
 
 export interface HarvestInput { plantingId: string; crates: string; harvestedAt: string; note: string }
@@ -45,7 +43,7 @@ export function buildHarvest(input: HarvestInput, links: readonly Row[], sprayRo
   return { ok: true, row: { id, farm_id: farmId, planting_id: input.plantingId, crates_str: input.crates.trim(), harvested_at: input.harvestedAt, created_at: nowIso, ...(input.note.trim() ? { note: input.note.trim() } : {}) } };
 }
 
-export type Cut = { state: 'free' } | { state: 'unknown' } | { state: 'from'; at: string; source: Source; late?: true };
+export type Cut = { state: 'free' } | { state: 'unknown' } | { state: 'from'; at: string; source: Source };
 
 /**
  * «Κοπή από …» for a parcel, from the waiting periods of ALL its plantings: one unknown waiting period makes the whole parcel «unknown» (blocked); otherwise
@@ -54,14 +52,13 @@ export type Cut = { state: 'free' } | { state: 'unknown' } | { state: 'from'; at
 export function cutFromParcel(parcelId: string, now: string, plantings: readonly Row[], links: readonly Row[], sprayRows: readonly Row[]): Cut {
   let latest: string | undefined;
   let source: Source = 'label';
-  let late = false;
   for (const p of plantings.filter((x) => x.parcel_id === parcelId && !x.deleted_at)) {
     const g = harvestGate(p.id, now, links, sprayRows);
     if (g.ok) continue;
     if (g.reason !== 'running') return { state: 'unknown' }; // unknown waiting period or unreadable time
-    if (g.until && (latest === undefined || g.until > latest)) { latest = g.until; source = g.source ?? 'label'; late = g.late === true; }
+    if (g.until && (latest === undefined || g.until > latest)) { latest = g.until; source = g.source ?? 'label'; }
   }
-  return latest === undefined ? { state: 'free' } : { state: 'from', at: latest, source, ...(late ? { late: true as const } : {}) };
+  return latest === undefined ? { state: 'free' } : { state: 'from', at: latest, source };
 }
 
 /** Re-entry lock for a field: the LATEST running re-entry end among its sprays (from the END of the spraying), or «unknown» when a spray there has no known REI. */

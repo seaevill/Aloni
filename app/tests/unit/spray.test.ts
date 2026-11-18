@@ -65,33 +65,19 @@ describe('a spray is RECORDED even with a weak label, marked, with the PHI unkno
   });
 });
 
-describe('a LATE entry (the end of the spraying is more than 7 days before the record): allowed, but it needs a reason and is marked; the waiting periods do not change', () => {
-  const noError = { applicator: false, dose: false, doseUnit: false, plantings: false, product: false, qty: false, time: false, water: false, lateReason: false };
-  it.each([['exactly 7 days before the record', '2026-11-13T10:00:00Z'], ['earlier today', '2026-11-20T01:00:00Z']])('%s: no reason needed, no mark', (_n, at) => {
-    const r = build(input({ sprayedAt: at }), ctx());
-    expect(r.flags).toEqual([]);
-    expect(r.spray.late_reason).toBeUndefined();
+describe('backdating: the end of the spraying cannot be written further back than 7 days (a late time can only shorten a waiting period)', () => {
+  it.each([
+    ['exactly 7 days before the record', '2026-11-13T10:00:00Z', true],
+    ['one second more than 7 days', '2026-11-13T09:59:59Z', false],
+    ['a month back', '2026-10-20T08:00:00Z', false],
+    ['earlier today', '2026-11-20T01:00:00Z', true],
+  ] as const)('%s', (_n, at, ok) => {
+    const r = buildSpray(input(ok ? { sprayedAt: at } : { sprayedAt: at }), ctx(), F, now, ids);
+    expect(r.ok).toBe(ok);
+    if (!r.ok) expect(r.errors).toEqual({ applicator: false, dose: false, doseUnit: false, plantings: false, product: false, qty: false, time: true, water: false });
   });
-  it.each([['one second more than 7 days', '2026-11-13T09:59:59Z'], ['a month back', '2026-10-20T08:00:00Z']])('%s: without a reason it is refused', (_n, at) => {
-    for (const lateReason of [undefined, '', '   ']) expect(buildSpray(input({ sprayedAt: at, lateReason }), ctx(), F, now, ids)).toEqual({ ok: false, errors: { ...noError, lateReason: true } });
-  });
-  it('with a reason it is recorded, flagged «late_entry», the reason kept as typed, and the PHI/REI counted from the ENTERED end time', () => {
-    const r = build(input({ sprayedAt: '2026-11-01T08:00:00Z', lateReason: '  Ξέχασα να το γράψω  ' }), ctx());
-    expect(r.flags).toEqual(['late_entry']);
-    expect(r.spray).toEqual(expect.objectContaining({ sprayed_at: '2026-11-01T08:00:00Z', late_reason: 'Ξέχασα να το γράψω', flags: ['late_entry'], phi_until: '2026-11-08T08:00:00Z', rei_until: '2026-11-02T08:00:00Z' }));
-  });
-  it('only the Demo seed may write history without a reason (the flag is explicit)', () => {
-    const r = buildSpray(input({ sprayedAt: '2026-10-20T08:00:00Z' }), ctx({ historic: true }), F, now, ids);
-    expect(r.ok).toBe(true);
-  });
-  it('the harvest gate and «Κοπή από» carry the mark of a late entry', () => {
-    const late = build(input({ sprayedAt: '2026-11-18T08:00:00Z', lateReason: 'x' }), ctx({ historic: true })).spray; // not late here (2 days): use a stored late row
-    const row: Row = { ...late, flags: ['late_entry'], late_reason: 'x', job_id: 'job1', id: 'late1' };
-    const pls: Row[] = [{ id: 'pl1', farm_id: F, parcel_id: 'P', crop_id: 'crop' }];
-    const lk: Row[] = [{ id: 'jp1', farm_id: F, job_id: 'job1', planting_id: 'pl1' }];
-    expect(harvestGate('pl1', '2026-11-19T00:00:00Z', lk, [row])).toEqual({ ok: false, reason: 'running', until: '2026-11-25T08:00:00Z', source: 'label', late: true });
-    expect(cutFromParcel('P', '2026-11-19T00:00:00Z', pls, lk, [row])).toEqual({ state: 'from', at: '2026-11-25T08:00:00Z', source: 'label', late: true });
-    expect(harvestGate('pl1', '2026-11-19T00:00:00Z', lk, [{ ...row, flags: [] }])).toEqual({ ok: false, reason: 'running', until: '2026-11-25T08:00:00Z', source: 'label' });
+  it('only the Demo seed may write history (the flag is explicit)', () => {
+    expect(buildSpray(input({ sprayedAt: '2026-10-20T08:00:00Z' }), ctx({ historic: true }), F, now, ids).ok).toBe(true);
   });
 });
 
@@ -103,7 +89,7 @@ describe('what a spray record cannot be without', () => {
     ['unreadable quantity', { qty: 'abc' }, 'qty'], ['a lot without a quantity', { qty: '' }, 'qty'], ['unreadable water', { water: '1.000x' }, 'water'],
   ] as const)('%s is refused', (_n, over, key) => {
     const r = buildSpray(input(over as Partial<SprayInput>), ctx(), F, now, ids);
-    expect(r).toEqual({ ok: false, errors: { applicator: false, dose: false, doseUnit: false, plantings: false, product: false, qty: false, time: false, water: false, lateReason: false, [key]: true } });
+    expect(r).toEqual({ ok: false, errors: { applicator: false, dose: false, doseUnit: false, plantings: false, product: false, qty: false, time: false, water: false, [key]: true } });
   });
   it('without a lot no stock movement is made', () => expect(build(input({ lotKey: undefined, qty: '' }), ctx()).movement).toBeUndefined());
 });
