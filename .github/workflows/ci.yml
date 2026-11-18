@@ -62,7 +62,13 @@ jobs:
       PGDATABASE: postgres
     steps:
       - uses: actions/checkout@v4
-      - name: SQL tests on a bare PostGIS (migrations 0001-0010, smoke, review, concurrency)
+      - name: Upgrade test (a database with data under 0001-0009 gets 0010+ on top)
+        run: bash supabase/tests/upgrade.sh
+      - name: The exact `supabase db push` of the workflow, with the pinned CLI, against a throwaway database
+        run: bash supabase/tests/cli_push.sh
+      - name: The workflow's gate (exact commit, finished, green) and result parser
+        run: bash scripts/ci-gate.test.sh
+      - name: SQL tests on a bare PostGIS (all migrations, then every SQL test)
         run: bash supabase/tests/run.sh plain
       - name: SQL tests with the Supabase layout (extensions schema, search_path) - the auth schema is a STUB, not Supabase Auth
         run: bash supabase/tests/run.sh supabase

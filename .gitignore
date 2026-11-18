@@ -7,3 +7,6 @@ playwright-report/
 .env.local
 *.log
 app/screenshots/
+
+# Supabase CLI scratch files (written by `supabase link` / `db push`)
+supabase/.temp/
