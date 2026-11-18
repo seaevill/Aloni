@@ -15,3 +15,8 @@ export const DEMO_FARM_ID = '2843e10d-bdc6-5886-a109-84501d373de2'; // uuidv5('f
 
 /** There is no server yet (M1): nothing is sent anywhere. Screens then say «saved on this phone» instead of counting records as «unsynced». Becomes true with the live sync PR. */
 export const SYNC_CONNECTED = false;
+
+/** Sign-in and worker invitations (src/auth, SignIn, Workers). OFF: nothing is shown and no request is made. Turned on by Bora after the 0001–0018 migrations and the real-account trial (RUNBOOK 12). */
+export const AUTH_ENABLED = false;
+/** The Supabase project's PUBLIC address and publishable key (both are meant to be public; never a secret key). Empty until the live switch. */
+export const BACKEND = { url: '', apiKey: '' };

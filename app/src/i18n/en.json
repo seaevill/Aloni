@@ -405,5 +405,19 @@
   "sync.queuedSignal": "Saved · will be sent when there is signal",
   "sync.rejected.title": "The server did not accept these records",
   "sync.rejected.dismiss": "I have seen it",
-  "sync.rejected.line": "{table} — {reason}"
+  "sync.rejected.line": "{table} — {reason}",
+  "signin.title": "Sign in",
+  "signin.email": "Email",
+  "signin.send": "Send code",
+  "signin.code": "Code from the email",
+  "signin.verify": "Sign in",
+  "signin.out": "Sign out",
+  "signin.as": "Signed in: {email}",
+  "signin.error": "Sign-in did not work. Try again.",
+  "invite.title": "Invitation",
+  "invite.email": "The worker's email",
+  "invite.send": "Save invitation",
+  "invite.closed": "To invite workers, first enter the data controller's details (Information).",
+  "invite.sent": "Invitation saved. The worker signs in with this email.",
+  "invite.error": "The invitation was not saved. Check the email and the connection."
 }
