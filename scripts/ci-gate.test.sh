@@ -34,4 +34,6 @@ expect stop "pooler: an error object (no right)" bash -c "export SUPABASE_DB_PAS
 expect stop "pooler: a host that is not a Supabase pooler" bash -c "export SUPABASE_DB_PASSWORD=x; echo '$P' | sed 's/aws-0-eu-central-1.pooler.supabase.com/evil.example.com/g' | ./pooler-url.sh $R"
 expect stop "pooler: a user of another project" bash -c "export SUPABASE_DB_PASSWORD=x; echo '$P' | ./pooler-url.sh aaaaaaaaaaaaaaaaaaaa"
 expect stop "pooler: no password" bash -c "unset SUPABASE_DB_PASSWORD; echo '$P' | ./pooler-url.sh $R"
+expect pass "pooler: a password with a trailing line break is cleaned" bash -c "export SUPABASE_DB_PASSWORD=\$'abc\n'; echo '$P' | ./pooler-url.sh $R 2>/dev/null | grep -qx 'postgresql://postgres.$R:abc@aws-0-eu-central-1.pooler.supabase.com:5432/postgres?sslmode=require'"
+expect pass "pooler: the password facts are logged without the value" bash -c "export SUPABASE_DB_PASSWORD='sEcret value!'; out=\$(echo '$P' | ./pooler-url.sh $R 2>&1 >/dev/null); echo \"\$out\" | grep -q 'has characters that need URL-encoding=yes' && ! echo \"\$out\" | grep -q sEcret"
 exit $bad

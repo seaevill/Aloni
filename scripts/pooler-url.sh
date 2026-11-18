@@ -21,5 +21,11 @@ host=$(echo "$entry" | jq -r '.db_host // ""'); user=$(echo "$entry" | jq -r '.d
 [[ "$host" =~ ^[a-z0-9.-]+\.pooler\.supabase\.com$ ]] || { echo "::error::the pooler host the API named is not a Supabase pooler host. Nothing was changed." >&2; exit 1; }
 [ "$user" = "postgres.$ref" ] || { echo "::error::the pooler user is not postgres.<project reference>. Nothing was changed." >&2; exit 1; }
 [ "$name" = postgres ] || { echo "::error::the database name is not «postgres». Nothing was changed." >&2; exit 1; }
-enc=$(jq -rn --arg p "$SUPABASE_DB_PASSWORD" '$p | @uri')
+pw=$SUPABASE_DB_PASSWORD
+# A secret pasted with a trailing line break is the commonest cause of «password authentication failed»: drop trailing CR/LF only (nothing else is changed).
+trimmed=no; while [[ "$pw" == *$'\n' || "$pw" == *$'\r' ]]; do pw=${pw%?}; trimmed=yes; done
+# Facts about the password, never its value: they help to tell a mistyped secret from an encoding problem.
+lead=no; [[ "$pw" == [[:space:]]* ]] && lead=yes; trail=no; [[ "$pw" == *[[:space:]] ]] && trail=yes; special=no; [[ "$pw" =~ [^A-Za-z0-9] ]] && special=yes
+echo "database password (the value is never shown): trailing line break removed=$trimmed, starts with a space=$lead, ends with a space=$trail, has characters that need URL-encoding=$special" >&2
+enc=$(jq -rn --arg p "$pw" '$p | @uri')
 printf 'postgresql://%s:%s@%s:%s/%s?sslmode=require\n' "$user" "$enc" "$host" "$port" "$name"
