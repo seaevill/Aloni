@@ -14,7 +14,7 @@ import type { DoseUnit } from '@aloni/rules-core';
 const COL_KEYS: Record<Column, I18nKey> = {
   when: 'register.col.when', parcel: 'register.col.parcel', crop: 'register.col.crop', area: 'register.col.area', product: 'register.col.product', reg_no: 'register.col.reg_no', dose: 'register.col.dose',
   unit: 'register.col.unit', qty: 'register.col.qty', water: 'register.col.water', applicator: 'register.col.applicator', label: 'register.col.label', phi_until: 'register.col.phi_until',
-  rei_until: 'register.col.rei_until', flags: 'register.col.flags', note: 'register.col.note', record: 'register.col.record', amends: 'register.col.amends',
+  rei_until: 'register.col.rei_until', flags: 'register.col.flags', note: 'register.col.note', late_reason: 'register.col.late_reason', record: 'register.col.record', amends: 'register.col.amends',
 };
 const LABEL_KEYS: Record<string, I18nKey> = { signed: 'register.label.signed', unsigned: 'labeluse.status.unsigned', changed: 'labeluse.status.changed', blocked: 'spray.flag.label_blocked', none: 'spray.flag.label_none' };
 const FMT: Fmt = {

@@ -5,7 +5,7 @@ import { effectiveSprays } from '../spray/spray';
 // (date and time, field, crop, treated area, product and registration number, dose and unit, quantity used, water, who applied, the label state and the
 // waiting periods). It is a DRAFT («προσχέδιο»): the app prepares it, a person signs it. Values are printed exactly as stored; nothing is rounded.
 
-export const COLUMNS = ['when', 'parcel', 'crop', 'area', 'product', 'reg_no', 'dose', 'unit', 'qty', 'water', 'applicator', 'label', 'phi_until', 'rei_until', 'flags', 'note', 'record', 'amends'] as const;
+export const COLUMNS = ['when', 'parcel', 'crop', 'area', 'product', 'reg_no', 'dose', 'unit', 'qty', 'water', 'applicator', 'label', 'phi_until', 'rei_until', 'flags', 'note', 'late_reason', 'record', 'amends'] as const;
 export type Column = (typeof COLUMNS)[number];
 export type RegisterLine = Record<Column, string>;
 export interface RegisterData { sprays: readonly Row[]; links: readonly Row[]; plantings: readonly Row[]; parcels: readonly Row[]; crops: readonly Row[]; products: readonly Row[]; workers: readonly Row[] }
@@ -29,7 +29,7 @@ export function registerLines(d: RegisterData, f: Fmt): RegisterLine[] {
         product: product ? f.name(product) : '', reg_no: text(product?.reg_no), dose: f.num(text(s.dose_str)), unit: f.unit(text(s.dose_unit)), qty: f.num(text(s.qty_str)), water: f.num(text(s.water_l)),
         applicator: text(worker?.name), label: f.label(text(s.label_state)),
         phi_until: s.phi_until ? f.when(text(s.phi_until)) : '', rei_until: s.rei_until ? f.when(text(s.rei_until)) : '',
-        flags: (Array.isArray(s.flags) ? (s.flags as string[]) : []).map(f.flag).join(' | '), note: text(s.note), record: text(s.id), amends: text(s.amends_id),
+        flags: (Array.isArray(s.flags) ? (s.flags as string[]) : []).map(f.flag).join(' | '), note: text(s.note), late_reason: text(s.late_reason), record: text(s.id), amends: text(s.amends_id),
       });
     }
   }
