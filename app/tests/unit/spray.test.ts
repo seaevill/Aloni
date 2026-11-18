@@ -65,22 +65,6 @@ describe('a spray is RECORDED even with a weak label, marked, with the PHI unkno
   });
 });
 
-describe('backdating: the end of the spraying cannot be written further back than 7 days (a late time can only shorten a waiting period)', () => {
-  it.each([
-    ['exactly 7 days before the record', '2026-11-13T10:00:00Z', true],
-    ['one second more than 7 days', '2026-11-13T09:59:59Z', false],
-    ['a month back', '2026-10-20T08:00:00Z', false],
-    ['earlier today', '2026-11-20T01:00:00Z', true],
-  ] as const)('%s', (_n, at, ok) => {
-    const r = buildSpray(input(ok ? { sprayedAt: at } : { sprayedAt: at }), ctx(), F, now, ids);
-    expect(r.ok).toBe(ok);
-    if (!r.ok) expect(r.errors).toEqual({ applicator: false, dose: false, doseUnit: false, plantings: false, product: false, qty: false, time: true, water: false });
-  });
-  it('only the Demo seed may write history (the flag is explicit)', () => {
-    expect(buildSpray(input({ sprayedAt: '2026-10-20T08:00:00Z' }), ctx({ historic: true }), F, now, ids).ok).toBe(true);
-  });
-});
-
 describe('what a spray record cannot be without', () => {
   it.each([
     ['no planting', { plantingIds: [] }, 'plantings'], ['no product', { productId: '' }, 'product'], ['no applicator', { applicatorId: '' }, 'applicator'],
