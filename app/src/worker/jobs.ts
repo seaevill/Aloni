@@ -11,10 +11,10 @@ export type SkipReason = (typeof SKIP_REASONS)[number];
 export type Completion = { ok: true; job: Row; spray: Row } | { ok: false };
 
 /** «Έγινε»: the spray record is built from the JOB's own product, dose and label use; the applicator and the actor are the worker. */
-export function completeSprayJob(job: Row, label: Row | undefined, plantings: readonly Row[], worker: Row, sprayedAt: string, note: string, nowIso: string, sprayId: string): Completion {
+export function completeSprayJob(job: Row, label: Row | undefined, plantings: readonly Row[], worker: Row, sprayedAt: string, note: string, nowIso: string, sprayId: string, lateReason?: string): Completion {
   if (job.status !== 'planned' || job.worker_id !== worker.id) return { ok: false }; // only the assigned worker, only a job that is still open
   const r = buildSpray(
-    { plantingIds: plantings.map((p) => p.id), productId: String(job.product_id), applicatorId: worker.id, sprayedAt, dose: String(job.dose_str), doseUnit: job.dose_unit as DoseUnit, lotKey: undefined, qty: '', water: '', note },
+    { plantingIds: plantings.map((p) => p.id), productId: String(job.product_id), applicatorId: worker.id, sprayedAt, dose: String(job.dose_str), doseUnit: job.dose_unit as DoseUnit, lotKey: undefined, qty: '', water: '', note, lateReason },
     { label, plantings, lot: undefined, lotBalance: undefined, today: sprayedAt.split('T')[0] },
     job.farm_id, nowIso, { job: job.id, spray: sprayId, movement: sprayId, plantingLinks: plantings.map((p) => p.id) },
   );

@@ -6,6 +6,7 @@ import { UNIT_KEYS } from './LabelUseForm';
 import { formatDose } from '../i18n/format';
 import { known, type Decimal } from '@aloni/rules-core';
 import { putMany } from '../repo';
+import { isLate } from '../spray/spray';
 import { buildObservation, completeSprayJob, OBSERVATION_KINDS, SKIP_REASONS, skipSprayJob, type ObservationKind, type SkipReason } from '../worker/jobs';
 import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
 import { doneBlocked, reiLockJob, type Lock } from '../spray/harvest';
@@ -32,7 +33,8 @@ export function WorkerApp() {
   const people = workers.rows?.filter((w) => !w.deleted_at && w.name !== 'Bora') ?? [];
   const me = people.find((w) => w.id === workerView.value) ?? people[0];
   const [tabId, setTabId] = useState<'jobs' | 'harvest' | 'observe'>('jobs');
-  const [harvestSaved, setHarvestSaved] = useState(false); // «saved, will be sent when there is signal» after a harvest record
+  const [lateReason, setLateReason] = useState(''); // «λόγος καθυστέρησης» for a time more than 7 days back
+  const [harvestSaved, setHarvestSaved] = useState(false); // the «saved on the phone» line after a harvest record
   const [open, setOpen] = useState<{ job: string; mode: 'done' | 'skip' } | undefined>(undefined);
   const [held, setHeld] = useState<string[]>([]);
   const [when, setWhen] = useState(athensLocalNow(new Date()) ?? '');
@@ -57,7 +59,7 @@ export function WorkerApp() {
   const confirmDone = (job: Row) => {
     const at = athensInstant(when);
     const label = (labels.rows ?? []).find((l) => l.id === job.label_use_id);
-    const c = at ? completeSprayJob(job, label, plantingsOf(job), me, at, note, new Date().toISOString(), crypto.randomUUID()) : undefined;
+    const c = at ? completeSprayJob(job, label, plantingsOf(job), me, at, note, new Date().toISOString(), crypto.randomUUID(), lateReason) : undefined;
     if (c?.ok) hold(job, () => putMany(db, [{ table: 'jobs', row: c.job }, { table: 'job_spray', row: c.spray, op: 'insert' }]));
   };
   const confirmSkip = (job: Row, reason: SkipReason) => {
@@ -101,6 +103,9 @@ export function WorkerApp() {
               {open?.job === j.id && open.mode === 'done' && (
                 <>
                   <label class="field">{t('worker.time')}<input class="input" type="datetime-local" value={when} onInput={(e) => setWhen((e.target as HTMLInputElement).value)} /></label>
+                  {isLate(athensInstant(when) ?? '', new Date().toISOString()) && athensInstant(when) !== undefined && (
+                    <label class="field">{t('spray.late.reason')}<input class="input" value={lateReason} autoComplete="off" data-testid="worker-late-reason" onInput={(e) => setLateReason((e.target as HTMLInputElement).value)} /></label>
+                  )}
                   <label class="field">{t('worker.note')}<input class="input" value={note} autoComplete="off" onInput={(e) => setNote((e.target as HTMLInputElement).value)} /></label>
                   <button class="btn big" data-testid="job-confirm" onClick={() => confirmDone(j)}>{t('worker.confirm')}</button>
                 </>

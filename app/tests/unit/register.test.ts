@@ -19,7 +19,7 @@ describe('the spray register', () => {
   it('one line per spray × planting with the inspection fields, values exactly as stored (0.250 keeps its zero), the applicator and the waiting end', () => {
     const lines = registerLines(base(), fmt);
     expect(lines).toHaveLength(2);
-    expect(lines[0]).toEqual({ "amends": "", "applicator": "Γιώργος", "area": "0,5", "crop": "Σπανάκι", "dose": "0,025", "flags": "lot_expired", "label": "signed", "note": 'a;b "c"', "parcel": "Κάτω Κάμπος", "phi_until": "2026-11-27T08:00:00Z", "product": "Kocide", "qty": "0,250", "record": "s1", "reg_no": "1234/56", "rei_until": "", "unit": "ml/str", "water": "", "when": "2026-11-20T08:00:00Z" });
+    expect(lines[0]).toEqual({ "amends": "", "applicator": "Γιώργος", "area": "0,5", "crop": "Σπανάκι", "dose": "0,025", "flags": "lot_expired", "label": "signed", "late_reason": "", "note": 'a;b "c"', "parcel": "Κάτω Κάμπος", "phi_until": "2026-11-27T08:00:00Z", "product": "Kocide", "qty": "0,250", "record": "s1", "reg_no": "1234/56", "rei_until": "", "unit": "ml/str", "water": "", "when": "2026-11-20T08:00:00Z" });
     expect(lines[1].area).toBe('1');
   });
   it('an unknown waiting period stays EMPTY (never a made-up date); a correction replaces the row it amends and names it', () => {
@@ -29,7 +29,13 @@ describe('the spray register', () => {
     const amend: Row = { ...unknown, id: 's3', amends_id: 's2', phi_until: '2026-11-27T08:00:00Z' };
     const lines = registerLines(base({ sprays: [unknown, amend] }), fmt);
     expect(lines).toHaveLength(2); // the amended row is not listed twice
-    expect(lines[0]).toEqual({ "amends": "s2", "applicator": "Γιώργος", "area": "0,5", "crop": "Σπανάκι", "dose": "0,025", "flags": "lot_expired", "label": "unsigned", "note": 'a;b "c"', "parcel": "Κάτω Κάμπος", "phi_until": "2026-11-27T08:00:00Z", "product": "Kocide", "qty": "0,250", "record": "s3", "reg_no": "1234/56", "rei_until": "", "unit": "ml/str", "water": "", "when": "2026-11-20T08:00:00Z" });
+    expect(lines[0]).toEqual({ "amends": "s2", "applicator": "Γιώργος", "area": "0,5", "crop": "Σπανάκι", "dose": "0,025", "flags": "lot_expired", "label": "unsigned", "late_reason": "", "note": 'a;b "c"', "parcel": "Κάτω Κάμπος", "phi_until": "2026-11-27T08:00:00Z", "product": "Kocide", "qty": "0,250", "record": "s3", "reg_no": "1234/56", "rei_until": "", "unit": "ml/str", "water": "", "when": "2026-11-20T08:00:00Z" });
+  });
+  it('a late entry is marked and its reason printed next to it', () => {
+    const late: Row = { ...base().sprays[0], flags: ['late_entry'], late_reason: 'Ξέχασα' };
+    const l = registerLines(base({ sprays: [late] }), fmt)[0];
+    expect([l.flags, l.late_reason]).toEqual(['late_entry', 'Ξέχασα']);
+    expect(COLUMNS).toContain('late_reason');
   });
   it('in time order, oldest first', () => {
     const a = { ...base().sprays[0], id: 'a', sprayed_at: '2026-11-21T08:00:00Z' }; const b = { ...base().sprays[0], id: 'b', sprayed_at: '2026-11-19T08:00:00Z' };
