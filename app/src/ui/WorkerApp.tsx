@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks';
 import { activeFarm, dataVersion, db } from '../db';
-import { DEMO_FARM_ID } from '../config';
+import { DEMO_FARM_ID, SYNC_CONNECTED } from '../config';
 import { formatDateTime, t, type I18nKey } from '../i18n';
 import { UNIT_KEYS } from './LabelUseForm';
 import { formatDose } from '../i18n/format';
@@ -14,6 +14,7 @@ import type { Row } from '../db/schema';
 import { DemoBanner } from './DemoBanner';
 import { HarvestForm } from './HarvestForm';
 import { nameOf } from './screens';
+import { queuedKey } from './states';
 import { showHeldUndo } from './Toast';
 import { useRows } from './useRows';
 import { workerView } from './nav';
@@ -85,7 +86,7 @@ export function WorkerApp() {
 
       {tabId === 'jobs' && (
         <>
-          {harvestSaved && <p class="msg" role="status" data-testid="worker-status-harvest">{t('harvest.saved')} {t('worker.queued')}</p>}
+          {harvestSaved && <p class="msg" role="status" data-testid="worker-status-harvest">{t('harvest.saved')} {t(queuedKey(SYNC_CONNECTED))}</p>}
           <h2>{t('worker.jobs')}</h2>
           {open_.length === 0 && <p class="muted" data-testid="worker-nojobs">{t('worker.noJobs')}</p>}
           {open_.map((j) => (
@@ -122,7 +123,7 @@ export function WorkerApp() {
           {finished.map((j) => (
             <div class="card" key={j.id} data-testid="worker-finished">{nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {})}
               <small>{finishedLine(j)}</small>
-              {j.status === 'done' && <small class="status-line" data-testid="worker-status">{t('worker.queued')}</small>}
+              {j.status === 'done' && <small class="status-line" data-testid="worker-status">{t(queuedKey(SYNC_CONNECTED))}</small>}
             </div>
           ))}
         </>
