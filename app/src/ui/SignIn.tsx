@@ -3,18 +3,16 @@ import { AUTH_ENABLED, BACKEND } from '../config';
 import { db } from '../db';
 import { t } from '../i18n';
 import { claimInvitations, requestCode, session, tokenFor, verifyCode, type Session } from '../auth/gotrue';
-import { putLocal } from '../repo';
+import { loadSession, saveSession } from '../auth/store';
 
-const KEY = 'auth_session';
-const save = async (s: Session | undefined) => { session.value = s; await putLocal(db, KEY, s ?? null); };
+const save = saveSession;
 
 /** More → sign-in with an e-mail code (owner and worker alike). Shown only when AUTH_ENABLED. After the first sign-in an open invitation for the address is claimed. */
 export function SignIn() {
   const [email, setEmail] = useState(''); const [code, setCode] = useState(''); const [sent, setSent] = useState(false); const [failed, setFailed] = useState(false);
   useEffect(() => {
     if (!AUTH_ENABLED) return;
-    void db.settings.get(KEY).then(async (r) => {
-      const s = (r?.value as Session | null) ?? undefined;
+    void loadSession().then(async (s) => {
       if (!s) return;
       const token = await tokenFor(BACKEND, s, Date.now(), save); // a refreshed session is stored by tokenFor itself
       if (token && !session.value) session.value = s;               // still valid: no refresh was needed

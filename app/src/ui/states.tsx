@@ -3,6 +3,7 @@ import { db } from '../db';
 import { pendingOps, rejectedOps, unsyncedIds } from '../repo';
 import { dismissRejected } from '../repo/sync-apply';
 import { t, tn, type I18nKey } from '../i18n';
+import { syncError } from '../sync/run';
 import { online } from './sync';
 
 /**
@@ -17,6 +18,7 @@ export function SyncChip() {
   else if (offline && n > 0) text = t('sync.both', { offline: t('sync.offline'), pending: tn('sync.pending', n) });
   else if (offline) text = t('sync.offline');
   else if (n > 0) text = tn('sync.pending', n);
+  if (SYNC_CONNECTED && syncError.value) text = [text, t('sync.error')].filter(Boolean).join(' · ');
   if (!text) return null;
   return <p class={SYNC_CONNECTED ? 'chip' : 'chip calm'} role="status" data-testid="sync-chip">{text}</p>;
 }
