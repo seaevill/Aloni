@@ -24,4 +24,4 @@ problems as (
   union all select 'migration 0012 not applied (sync_table does not know crops)' where not exists (select 1 from pg_proc where proname = 'sync_table') or sync_table('crops') is null
 )
 select problem from problems
-union all select 'OK: ' || count(*) || ' tables with RLS, no problem found' from pg_tables where schemaname = 'public' and rowsecurity and not exists (select 1 from problems);
+union all select 'OK: ' || n || ' tables with RLS, no problem found' from (select count(*) as n from pg_tables where schemaname = 'public' and rowsecurity) x where not exists (select 1 from problems);   -- the OK row exists ONLY when there is no problem (an aggregate without WHERE would always return a row)
