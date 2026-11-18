@@ -204,17 +204,19 @@ begin
   update jobs set status = 'skipped', skip_reason = 'rain' where id = j;
   begin update jobs set skip_reason = null where id = j; raise exception 'skipped job without a reason accepted'; exception when check_violation then null; end;
   begin insert into jobs(farm_id,kind,status,product_id,worker_id,dose_str,dose_unit,skip_reason) values (f,'spray','planned',prod,w,0.025,'ml/str','rain'); raise exception 'reason on an open job accepted'; exception when check_violation then null; end;
-  insert into jobs(id,farm_id,kind,status,product_id,worker_id,assigned_to,dose_str,dose_unit,planned_for) values ('ffffffff-0000-0000-0000-000000000002',f,'spray','planned',prod,w,'00000000-0000-0000-0000-0000000000b2',0.025,'ml/str','2026-11-18');
+  update workers set user_id = '00000000-0000-0000-0000-0000000000b2' where id = w; -- the roster entry has an account: the job's assignee is DERIVED from it
+  insert into jobs(id,farm_id,kind,status,product_id,worker_id,dose_str,dose_unit,planned_for) values ('ffffffff-0000-0000-0000-000000000002',f,'spray','planned',prod,w,0.025,'ml/str','2026-11-18');
   insert into products(id,farm_id,name,type,unit) values ('aaaaaaaa-0000-0000-0000-000000000002',f,'Other product','fungicide','kg');
   insert into observations(farm_id,parcel_id,kind,note,observed_at,device_id,actor_id) values (f,p,'pest','aphids','2026-11-20 08:00+00','dev',w::text);
   begin insert into observations(farm_id,parcel_id,kind) values (f,p,'rumour'); raise exception 'bad observation kind accepted'; exception when check_violation then null; end;
   begin update observations set note = 'x'; raise exception 'observation update allowed'; exception when insufficient_privilege then null; end;
 end $$;
 
-create role app_user nologin;
+do $$ begin if not exists (select 1 from pg_roles where rolname = 'app_user') then create role app_user nologin; end if; end $$;
 grant usage on schema public, auth to app_user;
 grant all on all tables in schema public to app_user;
 grant all on all sequences in schema public to app_user;
+grant execute on all functions in schema public to app_user;
 grant execute on all functions in schema auth to app_user;
 
 set role app_user;
@@ -232,9 +234,11 @@ begin
   res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', op1, 'farm_id', f, 'table', 'parcels', 'op', 'insert', 'row', jsonb_build_object('id', pid, 'farm_id', f, 'name', 'Synced', 'area_str', '0.625')))); 
   if res->0->>'status' <> 'applied' then raise exception 'insert not applied: %', res; end if;
   select area_str into v from parcels where id = pid; if v <> 0.625 then raise exception 'area changed on the way: %', v; end if;
-  -- the same op twice = ONE effect (even an update that would now change something)
+  -- the same op twice = ONE effect; the same op_id with DIFFERENT content is REJECTED (never quietly «duplicate»)
+  res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', op1, 'farm_id', f, 'table', 'parcels', 'op', 'insert', 'row', jsonb_build_object('id', pid, 'farm_id', f, 'name', 'Synced', 'area_str', '0.625'))));
+  if res->0->>'status' <> 'duplicate' then raise exception 'identical repeat not recognised: %', res; end if;
   res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', op1, 'farm_id', f, 'table', 'parcels', 'op', 'insert', 'row', jsonb_build_object('id', pid, 'farm_id', f, 'name', 'Changed', 'area_str', '9'))));
-  if res->0->>'status' <> 'duplicate' then raise exception 'repeat not recognised: %', res; end if;
+  if res->0->>'status' <> 'rejected' or res->0->>'reason' not like '%different content%' then raise exception 'reused op_id with other content not rejected: %', res; end if;
   select count(*), min(name) into n, nm from parcels where id = pid; if n <> 1 or nm <> 'Synced' then raise exception 'repeat had an effect'; end if;
   -- an update
   res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', op2, 'farm_id', f, 'table', 'parcels', 'op', 'update', 'row', jsonb_build_object('id', pid, 'farm_id', f, 'name', 'Renamed'))));
@@ -256,14 +260,28 @@ begin
   res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', f, 'table', 'nope', 'op', 'insert', 'row', '{}'::jsonb),
     jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', f, 'table', 'settings', 'op', 'insert', 'row', jsonb_build_object('farm_id', f, 'key', 'controller', 'value', jsonb_build_object('name', 'T')))));
   if res->0->>'status' <> 'rejected' or res->1->>'status' <> 'applied' then raise exception 'batch handling wrong: %', res; end if;
-  -- pull: only newer rows, oldest first, only this farm
-  res := pull(f, 0, 1000);
-  if jsonb_array_length(res) < 3 then raise exception 'pull returned too little: %', jsonb_array_length(res); end if;
-  select max((x->>'seq')::bigint) into seq0 from jsonb_array_elements(res) x;
-  if jsonb_array_length(pull(f, seq0, 1000)) <> 0 then raise exception 'pull after the last seq returned rows'; end if;
-  if jsonb_array_length(pull(f, 0, 2)) <> 2 then raise exception 'pull ignored its limit'; end if;
-  if jsonb_array_length(pull(other, 0, 1000)) <> 0 then raise exception 'pull of a farm the caller is not in returned rows'; end if;
-  begin perform pull(f, 0, 0); raise exception 'pull with limit 0 accepted'; exception when invalid_parameter_value then null; end;
+end $$;
+
+-- 0010: pull runs in ANOTHER transaction than the writes (it serves only finished transactions): cursor, limit, paging, farm isolation
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; other constant uuid := '22222222-2222-2222-2222-222222222222'; res jsonb; r2 jsonb; n int; seen int := 0; cur jsonb := null; guard int := 0;
+begin
+  res := pull(f, null, 1000);
+  if jsonb_array_length(res->'rows') < 3 or (res->>'more')::boolean then raise exception 'pull returned too little or claims more: %', res->>'more'; end if;
+  if (res->'rows'->0) ? 'sync_xid' or (res->'rows'->0->'row') ? 'sync_xid' then raise exception 'sync_xid leaked into the rows'; end if;
+  -- nothing after the cursor
+  r2 := pull(f, res->'cursor', 1000);
+  if jsonb_array_length(r2->'rows') <> 0 then raise exception 'pull after its own cursor returned rows'; end if;
+  if r2->'cursor' <> res->'cursor' then raise exception 'an empty page moved the cursor'; end if;
+  -- paging with a limit of 2 visits every row exactly once, in the same order
+  loop
+    res := pull(f, cur, 2); n := jsonb_array_length(res->'rows'); seen := seen + n; cur := res->'cursor'; guard := guard + 1;
+    exit when not (res->>'more')::boolean or guard > 200;
+  end loop;
+  if seen <> jsonb_array_length(pull(f, null, 1000)->'rows') then raise exception 'paging lost or repeated rows (% vs %)', seen, jsonb_array_length(pull(f, null, 1000)->'rows'); end if;
+  if jsonb_array_length(pull(other, null, 1000)->'rows') <> 0 then raise exception 'pull of a farm the caller is not in returned rows'; end if;
+  begin perform pull(f, null, 0); raise exception 'limit 0 accepted'; exception when invalid_parameter_value then null; end;
+  begin perform pull(f, null, 1001); raise exception 'limit 1001 accepted'; exception when invalid_parameter_value then null; end;
 end $$;
 
 set test.uid = '00000000-0000-0000-0000-0000000000b2';   -- worker
@@ -288,7 +306,7 @@ end $$;
 do $$ declare res jsonb; f constant uuid := '11111111-1111-1111-1111-111111111111'; begin
   res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', f, 'table', 'products', 'op', 'insert', 'row', jsonb_build_object('id', gen_random_uuid(), 'farm_id', f, 'name', 'x', 'type', 'fungicide', 'unit', 'kg'))));
   if res->0->>'status' <> 'rejected' then raise exception 'worker pushed a product: %', res; end if;
-  if jsonb_array_length(pull(f, 0, 1000)) > 0 and exists (select 1 from jsonb_array_elements(pull(f, 0, 1000)) x where x->>'table' in ('job_spray', 'products', 'stock_lots')) then raise exception 'worker pulled products, sprays or stock'; end if;
+  if exists (select 1 from jsonb_array_elements(pull(f, null, 1000)->'rows') x where x->>'table' in ('job_spray', 'products', 'stock_lots')) then raise exception 'worker pulled products, sprays or stock'; end if;
 end $$;
 
 -- 0008: a worker may only say done / not done (with time and note): never change the product, the dose, the assignment or anything else of the job

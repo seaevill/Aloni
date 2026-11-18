@@ -62,12 +62,10 @@ jobs:
       PGDATABASE: postgres
     steps:
       - uses: actions/checkout@v4
-      - name: Apply migrations to a THROWAWAY database (not Supabase)
-        run: |
-          psql -v ON_ERROR_STOP=1 -f supabase/tests/auth_stub.sql
-          for f in supabase/migrations/*.sql; do echo "== $f"; psql -v ON_ERROR_STOP=1 -f "$f"; done
-      - name: Smoke test (append-only, hash chain, RLS)
-        run: psql -v ON_ERROR_STOP=1 -f supabase/tests/smoke.sql
+      - name: SQL tests on a bare PostGIS (migrations 0001-0010, smoke, review, concurrency)
+        run: bash supabase/tests/run.sh plain
+      - name: SQL tests with the Supabase layout (extensions schema, search_path) - the auth schema is a STUB, not Supabase Auth
+        run: bash supabase/tests/run.sh supabase
 
   pr-size:
     if: github.event_name == 'pull_request'
