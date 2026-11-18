@@ -21,4 +21,5 @@ psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/review.sql && echo "SQL review t
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/agri.sql && echo "SQL agricultural record tests OK"
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/phone.sql && echo "SQL phone-records tests OK"
 bash supabase/tests/contract.sh
+out=$(psql -X -At -f supabase/tests/verify_applied.sql); echo "$out"; echo "$out" | grep -q "^OK:" || { echo "verify_applied.sql found problems"; exit 1; }
 bash supabase/tests/concurrency.sh

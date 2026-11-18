@@ -90,3 +90,19 @@ Barındırma **Cloudflare Workers** (statik dosyalar) üzerinde; paneldeki `alon
 8. **Veritabanı kurulumu (SQL):** Claude her migration dosyasını (`supabase/migrations/…`) sana verir; sen **SQL Editor → New query**'ye yapıştırıp **Run**'a basarsın, sırayla. Claude hangi dosyanın sırada olduğunu ve «Success» çıktısını nasıl göreceğini yazar. Bir dosya hata verirse **durup** ekran görüntüsünü Claude'a gönder.
 9. **Yedek (para sorusu):** Free planda günlük otomatik yedek **yok**. Plan: haftalık `pg_dump` (senin AB kovan) + uygulamadan JSON yedeği. Pro (25 $/ay) günlük yedek ekler; **para gerektirdiği için sen onaylamadan açılmaz**.
 10. Bittiğinde Claude'a «Supabase tamam» ve Project URL'yi yaz. Claude PR 16'ya (canlı eşitleme) başlar.
+
+## 10. Migration'ları Supabase'e uygulama planı (Bora onayıyla; yalnızca §9 bittikten ve «Supabase tamam» dedikten sonra)
+**Henüz hiçbir migration hiçbir yere uygulanmadı** (CI yalnızca geçici veritabanlarında dener). Önce `docs/reviews/2026-11-18-migrations.md` ve açık sorular okunur; Bora «uygula» demeden bu bölüm çalıştırılmaz.
+**Başlamadan:** (a) `main`'de CI ve Workers Builds yeşil; (b) proje boş (Table Editor'de tablo yok); (c) **Database → Extensions** sayfasında `postgis` ve `pgcrypto` varsa «extensions» şemasında kalsın (Claude'un testi bu yerleşimle de geçer); (d) Telefondaki JSON yedeği (More → Yedek) alınmış.
+**Sırayla, her dosya ayrı «New query» → yapıştır → Run** (SQL Editor bir dosyayı tek işlem olarak çalıştırır: hata olursa o dosyanın hiçbir şeyi kalmaz):
+`0001_core` → `0002_master_data` → `0003_operations` → `0004_triggers_rls` → `0005_weather_topo` → `0006_phone_model` → `0007_spray_harvest` → `0008_assignment_observations` → `0009_sync` → `0010_review_hardening` → `0011_agri_records` → `0012_phone_contract`.
+Her dosyadan sonra «Success» görünmeli. **Hata olursa dur**, ekran görüntüsünü Claude'a gönder; sonraki dosyaya geçme.
+**Sonunda:** `supabase/tests/verify_applied.sql` dosyasını yapıştırıp çalıştır. Çıktı tek satır `OK: … tables with RLS, no problem found` olmalı; başka satır varsa her satır bir sorundur → Claude'a gönder.
+**İlk çiftlik ve sahip (bir kez, SQL Editor):** Authentication → Users → **Add user** (kendi e-postan) → kullanıcının `id`'sini kopyala; sonra
+`insert into farms(name) values ('Bora''nın çiftliği') returning id;` çıkan `id` ile
+`insert into farm_members(farm_id, user_id, role) values ('<farm id>', '<user id>', 'owner');`
+(Kayıt ekranı kapalı kalır; işçi hesapları M2 (c)'de davetle.)
+**Bundan sonra:** uygulanmış bir migration dosyası **asla** değiştirilmez; her değişiklik yeni numaralı dosyadır (CODING_STANDARDS 6).
+**Yedek:** uygulama anında veritabanı boş ve veri yalnızca telefonlardadır; asıl yedek telefondaki JSON yedeğidir. Eşitleme açıldıktan sonra: Free planda otomatik yedek yok → haftalık `pg_dump` (§5/§9-9) + her telefonun JSON yedeği; Pro'ya geçmek para gerektirir, onaysız yapılmaz.
+**Kurtarma:** (1) Bir dosya yarıda hata verdiyse: o dosya tek işlemdir, kendini geri alır; düzeltmeyi Claude yeni dosya olarak hazırlar (uygulanmış dosyalar değişmez). (2) Birden çok dosya uygulanmış ve temiz başlangıç istenirse: veritabanı boş olduğu sürece en güvenli yol projeyi **silip yeniden oluşturmak** (Settings → General → Delete project; veri kaybı yok çünkü veri telefonlarda) ve §9'u yinelemek. (3) Eşitleme açıldıktan sonra: telefonlar JSON yedeğinden geri yükler (kayıtlar özgün kimlikleriyle, bir kez), sunucu yedeği `pg_dump` dosyasından döner; tatbikat M5'te.
+
