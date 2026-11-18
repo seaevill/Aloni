@@ -1,0 +1,2 @@
+# Minimal Supabase CLI project file (only what `supabase link` / `supabase db push` need). The migrations are in supabase/migrations (0001, 0002, ...).
+project_id = "aloni"

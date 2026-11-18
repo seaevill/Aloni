@@ -91,18 +91,28 @@ Barındırma **Cloudflare Workers** (statik dosyalar) üzerinde; paneldeki `alon
 9. **Yedek (para sorusu):** Free planda günlük otomatik yedek **yok**. Plan: haftalık `pg_dump` (senin AB kovan) + uygulamadan JSON yedeği. Pro (25 $/ay) günlük yedek ekler; **para gerektirdiği için sen onaylamadan açılmaz**.
 10. Bittiğinde Claude'a «Supabase tamam» ve Project URL'yi yaz. Claude PR 16'ya (canlı eşitleme) başlar.
 
-## 10. Migration'ları Supabase'e uygulama planı (Bora onayıyla; yalnızca §9 bittikten ve «Supabase tamam» dedikten sonra)
-**Henüz hiçbir migration hiçbir yere uygulanmadı** (CI yalnızca geçici veritabanlarında dener). Önce `docs/reviews/2026-11-18-migrations.md` ve açık sorular okunur; Bora «uygula» demeden bu bölüm çalıştırılmaz.
-**Başlamadan:** (a) `main`'de CI ve Workers Builds yeşil; (b) proje boş (Table Editor'de tablo yok); (c) **Database → Extensions** sayfasında `postgis` ve `pgcrypto` varsa «extensions» şemasında kalsın (Claude'un testi bu yerleşimle de geçer); (d) Telefondaki JSON yedeği (More → Yedek) alınmış.
-**Sırayla, her dosya ayrı «New query» → yapıştır → Run** (SQL Editor bir dosyayı tek işlem olarak çalıştırır: hata olursa o dosyanın hiçbir şeyi kalmaz):
-`0001_core` → `0002_master_data` → `0003_operations` → `0004_triggers_rls` → `0005_weather_topo` → `0006_phone_model` → `0007_spray_harvest` → `0008_assignment_observations` → `0009_sync` → `0010_review_hardening` → `0011_agri_records` → `0012_phone_contract`.
-Her dosyadan sonra «Success» görünmeli. **Hata olursa dur**, ekran görüntüsünü Claude'a gönder; sonraki dosyaya geçme.
-**Sonunda:** `supabase/tests/verify_applied.sql` dosyasını yapıştırıp çalıştır. Çıktı tek satır `OK: … tables with RLS, no problem found` olmalı; başka satır varsa her satır bir sorundur → Claude'a gönder.
-**İlk çiftlik ve sahip (bir kez, SQL Editor):** Authentication → Users → **Add user** (kendi e-postan) → kullanıcının `id`'sini kopyala; sonra
-`insert into farms(name) values ('Bora''nın çiftliği') returning id;` çıkan `id` ile
-`insert into farm_members(farm_id, user_id, role) values ('<farm id>', '<user id>', 'owner');`
-(Kayıt ekranı kapalı kalır; işçi hesapları M2 (c)'de davetle.)
-**Bundan sonra:** uygulanmış bir migration dosyası **asla** değiştirilmez; her değişiklik yeni numaralı dosyadır (CODING_STANDARDS 6).
-**Yedek:** uygulama anında veritabanı boş ve veri yalnızca telefonlardadır; asıl yedek telefondaki JSON yedeğidir. Eşitleme açıldıktan sonra: Free planda otomatik yedek yok → haftalık `pg_dump` (§5/§9-9) + her telefonun JSON yedeği; Pro'ya geçmek para gerektirir, onaysız yapılmaz.
-**Kurtarma:** (1) Bir dosya yarıda hata verdiyse: o dosya tek işlemdir, kendini geri alır; düzeltmeyi Claude yeni dosya olarak hazırlar (uygulanmış dosyalar değişmez). (2) Birden çok dosya uygulanmış ve temiz başlangıç istenirse: veritabanı boş olduğu sürece en güvenli yol projeyi **silip yeniden oluşturmak** (Settings → General → Delete project; veri kaybı yok çünkü veri telefonlarda) ve §9'u yinelemek. (3) Eşitleme açıldıktan sonra: telefonlar JSON yedeğinden geri yükler (kayıtlar özgün kimlikleriyle, bir kez), sunucu yedeği `pg_dump` dosyasından döner; tatbikat M5'te.
+## 10. Migration'ları Supabase'e uygulama planı (Bora onayıyla)
+**Henüz hiçbir migration hiçbir yere uygulanmadı** (CI yalnızca geçici veritabanlarında dener). Rapor: `docs/reviews/2026-11-18-migrations.md`. **Uygulama ancak şu üç şey olunca:** (1) §9 bitti ve «Supabase tamam» yazıldı, (2) ekibin bağımsız incelemesi (0010–0012) bitti ve düzeltmeleri `main`'de, (3) Bora açıkça **«uygula»** dedi. Bundan önce workflow'u yalnızca `dry-run` ile (hiçbir şeyi değiştirmez) denemek serbest.
+**Başlamadan:** `main`'de CI ve Workers Builds yeşil; proje boş; telefonda JSON yedeği alınmış.
 
+### 10.1 Ana yol: GitHub Actions (`Supabase migrate (manual)`)
+Yalnızca elle başlatılır, yalnızca `main`'den çalışır, o commit'in CI'ı (`check`, `sql`) ve `main`'in Workers Builds kontrolü yeşil değilse **durur**; migration'ları sırayla `supabase db push` ile uygular, geçmişi Supabase'in kendi tablosunda tutar, sonunda `verify_applied.sql`'i çalıştırır.
+**Gizli değerleri sen girersin; bana, sohbete ya da bir dosyaya yazma, ekran görüntüsünde de gösterme.**
+1. **Erişim anahtarı (Access token):** supabase.com → sağ üstte profil → **Account → Access Tokens → Generate new token** → ad: `aloni-github` → çıkan değeri **bir kez** kopyala (sonra bir daha gösterilmez). Bu anahtar hesabının tamamına erişir: iş bitince **Revoke** et, yeni migration gerekince yenisini üret.
+2. **Proje kimliği:** projeyi aç → **Project Settings → General → Reference ID** (20 harflik kod).
+3. **Veritabanı şifresi:** §9 adım 3'te parola yöneticine kaydettiğin şifre. Kaybolduysa: **Project Settings → Database → Reset database password**, yeni şifreyi parola yöneticine kaydet.
+4. **GitHub'da ortam oluştur:** repo → **Settings → Environments → New environment** → ad tam olarak `supabase-production` → **Required reviewers**: kendini ekle (her çalıştırmada senden onay ister) → **Deployment branches and tags → Selected branches** → `main` → **Save protection rules**.
+5. Aynı ortam sayfasında **Environment secrets → Add environment secret**, üç kez, adlar tam olarak: `SUPABASE_ACCESS_TOKEN` (1. adımdaki değer), `SUPABASE_PROJECT_REF` (2.), `SUPABASE_DB_PASSWORD` (3.). Kaydettikten sonra değerler bir daha görünmez; GitHub günlüklerde otomatik `***` yapar, workflow hiçbirini yazdırmaz.
+6. **Deneme (güvenli):** repo → **Actions → Supabase migrate (manual) → Run workflow** → Branch `main`, **mode = dry-run** → Run → onay isteyince **Approve**. Günlükte «would push these migrations» listesi (0001…0012) görünmeli. Hata ya da kırmızı varsa günlüğün **şifre içermeyen** ekran görüntüsünü Claude'a gönder.
+7. **Gerçek uygulama (yalnızca «uygula» dedikten sonra):** aynı ekranda **mode = apply**, **confirm = APPLY** → Run → Approve. Sonunda `verify_applied.sql` adımı yeşil olmalı (`OK: … tables with RLS`). Kırmızıysa **dur**, günlük görüntüsünü gönder; hiçbir şeyi elle düzeltme.
+8. **Panel kontrolü:** Supabase → **Security Advisor** ve **Performance Advisor** sayfalarının ekran görüntüsünü Claude'a gönder. Hedef: RLS'si kapalı tablo ve herkese açık fonksiyon uyarısı **kalmamalı**; kalanları Claude yeni bir migration ile düzeltir.
+9. **İlk çiftlik ve sahip (bir kez, SQL Editor):** Authentication → Users → **Add user** (kendi e-postan) → kullanıcının `id`'sini kopyala; sonra `insert into farms(name) values ('Bora''nın çiftliği') returning id;` ve çıkan `id` ile `insert into farm_members(farm_id, user_id, role) values ('<farm id>', '<user id>', 'owner');` (Kayıt ekranı kapalı kalır; işçi hesapları M2-c'de davetle.)
+10. **Gerçek hesap denemesi (CI'ın yerine geçmez):** sahip hesabıyla bir ilaçlama; işçi hesabıyla ürün/ilaçlama eklenememesi ve başka çiftliğin görünmemesi; `select verify_spray_chain('<farm id>')` boş; anonim anahtarla `apply_ops` reddi.
+
+### 10.2 Yedek yol: SQL Editor (elle)
+Actions çalışmazsa: sırayla `0001_core` → … → `0012_phone_contract` (ve sonraki numaralar), her dosya ayrı **New query** → yapıştır → **Run**; her biri «Success» vermeli, hata olursa dur. Sonunda `supabase/tests/verify_applied.sql`. **Dikkat:** bu yol Supabase'in migration geçmişi tablosuna yazmaz; sonradan Actions'a geçilecekse Claude önce geçmişi hizalar (`supabase migration repair`). İki yolu aynı projede karıştırma.
+
+### 10.3 Kurallar, yedek, kurtarma
+- Uygulanmış bir migration dosyası **asla** değiştirilmez; her değişiklik yeni numaralı dosyadır (CODING_STANDARDS 6). Numara boşluğu ya da çift numara varsa workflow durur.
+- **Yedek:** uygulama anında veritabanı boş, veri yalnızca telefonlarda; asıl yedek telefondaki JSON yedeği. Eşitleme açıldıktan sonra: Free planda otomatik yedek yok → haftalık `pg_dump` + her telefonun JSON yedeği; Pro (para) onaysız açılmaz.
+- **Kurtarma:** (1) Bir dosya hata verirse `db push` o dosyayı kendi işleminde geri alır; düzeltmeyi Claude **yeni dosya** olarak hazırlar. (2) Temiz başlangıç gerekirse, veritabanı boş olduğu sürece en güvenli yol projeyi silip yeniden oluşturmak (Settings → General → Delete project; veri telefonlarda) ve §9'u yinelemek. (3) Eşitleme açıldıktan sonra: telefonlar JSON yedeğinden, sunucu `pg_dump`'tan döner; tatbikat M5'te.

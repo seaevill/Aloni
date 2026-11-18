@@ -1,0 +1,104 @@
+name: Supabase migrate (manual)
+
+# Applies supabase/migrations/*.sql to the Supabase project with `supabase db push`; the CLI keeps the history in Supabase's own table
+# (supabase_migrations.schema_migrations). It runs ONLY when someone starts it by hand, ONLY from `main`, and ONLY when the CI of that commit is green.
+# The first run should be `dry-run` (it lists what would be applied and changes nothing). The secrets live in the GitHub environment «supabase-production»
+# (RUNBOOK §10): SUPABASE_ACCESS_TOKEN, SUPABASE_DB_PASSWORD, SUPABASE_PROJECT_REF. Nothing here prints them.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'dry-run lists what would be applied and changes nothing; apply really applies'
+        type: choice
+        options: [dry-run, apply]
+        default: dry-run
+      confirm:
+        description: 'Type APPLY to allow mode=apply (ignored for dry-run)'
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+  checks: read
+
+concurrency:
+  group: supabase-migrate
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: supabase-production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: The CI of this commit and the main deploy must be green
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          runs=$(gh api "repos/$REPO/commits/$SHA/check-runs?per_page=100")
+          for name in check sql; do
+            c=$(echo "$runs" | jq -r --arg n "$name" '[.check_runs[] | select(.name == $n)] | first | .conclusion // "missing"')
+            echo "CI job '$name': $c"
+            [ "$c" = success ] || { echo "::error::CI job '$name' of $SHA is '$c', not success. Nothing was applied."; exit 1; }
+          done
+          w=$(echo "$runs" | jq -r '[.check_runs[] | select(.name | startswith("Workers Builds"))] | first | .conclusion // "missing"')
+          echo "Workers Builds (main): $w"
+          [ "$w" = success ] || { echo "::error::The Workers Builds check of main is '$w', not success. Fix main first. Nothing was applied."; exit 1; }
+
+      - name: The migration files are in order and there are no gaps
+        run: |
+          set -euo pipefail
+          i=1
+          for f in supabase/migrations/*.sql; do
+            n=$(basename "$f" | cut -d_ -f1)
+            [ "$((10#$n))" -eq "$i" ] || { echo "::error::Migration numbering has a gap or a duplicate at $f (expected $i)"; exit 1; }
+            i=$((i + 1))
+          done
+          echo "$((i - 1)) migration files, numbered 1..$((i - 1))"
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest    # pin to the version of the first successful run (RUNBOOK §10)
+
+      - name: Link the project
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          set -euo pipefail
+          supabase link --project-ref "$SUPABASE_PROJECT_REF"
+
+      - name: What would be applied (changes nothing)
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: supabase db push --dry-run
+
+      - name: Apply the migrations in order
+        if: inputs.mode == 'apply'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          set -euo pipefail
+          [ "$CONFIRM" = APPLY ] || { echo "::error::mode=apply needs the confirm field to be exactly APPLY. Nothing was applied."; exit 1; }
+          supabase db push
+
+      - name: Verify (read-only supabase/tests/verify_applied.sql)
+        if: inputs.mode == 'apply'
+        env:
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          set -euo pipefail
+          url=$(cat supabase/.temp/pooler-url)      # written by `supabase link`; it holds the host and the user, never the password
+          out=$(PGPASSWORD="$SUPABASE_DB_PASSWORD" psql "$url" -X -At -v ON_ERROR_STOP=1 -f supabase/tests/verify_applied.sql)
+          echo "$out"
+          echo "$out" | grep -q '^OK:' || { echo "::error::verify_applied.sql reported problems (listed above)"; exit 1; }
