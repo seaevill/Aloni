@@ -25,7 +25,11 @@ expect stop "verify: an error object instead of rows" bash -c "echo '{\"message\
 R=abcdefghijklmnopqrst
 P='[{"database_type":"PRIMARY","db_host":"aws-0-eu-central-1.pooler.supabase.com","db_name":"postgres","db_port":6543,"db_user":"postgres.abcdefghijklmnopqrst","pool_mode":"transaction"},{"database_type":"PRIMARY","db_host":"aws-0-eu-central-1.pooler.supabase.com","db_name":"postgres","db_port":5432,"db_user":"postgres.abcdefghijklmnopqrst","pool_mode":"session"}]'
 expect pass "pooler: the session entry, password encoded" bash -c "export SUPABASE_DB_PASSWORD='a b/c@d'; echo '$P' | ./pooler-url.sh $R | grep -qx 'postgresql://postgres.$R:a%20b%2Fc%40d@aws-0-eu-central-1.pooler.supabase.com:5432/postgres?sslmode=require'"
-expect stop "pooler: no session entry" bash -c "export SUPABASE_DB_PASSWORD=x; echo '[]' | ./pooler-url.sh $R"
+T='[{"database_type":"PRIMARY","db_host":"aws-0-eu-central-1.pooler.supabase.com","db_name":"postgres","db_port":6543,"db_user":"postgres.abcdefghijklmnopqrst","pool_mode":"transaction","connection_string":"postgresql://postgres.abcdefghijklmnopqrst:[YOUR-PASSWORD]@aws-0-eu-central-1.pooler.supabase.com:6543/postgres"}]'
+expect pass "pooler: only a transaction entry (real answer shape) gives the session address, port 5432" bash -c "export SUPABASE_DB_PASSWORD=x; echo '$T' | ./pooler-url.sh $R 2>/dev/null | grep -qx 'postgresql://postgres.$R:x@aws-0-eu-central-1.pooler.supabase.com:5432/postgres?sslmode=require'"
+expect pass "pooler: the log shows the shape and no password or user" bash -c "export SUPABASE_DB_PASSWORD=secretvalue; echo '$T' | ./pooler-url.sh $R 2>&1 >/dev/null | grep -q 'pool_mode=transaction port=6543 host_suffix=pooler.supabase.com' && ! (echo '$T' | ./pooler-url.sh $R 2>&1 >/dev/null | grep -q -e secretvalue -e abcdefghijklmnopqrst)"
+expect stop "pooler: only a replica entry" bash -c "export SUPABASE_DB_PASSWORD=x; echo '$T' | sed 's/PRIMARY/READ_REPLICA/' | ./pooler-url.sh $R"
+expect stop "pooler: empty answer" bash -c "export SUPABASE_DB_PASSWORD=x; echo '[]' | ./pooler-url.sh $R"
 expect stop "pooler: an error object (no right)" bash -c "export SUPABASE_DB_PASSWORD=x; echo '{\"message\":\"forbidden\"}' | ./pooler-url.sh $R"
 expect stop "pooler: a host that is not a Supabase pooler" bash -c "export SUPABASE_DB_PASSWORD=x; echo '$P' | sed 's/aws-0-eu-central-1.pooler.supabase.com/evil.example.com/g' | ./pooler-url.sh $R"
 expect stop "pooler: a user of another project" bash -c "export SUPABASE_DB_PASSWORD=x; echo '$P' | ./pooler-url.sh aaaaaaaaaaaaaaaaaaaa"
