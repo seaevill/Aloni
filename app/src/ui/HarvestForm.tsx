@@ -36,7 +36,7 @@ export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = 
     onDone(true);
   };
   const shown = parseWhole<'Crates'>(crates).known ? crates.trim() : '0'; // the counter shows 0 until a number is chosen
-  const reason = blocked ? (blocked.reason === 'unknown' ? t('harvest.blocked.unknown') : blocked.reason === 'running' ? t('harvest.blocked.running', { d: formatDateTime(blocked.until ?? '') }) : t('harvest.blocked.time')) : '';
+  const reason = blocked ? (blocked.reason === 'unknown' ? t('harvest.blocked.unknown') : blocked.reason === 'running' ? t(blocked.by === 'rei' ? 'harvest.blocked.rei' : 'harvest.blocked.running', { d: formatDateTime(blocked.until ?? '') }) : t('harvest.blocked.time')) : '';
   return (
     <section>
       <h1>{t('harvest.add')}</h1>

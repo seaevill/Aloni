@@ -24,11 +24,13 @@ const waitLine = (r: Row, days: 'phi_days' | 'rei_hours'): string | undefined =>
 /** Bora types the label's waiting period for a spray whose PHI is unknown. It is saved as a NEW row (the original stays); it never lifts a block by itself: the harvest opens only once this period has run out. */
 function WaitEntry({ spray, onDone }: { spray: Row; onDone: () => void }) {
   const [phi, setPhi] = useState('');
+  const [why, setWhy] = useState('');
   const [rei, setRei] = useState('');
   const [bad, setBad] = useState(false);
+  const [noReason, setNoReason] = useState(false);
   const save = async () => {
-    const e = buildWaitEntry(spray, phi, rei, new Date().toISOString(), crypto.randomUUID());
-    if (!e.ok) { setBad(true); return; }
+    const e = buildWaitEntry(spray, phi, rei, new Date().toISOString(), crypto.randomUUID(), why);
+    if (!e.ok) { setBad(e.phi || e.rei); setNoReason(e.reason); return; }
     await put(db, 'job_spray', { ...e.row, farm_id: realFarmId.value }, 'insert');
     dataVersion.value++;
     onDone();
@@ -42,7 +44,11 @@ function WaitEntry({ spray, onDone }: { spray: Row; onDone: () => void }) {
       <label class="field">{t('labeluse.rei')}
         <input class="input" value={rei} inputMode="numeric" autoComplete="off" data-testid="wait-rei" onInput={(e) => setRei((e.target as HTMLInputElement).value)} />
       </label>
+      <label class="field">{t('spray.wait.reason')}
+        <input class="input" value={why} autoComplete="off" data-testid="wait-reason" onInput={(e) => setWhy((e.target as HTMLInputElement).value)} />
+      </label>
       {bad && <p class="msg error" role="alert">{t('labeluse.error.whole')}</p>}
+      {noReason && <p class="msg error" role="alert" data-testid="wait-reason-error">{t('spray.wait.reason.error')}</p>}
       <button class="btn" data-testid="wait-save" onClick={() => void save()}>{t('product.save')}</button>
       <button class="btn secondary" onClick={onDone}>{t('product.cancel')}</button>
     </div>
