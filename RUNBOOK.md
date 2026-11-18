@@ -133,3 +133,30 @@ Actions çalışmazsa: sırayla `0001_core` → … → `0012_phone_contract` (v
 
 ## 11. Yeni görünümü (Tasarım 2, 2026-11) geri almak
 Görünüm yalnızca iki dosyada: `app/src/ui/tokens.css` (renk, ölçü, gölge) ve `app/src/ui/styles.css`. Mantık, veri ve metin değişmedi. Beğenmezsen: GitHub → **Pull requests → Closed** → «Görünüm: …» (theme) başlıklı PR'ı aç → **Revert** → açılan PR'ı birleştir (CI yeşil olunca). Her görünüm PR'ı tek commit olarak birleşir; en yenisinden başlayıp eskiye doğru hepsini geri alırsan uygulama tamamen eski renklere döner. Geri alma, verini ya da kayıtlarını etkilemez. Kararın kaydı: `docs/design/theme-2026-11/README.md`.
+
+## 12. Gerçek hesap denemesi (adım adım; her adımı sen tıklarsın)
+**Önkoşul:** 0001–0018 Supabase'e uygulanmış ve «verify» yeşil olmalı (0017 ve 0018 için «uygula» demen gerekir). Giriş ve davet ekranları **kapalı** gelir (`AUTH_ENABLED = false`); Claude'a «denemeyi aç» dediğinde proje adresini ve genel (publishable) anahtarı koyup ayrı bir PR'la açar. **Gizli (secret/service) anahtarı hiçbir yere yazma.**
+1. **Supabase → Authentication → Sign In / Providers:** yalnızca **Email** açık; **Confirm email** açık; Google/Apple vb. kapalı. **URL Configuration → Site URL** = uygulamanın adresi.
+2. **Sahip hesabı:** uygulamada **Περισσότερα → Σύνδεση** → e-postan → «Αποστολή κωδικού» → e-postadaki kodu yaz → «Σύνδεση». İlk çiftlik ve sahip üyeliği (bir kez, SQL Editor): bu belgenin 10. maddesindeki `insert into farms … ; insert into farm_members … 'owner'`.
+3. **Veri sorumlusu:** **Περισσότερα → Πληροφορίες** → ad, adres, telefon. (Bunlar olmadan davet **kapalı** kalır; sunucu da reddeder.)
+4. **Test işçisi davet et:** **Περισσότερα → Εργάτες** → işçi ekle (ör. «Δοκιμή») → altında **Πρόσκληση** → ikinci bir e-posta adresin → «Αποθήκευση πρόσκλησης» → «Η πρόσκληση αποθηκεύτηκε».
+5. **İşçi girişi:** başka bir telefonda (ya da gizli sekmede) uygulamayı aç → **Σύνδεση** → o ikinci e-posta → kod → giriş. İlk girişte davet otomatik kabul edilir.
+6. **İşçi ürün/ilaçlama ekleyemiyor (SQL Editor, hiçbir şey kalıcı olmaz — hep `rollback`):** `<işçi>` = Authentication → Users'ta işçinin **User UID**'i, `<çiftlik>` = farms tablosundaki id.
+```sql
+begin; set local role authenticated; select set_config('request.jwt.claims', '{"sub":"<işçi>","role":"authenticated"}', true);
+insert into products(farm_id, name, type, unit) values ('<çiftlik>', 'x', 'fungicide', 'kg');
+rollback;
+```
+Beklenen: **hata** (permission denied / row-level security). Hata yerine «Success» görürsen **dur** ve ekran görüntüsünü gönder.
+7. **İşçi başka çiftliği göremiyor:** önce `insert into farms(name) values ('Deneme 2') returning id;` (sonunda silinecek), sonra
+```sql
+begin; set local role authenticated; select set_config('request.jwt.claims', '{"sub":"<işçi>","role":"authenticated"}', true);
+select count(*) as gorunen_ciftlik from farms;
+rollback;
+```
+Beklenen: **1**.
+8. **Anonim `apply_ops` reddi:** `begin; set local role anon; select apply_ops('[]'::jsonb); rollback;` Beklenen: **permission denied for function apply_ops**.
+9. **Zincir doğrulama:** `select * from verify_spray_chain('<çiftlik>');` Beklenen: **0 satır** (boş). Satır gelirse ekran görüntüsünü gönder.
+10. **Panel kontrolü:** Supabase → sol menü **Advisors** → **Security Advisor** → *Refresh* → ekran görüntüsü; sonra **Performance Advisor** → ekran görüntüsü. Hedef: «RLS Disabled in Public» ve herkese açık fonksiyon uyarısı **yok**. Çıkanları çevirmeden bana göster.
+11. **Temizlik:** Authentication → Users → test işçisini sil; `delete from farms where name = 'Deneme 2';`.
+

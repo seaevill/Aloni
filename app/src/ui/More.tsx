@@ -11,6 +11,7 @@ import { Register } from './Register';
 import { Workers } from './Workers';
 import { workerView } from './nav';
 import { Backup } from './Backup';
+import { SignIn } from './SignIn';
 import { showUndo } from './Toast';
 
 export function More() {
@@ -45,6 +46,7 @@ export function More() {
       )}
       <p class="muted">{t('more.demoNote')}</p>
       {msg && <p class="msg" role="status">{msg}</p>}
+      <SignIn />
       <Backup />
       <SettingsBox />
       {activeFarm.value === DEMO_FARM_ID && <button class="btn secondary" data-testid="open-worker-view" onClick={() => { workerView.value = ''; }}>{t('more.workerView')}</button>}

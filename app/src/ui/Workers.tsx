@@ -1,4 +1,7 @@
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
+import { AUTH_ENABLED, BACKEND } from '../config';
+import { invite, session, tokenFor } from '../auth/gotrue';
+import { canInviteWorkers, loadController, type Controller } from '../legal/controller';
 import { activeFarm, dataVersion, db, realFarmId } from '../db';
 import { t } from '../i18n';
 import { archived, restored } from '../parcels/parcel';
@@ -9,7 +12,32 @@ import { showUndo } from './Toast';
 import { useRows } from './useRows';
 
 /** More → Εργάτες: the roster used to say who sprayed. A name only. Add, archive with 5 s undo; real farm only. */
+/** The invitation of one roster worker: only with a live sign-in AND the data controller's details entered (the same gate the server keeps). */
+function Invite({ worker, controller }: { worker: Row; controller: Controller | undefined }) {
+  const [email, setEmail] = useState(''); const [state, setState] = useState<'idle' | 'sent' | 'failed'>('idle');
+  if (!AUTH_ENABLED || !session.value) return null;
+  if (!canInviteWorkers(controller).allowed) return <p class="muted" data-testid="invite-closed">{t('invite.closed')}</p>;
+  const send = async () => {
+    try {
+      const token = await tokenFor(BACKEND, session.value, Date.now(), async (s) => { session.value = s; });
+      if (!token) throw new Error('not signed in');
+      await invite(BACKEND, token, realFarmId.value, email, worker.id); setState('sent'); setEmail('');
+    } catch { setState('failed'); }
+  };
+  return (
+    <>
+      <strong>{t('invite.title')}</strong>
+      <label class="field">{t('invite.email')}<input class="input" type="email" value={email} autoComplete="off" onInput={(e) => setEmail((e.target as HTMLInputElement).value)} /></label>
+      <button class="btn secondary" data-testid="invite-send" onClick={() => void send()}>{t('invite.send')}</button>
+      {state === 'sent' && <p class="msg" role="status">{t('invite.sent')}</p>}
+      {state === 'failed' && <p class="msg error" role="alert">{t('invite.error')}</p>}
+    </>
+  );
+}
+
 export function Workers({ onBack }: { onBack: () => void }) {
+  const [controller, setController] = useState<Controller | undefined>(undefined);
+  useEffect(() => { if (AUTH_ENABLED) void loadController(db).then(setController); }, []);
   const [name, setName] = useState('');
   const [bad, setBad] = useState(false);
   const q = useRows('workers');
@@ -46,6 +74,7 @@ export function Workers({ onBack }: { onBack: () => void }) {
       {q.rows && live.length === 0 && <p class="muted" data-testid="workers-empty">{t('workers.empty')}</p>}
       {live.map((w) => (
         <div class="card" key={w.id} data-testid="worker">{String(w.name)}
+          {!demo && <Invite worker={w} controller={controller} />}
           {!demo && <button class="btn secondary" onClick={() => void archive(w)}>{t('product.archive')}</button>}
         </div>
       ))}

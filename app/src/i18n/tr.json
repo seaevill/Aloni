@@ -405,5 +405,19 @@
   "sync.queuedSignal": "Kaydedildi · sinyal gelince gönderilecek",
   "sync.rejected.title": "Sunucu bu kayıtları kabul etmedi",
   "sync.rejected.dismiss": "Gördüm",
-  "sync.rejected.line": "{table} — {reason}"
+  "sync.rejected.line": "{table} — {reason}",
+  "signin.title": "Giriş",
+  "signin.email": "E-posta",
+  "signin.send": "Kod gönder",
+  "signin.code": "E-postadaki kod",
+  "signin.verify": "Giriş yap",
+  "signin.out": "Çıkış",
+  "signin.as": "Giriş yapıldı: {email}",
+  "signin.error": "Giriş olmadı. Tekrar deneyin.",
+  "invite.title": "Davet",
+  "invite.email": "İşçinin e-postası",
+  "invite.send": "Daveti kaydet",
+  "invite.closed": "İşçi davet etmek için önce veri sorumlusu bilgilerini girin (Bilgiler).",
+  "invite.sent": "Davet kaydedildi. İşçi bu e-postayla giriş yapar.",
+  "invite.error": "Davet kaydedilemedi. E-postayı ve bağlantıyı kontrol edin."
 }

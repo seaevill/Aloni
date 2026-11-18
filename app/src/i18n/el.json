@@ -405,5 +405,19 @@
   "sync.queuedSignal": "Αποθηκεύτηκε · θα σταλεί όταν έχει σήμα",
   "sync.rejected.title": "Ο διακομιστής δεν δέχτηκε αυτές τις εγγραφές",
   "sync.rejected.dismiss": "Το είδα",
-  "sync.rejected.line": "{table} — {reason}"
+  "sync.rejected.line": "{table} — {reason}",
+  "signin.title": "Σύνδεση",
+  "signin.email": "Email",
+  "signin.send": "Αποστολή κωδικού",
+  "signin.code": "Κωδικός από το email",
+  "signin.verify": "Σύνδεση",
+  "signin.out": "Αποσύνδεση",
+  "signin.as": "Συνδεδεμένος: {email}",
+  "signin.error": "Η σύνδεση δεν πέτυχε. Δοκιμάστε ξανά.",
+  "invite.title": "Πρόσκληση",
+  "invite.email": "Email του εργάτη",
+  "invite.send": "Αποθήκευση πρόσκλησης",
+  "invite.closed": "Για να καλέσετε εργάτες, συμπληρώστε πρώτα τα στοιχεία του υπεύθυνου επεξεργασίας (Πληροφορίες).",
+  "invite.sent": "Η πρόσκληση αποθηκεύτηκε. Ο εργάτης συνδέεται με αυτό το email.",
+  "invite.error": "Η πρόσκληση δεν αποθηκεύτηκε. Ελέγξτε το email και τη σύνδεση."
 }
