@@ -1,0 +1,11 @@
+:root {
+  /* ONE place for every colour, size, space, corner and shadow of the screens. The values are the ones the app has always had; a new look changes only this file. */
+  --bg:#f6f4ec; --fg:#1b1f1a; --green:#1e5630; --card:#fff; --line:#c9c6b8; --field:#6b7062; --warn:#8a3b00;
+  --white:#fff; --muted:#4a4f47; --tab:#3d423b; --amber-bg:#fff3cd; --amber-fg:#4a2500; --danger:#8a1c1c; --calm-bg:#eef3ec; --calm-fg:#1e3d28;
+  --font:"Commissioner",system-ui,-apple-system,"Segoe UI",sans-serif; --lh:1.4;
+  --fs-14:14px; --fs-16:16px; --fs-18:18px; --fs-20:20px; --fs-22:22px; --fs-count:40px;
+  --sp-2:2px; --sp-4:4px; --sp-6:6px; --sp-8:8px; --sp-10:10px; --sp-12:12px; --sp-14:14px; --sp-16:16px; --sp-24:24px; --sp-48:48px;
+  --r-sm:8px; --r-md:12px; --r-pill:99px; --bw-1:1px; --bw-2:2px;
+  --tap:56px; --tap-big:72px; --thumb:96px; --dot:10px; --btn-min-w:96px; --max-w:640px; --nav-h:72px; --main-pad-bottom:88px;
+  --shadow-tab:inset 0 3px 0 var(--green);
+}
