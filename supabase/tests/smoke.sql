@@ -223,9 +223,52 @@ do $$ declare n int; begin
   select count(*) into n from parcels; if n <> 1 then raise exception 'owner sees % parcels (want 1: own farm only)', n; end if;
 end $$;
 
+-- 0009: apply_ops (push) and pull, as the OWNER
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; other constant uuid := '22222222-2222-2222-2222-222222222222';
+        pid constant uuid := '99999999-0000-0000-0000-000000000001'; op1 constant uuid := '88888888-0000-0000-0000-000000000001'; op2 constant uuid := '88888888-0000-0000-0000-000000000002';
+        res jsonb; n int; seq0 bigint; v numeric; nm text;
+begin
+  res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', op1, 'farm_id', f, 'table', 'parcels', 'op', 'insert', 'row', jsonb_build_object('id', pid, 'farm_id', f, 'name', 'Synced', 'area_str', '0.625')))); 
+  if res->0->>'status' <> 'applied' then raise exception 'insert not applied: %', res; end if;
+  select area_str into v from parcels where id = pid; if v <> 0.625 then raise exception 'area changed on the way: %', v; end if;
+  -- the same op twice = ONE effect (even an update that would now change something)
+  res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', op1, 'farm_id', f, 'table', 'parcels', 'op', 'insert', 'row', jsonb_build_object('id', pid, 'farm_id', f, 'name', 'Changed', 'area_str', '9'))));
+  if res->0->>'status' <> 'duplicate' then raise exception 'repeat not recognised: %', res; end if;
+  select count(*), min(name) into n, nm from parcels where id = pid; if n <> 1 or nm <> 'Synced' then raise exception 'repeat had an effect'; end if;
+  -- an update
+  res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', op2, 'farm_id', f, 'table', 'parcels', 'op', 'update', 'row', jsonb_build_object('id', pid, 'farm_id', f, 'name', 'Renamed'))));
+  if res->0->>'status' <> 'applied' then raise exception 'update not applied: %', res; end if;
+  select name into nm from parcels where id = pid; if nm <> 'Renamed' then raise exception 'update lost'; end if;
+  -- rejected, with a reason, and NOT recorded as applied (the phone keeps it): unknown table, unknown column, another farm, a farm the caller is not in, an update of nothing
+  res := apply_ops(jsonb_build_array(
+    jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', f, 'table', 'audit_log', 'op', 'insert', 'row', jsonb_build_object('farm_id', f)),
+    jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', f, 'table', 'parcels', 'op', 'insert', 'row', jsonb_build_object('id', gen_random_uuid(), 'farm_id', f, 'name', 'x', 'area_str', 1, 'colour', 'red')),
+    jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', other, 'table', 'parcels', 'op', 'insert', 'row', jsonb_build_object('id', gen_random_uuid(), 'farm_id', f, 'name', 'x', 'area_str', 1)),
+    jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', other, 'table', 'parcels', 'op', 'insert', 'row', jsonb_build_object('id', gen_random_uuid(), 'farm_id', other, 'name', 'x', 'area_str', 1)),
+    jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', f, 'table', 'parcels', 'op', 'update', 'row', jsonb_build_object('id', gen_random_uuid(), 'farm_id', f, 'name', 'ghost'))));
+  select count(*) into n from jsonb_array_elements(res) x where x->>'status' = 'rejected'; if n <> 5 then raise exception 'expected 5 rejections: %', res; end if;
+  select count(*) into n from applied_ops; if n <> 2 then raise exception 'a rejected op was recorded as applied (%)', n; end if;
+  -- append-only: an update of a spray is rejected, never applied
+  res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', f, 'table', 'job_spray', 'op', 'update', 'row', jsonb_build_object('id', (select id from job_spray limit 1), 'farm_id', f, 'dose_str', 1))));
+  if res->0->>'status' <> 'rejected' then raise exception 'spray update accepted: %', res; end if;
+  -- one rejection does not stop the others
+  res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', f, 'table', 'nope', 'op', 'insert', 'row', '{}'::jsonb),
+    jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', f, 'table', 'settings', 'op', 'insert', 'row', jsonb_build_object('farm_id', f, 'key', 'controller', 'value', jsonb_build_object('name', 'T')))));
+  if res->0->>'status' <> 'rejected' or res->1->>'status' <> 'applied' then raise exception 'batch handling wrong: %', res; end if;
+  -- pull: only newer rows, oldest first, only this farm
+  res := pull(f, 0, 1000);
+  if jsonb_array_length(res) < 3 then raise exception 'pull returned too little: %', jsonb_array_length(res); end if;
+  select max((x->>'seq')::bigint) into seq0 from jsonb_array_elements(res) x;
+  if jsonb_array_length(pull(f, seq0, 1000)) <> 0 then raise exception 'pull after the last seq returned rows'; end if;
+  if jsonb_array_length(pull(f, 0, 2)) <> 2 then raise exception 'pull ignored its limit'; end if;
+  if jsonb_array_length(pull(other, 0, 1000)) <> 0 then raise exception 'pull of a farm the caller is not in returned rows'; end if;
+  begin perform pull(f, 0, 0); raise exception 'pull with limit 0 accepted'; exception when invalid_parameter_value then null; end;
+end $$;
+
 set test.uid = '00000000-0000-0000-0000-0000000000b2';   -- worker
 do $$ declare n int; begin
-  select count(*) into n from parcels; if n <> 1 then raise exception 'worker parcels %', n; end if;
+  select count(*) into n from parcels; if n <> 2 then raise exception 'worker parcels %', n; end if;
   select count(*) into n from job_spray; if n <> 0 then raise exception 'worker can read spray records'; end if;
   select count(*) into n from jobs; if n <> 1 then raise exception 'worker sees unassigned jobs (%)', n; end if;
   begin insert into products(farm_id,name,type,unit) values ('11111111-1111-1111-1111-111111111111','x','fungicide','kg'); raise exception 'worker can insert products';
@@ -239,6 +282,13 @@ end $$;
 do $$ begin
   begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values ('11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-0000000000a2',5,now()); raise exception 'worker harvest inside the PHI accepted'; exception when check_violation then null; end;
   insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values ('11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-0000000000a1',3,now()); -- a clear planting: allowed
+end $$;
+
+-- 0009: a worker's pushed ops go through the SAME rights: products and sprays are refused (rejected with a reason), nothing is applied
+do $$ declare res jsonb; f constant uuid := '11111111-1111-1111-1111-111111111111'; begin
+  res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', f, 'table', 'products', 'op', 'insert', 'row', jsonb_build_object('id', gen_random_uuid(), 'farm_id', f, 'name', 'x', 'type', 'fungicide', 'unit', 'kg'))));
+  if res->0->>'status' <> 'rejected' then raise exception 'worker pushed a product: %', res; end if;
+  if jsonb_array_length(pull(f, 0, 1000)) > 0 and exists (select 1 from jsonb_array_elements(pull(f, 0, 1000)) x where x->>'table' in ('job_spray', 'products', 'stock_lots')) then raise exception 'worker pulled products, sprays or stock'; end if;
 end $$;
 
 -- 0008: a worker may only say done / not done (with time and note): never change the product, the dose, the assignment or anything else of the job
