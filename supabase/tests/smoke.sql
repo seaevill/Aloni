@@ -218,6 +218,7 @@ grant usage on schema public, auth to app_user;
 grant all on all tables in schema public to app_user;
 grant all on all sequences in schema public to app_user;
 grant execute on all functions in schema public to app_user;
+revoke execute on function bump_sync_generation() from app_user;   -- like `authenticated`: only an administrator may call it
 grant execute on all functions in schema auth to app_user;
 
 set role app_user;

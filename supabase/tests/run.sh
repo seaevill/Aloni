@@ -24,6 +24,8 @@ psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/worker.sql || { echo "FAILED: su
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/worker_retry.sql || { echo "FAILED: supabase/tests/worker_retry.sql"; exit 1; }; echo "SQL worker-retry tests OK"
 bash supabase/tests/worker_concurrency.sh
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/final.sql || { echo "FAILED: supabase/tests/final.sql"; exit 1; }; echo "SQL final-review tests OK"
+psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/pull_generation.sql || { echo "FAILED: supabase/tests/pull_generation.sql"; exit 1; }; echo "SQL pull-generation tests OK"
 bash supabase/tests/contract.sh
 out=$(psql -X -At -v ON_ERROR_STOP=1 -f supabase/tests/verify_applied.sql) || { echo "FAILED: verify_applied.sql"; exit 1; }; echo "$out"; echo "$out" | grep -q "^OK:" || { echo "verify_applied.sql found problems"; exit 1; }
 bash supabase/tests/concurrency.sh
+bash supabase/tests/restore.sh "$db"
