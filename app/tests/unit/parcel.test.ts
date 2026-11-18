@@ -10,13 +10,13 @@ const build = (i: ParcelInput) => buildParcel(i, farm, now, 'id-1');
 describe('buildParcel', () => {
   it('keeps the area exactly as typed (0,625 stays 0.625, never 0.63) and sets nothing the farmer did not choose', () => {
     const r = build(input());
-    expect(r).toMatchObject({ ok: true, row: { id: 'id-1', farm_id: farm, name: 'Κάτω Κάμπος', area_str: '0.625', deleted_at: null } });
+    expect(r).toEqual({ "ok": true, "row": { "area_str": "0.625", "created_at": "2026-11-20T10:00:00.000Z", "deleted_at": null, "farm_id": "11111111-1111-4111-8111-111111111111", "id": "id-1", "name": "Κάτω Κάμπος", "updated_at": "2026-11-20T10:00:00.000Z" } });
     expect(r.ok && 'topo_class' in r.row).toBe(false); // no default terrain
     expect(r.ok && 'lat' in r.row).toBe(false); // no pin unless taken
   });
   it('terrain and pin are stored only when chosen', () => {
     const r = build(input({ topo: 'coast', pin: { lat: 37.9905, lng: 23.356, accuracy_m: 12.5 } }));
-    expect(r).toMatchObject({ ok: true, row: { topo_class: 'coast', lat: 37.9905, lng: 23.356, pin_accuracy_m: 12.5 } });
+    expect(r).toEqual({ "ok": true, "row": { "area_str": "0.625", "created_at": "2026-11-20T10:00:00.000Z", "deleted_at": null, "farm_id": "11111111-1111-4111-8111-111111111111", "id": "id-1", "lat": 37.9905, "lng": 23.356, "name": "Κάτω Κάμπος", "pin_accuracy_m": 12.5, "topo_class": "coast", "updated_at": "2026-11-20T10:00:00.000Z" } });
   });
   it('a name and an area are required; an ambiguous or zero area is refused, never guessed', () => {
     expect(build(input({ name: '  ' }))).toEqual({ ok: false, name: true, area: undefined });
@@ -31,7 +31,7 @@ describe('archive / restore: nothing is deleted', () => {
     const r = build(input());
     if (!r.ok) throw new Error('setup');
     const a = archived(r.row, '2026-11-21T00:00:00Z');
-    expect(a).toMatchObject({ name: 'Κάτω Κάμπος', area_str: '0.625', deleted_at: '2026-11-21T00:00:00Z' });
+    expect(a).toEqual({ "area_str": "0.625", "created_at": "2026-11-20T10:00:00.000Z", "deleted_at": "2026-11-21T00:00:00Z", "farm_id": "11111111-1111-4111-8111-111111111111", "id": "id-1", "name": "Κάτω Κάμπος", "updated_at": "2026-11-21T00:00:00Z" });
     expect(restored(a, '2026-11-21T00:00:05Z').deleted_at).toBeNull();
   });
 });

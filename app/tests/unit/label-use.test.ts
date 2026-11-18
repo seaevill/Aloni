@@ -18,29 +18,29 @@ const build = (i: LabelUseInput) => { const r = buildLabelUse(i, TEST_FARM_ID, n
 describe('typed values are kept exactly', () => {
   it('«0,025» is stored as 0.025 and shown back as «0,025»; trailing zeros survive; nothing becomes a number', async () => {
     const row = build(input());
-    expect(row).toMatchObject({ dose_min: '0.025', dose_kind: 'single', dose_unit: 'ml/str', phi_days: '7', rei_hours: '24', max_apps: '3' });
+    expect(row).toEqual({ "created_at": "2026-11-20T10:00:00.000Z", "crop_id": "crop-1", "deleted_at": null, "dose_kind": "single", "dose_min": "0.025", "dose_unit": "ml/str", "farm_id": "11111111-1111-4111-8111-111111111111", "id": "lu-1", "max_apps": "3", "phi_days": "7", "product_id": "prod-1", "rei_hours": "24", "updated_at": "2026-11-20T10:00:00.000Z" });
     const dose = readUse(row).dose;
     expect(dose.known && formatDose({ known: true, value: dose.value.min })).toBe('0,025');
-    expect(readUse(build(input({ doseMin: typed('0,250') }))).dose).toMatchObject({ known: true, value: { min: '0.250' } });
+    expect(readUse(build(input({ doseMin: typed('0,250') }))).dose).toEqual({ known: true, value: { kind: 'single', min: '0.250', max: '0.250', unit: 'ml/str' } });
     for (const k of ['dose_min', 'phi_days', 'rei_hours', 'max_apps']) expect(typeof row[k], k).toBe('string');
     const db = await newDb();
     await put(db, 'label_uses', row, 'insert');
-    expect(await db.label_uses.get('lu-1')).toMatchObject(row); // survives the database unchanged (plus who wrote it)
+    expect(await db.label_uses.get('lu-1')).toEqual({ ...row, device_id: expect.any(String), actor_id: expect.any(String) }); // survives unchanged, plus who wrote it
   });
   it('single = one box (a typed second dose is NOT kept); range = both, min above max refused, equal allowed', () => {
     expect(build(input({ doseMax: typed('9') })).dose_max).toBeUndefined();
     const range = build(input({ kind: 'range', doseMin: typed('0,15'), doseMax: typed('0,25') }));
-    expect(readUse(range).dose).toMatchObject({ known: true, value: { kind: 'range', min: '0.15', max: '0.25' } });
-    expect(buildLabelUse(input({ kind: 'range', doseMin: typed('0,25'), doseMax: typed('0,15') }), TEST_FARM_ID, now, 'x')).toMatchObject({ ok: false, invalid: new Set(['range']) });
+    expect(readUse(range).dose).toEqual({ "known": true, "value": { "kind": "range", "max": "0.25", "min": "0.15", "unit": "ml/str" } });
+    expect(buildLabelUse(input({ kind: 'range', doseMin: typed('0,25'), doseMax: typed('0,15') }), TEST_FARM_ID, now, 'x')).toEqual({ ok: false, product: false, crop: false, invalid: new Set(['range']) });
     expect(buildLabelUse(input({ kind: 'range', doseMin: typed('0,25'), doseMax: typed('0,25') }), TEST_FARM_ID, now, 'x').ok).toBe(true);
   });
   it('a typed but unreadable value is refused, never guessed: «1.000» dose, «7,5» PHI, «abc» REI', () => {
     const r = buildLabelUse(input({ doseMin: typed('1.000'), phi: typed('7,5'), rei: typed('abc') }), TEST_FARM_ID, now, 'x');
-    expect(r).toMatchObject({ ok: false, invalid: new Set(['doseMin', 'phi', 'rei']) });
+    expect(r).toEqual({ "crop": false, "invalid": new Set(["doseMin", "phi", "rei"]), "ok": false, "product": false });
   });
   it('a product and a crop are required; the dose unit list is the provisional one (no %, no conversions)', () => {
-    expect(buildLabelUse(input({ productId: '' }), TEST_FARM_ID, now, 'x')).toMatchObject({ ok: false, product: true, crop: false });
-    expect(buildLabelUse(input({ cropId: '' }), TEST_FARM_ID, now, 'x')).toMatchObject({ ok: false, product: false, crop: true });
+    expect(buildLabelUse(input({ productId: '' }), TEST_FARM_ID, now, 'x')).toEqual({ "crop": false, "invalid": new Set(), "ok": false, "product": true });
+    expect(buildLabelUse(input({ cropId: '' }), TEST_FARM_ID, now, 'x')).toEqual({ ok: false, product: false, crop: true, invalid: new Set() });
     expect([...DOSE_UNITS]).toEqual(['ml/str', 'g/str', 'l/str', 'kg/str', 'ml/100l', 'g/100l']);
   });
 });
@@ -75,7 +75,7 @@ describe('sign-off: exactly these values, a real date, a name; any edit drops it
   const signed = () => { const r = withSignOff(build(input()), '  Test Agronomist ', '2026-11-17', now); if (!r) throw new Error('setup'); return r; };
   it('records the sign-off and shows «signed»', () => {
     expect(statusOf(signed())).toBe('signed');
-    expect(signed().sign_off).toMatchObject({ by: 'Test Agronomist', on: '2026-11-17' });
+    expect(signed().sign_off).toEqual({ by: 'Test Agronomist', on: '2026-11-17', fingerprint: expect.stringContaining('prod-1') }); // the fingerprint covers product, crop, target and the values
   });
   it('no name or no real date → no sign-off', () => {
     for (const [by, on] of [['', '2026-11-17'], ['  ', '2026-11-17'], ['A', 'Invalid Date'], ['A', ''], ['A', '2026-02-31']]) expect(withSignOff(build(input()), by, on, now), `${by}|${on}`).toBeUndefined();
@@ -94,8 +94,8 @@ describe('sign-off: exactly these values, a real date, a name; any edit drops it
 
 describe('dose 0 and the scope of the approval', () => {
   it('a typed dose of 0 is refused; a stored 0 is blocked, never usable', () => {
-    for (const zero of ['0', '0,0', '0,000']) expect(buildLabelUse(input({ doseMin: typed(zero) }), TEST_FARM_ID, now, 'x'), zero).toMatchObject({ ok: false, invalid: new Set(['doseMin']) });
-    expect(buildLabelUse(input({ kind: 'range', doseMin: typed('1'), doseMax: typed('0') }), TEST_FARM_ID, now, 'x')).toMatchObject({ ok: false, invalid: new Set(['doseMax']) });
+    for (const zero of ['0', '0,0', '0,000']) expect(buildLabelUse(input({ doseMin: typed(zero) }), TEST_FARM_ID, now, 'x'), zero).toEqual({ ok: false, product: false, crop: false, invalid: new Set(['doseMin']) });
+    expect(buildLabelUse(input({ kind: 'range', doseMin: typed('1'), doseMax: typed('0') }), TEST_FARM_ID, now, 'x')).toEqual({ ok: false, product: false, crop: false, invalid: new Set(['doseMax']) });
     expect(statusOf({ ...build(input()), dose_min: '0' })).toBe('blocked');
     expect(build(input({ phi: typed('0') })).phi_days).toBe('0'); // a PHI of 0 days is a real label value
   });

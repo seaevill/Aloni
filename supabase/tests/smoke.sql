@@ -194,6 +194,8 @@ begin
   update jobs set status = 'skipped', skip_reason = 'rain' where id = j;
   begin update jobs set skip_reason = null where id = j; raise exception 'skipped job without a reason accepted'; exception when check_violation then null; end;
   begin insert into jobs(farm_id,kind,status,product_id,worker_id,dose_str,dose_unit,skip_reason) values (f,'spray','planned',prod,w,0.025,'ml/str','rain'); raise exception 'reason on an open job accepted'; exception when check_violation then null; end;
+  insert into jobs(id,farm_id,kind,status,product_id,worker_id,assigned_to,dose_str,dose_unit,planned_for) values ('ffffffff-0000-0000-0000-000000000002',f,'spray','planned',prod,w,'00000000-0000-0000-0000-0000000000b2',0.025,'ml/str','2026-11-18');
+  insert into products(id,farm_id,name,type,unit) values ('aaaaaaaa-0000-0000-0000-000000000002',f,'Other product','fungicide','kg');
   insert into observations(farm_id,parcel_id,kind,note,observed_at,device_id,actor_id) values (f,p,'pest','aphids','2026-11-20 08:00+00','dev',w::text);
   begin insert into observations(farm_id,parcel_id,kind) values (f,p,'rumour'); raise exception 'bad observation kind accepted'; exception when check_violation then null; end;
   begin update observations set note = 'x'; raise exception 'observation update allowed'; exception when insufficient_privilege then null; end;
@@ -215,12 +217,26 @@ set test.uid = '00000000-0000-0000-0000-0000000000b2';   -- worker
 do $$ declare n int; begin
   select count(*) into n from parcels; if n <> 1 then raise exception 'worker parcels %', n; end if;
   select count(*) into n from job_spray; if n <> 0 then raise exception 'worker can read spray records'; end if;
-  select count(*) into n from jobs; if n <> 0 then raise exception 'worker sees unassigned jobs'; end if;
+  select count(*) into n from jobs; if n <> 1 then raise exception 'worker sees unassigned jobs (%)', n; end if;
   begin insert into products(farm_id,name,type,unit) values ('11111111-1111-1111-1111-111111111111','x','fungicide','kg'); raise exception 'worker can insert products';
   exception when insufficient_privilege then null; end;
   select count(*) into n from workers; if n <> 0 then raise exception 'worker sees the roster'; end if;
   select count(*) into n from media; if n <> 0 then raise exception 'worker sees photos'; end if;
   select count(*) into n from farm_settings; if n <> 0 then raise exception 'worker sees settings'; end if;
   delete from parcels; get diagnostics n = row_count; if n <> 0 then raise exception 'worker deleted parcels'; end if;
+end $$;
+-- 0008: a worker may only say done / not done (with time and note): never change the product, the dose, the assignment or anything else of the job
+do $$ declare j constant uuid := 'ffffffff-0000-0000-0000-000000000002'; n int; begin
+  select count(*) into n from jobs; if n <> 1 then raise exception 'worker sees % jobs (want 1: own)', n; end if;
+  begin update jobs set product_id = 'aaaaaaaa-0000-0000-0000-000000000002' where id = j; raise exception 'worker changed the product'; exception when insufficient_privilege then null; end;
+  begin update jobs set dose_str = 0.5 where id = j; raise exception 'worker changed the dose'; exception when insufficient_privilege then null; end;
+  begin update jobs set dose_unit = 'g/str' where id = j; raise exception 'worker changed the dose unit'; exception when insufficient_privilege then null; end;
+  begin update jobs set label_use_id = gen_random_uuid() where id = j; raise exception 'worker changed the label use'; exception when insufficient_privilege or foreign_key_violation then null; end;
+  begin update jobs set worker_id = null, assigned_to = null where id = j; raise exception 'worker unassigned the job'; exception when insufficient_privilege then null; end;
+  begin update jobs set kind = 'other' where id = j; raise exception 'worker changed the kind'; exception when insufficient_privilege then null; end;
+  begin update jobs set status = 'cancelled' where id = j; raise exception 'worker set another status'; exception when insufficient_privilege or check_violation then null; end;
+  update jobs set status = 'done', done_at = '2026-11-20 08:00+00', device_id = 'dev', actor_id = 'w' where id = j;
+  begin update jobs set status = 'planned' where id = j; raise exception 'worker reopened a done job'; exception when insufficient_privilege then null; end;
+  select count(*) into n from jobs where id = j and status = 'done' and dose_str = 0.025 and dose_unit = 'ml/str' and product_id = 'aaaaaaaa-0000-0000-0000-000000000001'; if n <> 1 then raise exception 'the fixed fields changed'; end if;
 end $$;
 \echo 'SQL smoke test OK'

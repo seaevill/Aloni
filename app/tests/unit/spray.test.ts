@@ -21,11 +21,11 @@ const build = (i: SprayInput, c: SprayContext) => { const r = buildSpray(i, c, F
 describe('a spray with a SIGNED label', () => {
   it('records the applicator, the typed values exactly, the PHI/REI from the signed label, and ONE stock movement', () => {
     const r = build(input(), ctx());
-    expect(r.spray).toMatchObject({ job_id: 'job1', applicator_id: 'w1', dose_str: '0.025', dose_unit: 'ml/str', qty_str: '0.25', label_state: 'signed', phi_days: '7', rei_hours: '24', phi_source: 'label', phi_until: '2026-11-27T08:00:00Z', rei_until: '2026-11-21T08:00:00Z' });
+    expect(r.spray).toEqual({ id: 'sp1', farm_id: 'farm', job_id: 'job1', product_id: 'prod', label_use_id: 'lu', lot_key: 'lot', applicator_id: 'w1', sprayed_at: '2026-11-20T08:00:00Z', created_at: '2026-11-20T10:00:00.000Z', dose_str: '0.025', dose_unit: 'ml/str', qty_str: '0.25', label_state: 'signed', phi_days: '7', rei_hours: '24', phi_source: 'label', phi_until: '2026-11-27T08:00:00Z', rei_until: '2026-11-21T08:00:00Z', flags: [] });
     expect(r.flags).toEqual([]);
-    expect(r.job).toMatchObject({ kind: 'spray', status: 'done', worker_id: 'w1' });
-    expect(r.jobPlantings).toMatchObject([{ planting_id: 'pl1', job_id: 'job1', area_str_treated: '0.5' }]);
-    expect(r.movement).toMatchObject({ direction: 'out', qty_str: '0.25', reason: 'spray', job_id: 'job1', lot_key: 'lot' });
+    expect(r.job).toEqual({ id: 'job1', farm_id: 'farm', kind: 'spray', status: 'done', worker_id: 'w1', product_id: 'prod', label_use_id: 'lu', done_at: '2026-11-20T08:00:00Z', created_at: '2026-11-20T10:00:00.000Z', updated_at: '2026-11-20T10:00:00.000Z', deleted_at: null });
+    expect(r.jobPlantings).toEqual([{ id: 'jp1', farm_id: 'farm', planting_id: 'pl1', job_id: 'job1', area_str_treated: '0.5', created_at: '2026-11-20T10:00:00.000Z' }]);
+    expect(r.movement).toEqual({ id: 'mv1', farm_id: 'farm', product_id: 'prod', direction: 'out', qty_str: '0.25', reason: 'spray', job_id: 'job1', lot_key: 'lot', created_at: '2026-11-20T10:00:00.000Z' });
   });
   it('nothing is rounded or converted: 0,250 stays 0.250', () => {
     expect(build(input({ qty: '0,250' }), ctx()).spray.qty_str).toBe('0.250');
@@ -73,7 +73,7 @@ describe('what a spray record cannot be without', () => {
     ['unreadable quantity', { qty: 'abc' }, 'qty'], ['a lot without a quantity', { qty: '' }, 'qty'], ['unreadable water', { water: '1.000x' }, 'water'],
   ] as const)('%s is refused', (_n, over, key) => {
     const r = buildSpray(input(over as Partial<SprayInput>), ctx(), F, now, ids);
-    expect(r).toMatchObject({ ok: false, errors: { [key]: true } });
+    expect(r).toEqual({ ok: false, errors: { applicator: false, dose: false, doseUnit: false, plantings: false, product: false, qty: false, time: false, water: false, [key]: true } });
   });
   it('without a lot no stock movement is made', () => expect(build(input({ lotKey: undefined, qty: '' }), ctx()).movement).toBeUndefined());
 });
@@ -83,16 +83,16 @@ describe('the PHI entered by Bora is a separate amending row, and only while the
   it('adds a new row (the original stays), marked manual, with the exact end', () => {
     const o = unknownSpray();
     const e = buildWaitEntry(o, '7', '24', now, 'sp2');
-    expect(e).toMatchObject({ ok: true, row: { id: 'sp2', amends_id: 'sp1', phi_days: '7', rei_hours: '24', phi_source: 'manual', phi_until: '2026-11-27T08:00:00Z', rei_until: '2026-11-21T08:00:00Z', job_id: 'job1', label_state: 'unsigned' } });
+    expect(e).toEqual({ ok: true, row: { id: 'sp2', farm_id: 'farm', amends_id: 'sp1', job_id: 'job1', product_id: 'prod', label_use_id: 'lu', lot_key: 'lot', applicator_id: 'w1', sprayed_at: '2026-11-20T08:00:00Z', created_at: '2026-11-20T10:00:00.000Z', dose_str: '0.025', dose_unit: 'ml/str', qty_str: '0.25', label_state: 'unsigned', phi_days: '7', rei_hours: '24', phi_source: 'manual', phi_until: '2026-11-27T08:00:00Z', rei_until: '2026-11-21T08:00:00Z', flags: ['label_unsigned'] } });
     expect('phi_days' in o).toBe(false); // the original is untouched
     if (!e.ok) throw new Error('setup');
     expect(effectiveSprays([o, e.row]).map((r) => r.id)).toEqual(['sp2']);
   });
   it('refuses unreadable or missing values, and refuses once a PHI is known (it could only shorten it)', () => {
     const o = unknownSpray();
-    for (const [p, r] of [['', '24'], ['7,5', '24'], ['NaN', '24'], ['7', ''], ['7', 'abc']]) expect(buildWaitEntry(o, p, r, now, 'x'), `${p}|${r}`).toMatchObject({ ok: false });
+    for (const [p, r] of [['', '24'], ['7,5', '24'], ['NaN', '24'], ['7', ''], ['7', 'abc']]) expect(buildWaitEntry(o, p, r, now, 'x'), `${p}|${r}`).toEqual({ ok: false, phi: p !== '7', rei: r !== '24', known: false });
     const known = build(input(), ctx()).spray;
-    expect(buildWaitEntry(known, '3', '24', now, 'x')).toMatchObject({ ok: false, known: true });
+    expect(buildWaitEntry(known, '3', '24', now, 'x')).toEqual({ ok: false, phi: false, rei: false, known: true });
   });
 });
 
@@ -103,7 +103,7 @@ describe('harvest gate: only a KNOWN waiting period that has run out unblocks; n
   it('no spray, nothing blocks; a running PHI blocks until the end second; strictly after it is allowed', () => {
     expect(harvestGate('pl1', '2026-11-21T00:00:00Z', links, [])).toEqual({ ok: true });
     expect(harvestGate('pl1', '2026-11-21T00:00:00Z', links, [signedSpray()])).toEqual({ ok: false, reason: 'running', until: '2026-11-27T08:00:00Z', source: 'label' });
-    expect(harvestGate('pl1', '2026-11-27T08:00:00Z', links, [signedSpray()])).toMatchObject({ ok: false, reason: 'running' });
+    expect(harvestGate('pl1', '2026-11-27T08:00:00Z', links, [signedSpray()])).toEqual({ ok: false, reason: 'running', until: '2026-11-27T08:00:00Z', source: 'label' });
     expect(harvestGate('pl1', '2026-11-27T08:00:01Z', links, [signedSpray()])).toEqual({ ok: true });
     expect(harvestGate('pl2', '2026-11-21T00:00:00Z', links, [signedSpray()])).toEqual({ ok: true }); // another planting is not affected
   });
@@ -112,7 +112,7 @@ describe('harvest gate: only a KNOWN waiting period that has run out unblocks; n
     expect(harvestGate('pl1', '2030-01-01T00:00:00Z', links, [o])).toEqual({ ok: false, reason: 'unknown' });
     const e = buildWaitEntry(o, '7', '24', now, 'sp2');
     if (!e.ok) throw new Error('setup');
-    expect(harvestGate('pl1', '2026-11-21T00:00:00Z', links, [o, e.row])).toMatchObject({ ok: false, reason: 'running' });
+    expect(harvestGate('pl1', '2026-11-21T00:00:00Z', links, [o, e.row])).toEqual({ ok: false, reason: 'running', until: '2026-11-27T08:00:00Z', source: 'manual' });
     expect(harvestGate('pl1', '2026-11-28T00:00:00Z', links, [o, e.row])).toEqual({ ok: true });
   });
   it('a «not on label» PHI and damaged values block; an unreadable time blocks', () => {
@@ -127,17 +127,17 @@ describe('harvest gate: only a KNOWN waiting period that has run out unblocks; n
   it('buildHarvest refuses while blocked and keeps the typed crate count; crates must be a whole number above 0', () => {
     const sp = [signedSpray()];
     const base = { plantingId: 'pl1', crates: '12', harvestedAt: '2026-11-21T00:00:00Z', note: '' };
-    expect(buildHarvest(base, links, sp, F, now, 'h1')).toMatchObject({ ok: false, gate: { reason: 'running' } });
+    expect(buildHarvest(base, links, sp, F, now, 'h1')).toEqual({ ok: false, planting: false, time: true, crates: false, gate: { ok: false, reason: 'running', until: '2026-11-27T08:00:00Z', source: 'label' } });
     // the gate looks at NOW, never at the typed harvest time: a future time cannot be used to step over the PHI
     const future = buildHarvest({ ...base, harvestedAt: '2026-11-28T00:00:00Z' }, links, sp, F, now, 'h1');
     expect(future).toEqual({ ok: false, planting: false, crates: false, time: true, gate: { ok: false, reason: 'running', until: '2026-11-27T08:00:00Z', source: 'label' } });
     const later = '2026-11-28T00:00:00.000Z';
     expect(buildHarvest({ ...base, harvestedAt: '2026-11-28T00:00:00Z' }, links, sp, F, later, 'h1')).toEqual({ ok: true, row: { id: 'h1', farm_id: 'farm', planting_id: 'pl1', crates_str: '12', harvested_at: '2026-11-28T00:00:00Z', created_at: later } });
-    expect(buildHarvest({ ...base, harvestedAt: '2026-11-21T00:00:00Z' }, links, sp, F, later, 'h1')).toMatchObject({ ok: true }); // a past time, PHI over now: recorded
-    expect(buildHarvest({ ...base, harvestedAt: 'Invalid Date' }, links, sp, F, later, 'h1')).toMatchObject({ ok: false, time: true });
-    expect(buildHarvest(base, links, sp, F, 'Invalid Date', 'h1')).toMatchObject({ ok: false, gate: { ok: false, reason: 'time' } }); // an unreadable «now» blocks
-    for (const bad of ['', '0', '1,5', 'abc', '-2']) expect(buildHarvest({ ...base, crates: bad, harvestedAt: '2026-11-28T00:00:00Z' }, links, sp, F, later, 'h'), bad).toMatchObject({ ok: false, crates: true });
-    expect(buildHarvest({ ...base, plantingId: '' }, links, sp, F, now, 'h')).toMatchObject({ ok: false, planting: true });
+    expect(buildHarvest({ ...base, harvestedAt: '2026-11-21T00:00:00Z' }, links, sp, F, later, 'h1')).toEqual({ ok: true, row: { id: 'h1', farm_id: 'farm', planting_id: 'pl1', crates_str: '12', harvested_at: '2026-11-21T00:00:00Z', created_at: later } }); // a past time, PHI over now: recorded
+    expect(buildHarvest({ ...base, harvestedAt: 'Invalid Date' }, links, sp, F, later, 'h1')).toEqual({ ok: false, planting: false, crates: false, time: true, gate: undefined });
+    expect(buildHarvest(base, links, sp, F, 'Invalid Date', 'h1')).toEqual({ ok: false, planting: false, crates: false, time: false, gate: { ok: false, reason: 'time' } }); // an unreadable «now» blocks
+    for (const bad of ['', '0', '1,5', 'abc', '-2']) expect(buildHarvest({ ...base, crates: bad, harvestedAt: '2026-11-28T00:00:00Z' }, links, sp, F, later, 'h'), bad).toEqual({ ok: false, planting: false, time: false, crates: true, gate: undefined });
+    expect(buildHarvest({ ...base, plantingId: '' }, links, sp, F, later, 'h')).toEqual({ ok: false, planting: true, time: false, crates: false, gate: undefined });
   });
 });
 
@@ -164,11 +164,11 @@ describe('the source of a date, and the re-entry lock for workers', () => {
   const links: Row[] = [{ id: 'a', farm_id: F, job_id: 'job1', planting_id: 'pl1' }];
   const label = (): Row => ({ ...build(input(), ctx()).spray, job_id: 'job1', id: 'sp-a' }); // PHI 7 d, REI 24 h from T0
   it('the date names where it came from: the signed label, or the owner\'s own entry from the label', () => {
-    expect(cutFromParcel('P', '2026-11-21T00:00:00Z', pls, links, [label()])).toMatchObject({ state: 'from', source: 'label' });
+    expect(cutFromParcel('P', '2026-11-21T00:00:00Z', pls, links, [label()])).toEqual({ state: 'from', at: '2026-11-27T08:00:00Z', source: 'label' });
     const unknownRow: Row = { ...build(input(), ctx({ label: labelRow() })).spray, job_id: 'job1', id: 'sp-u' };
     const e = buildWaitEntry(unknownRow, '7', '24', now, 'sp-m');
     if (!e.ok) throw new Error('setup');
-    expect(cutFromParcel('P', '2026-11-21T00:00:00Z', pls, links, [unknownRow, e.row])).toMatchObject({ state: 'from', source: 'manual' });
+    expect(cutFromParcel('P', '2026-11-21T00:00:00Z', pls, links, [unknownRow, e.row])).toEqual({ state: 'from', at: '2026-11-27T08:00:00Z', source: 'manual' });
   });
   it('REI lock: running until the end + REI hours (strictly after it is free); unknown REI is flagged; another field is free', () => {
     expect(reiLockParcel('P', '2026-11-21T08:00:00Z', pls, links, [label()])).toEqual({ state: 'running', until: '2026-11-21T08:00:00Z' });

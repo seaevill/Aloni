@@ -8,7 +8,7 @@ import { putMany } from '../repo';
 import { balanceOf, effectiveLots } from '../stock/stock';
 import { athensToday } from '../plantings/planting';
 import { buildSpray, type Flag, type SprayInput } from '../spray/spray';
-import { instantOf } from '../spray/time';
+import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
 import type { Row } from '../db/schema';
 import { Lines, badgeText } from './LabelUses';
 import { UNIT_KEYS } from './LabelUseForm';
@@ -22,7 +22,6 @@ export const FLAG_KEYS: Record<Flag, I18nKey> = {
 const RED: readonly Flag[] = ['label_none', 'label_blocked'];
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 /** «YYYY-MM-DDTHH:mm» in the phone's own clock, for the date-time box. */
-const localNow = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().replace(/:\d{2}\.\d{3}Z$/, '');
 
 /**
  * Record a spray that happened. It is never refused because of the label: weak labels, a dose outside the range, an expired lot or negative stock are
@@ -35,7 +34,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const [sel, setSel] = useState<string[]>([]);
   const [productId, setProductId] = useState('');
   const [workerId, setWorkerId] = useState('');
-  const [when, setWhen] = useState(localNow());
+  const [when, setWhen] = useState(athensLocalNow(new Date()) ?? '');
   const [dose, setDose] = useState('');
   const [unit, setUnit] = useState<(typeof DOSE_UNITS)[number] | undefined>(undefined);
   const [lotKey, setLotKey] = useState<string | undefined>(undefined);
@@ -50,7 +49,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const myLots = effectiveLots(lots.rows?.filter((l) => l.product_id === productId) ?? []);
   const lot = myLots.find((l) => l.lot_key === lotKey);
   const balance = lot ? balanceOf((moves.rows ?? []).filter((m) => m.lot_key === lotKey)) : undefined;
-  const sprayedAt = instantOf(new Date(when)) ?? '';
+  const sprayedAt = athensInstant(when) ?? '';
   const input: SprayInput = { plantingIds: sel, productId, applicatorId: workerId, sprayedAt, dose, doseUnit: unit, lotKey, qty, water, note };
   const ids = { job: crypto.randomUUID(), spray: crypto.randomUUID(), movement: crypto.randomUUID(), plantingLinks: sel.map(() => crypto.randomUUID()) };
   const r = buildSpray(input, { label, plantings: chosen, lot, lotBalance: balance, today: athensToday(new Date()) ?? '' }, realFarmId.value, new Date().toISOString(), ids);

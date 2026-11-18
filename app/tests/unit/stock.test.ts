@@ -55,11 +55,11 @@ describe('balance = sum of movements, exact; a negative balance is shown, never 
   });
   it('can go negative and says so', () => {
     expect(balanceOf([mov('in', '1'), mov('out', '1.5')])).toBe('-0.5');
-    expect(flagsOf(asRow({ expiry: '2028-03-31' }), '-0.5', '2026-11-20', SIXTY)).toMatchObject({ negative: true });
+    expect(flagsOf(asRow({ expiry: '2028-03-31' }), '-0.5', '2026-11-20', SIXTY)).toEqual({ expired: false, negative: true, soon: false, unknown: false });
   });
   it('an unreadable movement makes the balance unknown, never a quietly smaller number', () => {
     for (const bad of [{ qty_str: 'NaN' }, { qty_str: 5 }, { qty_str: undefined }, { direction: 'sideways' }]) expect(balanceOf([mov('in', '2'), { ...mov('in', '1'), ...bad }]), JSON.stringify(bad)).toBeUndefined();
-    expect(flagsOf(asRow({ expiry: '2028-03-31' }), undefined, '2026-11-20', SIXTY)).toMatchObject({ unknown: true });
+    expect(flagsOf(asRow({ expiry: '2028-03-31' }), undefined, '2026-11-20', SIXTY)).toEqual({ expired: false, negative: false, soon: false, unknown: true });
   });
   it('property: 2000 seeded ledgers match the integer sum and do not depend on the order', () => {
     let x = 4242;
@@ -81,19 +81,19 @@ describe('flags: expired and soon are information; a date nobody can read counts
   const today = '2026-11-20';
   const lot = (expiry: unknown) => asRow({ expiry });
   it('expired / soon / fine', () => {
-    expect(flagsOf(lot('2026-11-19'), '1', today, SIXTY)).toMatchObject({ expired: true, soon: false });
-    expect(flagsOf(lot('2026-11-20'), '1', today, SIXTY)).toMatchObject({ expired: false, soon: true }); // today is still in date
-    expect(flagsOf(lot('2027-01-19'), '1', today, SIXTY)).toMatchObject({ expired: false, soon: true }); // exactly SOON_DAYS (60) away
+    expect(flagsOf(lot('2026-11-19'), '1', today, SIXTY)).toEqual({ expired: true, negative: false, soon: false, unknown: false });
+    expect(flagsOf(lot('2026-11-20'), '1', today, SIXTY)).toEqual({ expired: false, negative: false, soon: true, unknown: false }); // today is still in date
+    expect(flagsOf(lot('2027-01-19'), '1', today, SIXTY)).toEqual({ expired: false, negative: false, soon: true, unknown: false }); // exactly SOON_DAYS (60) away
     expect(SIXTY).toEqual({ known: true, value: 60 });
-    expect(flagsOf(lot('2027-01-19'), '1', today, parseSoonDays('30'))).toMatchObject({ soon: false }); // Bora can change it
-    expect(flagsOf(lot('2026-12-20'), '1', today, parseSoonDays('30'))).toMatchObject({ soon: true });
-    expect(flagsOf(lot('2026-12-21'), '1', today, parseSoonDays('30'))).toMatchObject({ soon: false });
-    expect(flagsOf(lot('2026-11-25'), '1', today, parseSoonDays('0'))).toMatchObject({ soon: false }); // an unusable setting gives no «soon» flag
-    expect(flagsOf(lot('2027-01-20'), '1', today, SIXTY)).toMatchObject({ expired: false, soon: false });
+    expect(flagsOf(lot('2027-01-19'), '1', today, parseSoonDays('30'))).toEqual({ expired: false, negative: false, soon: false, unknown: false }); // Bora can change it
+    expect(flagsOf(lot('2026-12-20'), '1', today, parseSoonDays('30'))).toEqual({ expired: false, negative: false, soon: true, unknown: false });
+    expect(flagsOf(lot('2026-12-21'), '1', today, parseSoonDays('30'))).toEqual({ expired: false, negative: false, soon: false, unknown: false });
+    expect(flagsOf(lot('2026-11-25'), '1', today, parseSoonDays('0'))).toEqual({ expired: false, negative: false, soon: false, unknown: false }); // an unusable setting gives no «soon» flag
+    expect(flagsOf(lot('2027-01-20'), '1', today, SIXTY)).toEqual({ expired: false, negative: false, soon: false, unknown: false });
   });
   it('an unreadable expiry or unreadable «today» is never «fine»', () => {
-    for (const bad of [undefined, '', 'Invalid Date', '2028-02-31', 5]) expect(flagsOf(lot(bad), '1', today, SIXTY), String(bad)).toMatchObject({ expired: true });
-    expect(flagsOf(lot('2030-01-01'), '1', 'Invalid Date', SIXTY)).toMatchObject({ expired: true });
+    for (const bad of [undefined, '', 'Invalid Date', '2028-02-31', 5]) expect(flagsOf(lot(bad), '1', today, SIXTY), String(bad)).toEqual({ expired: true, negative: false, soon: false, unknown: false });
+    expect(flagsOf(lot('2030-01-01'), '1', 'Invalid Date', SIXTY)).toEqual({ expired: true, negative: false, soon: false, unknown: false });
   });
 });
 
