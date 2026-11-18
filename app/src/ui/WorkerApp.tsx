@@ -96,8 +96,8 @@ export function WorkerApp() {
               {lockOf(j).state !== 'none' && <p class="badge blocked" role="alert" data-testid="worker-lock">{lockText(lockOf(j))}</p>}
               {open?.job !== j.id && (
                 <div class="seg two big">
-                  <button data-testid="job-done" disabled={doneBlocked(lockOf(j))} onClick={() => setOpen({ job: j.id, mode: 'done' })}>{t('worker.done')}</button>
-                  <button data-testid="job-skip" onClick={() => setOpen({ job: j.id, mode: 'skip' })}>{t('worker.notdone')}</button>
+                  <button class="go" data-testid="job-done" disabled={doneBlocked(lockOf(j))} onClick={() => setOpen({ job: j.id, mode: 'done' })}>{t('worker.done')}</button>
+                  <button class="stop" data-testid="job-skip" onClick={() => setOpen({ job: j.id, mode: 'skip' })}>{t('worker.notdone')}</button>
                 </div>
               )}
               {open?.job === j.id && open.mode === 'done' && (
