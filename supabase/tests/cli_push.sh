@@ -10,7 +10,7 @@ ver=$(grep -E '^\s+SUPABASE_CLI_VERSION:' .github/workflows/supabase-migrate.yml
 base_db=${PGDATABASE:-postgres}; db=aloni_cli_push
 psql -X -q -d "$base_db" -c "drop database if exists $db" -c "create database $db" >/dev/null
 psql -X -q -d "$db" -v ON_ERROR_STOP=1 -f supabase/tests/auth_stub.sql >/dev/null
-url="postgresql://${PGUSER:-postgres}:${PGPASSWORD:-}@${PGHOST:-localhost}:${PGPORT:-5432}/$db"
+url="postgresql://${PGUSER:-postgres}:${PGPASSWORD:-}@${PGHOST:-localhost}:${PGPORT:-5432}/$db?sslmode=disable"   # the throwaway CI database has no TLS; the real project is reached over TLS by the CLI
 sb() { npx --yes "supabase@$ver" "$@"; }
 echo "supabase CLI $(sb --version)"
 files=$(ls supabase/migrations/*.sql | wc -l)
