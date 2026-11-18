@@ -10,7 +10,8 @@
 
 alter table job_spray   add column received_at timestamptz not null default now(), add column amend_reason text, add column chain_no bigint;
 alter table job_harvest add column received_at timestamptz not null default now();
-alter table job_spray add constraint job_spray_amend_reason check (amends_id is null or length(btrim(coalesce(amend_reason, ''))) > 0);
+-- NOT VALID: rows that already exist (written before this column existed) are tolerated, every NEW row is checked (found by supabase/tests/upgrade.sh)
+alter table job_spray add constraint job_spray_amend_reason check (amends_id is null or length(btrim(coalesce(amend_reason, ''))) > 0) not valid;
 alter table job_spray add constraint job_spray_manual_amends check (phi_source is distinct from 'manual' or amends_id is not null);
 
 -- ---------------------------------------------------------------- the hash chain: last trigger, own sequence, verifiable
