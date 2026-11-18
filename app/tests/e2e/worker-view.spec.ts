@@ -56,3 +56,35 @@ test('worker view (demo only): assigned sprays «Έγινε / Δεν έγινε�
   await expect(page.locator('nav.tabs')).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test('worker view: a field that was just sprayed shows a red re-entry warning and the «Έγινε» button is locked', async ({ page }) => {
+  await iphone(page);
+  await page.getByTestId('empty-state').locator('button').nth(1).click();
+  await expect(page.getByTestId('today-counts')).toBeVisible(); // the demo is loaded
+  // put a spray that ended just now (REI 24 h) on the field of the first open job
+  await page.evaluate(() => new Promise<void>((done) => {
+    const r = indexedDB.open('aloni');
+    r.onsuccess = () => {
+      const db = r.result;
+      const tx = db.transaction(['jobs', 'job_plantings', 'job_spray'], 'readwrite');
+      const jobs = tx.objectStore('jobs').getAll();
+      jobs.onsuccess = () => {
+        const planned = (jobs.result as Array<Record<string, unknown>>).filter((j) => j.status === 'planned' && j.worker_id);
+        const links = tx.objectStore('job_plantings').getAll();
+        links.onsuccess = () => {
+          for (const job of planned) { // every open job's field was just sprayed
+            const link = (links.result as Array<Record<string, unknown>>).find((l) => l.job_id === job.id);
+            tx.objectStore('job_plantings').put({ id: `lock-jp-${String(job.id)}`, farm_id: job.farm_id, job_id: `lock-job-${String(job.id)}`, planting_id: link?.planting_id });
+            tx.objectStore('job_spray').put({ id: `lock-sp-${String(job.id)}`, farm_id: job.farm_id, job_id: `lock-job-${String(job.id)}`, sprayed_at: new Date().toISOString().replace(/\.\d{3}Z$/, 'Z'), rei_hours: '24', phi_days: '7', created_at: new Date().toISOString() });
+          }
+        };
+      };
+      tx.oncomplete = () => done();
+    };
+  }));
+  await page.locator('nav.tabs [data-tab="more"]').click();
+  await page.getByTestId('open-worker-view').click();
+  await expect(page.getByTestId('worker-lock').first()).toContainText('Μην μπείτε στο χωράφι μέχρι');
+  await expect(page.getByTestId('job-done').first()).toBeDisabled();
+  await expect(page.getByTestId('job-skip').first()).toBeEnabled(); // «Δεν έγινε» stays possible
+});

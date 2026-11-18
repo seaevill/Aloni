@@ -78,3 +78,23 @@ describe('REG and ROT: a draft spray never covers beds that are not on a signed 
     expect(full.some((x) => x.rule_id === 'ROT')).toBe(false);
   });
 });
+
+describe('PHI and REI count from the END of the spraying (the safe side)', () => {
+  it('with a known end, the PHI hold runs from the end, not from the start', () => {
+    const j = [{ id: 'j', kind: 'spray', status: 'done', plantingIds: ['pl'], productId: 'prod', startedAt: '2026-11-18T08:00:00Z', endedAt: '2026-11-18T10:30:00Z' }];
+    const out = runRules(snap({ jobs: j, asOf: '2026-11-18T12:00:00Z' })).filter((o) => o.rule_id === 'PHI');
+    expect(out[0].values.safe_from).toBe('2026-11-25T10:30:00Z'); // end + 7 days, not start + 7 days
+    expect(runRules(snap({ jobs: j, asOf: '2026-11-25T10:00:00Z' })).some((o) => o.category === 'phi_hold')).toBe(true); // 08:00 + 7 d would already be over
+  });
+  it('property (500 sprays): the hold ends exactly PHI × 24 h after the END, never before the end-based date', () => {
+    const rnd = seeded(77);
+    for (let i = 0; i < 500; i += 1) {
+      const [mo, d] = [1 + (rnd() % 12), 1 + (rnd() % 27)];
+      const start = at(2026, mo, d, rnd() % 20, rnd() % 60, rnd() % 60);
+      const end = at(2026, mo, d, 20 + (rnd() % 4), rnd() % 60, rnd() % 60); // the same day, later in the evening
+      const phi = rnd() % 40;
+      const out = runRules(snap({ jobs: [{ id: 'j', kind: 'spray', status: 'done', plantingIds: ['pl'], productId: 'prod', startedAt: start, endedAt: end }], uses: [use(String(phi), '24', true)], asOf: start })).filter((o) => o.rule_id === 'PHI');
+      expect(secs(String(out[0].values.safe_from)) - secs(end), `${start} ${end}`).toBe(phi * 86400);
+    }
+  });
+});

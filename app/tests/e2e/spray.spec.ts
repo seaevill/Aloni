@@ -32,6 +32,7 @@ test('a spray with a SIGNED label: recorded with «Ψέκασε», the exact wai
   await expect(card.getByTestId('spray-phi-unknown')).toHaveCount(0);
   await expect(page.getByTestId('cut').first()).toHaveAttribute('data-state', 'from'); // «Κοπή από …» from the signed label
   await expect(page.getByTestId('cut-line').first()).toContainText('Κοπή από');
+  await expect(page.getByTestId('cut-source').first()).toHaveText('Πηγή: υπογεγραμμένη ετικέτα');
   await tab(page, 'stock');
   await page.getByTestId('stock-open').click();
   await expect(page.getByTestId('lot-balance')).toHaveText('Υπόλοιπο: 4,25 kg'); // 4,5 − 0,25, exact
@@ -65,6 +66,7 @@ test('a spray with an UNSIGNED label is still recorded, marked, and its waiting 
   await expect(page.getByTestId('spray')).toHaveCount(1); // still one spray on the screen
   await expect(card.getByTestId('spray-phi')).toContainText('Αναμονή λήγει');
   await expect(page.getByTestId('cut').first()).toHaveAttribute('data-state', 'from'); // his entered value gives a date, and it still has to run out
+  await expect(page.getByTestId('cut-source').first()).toHaveText('Πηγή: από ετικέτα – καταχώριση ιδιοκτήτη'); // the source is shown
   await expect(card.getByTestId('spray-manual')).toHaveText('Τιμή που καταχωρίσατε εσείς από την ετικέτα');
   await expect(card.getByTestId('wait-open')).toHaveCount(0); // once known it cannot be entered again (it could only shorten it)
   const rows = await page.evaluate(() => new Promise<number>((res) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const q = r.result.transaction('job_spray').objectStore('job_spray').count(); q.onsuccess = () => res(q.result); }; }));

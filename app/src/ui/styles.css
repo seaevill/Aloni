@@ -43,3 +43,4 @@ nav.tabs .ico { font-size:20px; line-height:1; }
 .btn.big, .seg.big button { min-height:72px; font-size:18px; }
 .badge.calm { background:#eef3ec; color:#1e3d28; }
 @media print { nav.tabs, .noprint, .chip, .toast, .btn { display:none !important; } body { background:#fff; } main { padding:0; } .card { break-inside:avoid; border:1px solid currentColor; } .sign { margin-top:48px; } }
+.demo-banner { display:block; border-radius:8px; padding:8px 10px; margin:0 0 10px; text-align:center; }

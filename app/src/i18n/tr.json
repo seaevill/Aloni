@@ -274,7 +274,7 @@
   "spray.plantings": "İlaçlanan ekimler",
   "spray.product": "İlaç/gübre",
   "spray.worker": "Kim attı",
-  "spray.time": "İlaçlama tarihi ve saati",
+  "spray.time": "İlaçlamanın bitiş tarihi ve saati",
   "spray.dose": "Uygulanan doz",
   "spray.unit": "Doz birimi",
   "spray.lot": "Parti (isteğe bağlı)",
@@ -334,7 +334,7 @@
   "worker.done": "Yapıldı",
   "worker.notdone": "Yapılmadı",
   "worker.fixed": "İlaç ve doz sorumlu tarafından belirlenir. Burada değişmez.",
-  "worker.time": "İlaçlama saati",
+  "worker.time": "İlaçlamanın bitiş saati",
   "worker.note": "Not (isteğe bağlı)",
   "worker.confirm": "Onayla",
   "worker.skip.title": "Neden yapılmadı?",
@@ -384,5 +384,10 @@
   "register.col.flags": "İşaretler",
   "register.col.note": "Not",
   "register.col.record": "Kayıt kodu",
-  "register.col.amends": "Düzelttiği kayıt"
+  "register.col.amends": "Düzelttiği kayıt",
+  "demo.banner": "Demo – hayali veriler",
+  "cut.source.label": "Kaynak: imzalı etiket",
+  "cut.source.manual": "Kaynak: etiketten – sahibin girdiği değer",
+  "worker.lock.running": "{d} tarihine kadar tarlaya girmeyin: yeni ilaçlama yapıldı.",
+  "worker.lock.unknown": "Bu tarlada tarlaya giriş süresi bilinmiyor: sorumlu girene kadar girmeyin."
 }
