@@ -58,7 +58,7 @@ function snapshot(c: J): Snapshot {
   return {
     asOf: utc(c.as_of), uses, parcelsForInfo: ((c.inputs.parcels ?? []) as J[]).map((p) => p.id),
     plantings: ((c.inputs.plantings ?? []) as J[]).map((p) => ({ id: p.id, parcelId: p.parcel_id, cropId: p.crop_id })),
-    jobs: jobs.map((j) => ({ id: j.id, kind: j.kind, status: j.status ?? 'done', plantingIds: j.planting_ids, productId: j.product_id, startedAt: utc(j.started_at), endedAt: j.ended_at ? utc(j.ended_at) : undefined })),
+    jobs: jobs.map((j) => ({ id: j.id, kind: j.kind, status: j.status ?? 'done', plantingIds: j.planting_ids, productId: j.product_id, startedAt: utc(j.started_at), endedAt: utc(j.ended_at ?? j.started_at) /* the phone records ONE time, the END; the prototype's single time is that time */ })),
     tasks: ((syn.worker_tasks ?? []) as J[]).map((t) => ({ id: t.id, plantingIds: t.planting_ids, at: utc(t.at) })),
     draftJobs: ([...(syn.draft_job ? [syn.draft_job] : []), ...(syn.draft_jobs ?? [])] as J[]).map((j) => ({ id: j.id, kind: j.kind, plantingIds: j.planting_ids, productId: j.product_id })),
     products: ((c.inputs.products ?? []) as J[]).map((p) => ({ id: p.id, groupCode: p.group_code ?? undefined })),

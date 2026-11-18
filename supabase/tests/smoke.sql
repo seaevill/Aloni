@@ -151,10 +151,35 @@ begin
   begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,amends_id) values (f,job2,prod,w,now(),0.025,'ml/str','unsigned',sp1); raise exception 'amending row that is not a manual entry accepted'; exception when check_violation then null; end;
   begin update job_spray set note = 'x'; raise exception 'spray update allowed'; exception when insufficient_privilege then null; end;
   -- harvest: crates as a whole number above zero
-  insert into job_harvest(farm_id,planting_id,crates_str,harvested_at,note,device_id,actor_id) values (f,pl,12,'2026-11-28 08:00+00','x','dev','act');
+  insert into plantings(id,farm_id,parcel_id,crop_id,area_str,sown_on,status) values ('dddddddd-0000-0000-0000-000000000009',f,p,crop2,0.25,'2026-11-17','growing'); -- never sprayed
+  insert into job_harvest(farm_id,planting_id,crates_str,harvested_at,note,device_id,actor_id) values (f,'dddddddd-0000-0000-0000-000000000009',12,now(),'x','dev','act');
   begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,pl,0,now()); raise exception 'zero crates accepted'; exception when check_violation then null; end;
   begin update job_harvest set crates_str = 99; raise exception 'harvest update allowed'; exception when insufficient_privilege then null; end;
   select count(*) into n from job_spray where job_id = job2; if n <> 3 then raise exception 'spray rows %', n; end if;
+end $$;
+
+-- 0009: the server refuses a harvest inside a waiting period, whatever the phone says (checked at NOW, never at the typed harvest time)
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; p constant uuid := '33333333-3333-3333-3333-333333333333';
+        prod constant uuid := 'aaaaaaaa-0000-0000-0000-000000000001'; w constant uuid := 'bbbbbbbb-0000-0000-0000-000000000001'; crop2 constant uuid := 'cccccccc-0000-0000-0000-000000000002';
+        ok_pl constant uuid := 'dddddddd-0000-0000-0000-0000000000a1'; run_pl constant uuid := 'dddddddd-0000-0000-0000-0000000000a2'; unk_pl constant uuid := 'dddddddd-0000-0000-0000-0000000000a3';
+        ok_j constant uuid := 'eeeeeeee-0000-0000-0000-0000000000a1'; run_j constant uuid := 'eeeeeeee-0000-0000-0000-0000000000a2'; unk_j constant uuid := 'eeeeeeee-0000-0000-0000-0000000000a3'; n int;
+begin
+  insert into plantings(id,farm_id,parcel_id,crop_id,area_str,sown_on,status) values (ok_pl,f,p,crop2,0.25,'2026-11-17','growing'),(run_pl,f,p,crop2,0.25,'2026-11-17','growing'),(unk_pl,f,p,crop2,0.25,'2026-11-17','growing');
+  insert into jobs(id,farm_id,kind,status,worker_id,product_id,done_at) values (ok_j,f,'spray','done',w,prod,now()),(run_j,f,'spray','done',w,prod,now()),(unk_j,f,'spray','done',w,prod,now());
+  insert into job_plantings(farm_id,job_id,planting_id) values (f,ok_j,ok_pl),(f,run_j,run_pl),(f,unk_j,unk_pl);
+  insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,phi_source,phi_until) values (f,ok_j,prod,w,now() - interval '10 days',0.025,'ml/str','signed',7,'label',now() - interval '3 days');
+  insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,phi_source,phi_until) values (f,run_j,prod,w,now() - interval '1 day',0.025,'ml/str','signed',7,'label',now() + interval '6 days');
+  insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state) values (f,unk_j,prod,w,now() - interval '30 days',0.025,'ml/str','unsigned');
+  insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,ok_pl,5,now());
+  begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,run_pl,5,now() + interval '10 days'); raise exception 'harvest inside the PHI accepted with a future time'; exception when check_violation then null; end;
+  begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,run_pl,5,now()); raise exception 'harvest inside the PHI accepted'; exception when check_violation then null; end;
+  begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,unk_pl,5,now()); raise exception 'harvest with an UNKNOWN PHI accepted'; exception when check_violation then null; end;
+  begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,ok_pl,5,now() + interval '2 days'); raise exception 'a future harvest time accepted'; exception when check_violation then null; end;
+  -- Bora's own entry (an amending row) unblocks it, but only when it has run out
+  insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,amends_id)
+    select f,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,7,24,'manual',sprayed_at + interval '7 days',sprayed_at + interval '24 hours',id from job_spray where job_id = unk_j;
+  insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,unk_pl,5,now());
 end $$;
 
 -- 0008: job assignment and observations as the phone writes them (run as the table owner, before `set role`)

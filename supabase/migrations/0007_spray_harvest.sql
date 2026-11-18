@@ -56,6 +56,26 @@ alter table job_harvest drop column crates;
 alter table job_harvest add column crates_str integer not null check (crates_str > 0), add column harvested_at timestamptz not null, add column note text,
   add column device_id text, add column actor_id text;
 
+-- The server refuses a harvest inside a waiting period, whatever the phone says. It looks at NOW (the server's clock), never at the typed harvest time, so a
+-- time in the future cannot step over a PHI; a harvest time more than 5 minutes ahead of the server is refused (clock skew). A spray counts unless a later row
+-- amends it; a waiting period that is unknown (NULL) blocks. There is no override.
+create function check_harvest_phi() returns trigger language plpgsql as $$
+begin
+  if new.harvested_at > now() + interval '5 minutes' then
+    raise exception 'harvest time is in the future' using errcode = 'check_violation';
+  end if;
+  if exists (
+    select 1 from job_plantings jp join job_spray s on s.job_id = jp.job_id
+    where jp.planting_id = new.planting_id
+      and not exists (select 1 from job_spray a where a.amends_id = s.id)
+      and (s.phi_until is null or s.phi_until > now())
+  ) then
+    raise exception 'harvest blocked: a spray on this planting has an unknown or running waiting period' using errcode = 'check_violation';
+  end if;
+  return new;
+end $$;
+create trigger job_harvest_phi before insert on job_harvest for each row execute function check_harvest_phi();
+
 -- ---- triggers and RLS for the roster (same pattern as 0004; workers get no policy until accounts exist) ----
 create trigger workers_seq before insert or update on workers for each row execute function set_server_seq();
 create trigger workers_audit after insert or update or delete on workers for each row execute function write_audit();

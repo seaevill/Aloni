@@ -24,7 +24,7 @@ export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = 
   const [note, setNote] = useState('');
   const [failed, setFailed] = useState(false);
   const at = instantOf(new Date(when)) ?? '';
-  const gate = planting ? harvestGate(planting, at, links.rows ?? [], sprays.rows ?? []) : undefined;
+  const gate = planting ? harvestGate(planting, instantOf(new Date()) ?? '', links.rows ?? [], sprays.rows ?? []) : undefined;
   const blocked = gate && !gate.ok ? gate : undefined;
   const live = plantings.rows?.filter((p) => !p.deleted_at) ?? [];
   const name = (p: Row) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) });
