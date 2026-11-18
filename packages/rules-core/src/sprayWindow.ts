@@ -1,14 +1,26 @@
+import { parseInstant } from './waits';
+
 // SPRAY-WIN, the hour test. PURE and conservative: an hour is OK only when EVERY condition is positively known to hold; a missing or unreadable value
 // (NaN, not enough hours before/after) makes the hour «not OK», never «OK». The numbers are [SET] thresholds: until they are signed the rule only shows data.
 
-export interface Hour { time: string; day: string; tempC: number; rhPct: number; windKmh: number; gustKmh: number; rainMm: number; cloudOktas: number; leafWet: boolean }
+export interface Hour { time: string; day: string; tempC: number; rhPct: number; windKmh: number; gustKmh: number; rainMm: number; cloudOktas: number; /** undefined = not measured/estimated = UNKNOWN (never «dry») */ leafWet: boolean | undefined }
 export interface Sun { sunrise: string; sunset: string }
 export interface SprayParams {
   windMin: number; windMax: number; gustMax: number; dryBeforeH: number; rainLookaheadH: number; rainMaxMm: number; deltaTMin: number; deltaTMax: number; tempMax: number; inversionAfterSunriseH: number;
 }
-export type Reason = 'data_missing' | 'wind_above_max' | 'wind_below_min' | 'gust_above_max' | 'leaves_wet' | 'rain_expected' | 'delta_t_out_of_range' | 'temp_above_max' | 'inversion';
+export type Reason = 'data_missing' | 'wind_above_max' | 'wind_below_min' | 'gust_above_max' | 'leaves_wet' | 'rain_expected' | 'delta_t_out_of_range' | 'temp_above_max' | 'inversion' | 'params_invalid';
 
 const finite = (...xs: number[]) => xs.every((x) => Number.isFinite(x));
+
+/** The thresholds must be usable numbers in a sensible order: with a NaN limit every comparison is false and an hour would slip through as «OK». */
+export function paramsValid(p: SprayParams): boolean {
+  return finite(p.windMin, p.windMax, p.gustMax, p.dryBeforeH, p.rainLookaheadH, p.rainMaxMm, p.deltaTMin, p.deltaTMax, p.tempMax, p.inversionAfterSunriseH)
+    && p.windMin >= 0 && p.windMin <= p.windMax && p.gustMax >= 0 && p.rainMaxMm >= 0 && p.deltaTMin <= p.deltaTMax && p.inversionAfterSunriseH >= 0
+    && Number.isInteger(p.dryBeforeH) && p.dryBeforeH >= 0 && Number.isInteger(p.rainLookaheadH) && p.rainLookaheadH >= 1;
+}
+const stamp = (t: string): number | undefined => { const r = parseInstant(t); return r.known ? r.value.day * 86400 + r.value.sec : undefined; };
+/** Two neighbouring hours must be exactly one hour apart; anything else (a gap, a repeat, an unsorted series, an unreadable time) is not a series we can judge. */
+const oneHourApart = (a: Hour, b: Hour): boolean => { const x = stamp(a.time); const y = stamp(b.time); return x !== undefined && y !== undefined && y - x === 3600; };
 
 /** Stull (2011) wet-bulb temperature from temperature (°C) and relative humidity (%), and Delta-T = T − Tw. */
 export function deltaT(tempC: number, rhPct: number): number {
@@ -18,8 +30,12 @@ export function deltaT(tempC: number, rhPct: number): number {
 
 /** Why hour `i` of a parcel's series is not OK (empty = OK). `sun` maps a local day to its sunrise / sunset instants (UTC seconds strings). */
 export function hourReasons(hours: readonly Hour[], i: number, p: SprayParams, sun: Readonly<Record<string, Sun>>): Reason[] {
+  if (!paramsValid(p)) return ['params_invalid'];
   const h = hours[i];
-  if (!h || !finite(h.tempC, h.rhPct, h.windKmh, h.gustKmh, h.rainMm, h.cloudOktas)) return ['data_missing'];
+  if (!h || !finite(h.tempC, h.rhPct, h.windKmh, h.gustKmh, h.rainMm, h.cloudOktas) || stamp(h.time) === undefined) return ['data_missing'];
+  const around = hours.slice(Math.max(0, i - p.dryBeforeH), Math.min(hours.length, i + p.rainLookaheadH));
+  if (!around.every((x, k) => k === 0 || oneHourApart(around[k - 1], x))) return ['data_missing']; // a gap or a disorder in the hours that count
+  if (h.leafWet === undefined || hours.slice(Math.max(0, i - p.dryBeforeH), i).some((b) => b.leafWet === undefined)) return ['data_missing']; // unknown wetness is not «dry»
   const why: Reason[] = [];
   if (h.windKmh > p.windMax) why.push('wind_above_max');
   if (h.windKmh < p.windMin) why.push('wind_below_min');

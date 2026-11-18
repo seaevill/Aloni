@@ -4,13 +4,12 @@ import { dataVersion, db, realFarmId } from '../db';
 import { formatDateTime, t, tn } from '../i18n';
 import { put } from '../repo';
 import { buildHarvest, harvestGate } from '../spray/harvest';
-import { instantOf } from '../spray/time';
+import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
 import type { Row } from '../db/schema';
 import { nameOf } from './screens';
 import { useRows } from './useRows';
 
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
-const localNow = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().replace(/:\d{2}\.\d{3}Z$/, '');
 
 /**
  * The harvest counter. The planting must have NO running or unknown waiting period at the time chosen: otherwise the screen says why and saving is
@@ -20,10 +19,10 @@ export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = 
   const plantings = useRows('plantings'); const crops = useRows('crops'); const parcels = useRows('parcels'); const links = useRows('job_plantings'); const sprays = useRows('job_spray');
   const [planting, setPlanting] = useState('');
   const [crates, setCrates] = useState('');
-  const [when, setWhen] = useState(localNow());
+  const [when, setWhen] = useState(athensLocalNow(new Date()) ?? '');
   const [note, setNote] = useState('');
   const [failed, setFailed] = useState(false);
-  const at = instantOf(new Date(when)) ?? '';
+  const at = athensInstant(when) ?? '';
   const gate = planting ? harvestGate(planting, instantOf(new Date()) ?? '', links.rows ?? [], sprays.rows ?? []) : undefined;
   const blocked = gate && !gate.ok ? gate : undefined;
   const live = plantings.rows?.filter((p) => !p.deleted_at) ?? [];

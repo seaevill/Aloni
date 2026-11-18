@@ -88,7 +88,7 @@
         "product_id": "PR05",
         "dose_per_str": "0.05",
         "started_at": "2026-11-09T10:30:00+02:00",
-        "ended_at": null,
+        "ended_at": "2026-11-09T10:30:00+02:00",
         "time_source": "job notes",
         "notes": "Septoria leaf spot (Septoria petroselini) on parsley; 50 L water/στρ; 10:30, leaves dry."
       }

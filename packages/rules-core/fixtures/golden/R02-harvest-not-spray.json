@@ -83,7 +83,7 @@
         "product_id": "PR01",
         "dose_per_str": "0.2",
         "started_at": "2026-11-02T10:45:00+02:00",
-        "ended_at": null,
+        "ended_at": "2026-11-02T10:45:00+02:00",
         "time_source": "job notes",
         "notes": "Preventive copper before mid-Nov rains; 50 L water/στρ; 10:45."
       },

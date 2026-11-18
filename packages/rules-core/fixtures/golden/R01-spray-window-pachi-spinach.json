@@ -252,7 +252,7 @@
         "product_id": "PR04",
         "dose_per_str": "0.2",
         "started_at": "2026-10-30T11:30:00+02:00",
-        "ended_at": null,
+        "ended_at": "2026-10-30T11:30:00+02:00",
         "time_source": "job notes",
         "notes": "Preventive, downy mildew (Peronospora effusa); 50 L water/στρ. Applied 11:30, leaves dry."
       }

@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "id": "NEG-PHI-no-end-time-blocks",
+  "case_type": "negative",
+  "source_case": null,
+  "qa_refs": [],
+  "rule_id": "PHI",
+  "related_rules": [
+    "REG",
+    "GAP"
+  ],
+  "farm": "demo",
+  "as_of": "2026-11-18T15:30:00+02:00",
+  "rule_state": {
+    "status": "signed_for_test",
+    "params": {}
+  },
+  "inputs": {
+    "plantings": [
+      {
+        "id": "PL09",
+        "crop_id": "chard",
+        "parcel_id": "P3",
+        "area_str": "1",
+        "sown": "2026-09-15",
+        "stage_pct": 100,
+        "harvest_from": "2026-11-05",
+        "harvest_to": "2027-01-15",
+        "est_crates": 200,
+        "status": "harvesting",
+        "family": "Amaranthaceae"
+      }
+    ],
+    "products": [
+      {
+        "id": "PR03",
+        "label": "Mandipropamid 25% SC",
+        "type": "fungicide",
+        "group_system": "FRAC",
+        "group_code": "40",
+        "unit": "L"
+      }
+    ],
+    "label_uses": [
+      {
+        "product_id": "PR03",
+        "crop_id": "chard",
+        "target": null,
+        "dose_kind": "single",
+        "dose_min_per_str": "0.06",
+        "dose_max_per_str": "0.06",
+        "dose_unit": "L/στρ",
+        "phi_days": 14,
+        "rei_h": 24,
+        "max_apps": null,
+        "min_interval_days": null,
+        "rainfast_h": null,
+        "source": "prototype data.json (illustrative)",
+        "sign_off": "test-only"
+      }
+    ],
+    "label_uses_note": "PR03 HAS a signed-for-test label row for chard (PHI 14 days); the logged spray has NO end time"
+  },
+  "synthetic_inputs": {
+    "_synthetic": true,
+    "why": "A done spray with a start time but no end time: the PHI is never counted from the start; the bed is blocked until the end is known.",
+    "jobs": [
+      {
+        "id": "J-X1",
+        "kind": "spray",
+        "status": "done",
+        "parcel_id": "P3",
+        "planting_ids": [
+          "PL09"
+        ],
+        "product_id": "PR03",
+        "dose_per_str": "0.06",
+        "started_at": "2026-11-18T11:00:00+02:00"
+      }
+    ]
+  },
+  "expected": {
+    "mode": "decide",
+    "kind": "alert",
+    "category": "phi_blocked_unknown",
+    "severity": "high",
+    "targets": {
+      "planting_ids": [
+        "PL09"
+      ],
+      "planting_match": "exact"
+    },
+    "values": {
+      "lot_status": "blocked",
+      "safe_from": null,
+      "reason": "no_end_time"
+    },
+    "vetoes": [
+      {
+        "by": "PHI",
+        "vetoed": "harvest",
+        "planting_id": "PL09",
+        "reason": "no_end_time"
+      }
+    ],
+    "must_not": [
+      {
+        "id": "no-default-safe-from",
+        "match": {
+          "rule_id": "PHI",
+          "planting_ids": "PL09",
+          "values": {
+            "safe_from": {
+              "$exists": true,
+              "$ne": null
+            }
+          }
+        },
+        "why": "never a PHI counted from the start"
+      },
+      {
+        "id": "no-supply",
+        "match": {
+          "category": "supply_gap",
+          "values": {
+            "supply_by_planting": {
+              "PL09": [
+                {
+                  "$gt": 0
+                }
+              ]
+            }
+          }
+        },
+        "why": "blocked lot is not supply"
+      },
+      {
+        "id": "no-hold-from-start",
+        "match": {
+          "rule_id": "PHI",
+          "category": "phi_hold"
+        },
+        "why": "a hold with a date would mean the PHI was counted from the start"
+      }
+    ]
+  },
+  "source_text": {
+    "rules": "PHI: If the label has no entry for that product and crop pair, the lot is blocked, never given a default."
+  },
+  "notes": "Safe side: a missing end time blocks (team review 2026-11-18); the golden adapter no longer invents an end time."
+}

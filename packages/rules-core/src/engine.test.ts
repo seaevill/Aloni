@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fingerprint, known, makeDose, parseDecimal, parseMaxApps, parsePhiDays, parseReiHours, parseInstant, requireSignOff, runRules, type LabelUse, type Snapshot, type UseFact } from './index';
+import { fingerprint, known, makeDose, parseDecimal, parseMaxApps, parsePhiDays, parseReiHours, parseInstant, requireSignOff, runRules, type LabelUse, type Output, type Snapshot, type UseFact } from './index';
 
 function seeded(seed: number) { let x = seed; return () => { x = (x * 1103515245 + 12345) % 2147483648; return x; }; }
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -14,6 +14,10 @@ const snap = (over: Partial<Snapshot>): Snapshot => ({
   asOf: '2026-11-20T00:00:00Z', plantings: [{ id: 'pl', parcelId: 'p', cropId: 'crop' }], uses: [use('7', '24', true)], tasks: [], ruleStatus: {}, parcelsForInfo: [], draftJobs: [], products: [],
   jobs: [{ id: 'j', kind: 'spray', status: 'done', plantingIds: ['pl'], productId: 'prod', startedAt: '2026-11-18T08:00:00Z', endedAt: '2026-11-18T09:00:00Z' }], ...over,
 });
+
+/** A full output with the engine's empty defaults, so a test states EVERY field it expects (nothing extra can slip through). */
+const full = (o: Partial<Output>): Output => ({ rule_id: '', kind: 'info', category: '', notify: false, parcel_ids: [], planting_ids: [], product_ids: [], crop_ids: [], values: {}, vetoes: [], ...o });
+const PHI_BLOCK: Partial<Output> = { rule_id: 'PHI', kind: 'alert', category: 'phi_blocked_unknown', severity: 'high', planting_ids: ['pl'], parcel_ids: ['p'], product_ids: ['prod'] };
 
 describe('the engine never shortens a waiting period and never decides from what is not signed', () => {
   it('property (1000 sprays): the PHI hold ends exactly PHI × 24 h after the spray, is on while it runs and gone after it, and no date is earlier', () => {
@@ -40,7 +44,7 @@ describe('the engine never shortens a waiting period and never decides from what
     for (const asOf of ['2026-11-19T00:00:00Z', '2030-01-01T00:00:00Z']) {
       const o = runRules(snap({ jobs: j, asOf })).filter((x) => x.rule_id === 'PHI');
       expect(o, asOf).toHaveLength(1);
-      expect(o[0]).toMatchObject({ category: 'phi_blocked_unknown', values: { lot_status: 'blocked', safe_from: null, reason: 'no_end_time' }, vetoes: [{ by: 'PHI', vetoed: 'harvest', planting_id: 'pl' }] });
+      expect(o[0]).toEqual(full({ ...PHI_BLOCK, values: { lot_status: 'blocked', safe_from: null, reason: 'no_end_time' }, vetoes: [{ by: 'PHI', vetoed: 'harvest', planting_id: 'pl', reason: 'no_end_time' }] }));
     }
   });
   it('an unreadable spray time is «blocked», never silently passed', () => {
@@ -54,17 +58,19 @@ describe('the engine never shortens a waiting period and never decides from what
     for (const uses of [[use('7', '24', false)], [use('', '24', true)], [use('7', 'NaN', true)], []]) {
       const out = runRules(snap({ uses })).filter((o) => o.rule_id === 'PHI');
       expect(out, JSON.stringify(uses.length)).toHaveLength(1);
-      expect(out[0]).toMatchObject({ category: 'phi_blocked_unknown', values: { lot_status: 'blocked', safe_from: null }, vetoes: [{ by: 'PHI', vetoed: 'harvest' }] });
+      const why = uses.length === 0 ? 'no_label_row' : 'not_signed';
+      expect(out[0]).toEqual(full({ ...PHI_BLOCK, values: { lot_status: 'blocked', safe_from: null, reason: why }, vetoes: [{ by: 'PHI', vetoed: 'harvest', planting_id: 'pl', reason: why }] }));
     }
   });
   it('REI counts from the END of the spraying, never from midnight and never shorter; tasks before it are vetoed', () => {
     const out = runRules(snap({ asOf: '2026-11-18T10:00:00Z', tasks: [{ id: 'T1', plantingIds: ['pl'], at: '2026-11-19T08:00:00Z' }, { id: 'T2', plantingIds: ['pl'], at: '2026-11-19T09:30:00Z' }] })).filter((o) => o.rule_id === 'REI');
     expect(out).toHaveLength(1);
-    expect(out[0].values).toMatchObject({ reentry_at: '2026-11-19T09:00:00Z', blocked_task_ids: ['T1'], allowed_task_ids: ['T2'] });
+    expect(out[0]).toEqual(full({ rule_id: 'REI', kind: 'alert', category: 'rei', severity: 'high', confidence: 'medium', planting_ids: ['pl'], parcel_ids: ['p'], window: { start: '2026-11-18T09:00:00Z', end: '2026-11-19T09:00:00Z' },
+      values: { reentry_at: '2026-11-19T09:00:00Z', rei_h: 24, blocked_task_ids: ['T1'], allowed_task_ids: ['T2'] }, vetoes: [{ by: 'REI', vetoed: 'task', task_id: 'T1', reason: 'before_reentry' }] }));
   });
   it('a rule whose own thresholds are unsigned only SHOWS its inputs: no alert, no severity, no notification', () => {
     const out = runRules(snap({ ruleStatus: { FROST: 'unsigned' }, parcelsForInfo: ['p'] })).filter((o) => o.rule_id === 'FROST');
-    expect(out).toEqual([expect.objectContaining({ kind: 'info', notify: false, values: expect.objectContaining({ badge: 'not_signed_off' }) })]);
+    expect(out).toEqual([full({ rule_id: 'FROST', kind: 'info', category: 'frost_inputs', parcel_ids: ['p'], values: { shows_inputs: true, badge: 'not_signed_off', notify: false } })]);
     expect(out[0].severity).toBeUndefined();
     expect(runRules(snap({ ruleStatus: { FROST: 'signed' }, parcelsForInfo: ['p'] })).some((o) => o.rule_id === 'FROST')).toBe(false); // not built yet: nothing invented
   });
@@ -72,7 +78,7 @@ describe('the engine never shortens a waiting period and never decides from what
     for (const asOf of ['Invalid Date', '', 'NaN', '2026-11-20']) {
       const o = runRules(snap({ asOf }));
       expect(o, asOf).toHaveLength(1);
-      expect(o[0]).toMatchObject({ rule_id: 'ENGINE', kind: 'block', category: 'now_unreadable', severity: 'high', notify: false, vetoes: [{ by: 'ENGINE', vetoed: 'everything', reason: 'unreadable_now' }] });
+      expect(o[0]).toEqual(full({ rule_id: 'ENGINE', kind: 'block', category: 'now_unreadable', severity: 'high', vetoes: [{ by: 'ENGINE', vetoed: 'everything', reason: 'unreadable_now' }] }));
     }
   });
   it('REI: a done spray with NO end time, an unreadable time, or no signed label blocks every task on that planting (never skipped)', () => {
@@ -81,14 +87,15 @@ describe('the engine never shortens a waiting period and never decides from what
     for (const [endedAt, why] of [[undefined, 'no_end_time'], ['Invalid Date', 'unreadable_time']] as const) {
       const o = runRules(snap({ jobs: job(endedAt), tasks })).filter((x) => x.rule_id === 'REI');
       expect(o, why).toHaveLength(1);
-      expect(o[0]).toMatchObject({ category: 'rei_unknown', values: { reentry_at: null, reason: why, blocked_task_ids: ['T1'] }, vetoes: [{ by: 'REI', vetoed: 'task', task_id: 'T1', reason: 'rei_unknown' }] });
+      expect(o[0]).toEqual(full({ rule_id: 'REI', kind: 'alert', category: 'rei_unknown', severity: 'high', planting_ids: ['pl'], parcel_ids: ['p'], product_ids: ['prod'], values: { reentry_at: null, reason: why, blocked_task_ids: ['T1'], allowed_task_ids: ['T2'] }, vetoes: [{ by: 'REI', vetoed: 'task', task_id: 'T1', reason: 'rei_unknown' }] }));
     }
     const unsigned = runRules(snap({ jobs: job('2026-11-18T09:00:00Z'), tasks, uses: [use('7', '24', false)] })).filter((x) => x.rule_id === 'REI');
     expect(unsigned.map((x) => [x.category, x.values.reason])).toEqual([['rei_unknown', 'not_signed']]);
   });
   it('REI: a task whose time cannot be read is vetoed, never allowed', () => {
     const o = runRules(snap({ asOf: '2026-11-18T10:00:00Z', tasks: [{ id: 'T1', plantingIds: ['pl'], at: 'Invalid Date' }, { id: 'T2', plantingIds: ['pl'], at: '2026-11-19T09:30:00Z' }] })).filter((x) => x.rule_id === 'REI');
-    expect(o[0].values).toMatchObject({ blocked_task_ids: ['T1'], allowed_task_ids: ['T2'] });
+    expect(o[0].values).toEqual({ reentry_at: '2026-11-19T09:00:00Z', rei_h: 24, blocked_task_ids: ['T1'], allowed_task_ids: ['T2'] });
+    expect(o[0].vetoes).toEqual([{ by: 'REI', vetoed: 'task', task_id: 'T1', reason: 'before_reentry' }]);
   });
 });
 
@@ -98,7 +105,7 @@ describe('REG and ROT: a draft spray never covers beds that are not on a signed 
   it('only the planting whose crop is on the signed label is allowed; the others are excluded one by one', () => {
     const o = runRules(snap({ plantings: two, draftJobs: [draft], jobs: [] })).filter((x) => x.rule_id === 'REG');
     expect(o).toHaveLength(1);
-    expect(o[0]).toMatchObject({ kind: 'block', values: { allowed_planting_ids: ['pl'], exclude_planting_ids: ['pl2'] }, vetoes: [{ by: 'REG', vetoed: 'spray', planting_id: 'pl2', reason: 'not_on_label' }] });
+    expect(o[0]).toEqual(full({ rule_id: 'REG', kind: 'block', category: 'exclude_unregistered_beds', severity: 'high', planting_ids: ['pl2'], product_ids: ['prod'], values: { job_id: 'd', allowed_planting_ids: ['pl'], exclude_planting_ids: ['pl2'] }, vetoes: [{ by: 'REG', vetoed: 'spray', planting_id: 'pl2', reason: 'not_on_label' }] }));
   });
   it('an UNSIGNED label registers nothing: every bed is excluded', () => {
     const o = runRules(snap({ plantings: two, draftJobs: [draft], jobs: [], uses: [use('7', '24', false)] })).filter((x) => x.rule_id === 'REG');
@@ -134,17 +141,24 @@ describe('PHI and REI count from the END of the spraying (the safe side)', () =>
 });
 
 describe('SPRAY-WIN: unsigned thresholds only show data', () => {
-  const hours = Array.from({ length: 30 }, (_, i) => ({ time: `2026-11-20T${String(i % 24).padStart(2, '0')}:00:00Z`, day: '2026-11-20', tempC: 8, rhPct: 94, windKmh: 30, gustKmh: 60, rainMm: 2, cloudOktas: 6, leafWet: true }));
+  const hours = Array.from({ length: 24 }, (_, i) => ({ time: `2026-11-20T${String(i).padStart(2, '0')}:00:00Z`, day: '2026-11-20', tempC: 8, rhPct: 94, windKmh: 30, gustKmh: 60, rainMm: 2, cloudOktas: 6, leafWet: true }));
   const weather = { hours: { p: hours }, sun: { '2026-11-20': { sunrise: '2026-11-20T05:10:00Z', sunset: '2026-11-20T15:07:00Z' } }, rainDaily: { p: { '2026-11-20': 6.5 } } };
   const sprayParams = { windMin: 3, windMax: 10, gustMax: 20, dryBeforeH: 1, rainLookaheadH: 3, rainMaxMm: 0.2, deltaTMin: 2, deltaTMax: 8, tempMax: 28, inversionAfterSunriseH: 2 };
   it('signed (for test): a day with no OK hour raises the medium «window closed» alert; it never notifies', () => {
     const o = runRules(snap({ weather, sprayParams, ruleStatus: { 'SPRAY-WIN': 'signed' } })).filter((x) => x.rule_id === 'SPRAY-WIN');
-    expect(o).toEqual([expect.objectContaining({ kind: 'alert', category: 'spray_window_closed', severity: 'medium', notify: false, values: expect.objectContaining({ ok_hours: 0, closed_days: ['2026-11-20'] }) })]);
+    expect(o).toEqual([full({ rule_id: 'SPRAY-WIN', kind: 'alert', category: 'spray_window_closed', severity: 'medium', confidence: 'medium', parcel_ids: ['p'], window: { start: '2026-11-20', end: '2026-11-20' }, values: { closed_days: ['2026-11-20'], ok_hours: 0, rain_mm: { '2026-11-20': 6.5 }, max_gust_kmh: { p: 60 } } })]);
   });
   it('UNSIGNED: the same weather gives an info line only: no alert, no severity, no notification', () => {
     const o = runRules(snap({ weather, sprayParams, ruleStatus: { 'SPRAY-WIN': 'unsigned' } })).filter((x) => x.rule_id === 'SPRAY-WIN');
-    expect(o).toEqual([expect.objectContaining({ kind: 'info', category: 'spray_window_inputs', notify: false })]);
+    expect(o).toEqual([full({ rule_id: 'SPRAY-WIN', kind: 'info', category: 'spray_window_inputs', parcel_ids: ['p'], values: { shows_inputs: true, badge: 'not_signed_off', notify: false } })]);
     expect(o[0].severity).toBeUndefined();
+  });
+  it('thresholds that cannot be used, or hours with missing data, are NEVER reported as «window closed»: only an info line that says it is unknown', () => {
+    const signed = { 'SPRAY-WIN': 'signed' } as const;
+    const broken = runRules(snap({ weather, sprayParams: { ...sprayParams, windMax: NaN }, ruleStatus: signed })).filter((x) => x.rule_id === 'SPRAY-WIN');
+    expect(broken.map((x) => [x.kind, x.category])).toEqual([['info', 'spray_window_unknown']]);
+    const noWet = { ...weather, hours: { p: hours.map((h) => ({ ...h, leafWet: undefined })) } };
+    expect(runRules(snap({ weather: noWet, sprayParams, ruleStatus: signed })).filter((x) => x.rule_id === 'SPRAY-WIN').map((x) => [x.kind, x.category])).toEqual([['info', 'spray_window_unknown']]);
   });
   it('no weather yet (the server connection comes later): nothing is said, nothing invented', () => {
     expect(runRules(snap({ ruleStatus: { 'SPRAY-WIN': 'signed' } })).filter((x) => x.rule_id === 'SPRAY-WIN')).toEqual([]);
@@ -163,7 +177,8 @@ describe('FROST: only positively known inputs make an alert; never a damage clai
   const of = (s: Snapshot) => runRules(s).filter((x) => x.rule_id === 'FROST');
   it('a clear calm cold night on a low plain parcel: a high, LOW-confidence alert that claims no damage and notifies nobody', () => {
     const o = of(low(() => undefined, 'signed'));
-    expect(o[0]).toMatchObject({ kind: 'alert', category: 'frost_conditions', severity: 'high', confidence: 'low', notify: false, values: { damage_claimed: false } });
+    expect(o[0]).toEqual(full({ rule_id: 'FROST', kind: 'alert', category: 'frost_conditions', severity: 'high', confidence: 'low', parcel_ids: ['p'], planting_ids: ['pl'], window: { start: '2026-11-17', end: '2026-11-18' },
+      values: { nights: [{ night: '2026-11-17/2026-11-18', p: 1 }], leaf_range_c: [{ night: '2026-11-17/2026-11-18', p: [-2, 0] }], leaf_basis: 'EST', damage_claimed: false } }));
     expect(o.map((x) => x.category)).toContain('cover');
   });
   it('UNSIGNED: only an info line, no alert, no recommendation, no severity', () => {
@@ -174,7 +189,7 @@ describe('FROST: only positively known inputs make an alert; never a damage clai
     for (const s of [low((n) => { n.cloudOktas = undefined; }, 'signed'), low((n) => { n.tminC = NaN; }, 'signed'), low((n) => { n.windKmh = NaN; }, 'signed'), frostSnap(night(() => undefined), 'signed', 20, undefined), frostSnap(night(() => undefined), 'signed', NaN, 'plain')]) {
       const o = of(s);
       expect(o.some((x) => x.kind === 'alert')).toBe(false);
-      expect(o).toEqual([expect.objectContaining({ kind: 'info', category: 'frost_inputs_missing' })]);
+      expect(o).toEqual([full({ rule_id: 'FROST', kind: 'info', category: 'frost_inputs_missing', parcel_ids: ['p'], values: { missing: expect.any(Array), badge: 'unknown' } })]);
     }
   });
   it('every limit is inclusive and a night just outside it is quiet: 2.0 °C, 5 km/h, 2 oktas, 50 m are in; 2.1, 5.1, 3, 50.1 are out', () => {

@@ -15,13 +15,12 @@ describe('repo.put: one write path', () => {
     const db = await newDb();
     const a = row(); await put(db, 'parcels', a);
     const b = row(); await put(db, 'parcels', b);
-    expect(await db.parcels.get(a.id)).toMatchObject(a);
-    expect(await db.parcels.get(a.id)).toMatchObject({ device_id: expect.any(String), actor_id: expect.any(String) });
+    expect(await db.parcels.get(a.id)).toEqual({ ...a, device_id: expect.any(String), actor_id: expect.any(String) }); // exactly the row plus who wrote it
     const ops = await db.outbox.toArray();
     expect(ops).toHaveLength(2);
     const opA = ops.find((o) => o.row_id === a.id)!; // the outbox is ordered by op_id (random), not by time
     const opB = ops.find((o) => o.row_id === b.id)!;
-    expect(opA).toMatchObject({ table: 'parcels', op: 'update', status: 'pending', farm_id: TEST_FARM_ID });
+    expect(opA).toEqual({ op_id: expect.any(String), farm_id: TEST_FARM_ID, table: 'parcels', row_id: a.id, op: 'update', row: { ...a, device_id: expect.any(String), actor_id: expect.any(String) }, device_id: expect.any(String), actor_id: expect.any(String), at: expect.any(String), status: 'pending' });
     expect(opA.device_id).toBe(opB.device_id);
     expect(opA.actor_id).toBe(opB.actor_id);
     expect(opA.device_id).not.toBe(opA.actor_id);
@@ -61,7 +60,7 @@ describe('repo.put: one write path', () => {
   it('owner settings are queued too', async () => {
     const db = await newDb();
     await putSetting(db, TEST_FARM_ID, 'controller', { name: 'Test' });
-    expect(await db.outbox.toArray()).toMatchObject([{ table: 'settings', row_id: 'controller', op: 'update' }]);
+    expect(await db.outbox.toArray()).toEqual([{ actor_id: expect.any(String), device_id: expect.any(String), op_id: expect.any(String), at: expect.any(String), farm_id: TEST_FARM_ID, op: 'update', row: { key: 'controller', value: { name: 'Test' } }, row_id: 'controller', status: 'pending', table: 'settings' }]);
   });
 });
 

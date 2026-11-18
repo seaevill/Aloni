@@ -7,7 +7,7 @@ import { formatDose } from '../i18n/format';
 import { known, type Decimal } from '@aloni/rules-core';
 import { putMany } from '../repo';
 import { buildObservation, completeSprayJob, OBSERVATION_KINDS, SKIP_REASONS, skipSprayJob, type ObservationKind, type SkipReason } from '../worker/jobs';
-import { instantOf } from '../spray/time';
+import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
 import { doneBlocked, reiLockJob, type Lock } from '../spray/harvest';
 import type { Row } from '../db/schema';
 import { DemoBanner } from './DemoBanner';
@@ -21,7 +21,6 @@ const HOLD_MS = 10000; // 10 seconds to take it back
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 const SKIP_KEYS: Record<SkipReason, I18nKey> = { rain: 'worker.skip.rain', wind: 'worker.skip.wind', no_product: 'worker.skip.no_product', other: 'worker.skip.other' };
 const KIND_KEYS: Record<ObservationKind, I18nKey> = { dew: 'worker.kind.dew', frost_damage: 'worker.kind.frost_damage', disease: 'worker.kind.disease', pest: 'worker.kind.pest', other: 'worker.kind.other' };
-const localNow = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().replace(/:\d{2}\.\d{3}Z$/, '');
 
 /**
  * The worker's screens, on the SAME phone, for the Demo farm only: the jobs the manager assigned (done / not done, 72 px buttons, 10 s undo),
@@ -35,7 +34,7 @@ export function WorkerApp() {
   const [tabId, setTabId] = useState<'jobs' | 'harvest' | 'observe'>('jobs');
   const [open, setOpen] = useState<{ job: string; mode: 'done' | 'skip' } | undefined>(undefined);
   const [held, setHeld] = useState<string[]>([]);
-  const [when, setWhen] = useState(localNow());
+  const [when, setWhen] = useState(athensLocalNow(new Date()) ?? '');
   const [note, setNote] = useState('');
   const [parcel, setParcel] = useState(''); const [kind, setKind] = useState<ObservationKind | undefined>(undefined);
   if (activeFarm.value !== DEMO_FARM_ID || !me) return null;
@@ -55,7 +54,7 @@ export function WorkerApp() {
     showHeldUndo(t('worker.committed'), () => setHeld((h) => h.filter((x) => x !== job.id)), async () => { await write(); dataVersion.value++; setHeld((h) => h.filter((x) => x !== job.id)); }, HOLD_MS);
   };
   const confirmDone = (job: Row) => {
-    const at = instantOf(new Date(when));
+    const at = athensInstant(when);
     const label = (labels.rows ?? []).find((l) => l.id === job.label_use_id);
     const c = at ? completeSprayJob(job, label, plantingsOf(job), me, at, note, new Date().toISOString(), crypto.randomUUID()) : undefined;
     if (c?.ok) hold(job, () => putMany(db, [{ table: 'jobs', row: c.job }, { table: 'job_spray', row: c.spray, op: 'insert' }]));

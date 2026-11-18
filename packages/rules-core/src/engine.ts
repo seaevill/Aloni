@@ -1,7 +1,7 @@
 import { frostNights, type FrostFacts, type FrostHit } from './frost';
 import { known, type Known } from './known';
 import type { SignedLabelUse } from './label';
-import { summariseDays, type Hour, type SprayParams, type Sun } from './sprayWindow';
+import { paramsValid, summariseDays, type Hour, type SprayParams, type Sun } from './sprayWindow';
 import { parseInstant, phiEnd, reiEnd, waitOver } from './waits';
 
 // The rules engine (M3 start). PURE: no clock (`asOf` is an argument), no I/O. Deciding rules take ONLY a Known<SignedLabelUse>: an unsigned, changed or
@@ -128,6 +128,8 @@ function sprayWindowClosed(s: Snapshot): Output[] {
   const parcels = Object.keys(w.hours);
   const per = parcels.map((p) => ({ p, days: summariseDays(w.hours[p], params, w.sun) }));
   const days = [...new Set(per.flatMap((x) => x.days.map((d) => d.day)))].sort();
+  const unknown = !paramsValid(params) || per.some((x) => x.days.some((d) => d.okHours === 0 && d.reasons.some((r) => r === 'data_missing' || r === 'params_invalid')));
+  if (unknown) return [blank({ rule_id: 'SPRAY-WIN', kind: 'info', category: 'spray_window_unknown', parcel_ids: parcels, values: { reason: 'data_or_thresholds_unusable', badge: 'unknown' } })]; // unknown is never «closed»
   const closed = days.filter((d) => per.every((x) => { const y = x.days.find((z) => z.day === d); return y !== undefined && y.okHours === 0; }));
   if (days.length === 0 || closed.length !== days.length) return [];
   const gust: Record<string, number> = {};
