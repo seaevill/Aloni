@@ -11,6 +11,12 @@ export function httpTransport(e: Endpoint, fetcher: typeof fetch = fetch): Trans
     return res.json();
   };
   return {
+    async rpc(name, args) {
+      const res = await fetcher(`${e.url}/rest/v1/rpc/${name}`, { method: 'POST', headers: { 'content-type': 'application/json', apikey: e.apiKey, authorization: `Bearer ${await e.token()}` }, body: JSON.stringify(args) });
+      if (res.ok) return { ok: true };
+      if (res.status >= 400 && res.status < 500 && res.status !== 408 && res.status !== 429) { const b = (await res.json().catch(() => ({}))) as { code?: string; message?: string }; return { ok: false, code: b.code ?? String(res.status), reason: b.message ?? `HTTP ${res.status}` }; }
+      throw new Error(`${name}: HTTP ${res.status}`);
+    },
     async applyOps(ops) { return (await call('apply_ops', { p_ops: ops })) as Array<ServerAnswer & { op_id: string }>; },
     async pull(farmId, cursor, limit) {
       const r = (await call('pull', { p_farm: farmId, p_cursor: cursor, p_limit: limit })) as { rows: Array<{ table: string; x: string; seq: number; row: PullAnswer['rows'][number]['row'] }>; more: boolean; reset: boolean; cursor: unknown };

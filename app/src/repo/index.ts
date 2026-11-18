@@ -94,6 +94,13 @@ export async function refreshPending(db: AppDB): Promise<void> {
   rejectedOps.value = await db.outbox.where('status').equals('rejected').toArray();
 }
 
+/** A server call the phone queues like a record (the worker's «Έγινε» → complete_spray_job): sent by the sync engine, acked or refused like any op, visible in the same counters. */
+export const RPC_PREFIX = 'rpc:';
+export async function putRpc(db: AppDB, farmId: string, name: string, rowId: string, args: Record<string, unknown>): Promise<void> {
+  await db.transaction('rw', [db.outbox, db.settings], async () => { await enqueue(db, farmId, `${RPC_PREFIX}${name}`, rowId, 'insert', args, { device_id: await deviceId(db), actor_id: await actorId(db) }); });
+  await refreshPending(db);
+}
+
 /** Device-local settings (e.g. when the last backup was made): written here, NOT queued for the server. */
 export async function putLocal(db: AppDB, key: string, value: unknown): Promise<void> {
   await db.settings.put({ key, value });
