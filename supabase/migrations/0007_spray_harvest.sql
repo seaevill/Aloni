@@ -59,7 +59,8 @@ alter table job_harvest add column crates_str integer not null check (crates_str
 -- The server refuses a harvest inside a waiting period, whatever the phone says. It looks at NOW (the server's clock), never at the typed harvest time, so a
 -- time in the future cannot step over a PHI; a harvest time more than 5 minutes ahead of the server is refused (clock skew). A spray counts unless a later row
 -- amends it; a waiting period that is unknown (NULL) blocks. There is no override.
-create function check_harvest_phi() returns trigger language plpgsql as $$
+-- SECURITY DEFINER: a worker cannot read job_spray (RLS), and the check must see every spray to work at all; search_path is pinned.
+create function check_harvest_phi() returns trigger language plpgsql security definer set search_path = public as $$
 begin
   if new.harvested_at > now() + interval '5 minutes' then
     raise exception 'harvest time is in the future' using errcode = 'check_violation';
@@ -68,7 +69,7 @@ begin
     select 1 from job_plantings jp join job_spray s on s.job_id = jp.job_id
     where jp.planting_id = new.planting_id
       and not exists (select 1 from job_spray a where a.amends_id = s.id)
-      and (s.phi_until is null or s.phi_until > now())
+      and (s.phi_until is null or s.phi_until >= now()) -- AT the end instant it is still blocked, as on the phone
   ) then
     raise exception 'harvest blocked: a spray on this planting has an unknown or running waiting period' using errcode = 'check_violation';
   end if;

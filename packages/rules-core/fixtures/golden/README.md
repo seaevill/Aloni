@@ -4,13 +4,13 @@ These files turn the prototype's 10 alerts and 7 recommendations (`reference/pro
 
 **All data is fictional Demo-farm data** (CLAUDE.md safety rule 4). Nothing here may be imported into Bora's real farm. Label values come from the prototype and are illustrative. The `synthetic_inputs` blocks hold TEST-ONLY values; they must never be used as label data.
 
-## Cases (26)
+## Cases (27)
 
 | Type | Files |
 |---|---|
 | golden (17, one per prototype item) | `A01`–`A10`, `R01`–`R07` |
 | derived (1) | `REI-after-r01-spray`: re-entry after the R01 spray |
-| negative (8) | `NEG-P0-1-dose-never-rounded`, `NEG-P0-2-phi-lot-not-supply`, `NEG-P0-3-sow-not-on-flagged-parcels`, `NEG-unsigned-rule-info-only`, `NEG-PHI-no-label-row-blocks`, `NEG-REG-exclude-unregistered-beds`, `NEG-ROT-unknown-group`, `NEG-N-shared-valve` |
+| negative (9) | `NEG-P0-1-dose-never-rounded`, `NEG-P0-2-phi-lot-not-supply`, `NEG-P0-3-sow-not-on-flagged-parcels`, `NEG-unsigned-rule-info-only`, `NEG-PHI-no-label-row-blocks`, `NEG-PHI-no-end-time-blocks`, `NEG-REG-exclude-unregistered-beds`, `NEG-ROT-unknown-group`, `NEG-N-shared-valve` |
 
 18 cases need `synthetic_inputs`: hourly weather, sun times, cloud cover, topo class, covers, valve map, planned or draft jobs, job times, worker tasks, or label target/max_apps/min_interval.
 

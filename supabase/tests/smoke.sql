@@ -180,6 +180,12 @@ begin
   insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,amends_id)
     select f,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,7,24,'manual',sprayed_at + interval '7 days',sprayed_at + interval '24 hours',id from job_spray where job_id = unk_j;
   insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,unk_pl,5,now());
+  -- the boundary: AT the very instant the waiting period ends it is still blocked (the phone blocks it too: strictly after the end is free)
+  insert into plantings(id,farm_id,parcel_id,crop_id,area_str,sown_on,status) values ('dddddddd-0000-0000-0000-0000000000a4',f,p,crop2,0.25,'2026-11-17','growing');
+  insert into jobs(id,farm_id,kind,status,worker_id,product_id,done_at) values ('eeeeeeee-0000-0000-0000-0000000000a4',f,'spray','done',w,prod,now());
+  insert into job_plantings(farm_id,job_id,planting_id) values (f,'eeeeeeee-0000-0000-0000-0000000000a4','dddddddd-0000-0000-0000-0000000000a4');
+  insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,phi_source,phi_until) values (f,'eeeeeeee-0000-0000-0000-0000000000a4',prod,w,now() - interval '7 days',0.025,'ml/str','signed',7,'label',now());
+  begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,'dddddddd-0000-0000-0000-0000000000a4',5,now()); raise exception 'harvest at the exact end instant accepted'; exception when check_violation then null; end;
 end $$;
 
 -- 0008: job assignment and observations as the phone writes them (run as the table owner, before `set role`)
@@ -225,6 +231,12 @@ do $$ declare n int; begin
   select count(*) into n from farm_settings; if n <> 0 then raise exception 'worker sees settings'; end if;
   delete from parcels; get diagnostics n = row_count; if n <> 0 then raise exception 'worker deleted parcels'; end if;
 end $$;
+-- 0007: a WORKER'S harvest is checked too, although a worker cannot read job_spray (the check must run with the owner's rights)
+do $$ begin
+  begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values ('11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-0000000000a2',5,now()); raise exception 'worker harvest inside the PHI accepted'; exception when check_violation then null; end;
+  insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values ('11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-0000000000a1',3,now()); -- a clear planting: allowed
+end $$;
+
 -- 0008: a worker may only say done / not done (with time and note): never change the product, the dose, the assignment or anything else of the job
 do $$ declare j constant uuid := 'ffffffff-0000-0000-0000-000000000002'; n int; begin
   select count(*) into n from jobs; if n <> 1 then raise exception 'worker sees % jobs (want 1: own)', n; end if;

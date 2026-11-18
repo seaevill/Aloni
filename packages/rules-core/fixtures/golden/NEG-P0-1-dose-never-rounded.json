@@ -141,7 +141,7 @@
         "product_id": "PR08",
         "dose_per_str": "0.025",
         "started_at": "2026-11-06T17:00:00+02:00",
-        "ended_at": null,
+        "ended_at": "2026-11-06T17:00:00+02:00",
         "time_source": "job notes",
         "notes": "Caterpillars (Spodoptera littoralis) on rocket; 40 L water/στρ; 17:00."
       }

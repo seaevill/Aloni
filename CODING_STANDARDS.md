@@ -35,6 +35,9 @@ This file must match reality: never write "Proven" for something that is only a 
 
 5. **Permanent condition (Bora, 2026-11-17): no code that computes or shows PHI, REI or a dose merges until all of these are on `main`:** (a) the types `Known<T>`, `SignedLabelUse` and `parseDecimal`; (b) safe-side tests: NaN, an invalid date (`Invalid Date`) and a missing PHI give **«blocked»**, never «passed»; (c) a **property test** proving that a computed PHI/REI never gets shorter than the label says and is never rounded. It applies to screens, `rules-core` and notifications. `formatDose` accepts only `Known<Decimal>`.
 
+6. **Migrations are never edited in place once they have been applied anywhere (Bora, 2026-11-18).** `0001`–`0008` were written but applied nowhere, so they could still be edited. From the day one of them is applied to Supabase (or any real database) it is frozen: every change is a NEW numbered file. A PR that touches an applied migration fails review.
+7. **A «safety» test uses `toEqual` with the whole expected object**, never `toMatchObject` / `objectContaining` (they ignore unexpected extra fields). `toMatchObject` stays only for input-validation shape checks, and the PR says so in one line.
+
 ## Conventions
 - No dynamic i18n keys: spell each key out as a string literal so the dead-key test can see it.
 - User-facing text only via `t()`; numbers only via `format.ts`; dates via the `i18n` helpers.

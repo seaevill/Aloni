@@ -13,7 +13,8 @@ export interface SprayInput {
   plantingIds: readonly string[]; productId: string; applicatorId: string; sprayedAt: string;
   dose: string; doseUnit: DoseUnit | undefined; lotKey: string | undefined; qty: string; water: string; note: string;
 }
-export interface SprayContext { label: Row | undefined; plantings: readonly Row[]; lot: Row | undefined; lotBalance: string | undefined; today: string }
+export interface SprayContext { label: Row | undefined; plantings: readonly Row[]; lot: Row | undefined; lotBalance: string | undefined; today: string; /** Demo seed only: history is allowed. A real record can never be written further back than MAX_BACKDATE_DAYS. */ historic?: true }
+export const MAX_BACKDATE_DAYS = 7;
 export interface SprayErrors { plantings: boolean; product: boolean; applicator: boolean; time: boolean; dose: boolean; doseUnit: boolean; qty: boolean; water: boolean }
 export type SprayResult =
   | { ok: true; job: Row; jobPlantings: Row[]; spray: Row; movement: Row | undefined; flags: Flag[] }
@@ -28,7 +29,7 @@ export function buildSpray(input: SprayInput, ctx: SprayContext, farmId: string,
   const qty = input.qty.trim() === '' ? undefined : positive(input.qty);
   const water = input.water.trim() === '' ? undefined : parseDecimal(input.water);
   const errors: SprayErrors = {
-    plantings: input.plantingIds.length === 0, product: !input.productId, applicator: !input.applicatorId, time: !parseInstant(input.sprayedAt).known,
+    plantings: input.plantingIds.length === 0, product: !input.productId, applicator: !input.applicatorId, time: !parseInstant(input.sprayedAt).known || (!ctx.historic && Date.parse(input.sprayedAt) < Date.parse(nowIso) - MAX_BACKDATE_DAYS * 86400000),
     dose: !dose, doseUnit: !input.doseUnit || !DOSE_UNITS.includes(input.doseUnit),
     qty: (input.qty.trim() !== '' && !qty) || (input.lotKey !== undefined && !qty), // a lot needs the quantity taken from it; a typed quantity must be readable
     water: water !== undefined && !water.known,
