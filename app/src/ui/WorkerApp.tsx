@@ -34,6 +34,7 @@ export function WorkerApp() {
   const me = people.find((w) => w.id === workerView.value) ?? people[0];
   const [tabId, setTabId] = useState<'jobs' | 'harvest' | 'observe'>('jobs');
   const [lateReason, setLateReason] = useState(''); // «λόγος καθυστέρησης» for a time more than 7 days back
+  const [harvestSaved, setHarvestSaved] = useState(false); // the «saved on the phone» line after a harvest record
   const [open, setOpen] = useState<{ job: string; mode: 'done' | 'skip' } | undefined>(undefined);
   const [held, setHeld] = useState<string[]>([]);
   const [when, setWhen] = useState(athensLocalNow(new Date()) ?? '');
@@ -80,10 +81,11 @@ export function WorkerApp() {
       <p class="muted">{t('worker.demoNote')}</p>
       <h2>{t('worker.choose')}</h2>
       <div class="seg two big">{people.map((w) => <button key={w.id} aria-pressed={w.id === me.id} onClick={() => workerView.value = w.id}>{text(w.name)}</button>)}</div>
-      <div class="seg big">{TABS.map(([id, k]) => <button key={id} aria-pressed={tabId === id} data-testid={`worker-tab-${id}`} onClick={() => setTabId(id)}>{t(k)}</button>)}</div>
+      <div class="seg big">{TABS.map(([id, k]) => <button key={id} aria-pressed={tabId === id} data-testid={`worker-tab-${id}`} onClick={() => { setHarvestSaved(false); setTabId(id); }}>{t(k)}</button>)}</div>
 
       {tabId === 'jobs' && (
         <>
+          {harvestSaved && <p class="msg" role="status" data-testid="worker-status-harvest">{t('harvest.saved')} {t('worker.queued')}</p>}
           <h2>{t('worker.jobs')}</h2>
           {open_.length === 0 && <p class="muted" data-testid="worker-nojobs">{t('worker.noJobs')}</p>}
           {open_.map((j) => (
@@ -120,11 +122,12 @@ export function WorkerApp() {
           {finished.map((j) => (
             <div class="card" key={j.id} data-testid="worker-finished">{nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {})}
               <small>{finishedLine(j)}</small>
+              {j.status === 'done' && <small class="status-line" data-testid="worker-status">{t('worker.queued')}</small>}
             </div>
           ))}
         </>
       )}
-      {tabId === 'harvest' && <HarvestForm farmId={DEMO_FARM_ID} actorId={me.id} big onDone={() => setTabId('jobs')} />}
+      {tabId === 'harvest' && <HarvestForm farmId={DEMO_FARM_ID} actorId={me.id} big onDone={(saved) => { setHarvestSaved(saved); setTabId('jobs'); }} />}
       {tabId === 'observe' && (
         <>
           <h2>{t('worker.observe.parcel')}</h2>

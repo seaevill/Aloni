@@ -5,7 +5,10 @@ import { describe, expect, it } from 'vitest';
 describe('CSS font sizes', () => {
   it('no font-size below 14px', () => {
     const css = readFileSync(new URL('../../src/ui/styles.css', import.meta.url), 'utf8');
-    const sizes = [...css.matchAll(/font-size:\s*([\d.]+)px/g)].map((m) => Number(m[1]));
+    const tokens = readFileSync(new URL('../../src/ui/tokens.css', import.meta.url), 'utf8');
+    const px = (name: string) => Number(new RegExp(`--${name}:\\s*([\\d.]+)px`).exec(tokens)?.[1]);
+    // font-size:var(--fs-14) is read through its token; a literal px size is read as it is
+    const sizes = [...css.matchAll(/font-size:\s*(?:([\d.]+)px|var\(--([\w-]+)\))/g)].map((m) => (m[1] ? Number(m[1]) : px(m[2])));
     expect(sizes.length).toBeGreaterThan(0);
     expect(sizes.filter((s) => s < 14)).toEqual([]);
   });

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 // Sun-readable UI (Bora): text contrast >= 7:1 (WCAG AAA), borders/icons >= 3:1.
 // Every colour used in styles.css must be listed here, so a new colour cannot slip in without a contrast check.
-const css = readFileSync(new URL('../../src/ui/styles.css', import.meta.url), 'utf8');
+const css = ['tokens.css', 'styles.css'].map((f) => readFileSync(new URL(`../../src/ui/${f}`, import.meta.url), 'utf8')).join('\n'); // the colours live in tokens.css
 const token = (name: string) => new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{3,6})`).exec(css)?.[1] ?? '';
 
 const lum = (hex: string) => {

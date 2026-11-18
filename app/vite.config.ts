@@ -35,7 +35,7 @@ export default defineConfig({
           { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
-      workbox: { globPatterns: ['**/*.{js,css,html,png,svg,webmanifest}'], navigateFallback: '/index.html' },
+      workbox: { globPatterns: ['**/*.{js,css,html,png,svg,webmanifest,woff2}'], navigateFallback: '/index.html' },
     }),
   ],
   test: { environment: 'node', include: ['tests/unit/**/*.test.ts'] },
