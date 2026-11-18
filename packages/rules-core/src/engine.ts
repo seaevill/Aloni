@@ -46,8 +46,11 @@ function phi(s: Snapshot): Output[] {
       if (!use) out.push(blank({ rule_id: 'REG', kind: 'alert', category: 'unregistered_use', severity: 'high', planting_ids: [pid], parcel_ids: [p.parcelId], product_ids: [j.productId] }));
       continue;
     }
-    const end = phiEnd(j.endedAt ?? j.startedAt, known(use.signed.value.phiDays)); // counted from the END of the spraying (the start is used only when no end is known)
-    if (end.known && !waitOver(s.asOf, end)) {
+    // counted from the END of the spraying; a missing or unreadable end is «blocked» (never counted from the start, never skipped)
+    const end = j.endedAt === undefined ? ({ known: false } as const) : phiEnd(j.endedAt, known(use.signed.value.phiDays));
+    if (!end.known) {
+      out.push(blank({ rule_id: 'PHI', kind: 'alert', category: 'phi_blocked_unknown', severity: 'high', planting_ids: [pid], parcel_ids: [p.parcelId], product_ids: [j.productId], values: { lot_status: 'blocked', safe_from: null, reason: j.endedAt === undefined ? 'no_end_time' : 'unreadable_time' }, vetoes: [{ by: 'PHI', vetoed: 'harvest', planting_id: pid, reason: j.endedAt === undefined ? 'no_end_time' : 'unreadable_time' }] }));
+    } else if (!waitOver(s.asOf, end)) {
       out.push(blank({ rule_id: 'PHI', kind: 'alert', category: 'phi_hold', severity: 'high', confidence: 'medium', planting_ids: [pid], parcel_ids: [p.parcelId], product_ids: [j.productId], window: { start: j.startedAt, end: end.value }, values: { safe_from: end.value, phi_days: use.signed.value.phiDays, lot_status: 'hold_phi' } }));
     }
   }
@@ -57,16 +60,24 @@ function phi(s: Snapshot): Output[] {
 /** REI: re-entry = the END of the spraying + the label's REI hours (never from midnight, never shorter); tasks on that planting before it are vetoed. */
 function rei(s: Snapshot): Output[] {
   const out: Output[] = [];
+  const unknown = (j: JobFact, p: PlantingFact, reason: string): Output => {
+    const own = s.tasks.filter((t) => t.plantingIds.includes(p.id));
+    return blank({ rule_id: 'REI', kind: 'alert', category: 'rei_unknown', severity: 'high', planting_ids: [p.id], parcel_ids: [p.parcelId], product_ids: [j.productId],
+      values: { reentry_at: null, reason, blocked_task_ids: own.map((t) => t.id), allowed_task_ids: s.tasks.filter((t) => !own.includes(t)).map((t) => t.id) },
+      vetoes: own.map((t) => ({ by: 'REI', vetoed: 'task', task_id: t.id, reason: 'rei_unknown' })) });
+  };
   for (const j of doneSprays(s)) {
-    if (!j.endedAt) continue;
     for (const pid of j.plantingIds) {
       const p = s.plantings.find((x) => x.id === pid);
-      const use = p && s.uses.find((u) => u.productId === j.productId && u.cropId === p.cropId);
-      if (!p || !use?.signed.known) continue;
+      if (!p) continue;
+      const use = s.uses.find((u) => u.productId === j.productId && u.cropId === p.cropId);
+      if (!use?.signed.known) { out.push(unknown(j, p, 'not_signed')); continue; }
+      if (j.endedAt === undefined) { out.push(unknown(j, p, 'no_end_time')); continue; }
       const end = reiEnd(j.endedAt, known(use.signed.value.reiHours));
-      if (!end.known || waitOver(s.asOf, end)) continue;
+      if (!end.known) { out.push(unknown(j, p, 'unreadable_time')); continue; }
+      if (waitOver(s.asOf, end)) continue;
       const own = s.tasks.filter((t) => t.plantingIds.includes(pid));
-      const blocked = own.filter((t) => !waitOver(t.at, end) && t.at !== end.value && t.at < end.value);
+      const blocked = own.filter((t) => !parseInstant(t.at).known || (!waitOver(t.at, end) && t.at !== end.value && t.at < end.value)); // an unreadable task time is blocked
       out.push(blank({ rule_id: 'REI', kind: 'alert', category: 'rei', severity: 'high', confidence: 'medium', planting_ids: [pid], parcel_ids: [p.parcelId], window: { start: j.endedAt, end: end.value },
         values: { reentry_at: end.value, rei_h: use.signed.value.reiHours, blocked_task_ids: blocked.map((t) => t.id), allowed_task_ids: s.tasks.filter((t) => !blocked.includes(t)).map((t) => t.id) },
         vetoes: blocked.map((t) => ({ by: 'REI', vetoed: 'task', task_id: t.id, reason: 'before_reentry' })) }));
@@ -172,6 +183,7 @@ function infoOnly(s: Snapshot): Output[] {
 }
 
 export function runRules(s: Snapshot): Output[] {
-  if (!parseInstant(s.asOf).known) return []; // no readable «now»: nothing is decided
+  // no readable «now»: everything is blocked, said out loud; never an empty list that reads as «all clear»
+  if (!parseInstant(s.asOf).known) return [blank({ rule_id: 'ENGINE', kind: 'block', category: 'now_unreadable', severity: 'high', vetoes: [{ by: 'ENGINE', vetoed: 'everything', reason: 'unreadable_now' }] })];
   return [...phi(s), ...rei(s), ...reg(s), ...rot(s), ...sprayWindowClosed(s), ...frost(s), ...infoOnly(s)];
 }

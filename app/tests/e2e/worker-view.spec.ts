@@ -8,6 +8,9 @@ test('worker view (demo only): assigned sprays «Έγινε / Δεν έγινε�
   const errors = await iphone(page);
   await expect(page.getByTestId('open-worker-view')).toHaveCount(0); // not offered on the real farm
   await page.getByTestId('empty-state').locator('button').nth(1).click();
+  await expect(page.getByTestId('today-counts')).toBeVisible(); // the demo is loaded
+  // the demo's older sprays have unknown waiting periods (that keeps the buttons closed, see the next test): clear them so this flow can run
+  await page.evaluate(() => new Promise<void>((done) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const tx = r.result.transaction(['job_spray'], 'readwrite'); tx.objectStore('job_spray').clear(); tx.oncomplete = () => done(); }; }));
   await page.locator('nav.tabs [data-tab="more"]').click();
   await page.getByTestId('open-worker-view').click();
   await expect(page.getByTestId('worker-app')).toBeVisible();
@@ -87,4 +90,15 @@ test('worker view: a field that was just sprayed shows a red re-entry warning an
   await expect(page.getByTestId('worker-lock').first()).toContainText('Μην μπείτε στο χωράφι μέχρι');
   await expect(page.getByTestId('job-done').first()).toBeDisabled();
   await expect(page.getByTestId('job-skip').first()).toBeEnabled(); // «Δεν έγινε» stays possible
+});
+
+test('worker view: an UNKNOWN re-entry period keeps «Έγινε» closed too, and says so in red', async ({ page }) => {
+  await iphone(page);
+  await page.getByTestId('empty-state').locator('button').nth(1).click();
+  await expect(page.getByTestId('today-counts')).toBeVisible();
+  await page.locator('nav.tabs [data-tab="more"]').click();
+  await page.getByTestId('open-worker-view').click();
+  await expect(page.getByTestId('worker-lock').first()).toContainText('Άγνωστο διάστημα επανεισόδου');
+  for (const b of await page.getByTestId('job-done').all()) await expect(b).toBeDisabled();
+  await expect(page.getByTestId('job-skip').first()).toBeEnabled();
 });

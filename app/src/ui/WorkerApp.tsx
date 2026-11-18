@@ -8,7 +8,7 @@ import { known, type Decimal } from '@aloni/rules-core';
 import { putMany } from '../repo';
 import { buildObservation, completeSprayJob, OBSERVATION_KINDS, SKIP_REASONS, skipSprayJob, type ObservationKind, type SkipReason } from '../worker/jobs';
 import { instantOf } from '../spray/time';
-import { reiLockParcel, type Lock } from '../spray/harvest';
+import { doneBlocked, reiLockJob, type Lock } from '../spray/harvest';
 import type { Row } from '../db/schema';
 import { DemoBanner } from './DemoBanner';
 import { HarvestForm } from './HarvestForm';
@@ -45,7 +45,7 @@ export function WorkerApp() {
   const finished = mine.filter((j) => j.status !== 'planned');
   const plantingsOf = (job: Row) => (links.rows ?? []).filter((l) => l.job_id === job.id).map((l) => plantings.rows?.find((p) => p.id === l.planting_id)).filter((p): p is Row => !!p);
   const plantingName = (p: Row) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) });
-  const lockOf = (job: Row): Lock => { const first = plantingsOf(job)[0]; return first ? reiLockParcel(text(first.parcel_id), instantOf(new Date()) ?? '', plantings.rows ?? [], links.rows ?? [], sprays.rows ?? []) : { state: 'none' }; };
+  const lockOf = (job: Row): Lock => reiLockJob([...new Set(plantingsOf(job).map((p) => text(p.parcel_id)))], instantOf(new Date()) ?? '', plantings.rows ?? [], links.rows ?? [], sprays.rows ?? []); // ANY field of the job locks it
   const finishedLine = (j: Row): string => [j.status === 'done' ? t('worker.status.done') : t('worker.status.skipped'), j.done_at ? formatDateTime(text(j.done_at)) : ''].filter(Boolean).join(' · ');
   const lockText = (l: Lock): string => (l.state === 'running' ? t('worker.lock.running', { d: formatDateTime(l.until) }) : t('worker.lock.unknown'));
   const doseText = (j: Row) => t('labeluse.dosevalue', { v: formatDose(known(text(j.dose_str) as Decimal)), unit: t(UNIT_KEYS[j.dose_unit as keyof typeof UNIT_KEYS]) });
@@ -93,7 +93,7 @@ export function WorkerApp() {
               {lockOf(j).state !== 'none' && <p class="badge blocked" role="alert" data-testid="worker-lock">{lockText(lockOf(j))}</p>}
               {open?.job !== j.id && (
                 <div class="seg two big">
-                  <button data-testid="job-done" disabled={lockOf(j).state === 'running'} onClick={() => setOpen({ job: j.id, mode: 'done' })}>{t('worker.done')}</button>
+                  <button data-testid="job-done" disabled={doneBlocked(lockOf(j))} onClick={() => setOpen({ job: j.id, mode: 'done' })}>{t('worker.done')}</button>
                   <button data-testid="job-skip" onClick={() => setOpen({ job: j.id, mode: 'skip' })}>{t('worker.notdone')}</button>
                 </div>
               )}

@@ -22,7 +22,7 @@ describe('the engine never shortens a waiting period and never decides from what
       const start = at(2026, 1 + (rnd() % 12), 1 + (rnd() % 28), rnd() % 24, rnd() % 60, rnd() % 60);
       const phi = rnd() % 60;
       const s0 = secs(start);
-      const base = snap({ jobs: [{ id: 'j', kind: 'spray', status: 'done', plantingIds: ['pl'], productId: 'prod', startedAt: start, endedAt: undefined }], uses: [use(String(phi), '24', true)] });
+      const base = snap({ jobs: [{ id: 'j', kind: 'spray', status: 'done', plantingIds: ['pl'], productId: 'prod', startedAt: start, endedAt: start }], uses: [use(String(phi), '24', true)] });
       const out = runRules({ ...base, asOf: start }).filter((o) => o.rule_id === 'PHI');
       expect(out, start).toHaveLength(1);
       expect(secs(String(out[0].values.safe_from)) - s0, start).toBe(phi * 86400); // exact
@@ -30,10 +30,25 @@ describe('the engine never shortens a waiting period and never decides from what
     }
   });
   it('after the end the hold is gone; one second before it is still on', () => {
+    const j = [{ id: 'j', kind: 'spray', status: 'done', plantingIds: ['pl'], productId: 'prod', startedAt: '2026-11-18T08:00:00Z', endedAt: '2026-11-18T09:00:00Z' }];
+    expect(runRules(snap({ jobs: j, asOf: '2026-11-25T08:59:59Z' })).some((o) => o.category === 'phi_hold')).toBe(true);
+    expect(runRules(snap({ jobs: j, asOf: '2026-11-25T09:00:00Z' })).some((o) => o.category === 'phi_hold')).toBe(true); // at the second: still on
+    expect(runRules(snap({ jobs: j, asOf: '2026-11-25T09:00:01Z' })).some((o) => o.category === 'phi_hold')).toBe(false);
+  });
+  it('NO end time: the PHI is never counted from the start; the planting is «blocked» with no date', () => {
     const j = [{ id: 'j', kind: 'spray', status: 'done', plantingIds: ['pl'], productId: 'prod', startedAt: '2026-11-18T08:00:00Z', endedAt: undefined }];
-    expect(runRules(snap({ jobs: j, asOf: '2026-11-25T07:59:59Z' })).some((o) => o.category === 'phi_hold')).toBe(true);
-    expect(runRules(snap({ jobs: j, asOf: '2026-11-25T08:00:00Z' })).some((o) => o.category === 'phi_hold')).toBe(true); // at the second: still on
-    expect(runRules(snap({ jobs: j, asOf: '2026-11-25T08:00:01Z' })).some((o) => o.category === 'phi_hold')).toBe(false);
+    for (const asOf of ['2026-11-19T00:00:00Z', '2030-01-01T00:00:00Z']) {
+      const o = runRules(snap({ jobs: j, asOf })).filter((x) => x.rule_id === 'PHI');
+      expect(o, asOf).toHaveLength(1);
+      expect(o[0]).toMatchObject({ category: 'phi_blocked_unknown', values: { lot_status: 'blocked', safe_from: null, reason: 'no_end_time' }, vetoes: [{ by: 'PHI', vetoed: 'harvest', planting_id: 'pl' }] });
+    }
+  });
+  it('an unreadable spray time is «blocked», never silently passed', () => {
+    for (const endedAt of ['Invalid Date', '', 'NaN', '2026-11-18', '2026-11-18T09:00:00.000Z']) {
+      const j = [{ id: 'j', kind: 'spray', status: 'done', plantingIds: ['pl'], productId: 'prod', startedAt: '2026-11-18T08:00:00Z', endedAt }];
+      const o = runRules(snap({ jobs: j, asOf: '2030-01-01T00:00:00Z' })).filter((x) => x.rule_id === 'PHI');
+      expect(o.map((x) => [x.category, x.values.reason]), endedAt).toEqual([['phi_blocked_unknown', 'unreadable_time']]);
+    }
   });
   it('an unsigned, incomplete or missing label gives «blocked» with NO date, never a default PHI', () => {
     for (const uses of [[use('7', '24', false)], [use('', '24', true)], [use('7', 'NaN', true)], []]) {
@@ -53,8 +68,27 @@ describe('the engine never shortens a waiting period and never decides from what
     expect(out[0].severity).toBeUndefined();
     expect(runRules(snap({ ruleStatus: { FROST: 'signed' }, parcelsForInfo: ['p'] })).some((o) => o.rule_id === 'FROST')).toBe(false); // not built yet: nothing invented
   });
-  it('an unreadable «now» decides nothing', () => {
-    for (const asOf of ['Invalid Date', '', 'NaN', '2026-11-20']) expect(runRules(snap({ asOf })), asOf).toEqual([]);
+  it('an unreadable «now» is a BLOCK, never an empty «all clear»', () => {
+    for (const asOf of ['Invalid Date', '', 'NaN', '2026-11-20']) {
+      const o = runRules(snap({ asOf }));
+      expect(o, asOf).toHaveLength(1);
+      expect(o[0]).toMatchObject({ rule_id: 'ENGINE', kind: 'block', category: 'now_unreadable', severity: 'high', notify: false, vetoes: [{ by: 'ENGINE', vetoed: 'everything', reason: 'unreadable_now' }] });
+    }
+  });
+  it('REI: a done spray with NO end time, an unreadable time, or no signed label blocks every task on that planting (never skipped)', () => {
+    const tasks = [{ id: 'T1', plantingIds: ['pl'], at: '2026-11-19T08:00:00Z' }, { id: 'T2', plantingIds: ['other'], at: '2026-11-19T08:00:00Z' }];
+    const job = (endedAt: string | undefined) => [{ id: 'j', kind: 'spray', status: 'done', plantingIds: ['pl'], productId: 'prod', startedAt: '2026-11-18T08:00:00Z', endedAt }];
+    for (const [endedAt, why] of [[undefined, 'no_end_time'], ['Invalid Date', 'unreadable_time']] as const) {
+      const o = runRules(snap({ jobs: job(endedAt), tasks })).filter((x) => x.rule_id === 'REI');
+      expect(o, why).toHaveLength(1);
+      expect(o[0]).toMatchObject({ category: 'rei_unknown', values: { reentry_at: null, reason: why, blocked_task_ids: ['T1'] }, vetoes: [{ by: 'REI', vetoed: 'task', task_id: 'T1', reason: 'rei_unknown' }] });
+    }
+    const unsigned = runRules(snap({ jobs: job('2026-11-18T09:00:00Z'), tasks, uses: [use('7', '24', false)] })).filter((x) => x.rule_id === 'REI');
+    expect(unsigned.map((x) => [x.category, x.values.reason])).toEqual([['rei_unknown', 'not_signed']]);
+  });
+  it('REI: a task whose time cannot be read is vetoed, never allowed', () => {
+    const o = runRules(snap({ asOf: '2026-11-18T10:00:00Z', tasks: [{ id: 'T1', plantingIds: ['pl'], at: 'Invalid Date' }, { id: 'T2', plantingIds: ['pl'], at: '2026-11-19T09:30:00Z' }] })).filter((x) => x.rule_id === 'REI');
+    expect(o[0].values).toMatchObject({ blocked_task_ids: ['T1'], allowed_task_ids: ['T2'] });
   });
 });
 

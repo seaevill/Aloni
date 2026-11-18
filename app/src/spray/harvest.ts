@@ -27,10 +27,18 @@ export function harvestGate(plantingId: string, at: string, links: readonly Row[
 export interface HarvestInput { plantingId: string; crates: string; harvestedAt: string; note: string }
 export type HarvestResult = { ok: true; row: Row } | { ok: false; planting: boolean; crates: boolean; time: boolean; gate: Gate | undefined };
 
+/** The clock's ISO time has milliseconds; the waiting-period logic reads whole UTC seconds. An unreadable «now» stays unreadable (and so blocks). */
+const wholeSeconds = (iso: string): string => iso.replace(/\.\d+Z$/, 'Z');
+
+/**
+ * The gate is checked at NOW (the phone's clock), never at the typed harvest time: a time in the future cannot be used to step over a waiting period, and a
+ * harvest time later than now is refused outright. A past time is a record of what already happened.
+ */
 export function buildHarvest(input: HarvestInput, links: readonly Row[], sprayRows: readonly Row[], farmId: string, nowIso: string, id: string): HarvestResult {
   const crates = parseWhole<'Crates'>(input.crates);
-  const bad = { planting: !input.plantingId, crates: !crates.known || crates.value < 1, time: !parseInstant(input.harvestedAt).known };
-  const gate = input.plantingId ? harvestGate(input.plantingId, input.harvestedAt, links, sprayRows) : undefined;
+  const now = wholeSeconds(nowIso);
+  const bad = { planting: !input.plantingId, crates: !crates.known || crates.value < 1, time: !parseInstant(input.harvestedAt).known || input.harvestedAt > now };
+  const gate = input.plantingId ? harvestGate(input.plantingId, now, links, sprayRows) : undefined;
   if (bad.planting || bad.crates || bad.time || !gate?.ok) return { ok: false, ...bad, gate: gate?.ok ? undefined : gate };
   return { ok: true, row: { id, farm_id: farmId, planting_id: input.plantingId, crates_str: input.crates.trim(), harvested_at: input.harvestedAt, created_at: nowIso, ...(input.note.trim() ? { note: input.note.trim() } : {}) } };
 }
@@ -68,3 +76,16 @@ export function reiLockParcel(parcelId: string, now: string, plantings: readonly
   }
   return until !== undefined ? { state: 'running', until } : unknown ? { state: 'unknown' } : { state: 'none' };
 }
+
+/** A job on several fields is locked by ANY of them: running wins (the latest end), then unknown; no field at all is unknown, never «free». */
+export function reiLockJob(parcelIds: readonly string[], now: string, plantings: readonly Row[], links: readonly Row[], sprayRows: readonly Row[]): Lock {
+  if (parcelIds.length === 0) return { state: 'unknown' };
+  const locks = parcelIds.map((id) => reiLockParcel(id, now, plantings, links, sprayRows));
+  let until: string | undefined;
+  for (const l of locks) if (l.state === 'running' && (until === undefined || l.until > until)) until = l.until;
+  if (until !== undefined) return { state: 'running', until };
+  return locks.some((l) => l.state === 'unknown') ? { state: 'unknown' } : { state: 'none' };
+}
+
+/** «Έγινε» is open only when the lock is positively «none»: a running OR an unknown re-entry period keeps it closed. */
+export const doneBlocked = (l: Lock): boolean => l.state !== 'none';

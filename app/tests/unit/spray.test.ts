@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildLabelUse, withSignOff, type LabelUseInput } from '../../src/labels/label-use';
-import { buildHarvest, cutFromParcel, harvestGate, reiLockParcel } from '../../src/spray/harvest';
+import { buildHarvest, cutFromParcel, doneBlocked, harvestGate, reiLockJob, reiLockParcel } from '../../src/spray/harvest';
 import { buildSpray, buildWaitEntry, effectiveSprays, type SprayContext, type SprayInput } from '../../src/spray/spray';
 import type { Row } from '../../src/db/schema';
 
@@ -128,8 +128,15 @@ describe('harvest gate: only a KNOWN waiting period that has run out unblocks; n
     const sp = [signedSpray()];
     const base = { plantingId: 'pl1', crates: '12', harvestedAt: '2026-11-21T00:00:00Z', note: '' };
     expect(buildHarvest(base, links, sp, F, now, 'h1')).toMatchObject({ ok: false, gate: { reason: 'running' } });
-    expect(buildHarvest({ ...base, harvestedAt: '2026-11-28T00:00:00Z' }, links, sp, F, now, 'h1')).toMatchObject({ ok: true, row: { planting_id: 'pl1', crates_str: '12', harvested_at: '2026-11-28T00:00:00Z' } });
-    for (const bad of ['', '0', '1,5', 'abc', '-2']) expect(buildHarvest({ ...base, crates: bad, harvestedAt: '2026-11-28T00:00:00Z' }, links, sp, F, now, 'h'), bad).toMatchObject({ ok: false, crates: true });
+    // the gate looks at NOW, never at the typed harvest time: a future time cannot be used to step over the PHI
+    const future = buildHarvest({ ...base, harvestedAt: '2026-11-28T00:00:00Z' }, links, sp, F, now, 'h1');
+    expect(future).toEqual({ ok: false, planting: false, crates: false, time: true, gate: { ok: false, reason: 'running', until: '2026-11-27T08:00:00Z', source: 'label' } });
+    const later = '2026-11-28T00:00:00.000Z';
+    expect(buildHarvest({ ...base, harvestedAt: '2026-11-28T00:00:00Z' }, links, sp, F, later, 'h1')).toEqual({ ok: true, row: { id: 'h1', farm_id: 'farm', planting_id: 'pl1', crates_str: '12', harvested_at: '2026-11-28T00:00:00Z', created_at: later } });
+    expect(buildHarvest({ ...base, harvestedAt: '2026-11-21T00:00:00Z' }, links, sp, F, later, 'h1')).toMatchObject({ ok: true }); // a past time, PHI over now: recorded
+    expect(buildHarvest({ ...base, harvestedAt: 'Invalid Date' }, links, sp, F, later, 'h1')).toMatchObject({ ok: false, time: true });
+    expect(buildHarvest(base, links, sp, F, 'Invalid Date', 'h1')).toMatchObject({ ok: false, gate: { ok: false, reason: 'time' } }); // an unreadable «now» blocks
+    for (const bad of ['', '0', '1,5', 'abc', '-2']) expect(buildHarvest({ ...base, crates: bad, harvestedAt: '2026-11-28T00:00:00Z' }, links, sp, F, later, 'h'), bad).toMatchObject({ ok: false, crates: true });
     expect(buildHarvest({ ...base, plantingId: '' }, links, sp, F, now, 'h')).toMatchObject({ ok: false, planting: true });
   });
 });
@@ -170,5 +177,17 @@ describe('the source of a date, and the re-entry lock for workers', () => {
     const unknownRow: Row = { ...build(input(), ctx({ label: labelRow() })).spray, job_id: 'job1', id: 'sp-u' };
     expect(reiLockParcel('P', '2030-01-01T00:00:00Z', pls, links, [unknownRow])).toEqual({ state: 'unknown' });
     expect(reiLockParcel('P', 'Invalid Date', pls, links, [])).toEqual({ state: 'unknown' }); // an unreadable «now» is never «free»
+  });
+  it('a job on SEVERAL fields is locked by ANY of them, not only the first; an unknown REI also keeps «Έγινε» closed; no field at all is unknown', () => {
+    const at = '2026-11-21T08:00:00Z'; // P runs until exactly this second, Q is free
+    expect(reiLockJob(['Q', 'P'], at, pls, links, [label()])).toEqual({ state: 'running', until: at });
+    expect(reiLockJob(['P', 'Q'], at, pls, links, [label()])).toEqual({ state: 'running', until: at });
+    expect(reiLockJob(['Q'], at, pls, links, [label()])).toEqual({ state: 'none' });
+    const unknownRow: Row = { ...build(input(), ctx({ label: labelRow() })).spray, job_id: 'job1', id: 'sp-u' };
+    expect(reiLockJob(['Q', 'P'], '2030-01-01T00:00:00Z', pls, links, [unknownRow])).toEqual({ state: 'unknown' });
+    expect(reiLockJob([], at, pls, links, [])).toEqual({ state: 'unknown' });
+    expect(doneBlocked({ state: 'none' })).toBe(false);
+    expect(doneBlocked({ state: 'running', until: at })).toBe(true);
+    expect(doneBlocked({ state: 'unknown' })).toBe(true);
   });
 });
