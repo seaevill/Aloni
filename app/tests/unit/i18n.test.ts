@@ -21,3 +21,12 @@ describe('i18n', () => {
     expect(formatDate('2026-11-16')).toBe('Δευ 16 Νοε');
   });
 });
+
+describe('the worker status line does not promise what does not exist yet', () => {
+  it('until the sync PR (16), «worker.queued» says nothing about signal: it is saved on the phone and will be sent when an account is connected', () => {
+    for (const l of ['el', 'tr', 'en']) {
+      const text = dictionaries[l as 'el' | 'tr' | 'en']['worker.queued'];
+      expect(text, l).not.toMatch(/σήμα|sinyal|signal/i);
+    }
+  });
+});

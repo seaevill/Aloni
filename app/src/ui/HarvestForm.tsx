@@ -35,6 +35,7 @@ export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = 
     dataVersion.value++;
     onDone(true);
   };
+  const shown = parseWhole<'Crates'>(crates).known ? crates.trim() : '0'; // the counter shows 0 until a number is chosen
   const reason = blocked ? (blocked.reason === 'unknown' ? t('harvest.blocked.unknown') : blocked.reason === 'running' ? t('harvest.blocked.running', { d: formatDateTime(blocked.until ?? '') }) : t('harvest.blocked.time')) : '';
   return (
     <section>
@@ -42,13 +43,26 @@ export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = 
       <h2>{t('harvest.planting')}</h2>
       <div class="seg two">{live.map((p) => <button key={p.id} aria-pressed={planting === p.id} onClick={() => setPlanting(p.id)}>{name(p)}</button>)}</div>
       {blocked && <p class="badge blocked" role="alert" data-testid="harvest-blocked">{reason}</p>}
-      <label class="field">{t('harvest.crates')}
-        <input class="input" value={crates} inputMode="numeric" autoComplete="off" data-testid="harvest-crates" onInput={(e) => setCrates((e.target as HTMLInputElement).value)} />
-      </label>
-      <div class={big ? 'seg two big' : 'seg two'}>
-        <button onClick={() => step(-1)}>{t('harvest.less')}</button>
-        <button data-testid="harvest-more" onClick={() => step(1)}>{t('harvest.more')}</button>
-      </div>
+      {big ? (
+        <>
+          <div class="counter">
+            <button data-testid="harvest-less" aria-label={t('harvest.less')} onClick={() => step(-1)}>{t('harvest.minus')}</button>
+            <output data-testid="harvest-count" aria-live="polite">{shown}</output>
+            <button data-testid="harvest-more" aria-label={t('harvest.more')} onClick={() => step(1)}>{t('harvest.plus')}</button>
+          </div>
+          <p class="caption muted">{t('harvest.counter')}</p>
+        </>
+      ) : (
+        <>
+          <label class="field">{t('harvest.crates')}
+            <input class="input" value={crates} inputMode="numeric" autoComplete="off" data-testid="harvest-crates" onInput={(e) => setCrates((e.target as HTMLInputElement).value)} />
+          </label>
+          <div class="seg two">
+            <button onClick={() => step(-1)}>{t('harvest.less')}</button>
+            <button data-testid="harvest-more" onClick={() => step(1)}>{t('harvest.more')}</button>
+          </div>
+        </>
+      )}
       {failed && !parseWhole<'Crates'>(crates).known && <p class="msg error" role="alert">{t('harvest.error.crates')}</p>}
       <label class="field">{t('harvest.time')}
         <input class="input" type="datetime-local" value={when} onInput={(e) => setWhen((e.target as HTMLInputElement).value)} />
