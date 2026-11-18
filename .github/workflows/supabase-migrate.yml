@@ -98,7 +98,7 @@ jobs:
           set -euo pipefail
           [[ "$SUPABASE_PROJECT_REF" =~ ^[a-z]{20}$ ]] || { echo "::error::SUPABASE_PROJECT_REF does not look like a project reference (20 lowercase letters)"; exit 1; }
           code=$(curl -sS -o project.json -w '%{http_code}' -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF" || true)
-          [ "$code" = 200 ] || { rm -f project.json; echo "::error::the Supabase API answered HTTP $code for the project (wrong token or reference?)"; exit 1; }
+          [ "$code" = 200 ] || { rm -f project.json; echo "::error::API call «read the project» (GET /v1/projects/{ref}) answered HTTP $code. 401/403 = the token lacks the right to read this project (or it is revoked/expired); 404 = wrong project reference. Nothing was applied."; exit 1; }
           jq -e --arg ref "$SUPABASE_PROJECT_REF" --arg name "$EXPECT_PROJECT_NAME" --arg region "$EXPECT_REGION" '.id == $ref and .name == $name and .region == $region' project.json >/dev/null \
             || { echo "::error::the project is not the expected one (id/name/region differ; expected name=$EXPECT_PROJECT_NAME region=$EXPECT_REGION). Nothing was applied."; jq -r '"found: name=\(.name) region=\(.region) status=\(.status)"' project.json; rm -f project.json; exit 1; }
           jq -r '"target project: name=\(.name) region=\(.region) status=\(.status)"' project.json
@@ -138,6 +138,6 @@ jobs:
           jq -Rs '{query: .}' supabase/tests/verify_applied.sql > query.json
           code=$(curl -sS -o answer.json -w '%{http_code}' -X POST -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H 'Content-Type: application/json' --data @query.json \
             "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF/database/query" || true)
-          [ "$code" = 200 ] || [ "$code" = 201 ] || { echo "::error::the verification query answered HTTP $code"; rm -f query.json answer.json; exit 1; }
+          [ "$code" = 200 ] || [ "$code" = 201 ] || { echo "::error::API call «run the verification query» (POST /v1/projects/{ref}/database/query) answered HTTP $code. 401/403 = the token lacks the right to run a read-only database query (add only that right, RUNBOOK 10.1a). The migrations themselves were applied before this step."; rm -f query.json answer.json; exit 1; }
           bash scripts/verify-result.sh < answer.json
           rm -f query.json answer.json
