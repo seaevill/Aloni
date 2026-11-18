@@ -63,8 +63,8 @@ test('label details offline: values kept as typed, empty or «δεν αναγρ�
   await expect(rocket.getByTestId('labeluse-status')).toContainText('ΑΠΟΚΛΕΙΣΜΕΝΟ');
   await expect(rocket).toHaveClass(/blocked/); // blocked looks stronger than «no signature»: red frame and a red badge
   const bg = (loc: ReturnType<Page['locator']>) => loc.evaluate((e) => getComputedStyle(e).backgroundColor);
-  expect(await bg(rocket.getByTestId('labeluse-status'))).toBe('rgb(138, 28, 28)');
-  expect(await bg(cards.filter({ hasText: 'Σπανάκι' }).getByTestId('labeluse-status'))).not.toBe('rgb(138, 28, 28)');
+  expect(await bg(rocket.getByTestId('labeluse-status'))).toBe('rgb(110, 23, 8)');
+  expect(await bg(cards.filter({ hasText: 'Σπανάκι' }).getByTestId('labeluse-status'))).not.toBe('rgb(110, 23, 8)');
   await expect(rocket).toContainText('Δόση: 0,25 – 0,35 g/στρ.');
   await expect(rocket).toContainText('Αναμονή πριν από τη συγκομιδή: Δεν αναγράφεται');
   await expect(rocket).toContainText('Επανείσοδος στο χωράφι: Δεν έχει συμπληρωθεί');

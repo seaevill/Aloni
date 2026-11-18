@@ -15,11 +15,12 @@ const lum = (hex: string) => {
 const ratio = (a: string, b: string) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
 
 const BG = token('bg'), CARD = token('card'), FG = token('fg'), GREEN = token('green'), WARN = token('warn'), LINE = token('line'), FIELD = token('field');
+const MUTED = token('muted'), TAB = token('tab'), AMBER_BG = token('amber-bg'), AMBER_FG = token('amber-fg'), DANGER = token('danger'), CALM_BG = token('calm-bg'), CALM_FG = token('calm-fg'), FOREST2 = token('forest-2'), LIME = token('lime'), ON_LIME = token('on-lime');
 const TEXT: Array<[string, string, string]> = [
   ['text on page', FG, BG], ['text on card', FG, CARD],
-  ['muted text on page', '#4a4f47', BG], ['muted text on card', '#4a4f47', CARD],
-  ['tab label', '#3d423b', CARD], ['active tab / secondary button / message', GREEN, CARD], ['message on page', GREEN, BG],
-  ['primary button', '#fff', GREEN], ['danger button', WARN, CARD], ['badge', '#fff', WARN], ['draft banner and sync chip', '#4a2500', '#fff3cd'], ['toast', '#fff', FG], ['blocked badge', '#fff', '#8a1c1c'], ['calm chip', '#1e3d28', '#eef3ec'],
+  ['muted text on page', MUTED, BG], ['muted text on card', MUTED, CARD],
+  ['tab label', TAB, BG], ['active tab label', FOREST2, BG], ['active tab icon pill (lime is only a fill)', ON_LIME, LIME], ['active tab / secondary button / message', GREEN, CARD], ['message on page', GREEN, BG],
+  ['primary button', '#fff', GREEN], ['danger button', WARN, CARD], ['badge', '#fff', WARN], ['draft banner and sync chip', AMBER_FG, AMBER_BG], ['toast', '#fff', FG], ['blocked badge', '#fff', DANGER], ['calm chip', CALM_FG, CALM_BG],
 ];
 
 describe('colour contrast', () => {
