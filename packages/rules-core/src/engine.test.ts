@@ -98,3 +98,21 @@ describe('PHI and REI count from the END of the spraying (the safe side)', () =>
     }
   });
 });
+
+describe('SPRAY-WIN: unsigned thresholds only show data', () => {
+  const hours = Array.from({ length: 30 }, (_, i) => ({ time: `2026-11-20T${String(i % 24).padStart(2, '0')}:00:00Z`, day: '2026-11-20', tempC: 8, rhPct: 94, windKmh: 30, gustKmh: 60, rainMm: 2, cloudOktas: 6, leafWet: true }));
+  const weather = { hours: { p: hours }, sun: { '2026-11-20': { sunrise: '2026-11-20T05:10:00Z', sunset: '2026-11-20T15:07:00Z' } }, rainDaily: { p: { '2026-11-20': 6.5 } } };
+  const sprayParams = { windMin: 3, windMax: 10, gustMax: 20, dryBeforeH: 1, rainLookaheadH: 3, rainMaxMm: 0.2, deltaTMin: 2, deltaTMax: 8, tempMax: 28, inversionAfterSunriseH: 2 };
+  it('signed (for test): a day with no OK hour raises the medium «window closed» alert; it never notifies', () => {
+    const o = runRules(snap({ weather, sprayParams, ruleStatus: { 'SPRAY-WIN': 'signed' } })).filter((x) => x.rule_id === 'SPRAY-WIN');
+    expect(o).toEqual([expect.objectContaining({ kind: 'alert', category: 'spray_window_closed', severity: 'medium', notify: false, values: expect.objectContaining({ ok_hours: 0, closed_days: ['2026-11-20'] }) })]);
+  });
+  it('UNSIGNED: the same weather gives an info line only: no alert, no severity, no notification', () => {
+    const o = runRules(snap({ weather, sprayParams, ruleStatus: { 'SPRAY-WIN': 'unsigned' } })).filter((x) => x.rule_id === 'SPRAY-WIN');
+    expect(o).toEqual([expect.objectContaining({ kind: 'info', category: 'spray_window_inputs', notify: false })]);
+    expect(o[0].severity).toBeUndefined();
+  });
+  it('no weather yet (the server connection comes later): nothing is said, nothing invented', () => {
+    expect(runRules(snap({ ruleStatus: { 'SPRAY-WIN': 'signed' } })).filter((x) => x.rule_id === 'SPRAY-WIN')).toEqual([]);
+  });
+});
