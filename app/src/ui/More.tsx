@@ -11,6 +11,7 @@ import { Register } from './Register';
 import { Workers } from './Workers';
 import { workerView } from './nav';
 import { Backup } from './Backup';
+import { GoLive } from './GoLive';
 import { Readiness } from './Readiness';
 import { SignIn } from './SignIn';
 import { showUndo } from './Toast';
@@ -48,6 +49,7 @@ export function More() {
       <p class="muted">{t('more.demoNote')}</p>
       {msg && <p class="msg" role="status">{msg}</p>}
       <Readiness />
+      <GoLive />
       <SignIn />
       <Backup />
       <SettingsBox />

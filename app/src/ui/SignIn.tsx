@@ -5,6 +5,7 @@ import { activeFarm, dataVersion, db, realFarmId } from '../db';
 import { t } from '../i18n';
 import { claimInvitations, requestCode, session, tokenFor, verifyCode, type Session } from '../auth/gotrue';
 import { loadSession, saveSession } from '../auth/store';
+import { setSyncFlag } from '../sync/golive';
 
 const save = saveSession;
 
@@ -24,7 +25,7 @@ export function SignIn() {
   const enter = async () => {
     try { const s = await verifyCode(BACKEND, email, code, Date.now()); await save(s);
       const farms = await claimInvitations(BACKEND, s.access_token);
-      if (farms[0] && (await adoptFarm(db, farms[0])) === 'adopted') { realFarmId.value = farms[0]; activeFarm.value = farms[0]; dataVersion.value++; } // a worker's fresh phone takes the farm's id
+      if (farms[0] && (await adoptFarm(db, farms[0])) === 'adopted') { realFarmId.value = farms[0]; activeFarm.value = farms[0]; dataVersion.value++; await setSyncFlag(db, true); } // a worker's fresh phone takes the farm's id
       setFailed(false); setSent(false); setCode(''); } catch { setFailed(true); }
   };
   if (session.value) return (
