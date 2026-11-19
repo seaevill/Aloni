@@ -7,7 +7,6 @@
   "farm.real": "Çiftliğim",
   "farm.demo": "Demo çiftlik",
   "today.title": "Bugün",
-  "today.empty": "Henüz veri yok. «Diğer» sekmesinden demo çiftliği yükleyin.",
   "today.counts": "Parsel: {parcels} · Ürün: {crops} · Ekim: {plantings}",
   "crops.title": "Ürünler",
   "parcels.title": "Parseller",
@@ -457,5 +456,11 @@
   "today.urgent.action": "İlaçlamalara bak",
   "history.title": "Geçmiş",
   "job.add.plus": "+ İş ata",
-  "today.jobs.none": "Bugün iş yok."
+  "today.jobs.none": "Bugün iş yok.",
+  "welcome.1": "Αλώνι nedir",
+  "welcome.1.body": "Tarlanızın defteri: tarlalar, ilaçlamalar, bekleme süreleri ve hasat; sinyal olmadan da çalışır.",
+  "welcome.2": "Tarla ekleyin",
+  "welcome.2.body": "Bir tarla ve ekili ürünüyle başlayın.",
+  "welcome.3": "ya da gösteriyi görün",
+  "welcome.3.body": "Nasıl çalıştığını görmeniz için hayali veriler. Kendi verilerinizle karışmaz."
 }

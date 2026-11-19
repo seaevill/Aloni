@@ -41,6 +41,16 @@ function WeatherStrip() {
   );
 }
 
+/** First start: three short steps, in the order the farmer will do them. */
+const WELCOME = [['welcome.1', 'welcome.1.body'], ['welcome.2', 'welcome.2.body'], ['welcome.3', 'welcome.3.body']] as const;
+function Welcome() {
+  return (
+    <ol class="welcome card" data-testid="welcome">
+      {WELCOME.map(([title, body], i) => <li key={title}><span class="step" aria-hidden="true">{i + 1}</span><div><strong>{t(title)}</strong><small>{t(body)}</small></div></li>)}
+    </ol>
+  );
+}
+
 function Fields({ cards, onUrgent }: { cards: FieldCard[]; onUrgent: () => void }) {
   void onUrgent;
   return (
@@ -101,8 +111,9 @@ export function Today() {
         <p class="farm muted" data-testid="today-farm">{farmLabel(activeFarm.value)}</p>
       </header>
       {rows.some((q) => q.failed) && <ErrorState onRetry={retry} />}
+      {loaded && !has && <Welcome />}
       {loaded && !has && (
-        <EmptyState message={t('today.empty')} actionLabel={t('parcel.add')} onAction={() => { tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
+        <EmptyState message={t('welcome.2.body')} actionLabel={t('parcel.add')} onAction={() => { tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
       )}
       {loaded && has && urgent && (
         <section class="hero" data-testid="urgent" aria-label={t('today.urgent')}>

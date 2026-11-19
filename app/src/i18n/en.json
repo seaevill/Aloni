@@ -7,7 +7,6 @@
   "farm.real": "My farm",
   "farm.demo": "Demo farm",
   "today.title": "Today",
-  "today.empty": "No data yet. Load the demo farm from \"More\".",
   "today.counts": "Parcels: {parcels} · Crops: {crops} · Plantings: {plantings}",
   "crops.title": "Crops",
   "parcels.title": "Parcels",
@@ -457,5 +456,11 @@
   "today.urgent.action": "See the sprayings",
   "history.title": "History",
   "job.add.plus": "+ Assign a job",
-  "today.jobs.none": "No jobs today."
+  "today.jobs.none": "No jobs today.",
+  "welcome.1": "What Aloni is",
+  "welcome.1.body": "Your farm's notebook: fields, sprayings, waiting periods and cutting, working without signal too.",
+  "welcome.2": "Add a field",
+  "welcome.2.body": "Start with one field and its planting.",
+  "welcome.3": "or see the demo",
+  "welcome.3.body": "Made-up data to show how it works. It never mixes with your own."
 }
