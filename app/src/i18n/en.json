@@ -367,7 +367,7 @@
   "worker.kind.pest": "Pest",
   "worker.kind.other": "Other",
   "cut.title": "Harvest by field",
-  "cut.free": "Harvest: no waiting period",
+  "cut.free": "Harvest: no waiting period on record",
   "cut.from": "Harvest from {d}",
   "cut.unknown": "Harvest from: unknown. Harvest is blocked.",
   "register.open": "Spray register (draft)",

@@ -16,7 +16,7 @@ export function Cuts() {
       <h2>{t('cut.title')}</h2>
       {cards.map(({ p, state, line, source, late }) => (
         <div class={state === 'unknown' ? 'card blocked' : 'card'} key={p.id} data-testid="cut" data-state={state}>{String(p.name)}
-          <span class={state === 'unknown' ? 'badge blocked' : state === 'from' ? 'badge unsigned' : 'badge calm'} data-testid="cut-line">{line}</span>
+          <span class={state === 'unknown' ? 'badge blocked' : state === 'from' ? 'badge unsigned' : 'badge neutral'} data-testid="cut-line">{line}</span>
           {source && <small data-testid="cut-source">{source}</small>}
           {late && <span class="badge warn" data-testid="cut-late">{t('cut.late')}</span>}
         </div>

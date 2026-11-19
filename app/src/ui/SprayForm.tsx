@@ -91,7 +91,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
       <div class="seg two">{live(products).map((p) => <button key={p.id} aria-pressed={productId === p.id} onClick={() => { setProductId(p.id); setLotKey(undefined); setQty(''); pickLabelDefaults(chosen.length ? live(labels).find((l) => l.product_id === p.id && l.crop_id === chosen[0].crop_id) : undefined); }}>{nameOf(p)}</button>)}</div>
       {productId && chosen.length > 0 && (
         <div class="card" data-testid="spray-label"><strong>{t('spray.label.title')}</strong>
-          {label ? <><span class={statusOf(label) === 'blocked' ? 'badge blocked' : 'badge unsigned'}>{badgeText(label, statusOf(label))}</span><Lines row={label} /></> : <span class="badge blocked">{t('spray.flag.label_none')}</span>}
+          {label ? <><span class={`badge ${statusOf(label)}`}>{badgeText(label, statusOf(label))}</span><Lines row={label} /></> : <span class="badge blocked">{t('spray.flag.label_none')}</span>}
         </div>
       )}
       <h2>{t('spray.worker')}</h2>
