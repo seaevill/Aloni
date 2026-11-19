@@ -5,10 +5,10 @@ import { effectiveSprays } from '../spray/spray';
 // (date and time, field, crop, treated area, product and registration number, dose and unit, quantity used, water, who applied, the label state and the
 // waiting periods). It is a DRAFT («προσχέδιο»): the app prepares it, a person signs it. Values are printed exactly as stored; nothing is rounded.
 
-export const COLUMNS = ['when', 'parcel', 'crop', 'area', 'product', 'reg_no', 'dose', 'unit', 'qty', 'water', 'applicator', 'label', 'phi_until', 'rei_until', 'flags', 'note', 'late_reason', 'record', 'amends'] as const;
+export const COLUMNS = ['start', 'when', 'parcel', 'crop', 'area', 'product', 'reg_no', 'dose', 'unit', 'qty', 'lot', 'water', 'applicator', 'label', 'phi_until', 'rei_until', 'flags', 'note', 'late_reason', 'record', 'amends'] as const;
 export type Column = (typeof COLUMNS)[number];
 export type RegisterLine = Record<Column, string>;
-export interface RegisterData { sprays: readonly Row[]; links: readonly Row[]; plantings: readonly Row[]; parcels: readonly Row[]; crops: readonly Row[]; products: readonly Row[]; workers: readonly Row[] }
+export interface RegisterData { sprays: readonly Row[]; links: readonly Row[]; plantings: readonly Row[]; parcels: readonly Row[]; crops: readonly Row[]; products: readonly Row[]; workers: readonly Row[]; lots?: readonly Row[] }
 export interface Fmt { when: (iso: string) => string; num: (s: string) => string; name: (row: Row) => string; flag: (f: string) => string; label: (state: string) => string; unit: (u: string) => string }
 
 const text = (v: unknown): string => (typeof v === 'string' ? v : typeof v === 'number' ? String(v) : '');
@@ -24,8 +24,9 @@ export function registerLines(d: RegisterData, f: Fmt): RegisterLine[] {
       const pl = d.plantings.find((p) => p.id === l?.planting_id);
       const parcel = d.parcels.find((p) => p.id === pl?.parcel_id);
       const crop = d.crops.find((c) => c.id === pl?.crop_id);
+      const lot = (d.lots ?? []).filter((x) => x.lot_key === s.lot_key && typeof x.batch === 'string').pop();
       lines.push({
-        when: f.when(text(s.sprayed_at)), parcel: parcel ? text(parcel.name) : '', crop: crop ? f.name(crop) : '', area: l ? f.num(text(l.area_str_treated)) : '',
+        start: s.started_at ? f.when(text(s.started_at)) : '', lot: lot ? text(lot.batch) : '', when: f.when(text(s.sprayed_at)), parcel: parcel ? text(parcel.name) : '', crop: crop ? f.name(crop) : '', area: l ? f.num(text(l.area_str_treated)) : '',
         product: product ? f.name(product) : '', reg_no: text(product?.reg_no), dose: f.num(text(s.dose_str)), unit: f.unit(text(s.dose_unit)), qty: f.num(text(s.qty_str)), water: f.num(text(s.water_l)),
         applicator: text(worker?.name), label: f.label(text(s.label_state)),
         phi_until: s.phi_until ? f.when(text(s.phi_until)) : '', rei_until: s.rei_until ? f.when(text(s.rei_until)) : '',
