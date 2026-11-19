@@ -20,8 +20,9 @@ begin
     if k not in ('type', 'coordinates') then raise exception 'the boundary may hold only «type» and «coordinates» (found «%»)', k using errcode = 'check_violation'; end if;
   end loop;
   begin
-    execute 'select GeometryType(x) as kind, ST_XMin(x) as xmin, ST_XMax(x) as xmax, ST_YMin(x) as ymin, ST_YMax(x) as ymax, ST_IsValid(x) as ok from (select ST_SetSRID(ST_GeomFromGeoJSON($1), 4326) as x) q' into g using new.boundary::text;
+    execute 'select GeometryType(x) as kind, ST_XMin(x) as xmin, ST_XMax(x) as xmax, ST_YMin(x) as ymin, ST_YMax(x) as ymax, ST_IsValid(x) as ok, ST_IsEmpty(x) as empty from (select ST_SetSRID(ST_GeomFromGeoJSON($1), 4326) as x) q' into g using new.boundary::text;
   exception when others then raise exception 'the boundary is not a readable GeoJSON polygon' using errcode = 'check_violation'; end;
+  if g.empty then raise exception 'the boundary is empty (a polygon needs at least a ring)' using errcode = 'check_violation'; end if;   -- m6-0029 LOW
   if g.kind <> 'POLYGON' then raise exception 'the boundary must be one polygon' using errcode = 'check_violation'; end if;
   if g.xmin < -180 or g.xmax > 180 or g.ymin < -90 or g.ymax > 90 then raise exception 'the boundary has coordinates outside longitude −180..180 / latitude −90..90' using errcode = 'check_violation'; end if;
   if not g.ok then raise exception 'the boundary is not a valid polygon (for example it crosses itself)' using errcode = 'check_violation'; end if;

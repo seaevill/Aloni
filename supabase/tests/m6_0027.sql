@@ -1,6 +1,7 @@
 -- Migration 0027: the parcel BOUNDARY drawn on the map (GeoJSON Polygon in `boundary`, next to the typed area). Written BEFORE 0027: the column does not exist. Runs AFTER m6_0026.sql.
 \set ON_ERROR_STOP on
 reset role; set test.uid = '';
+set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';   -- the REAL owner, not a superuser (team review m6-0029): the trigger needs the PostGIS functions with the caller's rights
 do $$
 declare p constant uuid := '33333333-3333-3333-3333-333333333333';
 begin
@@ -16,3 +17,4 @@ begin
   if (select area_str from parcels where id = p) is null then raise exception '(0027) the typed area vanished'; end if;
 end $$;
 do $$ begin raise notice 'm6-0027 tests passed'; end $$;
+reset role; set test.uid = '';

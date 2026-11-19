@@ -16,14 +16,28 @@ create function spray_floor(p_farm uuid, p_job uuid, p_product uuid, p_spray uui
   with recursive chain(id, amends_id, label_use_id) as (
     select s.id, s.amends_id, s.label_use_id from job_spray s where s.id = p_spray and s.farm_id = p_farm
     union all
-    select s.id, s.amends_id, s.label_use_id from job_spray s join chain c on s.id = c.amends_id where s.farm_id = p_farm)
+    select s.id, s.amends_id, s.label_use_id from job_spray s join chain c on s.id = c.amends_id where s.farm_id = p_farm),
+  crops(crop_id) as (select pl.crop_id from job_plantings jp join plantings pl on pl.id = jp.planting_id where jp.job_id = p_job and jp.farm_id = p_farm)
+  -- team review m6-0029 (SHOULD, 0022:23): ONLY a label of a crop of THIS job's plantings is a floor. The label a spray or its job names but that belongs to ANOTHER crop (PHI 3 on a crop whose own label says 14,
+  -- or no label at all) is not the waiting period of these plantings: with no label of their crop there is no floor and a typed value is refused (unknown = blocked).
   select max(l.phi_days)::integer, max(l.rei_hours)::integer, count(*)::integer from label_uses l
-  where l.farm_id = p_farm and l.product_id = p_product and (
+  where l.farm_id = p_farm and l.product_id = p_product and l.crop_id in (select crop_id from crops) and (
     l.id in (select c.label_use_id from chain c where c.label_use_id is not null)
     or l.id = (select j.label_use_id from jobs j where j.id = p_job and j.farm_id = p_farm)
-    or (l.deleted_at is null and l.crop_id in (select pl.crop_id from job_plantings jp join plantings pl on pl.id = jp.planting_id where jp.job_id = p_job and jp.farm_id = p_farm)))
+    or l.deleted_at is null)
 $$;
 revoke execute on function spray_floor(uuid, uuid, uuid, uuid) from public, anon, authenticated;
+
+-- team review m6-0029 (MUST A1): the EARLIEST end of a spray's correction chain. The harvest gate asks «had this spraying ended by t?» of THIS moment, so a correction that moved the end can never make
+-- the spraying «not yet happened» for the gate.
+create function spray_first_end(p_farm uuid, p_spray uuid) returns timestamptz language sql stable security definer set search_path = public, private, pg_temp as $$
+  with recursive chain(id, amends_id, sprayed_at) as (
+    select s.id, s.amends_id, s.sprayed_at from job_spray s where s.id = p_spray and s.farm_id = p_farm
+    union all
+    select s.id, s.amends_id, s.sprayed_at from job_spray s join chain c on s.id = c.amends_id where s.farm_id = p_farm)
+  select min(sprayed_at) from chain
+$$;
+revoke execute on function spray_first_end(uuid, uuid) from public, anon, authenticated;
 
 create or replace function check_spray_record() returns trigger language plpgsql security definer set search_path = public, private, pg_temp as $$
 declare lu record; o job_spray%rowtype; sl record;
@@ -37,7 +51,8 @@ begin
     raise exception 'rei_until must be exactly sprayed_at + % hours', new.rei_hours using errcode = 'check_violation';
   end if;
   if new.phi_source = 'label' then
-    select l.product_id, l.sign_off_by, l.phi_days, l.rei_hours into lu from label_uses l where l.id = new.label_use_id and l.farm_id = new.farm_id;
+    select l.product_id, l.sign_off_by, l.phi_days, l.rei_hours into lu from label_uses l where l.id = new.label_use_id and l.farm_id = new.farm_id
+      and l.crop_id in (select pl.crop_id from job_plantings jp join plantings pl on pl.id = jp.planting_id where jp.job_id = new.job_id and jp.farm_id = new.farm_id);   -- m6-0029: the label of a crop of THIS job
     if not found or lu.sign_off_by is null or lu.product_id is distinct from new.product_id or lu.phi_days is distinct from new.phi_days or lu.rei_hours is distinct from new.rei_hours then
       raise exception 'a label waiting period must equal the signed label use it names' using errcode = 'check_violation';
     end if;
@@ -82,7 +97,8 @@ begin
     select exists (
       select 1 from job_plantings jp join job_spray s on s.job_id = jp.job_id
       left join lateral spray_floor(s.farm_id, s.job_id, s.product_id, s.id) lf on true   -- the FLOOR: every label that applies to this product on this job's crops
-      where jp.planting_id = new.planting_id and s.sprayed_at <= t and not exists (select 1 from job_spray a where a.amends_id = s.id)
+      left join lateral (select spray_first_end(s.farm_id, s.id) as fe) x on true         -- the EARLIEST end of the chain (m6-0029 A1)
+      where jp.planting_id = new.planting_id and x.fe <= t and not exists (select 1 from job_spray a where a.amends_id = s.id)
         and (s.phi_until is null or s.phi_until >= t or s.rei_until is null or s.rei_until >= t
              or (lf.phi is not null and s.sprayed_at + make_interval(hours => lf.phi * 24) >= t)
              or (lf.rei is not null and s.sprayed_at + make_interval(hours => lf.rei) >= t))) into clash;

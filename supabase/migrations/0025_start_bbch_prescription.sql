@@ -72,7 +72,10 @@ begin
   else
     select * into lu from label_uses where id = j.label_use_id and farm_id = j.farm_id and product_id = j.product_id and deleted_at is null;
     if not found then raise exception 'the label use of the job is missing' using errcode = 'check_violation'; end if;
-    if lu.sign_off_by is null then state := 'unsigned'; flags := array['label_unsigned'];
+    if lu.crop_id not in (select pl.crop_id from job_plantings jp join plantings pl on pl.id = jp.planting_id where jp.job_id = j.id and jp.farm_id = j.farm_id) then
+      -- m6-0029 SHOULD 3 (0025:73): the label belongs to ANOTHER crop: it is not the waiting period of these plantings. The spraying is kept, marked, and its waiting period stays UNKNOWN (blocked)
+      state := 'none'; flags := array['label_none'];
+    elsif lu.sign_off_by is null then state := 'unsigned'; flags := array['label_unsigned'];
     else state := 'signed'; phi := lu.phi_days; rei := lu.rei_hours; src := 'label'; end if;
     if lu.dose_min is not null then
       if lu.dose_unit is distinct from j.dose_unit then flags := array_append(flags, 'dose_unit_differs');

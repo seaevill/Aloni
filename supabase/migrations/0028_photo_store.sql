@@ -10,6 +10,8 @@ end $$;
 
 alter table media add column job_id uuid references jobs(id);
 create index media_job on media (job_id) where job_id is not null;
+-- team review m6-0029 (LOW): the 5 MB cap of the bucket holds for the `media` row too
+alter table media add constraint media_bytes_cap check (bytes <= 5242880);
 
 -- media: the owner as before; a worker may read and add the photo rows of her own jobs (one permissive policy per command, the rules OR-ed, as in 0019)
 drop policy media_select on media; drop policy media_insert on media;
@@ -25,6 +27,7 @@ insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_typ
   on conflict (id) do update set public = false, file_size_limit = 5242880, allowed_mime_types = array['image/jpeg'];
 
 -- who may touch the objects: the first folder is the farm, the file name is the photo id
+-- team review m6-0029 (SHOULD, 0028:32/38): the name is EXACTLY <farm>/<photo id> (two parts, the second a uuid): no extra object can hide under a photo's name, for a worker or for the owner
 create policy photos_select on storage.objects for select to authenticated using (
   bucket_id = 'photos' and (
     private.has_role(((storage.foldername(name))[1])::uuid, array['owner'])
@@ -32,7 +35,7 @@ create policy photos_select on storage.objects for select to authenticated using
                where m.id::text = (string_to_array(name, '/'))[2] and m.farm_id::text = (storage.foldername(name))[1]
                  and j.assigned_to = (select auth.uid()) and j.deleted_at is null and private.has_role(j.farm_id, array['worker']))));
 create policy photos_insert on storage.objects for insert to authenticated with check (
-  bucket_id = 'photos' and (
+  bucket_id = 'photos' and array_length(string_to_array(name, '/'), 1) = 2 and (string_to_array(name, '/'))[2] ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' and (
     private.has_role(((storage.foldername(name))[1])::uuid, array['owner'])
     or exists (select 1 from public.media m join public.jobs j on j.id = m.job_id
                where m.id::text = (string_to_array(name, '/'))[2] and m.farm_id::text = (storage.foldername(name))[1]
