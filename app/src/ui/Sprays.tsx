@@ -15,7 +15,7 @@ import { useRows } from './useRows';
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 const RED: readonly string[] = ['label_none', 'label_blocked'];
 /** The waiting period as a sentence, or undefined when it is unknown (the card then says so, in red). Recomputed from the stored days and time. */
-const waitLine = (r: Row, days: 'phi_days' | 'rei_hours'): string | undefined => {
+export const waitLine = (r: Row, days: 'phi_days' | 'rei_hours'): string | undefined => {
   const v = text(r[days]);
   if (!v || v === NOT_ON_LABEL) return undefined;
   const end = days === 'phi_days' ? phiEnd(text(r.sprayed_at), parsePhiDays(v)) : reiEnd(text(r.sprayed_at), parseReiHours(v));

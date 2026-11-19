@@ -17,6 +17,7 @@
 - **Σήμερα prototipin düzenine geçti** (koyu başlık bandı, koyu hava kartı 4 karo, KPI karoları). Sol prototip | sağ uygulama: `docs/design/compare/today.png`. Öz puan 7/10 (hasat 7/28 gün kasa karoları ve uyarı listesi henüz yok).
 - **Tarla detay ekranı geldi**: Χωράφια'da bir tarlaya dokununca koyu başlık, sınır kroki, bilgi tablosu, kesim durumu, hava, ekimler, son ilaçlamalar. Prototip | uygulama: `docs/design/compare/parcel-detail.png`. Öz puan 7/10.
 - **Tarla detay ekranı geldi**: Χωράφια'da bir tarlaya dokununca koyu başlık, sınır kroki, bilgi tablosu, kesim durumu, hava, ekimler, son ilaçlamalar. Prototip | uygulama: `docs/design/compare/parcel-detail.png`. Öz puan 7/10.
+- **Ürün detay ekranı geldi** (Καλλιέργειες'te ürüne dokun): ekimler + son ilaçlama ve bekleme süresi. Öz puan 5/10 (öneri kartları ve sipariş tablosu yok).
 - EPPO kodları ekip listesine göre güncellendi (14 kod dolu, 3 boş).
 - Ekran görüntüleri: `docs/design/screenshots-2026-11-19c/`.
 

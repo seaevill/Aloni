@@ -158,3 +158,5 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 .detail .band h1 { color:var(--white); margin:0; }
 .detail .band .topbar { background:none; backdrop-filter:none; position:static; margin:0; padding:0; }
 .detail .band .back { color:var(--white); }
+
+.detail .band .latin { margin:0; font-style:italic; color:var(--white); }
