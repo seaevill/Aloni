@@ -65,7 +65,7 @@ test('real farm, OFFLINE: the spray and harvest forms and the stock screens meet
   await language(page, 'EL');
   await tab(page, 'today');
   await page.getByTestId('harvest-open').click(); // saves offline
-  await page.getByTestId('harvest-chip').first().click();
+  await page.getByTestId('harvest-chip').filter({ hasText: 'Σπανάκι' }).first().click();
   await page.getByTestId('harvest-more').click();
   await page.getByTestId('harvest-cutby-option').first().click();                       // «Ποιος έκοψε» is required
   await page.getByTestId('harvest-save').click();

@@ -16,7 +16,7 @@ test('a double tap or a triple tap on a save button makes exactly ONE record (ha
   await expect.poll(() => count(page, 'workers')).toBe(workersBefore + 1);
   await page.locator('nav.tabs [data-tab="today"]').click();
   await page.getByTestId('harvest-open').click();
-  await page.getByTestId('harvest-chip').first().click();
+  await page.getByTestId('harvest-chip').filter({ hasText: 'Σπανάκι' }).first().click();
   for (let i = 0; i < 4; i += 1) await page.getByTestId('harvest-more').click();
   await page.getByRole('button', { name: 'Γιώργος' }).click();
   await page.getByTestId('harvest-save').click({ clickCount: 3 });

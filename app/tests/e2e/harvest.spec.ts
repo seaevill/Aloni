@@ -10,7 +10,7 @@ test('harvest counter: +1 buttons, nothing blocks a planting that was never spra
   await setup(page, true);
   await closeHistory(page);
   await page.getByTestId('harvest-open').click();
-  await page.getByTestId('harvest-chip').first().click();
+  await page.getByTestId('harvest-chip').filter({ hasText: 'Σπανάκι' }).first().click();
   for (let i = 0; i < 3; i += 1) await page.getByTestId('harvest-more').click();
   await expect(page.getByTestId('harvest-crates')).toHaveValue('3');
   await page.getByTestId('harvest-cutby-option').first().click();                       // «Ποιος έκοψε» is required
@@ -31,7 +31,7 @@ test('after a SIGNED spray the harvest is blocked until the waiting period has r
   await page.getByTestId('spray-save').click();
   await closeHistory(page);
   await page.getByTestId('harvest-open').click();
-  await page.getByTestId('harvest-chip').first().click();
+  await page.getByTestId('harvest-chip').filter({ hasText: 'Σπανάκι' }).first().click();
   await page.getByTestId('harvest-crates').fill('5');
   await expect(page.getByTestId('harvest-blocked')).toContainText('Σε αναμονή μέχρι');
   await expect(page.getByTestId('harvest-save')).toBeDisabled();
@@ -44,7 +44,7 @@ test('after a SIGNED spray the harvest is blocked until the waiting period has r
   await page.clock.setSystemTime(Date.now() + EIGHT_DAYS); // the 7 days really pass
   await closeHistory(page);
   await page.getByTestId('harvest-open').click();
-  await page.getByTestId('harvest-chip').first().click();
+  await page.getByTestId('harvest-chip').filter({ hasText: 'Σπανάκι' }).first().click();
   await page.getByTestId('harvest-crates').fill('5');
   await expect(page.getByTestId('harvest-blocked')).toHaveCount(0);
   await page.getByTestId('harvest-cutby-option').first().click();                       // «Ποιος έκοψε» is required
@@ -61,7 +61,7 @@ test('after an UNSIGNED spray the PHI is unknown: blocked even far in the future
   await page.getByTestId('spray-save').click();
   await closeHistory(page);
   await page.getByTestId('harvest-open').click();
-  await page.getByTestId('harvest-chip').first().click();
+  await page.getByTestId('harvest-chip').filter({ hasText: 'Σπανάκι' }).first().click();
   await page.locator('input[type=datetime-local]').fill(await at(page, 3650));
   await expect(page.getByTestId('harvest-blocked')).toContainText('άγνωστη αναμονή');
   await expect(page.getByTestId('harvest-save')).toBeDisabled();
@@ -72,13 +72,13 @@ test('after an UNSIGNED spray the PHI is unknown: blocked even far in the future
   await page.getByTestId('wait-save').click();
   await closeHistory(page);
   await page.getByTestId('harvest-open').click();
-  await page.getByTestId('harvest-chip').first().click();
+  await page.getByTestId('harvest-chip').filter({ hasText: 'Σπανάκι' }).first().click();
   await expect(page.getByTestId('harvest-blocked')).toContainText('Σε αναμονή μέχρι'); // his value does not unblock by itself
   await page.getByRole('button', { name: 'Ακύρωση' }).click();
   await page.clock.setSystemTime(Date.now() + EIGHT_DAYS);
   await closeHistory(page);
   await page.getByTestId('harvest-open').click();
-  await page.getByTestId('harvest-chip').first().click();
+  await page.getByTestId('harvest-chip').filter({ hasText: 'Σπανάκι' }).first().click();
   await page.getByTestId('harvest-crates').fill('2');
   await page.getByTestId('harvest-cutby-option').first().click();                       // «Ποιος έκοψε» is required
   await page.getByTestId('harvest-save').click();
@@ -91,7 +91,7 @@ test('«Ποιος έκοψε» is required: without a cutter nothing is saved a
   await setup(page, true);
   await closeHistory(page);
   await page.getByTestId('harvest-open').click();
-  await page.getByTestId('harvest-chip').first().click();
+  await page.getByTestId('harvest-chip').filter({ hasText: 'Σπανάκι' }).first().click();
   await page.getByTestId('harvest-more').click();
   await page.getByTestId('harvest-save').click();
   await expect(page.getByTestId('harvest-cutby-error')).toBeVisible();

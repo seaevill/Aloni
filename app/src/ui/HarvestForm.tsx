@@ -53,7 +53,7 @@ export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = 
   const markOf = (p: Row): string => {
     const g = harvestGate(String(p.id), instantOf(new Date()) ?? '', links.rows ?? [], sprays.rows ?? []);
     if (g.ok) return '';
-    return g.reason === 'running' && g.until ? t('harvest.chip.until', { d: formatDate(g.until.slice(0, 10)) }) : t('harvest.chip.unknown');
+    return g.reason === 'running' && g.until ? t('harvest.chip.until', { d: formatDateTime(g.until) }) : t('harvest.chip.unknown');
   };
   const chipText = (p: Row): string => [planting === p.id ? MARK.ok : '', markOf(p) ? MARK.lock : '', labelOf(p), markOf(p)].filter(Boolean).join(' ');
   const mainFirst = (a: Row, b: Row): number => Number(text(b.status) === 'harvesting') - Number(text(a.status) === 'harvesting');
@@ -68,13 +68,13 @@ export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = 
   ));
   const cratesError = failed > 0 ? (!cratesN.known ? t('harvest.error.crates') : cratesN.value < 1 ? t('harvest.error.zero') : cratesN.value > MAX_CRATES ? t('harvest.error.max', { max: MAX_CRATES }) : '') : '';
   useEffect(() => { if (failed > 0) document.querySelector<HTMLElement>('main [data-error]')?.focus(); }, [failed]);
-  const step = (d: 1 | -1) => { const n = parseWhole<'Crates'>(crates); const cur = n.known ? n.value : 0; setCrates(cur + d < 1 ? '' : `${cur + d}`); }; // the counter buttons: +1 / −1, never below 1
+  const step = (d: 1 | -1) => { const n = parseWhole<'Crates'>(crates); const cur = n.known ? n.value : 0; setCrates(cur + d < 1 ? '' : `${Math.min(cur + d, MAX_CRATES)}`); }; // the counter buttons: +1 / −1, never below 1
   const save = async () => {
     const r = buildHarvest({ plantingId: planting, crates, harvestedAt: at, note, cutBy }, links.rows ?? [], sprays.rows ?? [], farmId, new Date().toISOString(), crypto.randomUUID());
     if (!r.ok) { setFailed((n) => n + 1); return; }
     await put(db, 'job_harvest', actorId ? { ...r.row, actor_id: actorId } : r.row, 'insert');
     dataVersion.value++;
-    if (big) { setSavedLine(cratesN.known ? tn('harvest.saved.line', cratesN.value, { crop: chosen ? cropOf(chosen) : '' }) : ''); setPlanting(''); setCrates(''); setNote(''); setFailed(0); }
+    if (big) { setSavedLine(cratesN.known ? tn('harvest.saved.line', cratesN.value, { crop: chosen ? cropOf(chosen) : '' }) : ''); setPlanting(''); setCrates(''); setNote(''); setWhen(athensLocalNow(new Date()) ?? ''); setFailed(0); }
     onDone(true);
   };
   const shown = parseWhole<'Crates'>(crates).known ? crates.trim() : '0'; // the counter shows 0 until a number is chosen

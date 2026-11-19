@@ -110,7 +110,7 @@ export function WorkerApp() {
       {!real && <h2>{t('worker.choose')}</h2>}
       {!real && <div class="seg two big">{people.map((w) => <button key={w.id} aria-pressed={w.id === me.id} onClick={() => workerView.value = w.id}>{text(w.name)}</button>)}</div>}
 
-      {harvestSaved && <p class="msg" role="status" data-testid="worker-status-harvest">{t('harvest.saved')} {t(queuedKey(SYNC_CONNECTED))}</p>}
+      {tabId === 'harvest' && harvestSaved && <p class="msg" role="status" data-testid="worker-status-harvest">{t('harvest.saved')} {t(queuedKey(SYNC_CONNECTED))}</p>}
       {tabId === 'jobs' && (
         <>
           <h2>{t('worker.jobs')}</h2>

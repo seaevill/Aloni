@@ -121,7 +121,7 @@ test('worker view: the big crate counter (72 px buttons, a number of at least 40
   expect(await h('harvest-more')).toBeGreaterThanOrEqual(72);
   expect(await page.getByTestId('harvest-count').evaluate((e) => parseFloat(getComputedStyle(e).fontSize))).toBeGreaterThanOrEqual(40);
   await expect(page.getByText('κλούβες κομμένες')).toBeVisible();
-  await page.getByTestId('harvest-chip').first().click(); // a planting
+  await page.getByTestId('harvest-chip').filter({ hasText: 'Σπανάκι' }).first().click(); // a planting
   for (let i = 0; i < 3; i += 1) await page.getByTestId('harvest-more').click();
   await page.getByTestId('harvest-less').click();
   await expect(page.getByTestId('harvest-count')).toHaveText('2');
