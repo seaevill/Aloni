@@ -3,6 +3,7 @@ import { activeFarm, dataVersion, db, loadDemo, realFarmId } from '../db';
 import { tab } from './nav';
 import { DEMO_FARM_ID } from '../config';
 import { lang, t, type I18nKey } from '../i18n';
+import { CATALOG, cropName } from '../crops/catalog';
 import { formatArea, formatQty } from '../i18n/format';
 import { archived, restored } from '../parcels/parcel';
 import { put } from '../repo';
@@ -27,6 +28,7 @@ export function Title({ k }: { k: I18nKey }) {
 
 /** A record's name in the current language. Nothing found = an EMPTY text, never the word «undefined» (the lists load one after the other). */
 export const nameOf = (r: Record<string, unknown>): string => {
+  if (lang.value === 'hi' && typeof r.slug === 'string') { const c = CATALOG.find((x) => x.slug === r.slug); if (c) return cropName(c, 'hi'); } // «पालक · Σπανάκι»
   const found = r[`name_${lang.value === 'hi' ? 'el' : lang.value}`] ?? r.name_en ?? r.name ?? r.label ?? r.id;
   return typeof found === 'string' || typeof found === 'number' ? String(found) : '';
 };

@@ -35,7 +35,8 @@ const localise = (s: string) => s.replace('.', separator()).replace(/^-/, '\u221
 
 /** A dose exactly as stored: «0.625» → «0,625», «0.250» → «0,250» (trailing zeros are kept). Only a Known<Decimal> is accepted: an unknown dose prints «— άγνωστο». */
 export function formatDose(v: Known<Decimal>): string {
-  return v.known ? localise(v.value) : t('value.unknown');
+  // Hindi shows the dose with the Greek decimal comma, like el and tr: the worker compares it with the Greek label on the package (display only, never rounded).
+  return v.known ? v.value.replace('.', lang.value === 'en' ? '.' : ',').replace(/^-/, '\u2212') : t('value.unknown');
 }
 
 /** A stock quantity or any other plain number, exactly as stored. */
