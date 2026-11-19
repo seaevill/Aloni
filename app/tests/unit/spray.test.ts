@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildLabelUse, withSignOff, type LabelUseInput } from '../../src/labels/label-use';
 import { buildHarvest, cutFromParcel, doneBlocked, harvestGate, reiLockJob, reiLockParcel } from '../../src/spray/harvest';
-import { buildSpray, buildWaitEntry, effectiveSprays, type SprayContext, type SprayInput } from '../../src/spray/spray';
+import { buildCorrection, buildSpray, buildWaitEntry, effectiveSprays, type SprayContext, type SprayInput } from '../../src/spray/spray';
 import type { Row } from '../../src/db/schema';
 
 const F = 'farm';
@@ -288,5 +288,34 @@ describe('one record = one crop (m5-0021 finding 2)', () => {
     const r = buildSpray(input({ plantingIds: ['p1', 'p2'] }), { ...c, plantings: [{ id: 'p1', farm_id: F, crop_id: 'c1', area_str: '1' }, { id: 'p2', farm_id: F, crop_id: 'c2', area_str: '1' }] }, F, now, ids);
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.errors.mixedCrops).toBe(true);
+  });
+});
+
+describe('correction of a recorded spray (0023)', () => {
+  const orig = { id: 'o1', farm_id: F, job_id: 'j1', product_id: 'prod', applicator_id: 'w1', sprayed_at: '2026-11-20T08:00:00Z', dose_str: '0.025', dose_unit: 'ml/str', label_state: 'signed', label_use_id: 'lu', phi_days: '7', rei_hours: '24', phi_source: 'label', phi_until: '2026-11-27T08:00:00Z', rei_until: '2026-11-21T08:00:00Z', lot_key: 'lot', qty_str: '2', flags: [], created_at: '2026-11-20T08:05:00Z' };
+  const base = { dose: '0,03', doseUnit: 'ml/str' as const, sprayedAt: '2026-11-20T08:00:00Z', applicatorId: 'w1', qty: '2', water: '', note: '', reason: 'typo' };
+  const move = { id: 'm1', farm_id: F, job_id: 'j1', lot_key: 'lot', product_id: 'prod', direction: 'out', qty_str: '2', reason: 'spray' };
+  const ids = { spray: 's2', moveIn: 'mi', moveOut: 'mo' };
+  it('a new row amends the original with a reason; the days are kept and the ends recomputed', () => {
+    const r = buildCorrection(orig, base, { movements: [move], lotBalance: '5' }, F, '2026-11-20T09:00:00Z', ids);
+    expect(r.ok).toBe(true);
+    if (r.ok) { expect(r.spray).toMatchObject({ id: 's2', amends_id: 'o1', amend_reason: 'typo', dose_str: '0.03', phi_days: '7', phi_until: '2026-11-27T08:00:00Z', label_use_id: 'lu' }); expect(r.movements).toHaveLength(0); }
+  });
+  it('no reason, an unreadable dose, or an END EARLIER than the original are refused', () => {
+    const ctx = { movements: [move], lotBalance: '5' };
+    const e = (over: Partial<typeof base>) => { const r = buildCorrection(orig, { ...base, ...over }, ctx, F, '2026-11-20T09:00:00Z', ids); return r.ok ? undefined : r.errors; };
+    expect(e({ reason: ' ' })?.reason).toBe(true);
+    expect(e({ dose: '1.000' })?.dose).toBe(true);
+    expect(e({ sprayedAt: '2026-11-19T08:00:00Z' })?.earlier).toBe(true);
+    expect(e({ sprayedAt: '2026-11-20T08:30:00Z' })).toBeUndefined();   // later is fine
+  });
+  it('a changed quantity puts the old one back and takes the new one, and flags a negative balance', () => {
+    const r = buildCorrection(orig, { ...base, qty: '4' }, { movements: [move], lotBalance: '1' }, F, '2026-11-20T09:00:00Z', ids);
+    expect(r.ok).toBe(true);
+    if (r.ok) { expect(r.movements.map((m) => [m.direction, m.qty_str, m.amends_id])).toEqual([['in', '2', 'm1'], ['out', '4', 'm1']]); expect(r.spray.flags).toContain('stock_negative'); }
+  });
+  it('a movement already taken back is not taken back twice', () => {
+    const r = buildCorrection(orig, { ...base, qty: '3' }, { movements: [move, { ...move, id: 'mi0', direction: 'in', reason: 'spray_correction', amends_id: 'm1' }, { ...move, id: 'mo0', qty_str: '4', amends_id: 'm1' }], lotBalance: '9' }, F, '2026-11-20T09:00:00Z', ids);
+    if (r.ok) expect(r.movements[0]).toMatchObject({ amends_id: 'mo0', qty_str: '4' });
   });
 });

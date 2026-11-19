@@ -41,10 +41,7 @@ begin
   begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,amends_id,amend_reason,created_at)
     values (f,'eeeeeeee-0000-0000-0000-000000000701',prod,w1,t,0.025,'ml/str','unsigned',7,0,'manual',t + interval '168 hours',t,'55555555-0000-0000-0000-000000000701','x',now()); raise exception '(a2) a manual REI of 0 was accepted';
   exception when check_violation then null; end;
-  -- another product / another end time than the original
-  begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,amends_id,amend_reason,created_at)
-    values (f,'eeeeeeee-0000-0000-0000-000000000701',prod,w1,t - interval '1 hour',0.025,'ml/str','unsigned',7,24,'manual',t - interval '1 hour' + interval '168 hours',t - interval '1 hour' + interval '24 hours','55555555-0000-0000-0000-000000000701','x',now()); raise exception '(a2) a correction with another end time was accepted';
-  exception when check_violation then null; end;
+  -- (0023: a correction may now carry another end time or applicator; a CHANGED product or job stays refused and a waiting period may never end earlier than the original's: tested in m5_0023.sql)
   -- the honest correction: accepted ...
   insert into job_spray(id,farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,amends_id,amend_reason,created_at)
     values ('55555555-0000-0000-0000-000000000711',f,'eeeeeeee-0000-0000-0000-000000000701',prod,w1,t,0.025,'ml/str','unsigned',7,24,'manual',t + interval '168 hours',t + interval '24 hours','55555555-0000-0000-0000-000000000701','values from the label',now());
