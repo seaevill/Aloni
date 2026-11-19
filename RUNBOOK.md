@@ -190,3 +190,25 @@ rollback;
 
 **11. Temizlik** — Authentication → Users → test işçisini sil; SQL Editor: `delete from farms where name = 'Deneme 2';`
  Doğru sonuç: Users listesinde test işçisi yok; `select count(*) from farms where name = 'Deneme 2';` → 0.
+
+## 13. Senkronu ilk kez açma (canlıya geçiş; her adımı sen yaparsın)
+**Önkoşul:** §12'deki deneme bitti; Supabase'e 0001–0026 uygulanmış ve «verify» yeşil; uygulamada canlı özellikler açık (`LIVE = true` ayrı bir PR'la, senin «aç» demenle). **Sihirbaz yalnızca `LIVE` açıkken görünür.** Gizli anahtarları hiçbir yere yazma.
+
+1. **Yedek al** — Uygulama → **Άλλα** → «Αντίγραφο» → dışa aktar.
+ Doğru sonuç: «Τελευταίο αντίγραφο: bugün»; dosya telefonda/Dosyalar'da. (Sihirbaz bunu da ister: yedek yeni değilse düğme kapalı.)
+2. **Hazırlık kartı** — **Άλλα → «Σύνδεση λογαριασμού: τι λείπει»**: veri sorumlusu, çiftlik adı, ΑΦΜ, «migration 0026 uygulandı», «Advisor kontrolü yapıldı».
+ Doğru sonuç: beş satır da yeşil «Έτοιμο».
+3. **Advisor'a bak** — Supabase → **Advisors → Security** ve **Performance** → *Refresh*.
+ Doğru sonuç: «RLS Disabled in Public» ve herkese açık fonksiyon uyarısı **yok**. Varsa dur, ekran görüntüsünü Claude'a gönder.
+4. **Giriş** — **Άλλα → Σύνδεση** → e-posta → kod.
+ Doğru sonuç: «Συνδεθήκατε…»; hiçbir şey **gönderilmez** (giriş tek başına senkronu açmaz).
+5. **Sihirbaz** — **Άλλα → «Άνοιγμα συγχρονισμού»**: yedek ve giriş satırları da yeşil olunca **düğme açılır** → bas.
+ Doğru sonuç: «Ανεβαίνουν τα στοιχεία…» → bitince «Ο συγχρονισμός είναι ανοιχτός.» Sırayla: boş çağrı (sunucu cevap veriyor mu) → kayıtlar (ebeveyn önce) → fotoğraflar (sırayla, en çok 2 paralel, küçültülmeden) → çekme. Demo verisi hiç gitmez.
+6. **Kontrol** — Supabase → **Table Editor** → `parcels`, `job_spray`: kayıtlar görünür; sayıları telefonla karşılaştır.
+ Doğru sonuç: aynı sayı. Fotoğraflar için `photos` deposu (bucket) **henüz migration'la oluşturulmadı**: fotoğraf yüklemesi hata verirse sihirbaz «açılmadı» der ve veri telefonda kalır (Claude'a söyle, 0027 yazılır).
+
+**Geri dönüş yolu (hata olursa):**
+- Sihirbaz hata verirse senkron **açılmaz**; telefonda hiçbir şey silinmez ya da değişmez; sunucuya giden kayıtlar sunucuda kalır, kalanlar sırada bekler. Düzeltilince aynı düğmeye tekrar basarsın: **kaldığı yerden** devam eder (gönderilenler tekrar gitmez).
+- Bir kaydı sunucu reddederse (ör. bekleme süresi kuralı) telefonda «Δεν έγιναν δεκτές» listesinde durur; silinmez.
+- Senkronu geri kapatmak için: uygulamadan çıkış yap (Άλλα → Αποσύνδεση) ve yedeğinden dönülecekse §3.
+- Sunucu tarafında sorun çıkarsa: Supabase **Backups**'tan geri yükleme (RUNBOOK §10.3 ve «sistem kimliği» adımı) ve ardından senkronu yeniden aç.

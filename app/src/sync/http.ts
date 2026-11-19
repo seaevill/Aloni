@@ -24,3 +24,11 @@ export function httpTransport(e: Endpoint, fetcher: typeof fetch = fetch): Trans
     },
   };
 }
+
+/** Photos: Supabase Storage, bucket `photos`, path `<farm>/<photo id>`; the bytes exactly as stored. (The bucket and its policy are created by a migration that is NOT written yet: until then a photo upload is refused and reported.) */
+export function httpMediaPut(e: Endpoint, farmId: string, fetcher: typeof fetch = fetch): (m: { id: string; mime: string; bytes: ArrayBuffer }) => Promise<void> {
+  return async (m) => {
+    const res = await fetcher(`${e.url}/storage/v1/object/photos/${farmId}/${m.id}`, { method: 'POST', headers: { 'content-type': m.mime, apikey: e.apiKey, authorization: `Bearer ${await e.token()}`, 'x-upsert': 'false' }, body: m.bytes });
+    if (!res.ok && res.status !== 409) throw new Error(`photo ${m.id}: HTTP ${res.status}`);   // 409 = already there (an earlier, interrupted upload)
+  };
+}

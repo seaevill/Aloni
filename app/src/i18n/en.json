@@ -522,5 +522,13 @@
   "spray.prescription": "Prescription number (optional)",
   "spray.mix.more": "Save and add another product to the same mix",
   "spray.mix.note": "Tank mix: {n} products recorded. Choose the next product; the plantings, the time and the applicator stay the same.",
-  "spray.mix.with": "Mix with: {names}"
+  "spray.mix.with": "Mix with: {names}",
+  "golive.title": "Switch sync on",
+  "golive.note": "Back up first, then the button. All your own data goes up once, in order; never the demo data.",
+  "golive.signed_in": "You are signed in with your account",
+  "golive.backup": "There is a recent backup on the phone (More → backup)",
+  "golive.start": "Switch sync on",
+  "golive.busy": "Uploading… do not close the app.",
+  "golive.failed": "Sync did NOT switch on. Nothing changed on the phone; your data is safe and you can try again.",
+  "golive.on": "Sync is on."
 }

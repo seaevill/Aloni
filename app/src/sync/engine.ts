@@ -24,9 +24,13 @@ export const toWire = (o: OutboxRow): Record<string, unknown> => ({
   ...(o.group_id ? { group_id: o.group_id, group_size: o.group_size } : {}),
 });
 
+/** On the same instant a parent goes before its children (a parcel before its planting, a job before its spray): the server checks references. */
+const RANK = ['media', 'parcels', 'crops', 'products', 'workers', 'label_uses', 'stock_lots', 'plantings', 'jobs', 'job_plantings', 'job_spray', 'stock_movements', 'job_harvest', 'soil_tests', 'water_tests', 'observations', 'farm_settings'];
+const rankOf = (table: string): number => RANK.indexOf(table);   // a table not listed (none exists) sorts first
+
 /** Pending ops in the order they were written, cut into batches that NEVER split a group (a group is sent whole or not at all). */
 export function batches(pending: readonly OutboxRow[]): OutboxRow[][] {
-  const ordered = [...pending].sort((a, b) => (a.at < b.at ? -1 : a.at > b.at ? 1 : 0));
+  const ordered = [...pending].sort((a, b) => (a.at < b.at ? -1 : a.at > b.at ? 1 : rankOf(a.table) - rankOf(b.table)));
   const units: OutboxRow[][] = [];
   for (const o of ordered) { const last = units[units.length - 1]; if (o.group_id && last?.[0]?.group_id === o.group_id) last.push(o); else units.push([o]); }
   const out: OutboxRow[][] = [];
