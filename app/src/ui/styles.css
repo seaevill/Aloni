@@ -161,7 +161,7 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 
 .detail .band .latin { margin:0; font-style:italic; color:var(--white); }
 /* Αποθήκη, prototype layout: dark band, type filters, product cards with tags */
-.filters { display:flex; gap:var(--sp-8); overflow-x:auto; margin:0 0 var(--sp-12); padding-bottom:var(--sp-4); }
+.filters { display:flex; flex-wrap:wrap; gap:var(--sp-8); margin:0 0 var(--sp-12); }
 .tag-btn { flex:0 0 auto; min-height:var(--tap); padding:0 var(--sp-14); font:inherit; border-radius:var(--r-btn); border:var(--bw-2) solid var(--line); background:var(--card); color:var(--fg); }
 .tag-btn[aria-pressed="true"] { background:var(--forest-2); border-color:var(--forest-2); color:var(--white); font-weight:700; }
 .tags { display:flex; flex-wrap:wrap; gap:var(--sp-8); margin:var(--sp-6) 0; }
