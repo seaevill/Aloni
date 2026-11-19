@@ -28,7 +28,7 @@ test('add a planting offline: area kept as typed, bigger-than-parcel only warns,
   await tab(page, 'crops');
   await page.getByTestId('empty-state').locator('button').click(); // the one action: add a planting
   await page.getByTestId('planting-save').click(); // nothing chosen
-  await expect(page.locator('main .msg.error')).toHaveCount(3); // parcel, crop, area (the date defaults to today); the backup banner is separate
+  await expect(page.locator('main .msg.error')).toHaveCount(2); // crop, area (the only parcel is chosen for you, the date defaults to today); the backup banner is separate
   await page.getByRole('button', { name: 'Κάτω Κάμπος' }).click();
   await page.getByRole('button', { name: 'Σπανάκι' }).click();
   await page.locator('input.input').nth(0).fill('0,75');
