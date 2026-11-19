@@ -466,5 +466,18 @@
   "unit.str": "stremma",
   "wx.temp": "{min}–{max}°",
   "wx.rain": "{mm} mm",
-  "wx.gust": "gusts {kmh} km/h"
+  "wx.gust": "gusts {kmh} km/h",
+  "ready.title": "Account sign-in: what is missing",
+  "ready.ok": "Ready",
+  "ready.missing": "Missing",
+  "ready.controller": "Data controller details (More → Information)",
+  "ready.farm_name": "Farm name",
+  "ready.vat": "Tax number ΑΦΜ (More → Spray register)",
+  "ready.migration": "The database has every change (verify OK)",
+  "ready.advisor": "Supabase Advisor check done",
+  "ready.farm_name.input": "Farm name",
+  "ready.migration.confirm": "I confirm: changes up to {v} were applied",
+  "ready.advisor.confirm": "I confirm: the Advisor check was done",
+  "ready.all": "Everything is ready. Sign-in is not switched on from here; that is a separate step.",
+  "ready.some": "{n} things are missing. Sign-in stays closed."
 }

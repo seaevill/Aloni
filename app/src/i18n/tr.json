@@ -466,5 +466,18 @@
   "unit.str": "dekar",
   "wx.temp": "{min}–{max}°",
   "wx.rain": "{mm} mm",
-  "wx.gust": "hamle {kmh} km/sa"
+  "wx.gust": "hamle {kmh} km/sa",
+  "ready.title": "Hesap bağlantısı: neler eksik",
+  "ready.ok": "Hazır",
+  "ready.missing": "Eksik",
+  "ready.controller": "Veri sorumlusu bilgileri (Diğer → Bilgilendirme)",
+  "ready.farm_name": "Çiftlik adı",
+  "ready.vat": "ΑΦΜ (Diğer → İlaçlama defteri)",
+  "ready.migration": "Veritabanında tüm değişiklikler var (verify OK)",
+  "ready.advisor": "Supabase Advisor kontrolü yapıldı",
+  "ready.farm_name.input": "Çiftlik adı",
+  "ready.migration.confirm": "Onaylıyorum: {v} numaralıya kadar uygulandı",
+  "ready.advisor.confirm": "Onaylıyorum: Advisor kontrolü yapıldı",
+  "ready.all": "Her şey hazır. Bağlantı buradan açılmaz; ayrı bir adımla açılır.",
+  "ready.some": "{n} şey eksik. Bağlantı kapalı kalır."
 }
