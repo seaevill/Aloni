@@ -629,5 +629,7 @@
   "stock.phi": "Αναμονή (εγκεκριμένη ετικέτα): {list}",
   "stock.phi.item": "{crop} {n} ημ.",
   "more.menu": "Μενού",
-  "more.settings": "Ρυθμίσεις και σύνδεση"
+  "more.settings": "Ρυθμίσεις και σύνδεση",
+  "wx.source": "Δεδομένα: {name} · {when}",
+  "wx.stale": "παλιά δεδομένα"
 }

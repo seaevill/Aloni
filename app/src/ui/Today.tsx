@@ -13,7 +13,7 @@ import { SprayForm } from './SprayForm';
 import { EmptyState, ErrorState } from './states';
 import { Title, nameOf, retry } from './screens';
 import { useRows, type Rows } from './useRows';
-import { dayOf, farmDay, parseDays, type Day } from '../weather/strip';
+import { dayOf, farmDay, parseDays, provenance, type Day } from '../weather/strip';
 import { todaySummary, cutCrates } from '../summary/today';
 import { useWeather } from './useWeather';
 import type { Row } from '../db/schema';
@@ -38,6 +38,7 @@ function WeatherStrip({ perParcel }: { perParcel: ReadonlyArray<readonly Day[]> 
   const dates = [0, 1, 2, 3, 4].map((i) => new Date(base + i * DAY_MS).toISOString().slice(0, 10));
   const days = dates.map((d) => farmDay(perParcel, d));
   const now = days[0];
+  const src = provenance(perParcel, Date.now());
   const any = days.some((d) => d !== undefined);
   const val = (n: number | undefined, key: 'wx.kmh' | 'wx.pct'): string => (n === undefined ? DASH : t(key, { v: formatQty(n) }));
   return (
@@ -62,6 +63,9 @@ function WeatherStrip({ perParcel }: { perParcel: ReadonlyArray<readonly Day[]> 
         })}
       </div>
       {!any && <p class="wx-none">{t('today.weather.none')}</p>}
+      {any && src && (
+        <p class="wx-source" data-testid="wx-source">{t('wx.source', { name: src.names.join(', '), when: src.issued === undefined ? t('value.unknown') : formatDateTime(src.issued) })}{src.stale && <strong data-testid="wx-stale"> {t('wx.stale')}</strong>}</p>
+      )}
     </section>
   );
 }

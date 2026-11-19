@@ -65,3 +65,24 @@ test('the demo farm fills every screen, read-only, in Greek at 375 px without ov
   await expect(page.getByTestId('demo-banner')).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test('the weather names its source and licence and the time of the data; after 12 hours it says «παλιά δεδομένα»', async ({ page }) => {
+  await iphone(page);
+  await page.getByTestId('empty-state').locator('button').nth(1).click();          // the demo farm
+  const stamp = async (hoursAgo: number) => {
+    await page.evaluate((h) => new Promise<void>((done) => {
+      const r = indexedDB.open('aloni');
+      r.onsuccess = () => {
+        const tx = r.result.transaction('weather', 'readwrite'); const s = tx.objectStore('weather');
+        s.getAll().onsuccess = (e) => { for (const row of (e.target as IDBRequest<Array<{ days: Array<Record<string, unknown>> }>>).result) { row.days.forEach((d) => { d.model = 'metno'; d.issued_at = new Date(Date.now() - h * 3_600_000).toISOString(); }); s.put(row); } };
+        tx.oncomplete = () => done();
+      };
+    }), hoursAgo);
+    await page.reload(); await page.locator('nav.tabs [data-tab="today"]').click();
+  };
+  await stamp(3);
+  await expect(page.getByTestId('wx-source')).toContainText('Δεδομένα: MET Norway (CC BY 4.0)');
+  await expect(page.getByTestId('wx-stale')).toHaveCount(0);
+  await stamp(13);
+  await expect(page.getByTestId('wx-stale')).toHaveText('παλιά δεδομένα');
+});
