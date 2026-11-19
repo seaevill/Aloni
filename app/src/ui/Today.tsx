@@ -170,8 +170,12 @@ export function Today() {
       {loaded && has && openJobs.length === 0 && <p class="muted" data-testid="jobs-none">{t('today.jobs.none')}</p>}
       {openJobs.map((j) => <div class="card" key={j.id} data-testid="job-planned">{t('job.planned.line', { product: nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {}), worker: text(workers.rows?.find((w) => w.id === j.worker_id)?.name), date: text(j.planned_for) })}</div>)}
       {loaded && has && <button class="btn" data-testid="job-open" disabled={demo} onClick={() => setPlanning(true)}>{t('job.add.plus')}</button>}
-      {loaded && has && !demo && <button class="btn secondary" data-testid="spray-open" onClick={() => setSpraying(true)}>{t('spray.add')}</button>}
-      {loaded && has && !demo && <button class="btn secondary" data-testid="harvest-open" onClick={() => setHarvesting(true)}>{t('harvest.add')}</button>}
+      {loaded && has && !demo && (
+        <div class="pair">
+          <button class="btn secondary" data-testid="spray-open" onClick={() => setSpraying(true)}>{t('spray.add')}</button>
+          <button class="btn secondary" data-testid="harvest-open" onClick={() => setHarvesting(true)}>{t('harvest.add')}</button>
+        </div>
+      )}
       {loaded && has && <button class="row" data-testid="history-open" onClick={() => setHistory(true)}><span>{t('history.title')}</span><span aria-hidden="true" class="chev" /></button>}
       {loaded && has && <p class="card" data-testid="today-counts">{t('today.counts', { parcels: live(parcels).length, crops: formatQty(cropsInUse), plantings: formatQty(live(plantings).length) })}</p>}
     </section>

@@ -123,3 +123,7 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 .checklist { list-style:none; margin:var(--sp-8) 0; padding:0; display:grid; gap:var(--sp-8); }
 
 .mapbox { width:100%; height:var(--map-h); border-radius:var(--r-card); overflow:hidden; background:var(--card); margin:0 0 var(--sp-8); }
+/* Ui touches (round 3): rare actions are quiet, the two main records sit side by side */
+.btn.quiet { width:auto; min-height:var(--tap); background:none; border:0; color:var(--muted); text-decoration:underline; font-weight:600; }
+.pair { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-8); margin:0 0 var(--sp-10); }
+.pair .btn { margin:0; }

@@ -67,7 +67,7 @@ export function Parcels() {
           <button class="row" data-testid="analysis-open" onClick={() => setAnalysing(r)}><span>{t('analysis.open')}</span><span aria-hidden="true" class="chev" /></button>
           {!demo && <button class="row" data-testid="parcel-edit" onClick={() => setEditing(r)}><span>{t('edit.open')}</span><span aria-hidden="true" class="chev" /></button>}
           <EditTrail row={r} />
-          {!demo && <button class="btn secondary" onClick={() => void archive(r)}>{t('parcel.archive')}</button>}
+          {!demo && <button class="btn quiet" onClick={() => void archive(r)}>{t('parcel.archive')}</button>}
         </div>
       ))}
     </section>
