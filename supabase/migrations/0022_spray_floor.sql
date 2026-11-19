@@ -10,22 +10,36 @@ do $$ begin
   end if;
 end $$;
 
-create function spray_floor(p_farm uuid, p_job uuid, p_product uuid, p_spray uuid, out phi integer, out rei integer, out n integer)
+-- team review m7 N1 (MUST): the labels are matched per PLANTING (per CROP), never per job. `spray_floor_crops` takes the crops that matter; `n` = the labels that apply to them, `missing` = how many of those crops have NO
+-- label of this product at all (a crop without a label is UNKNOWN: harvest closed, a typed waiting period refused). The wrappers: `spray_floor` = all crops of the job's plantings (for a typed correction, which
+-- covers the whole job), `spray_floor_planting` = the crop of ONE planting (for the harvest gate).
+create function spray_floor_crops(p_farm uuid, p_job uuid, p_product uuid, p_spray uuid, p_crops uuid[], out phi integer, out rei integer, out n integer, out missing integer)
   language sql stable security definer set search_path = public, private, pg_temp as $$
-  -- p_spray = the record whose floor is wanted; the labels of its WHOLE correction chain count (a correction that dropped the label cannot lose the floor)
   with recursive chain(id, amends_id, label_use_id) as (
     select s.id, s.amends_id, s.label_use_id from job_spray s where s.id = p_spray and s.farm_id = p_farm
     union all
     select s.id, s.amends_id, s.label_use_id from job_spray s join chain c on s.id = c.amends_id where s.farm_id = p_farm),
-  crops(crop_id) as (select pl.crop_id from job_plantings jp join plantings pl on pl.id = jp.planting_id where jp.job_id = p_job and jp.farm_id = p_farm)
-  -- team review m6-0029 (SHOULD, 0022:23): ONLY a label of a crop of THIS job's plantings is a floor. The label a spray or its job names but that belongs to ANOTHER crop (PHI 3 on a crop whose own label says 14,
-  -- or no label at all) is not the waiting period of these plantings: with no label of their crop there is no floor and a typed value is refused (unknown = blocked).
-  select max(l.phi_days)::integer, max(l.rei_hours)::integer, count(*)::integer from label_uses l
-  where l.farm_id = p_farm and l.product_id = p_product and l.crop_id in (select crop_id from crops) and (
-    l.id in (select c.label_use_id from chain c where c.label_use_id is not null)
-    or l.id = (select j.label_use_id from jobs j where j.id = p_job and j.farm_id = p_farm)
-    or l.deleted_at is null)
+  applies(id, crop_id, phi_days, rei_hours) as (
+    select l.id, l.crop_id, l.phi_days, l.rei_hours from label_uses l
+    where l.farm_id = p_farm and l.product_id = p_product and l.crop_id = any (coalesce(p_crops, '{}'::uuid[])) and (
+      l.id in (select c.label_use_id from chain c where c.label_use_id is not null)
+      or l.id = (select j.label_use_id from jobs j where j.id = p_job and j.farm_id = p_farm)
+      or l.deleted_at is null))
+  select max(a.phi_days)::integer, max(a.rei_hours)::integer, count(*)::integer,
+         (select count(*) from unnest(coalesce(p_crops, '{}'::uuid[])) c(crop) where not exists (select 1 from applies x where x.crop_id = c.crop))::integer
+  from applies a
 $$;
+create function spray_floor(p_farm uuid, p_job uuid, p_product uuid, p_spray uuid, out phi integer, out rei integer, out n integer, out missing integer)
+  language sql stable security definer set search_path = public, private, pg_temp as $$
+  select f.phi, f.rei, f.n, f.missing from spray_floor_crops(p_farm, p_job, p_product, p_spray,
+    (select array_agg(distinct pl.crop_id) from job_plantings jp join plantings pl on pl.id = jp.planting_id where jp.job_id = p_job and jp.farm_id = p_farm)) f
+$$;
+create function spray_floor_planting(p_farm uuid, p_job uuid, p_product uuid, p_spray uuid, p_planting uuid, out phi integer, out rei integer, out n integer, out missing integer)
+  language sql stable security definer set search_path = public, private, pg_temp as $$
+  select f.phi, f.rei, f.n, f.missing from spray_floor_crops(p_farm, p_job, p_product, p_spray, (select array[pl.crop_id] from plantings pl where pl.id = p_planting and pl.farm_id = p_farm)) f
+$$;
+revoke execute on function spray_floor_crops(uuid, uuid, uuid, uuid, uuid[]) from public, anon, authenticated;
+revoke execute on function spray_floor_planting(uuid, uuid, uuid, uuid, uuid) from public, anon, authenticated;
 revoke execute on function spray_floor(uuid, uuid, uuid, uuid) from public, anon, authenticated;
 
 -- team review m6-0029 (MUST A1): the EARLIEST end of a spray's correction chain. The harvest gate asks «had this spraying ended by t?» of THIS moment, so a correction that moved the end can never make
@@ -43,7 +57,7 @@ create or replace function check_spray_record() returns trigger language plpgsql
 declare lu record; o job_spray%rowtype; sl record;
 begin
   new.received_at := now();      -- the SERVER's clock, whatever the writer sent (m2-0015 finding 2)
-  if new.sprayed_at > now() + interval '5 minutes' then raise exception 'the end of a spraying cannot be in the future' using errcode = 'check_violation'; end if;
+  if new.sprayed_at > now() then raise exception 'the end of a spraying cannot be in the future' using errcode = 'check_violation'; end if;
   if new.phi_days is not null and new.phi_until is distinct from new.sprayed_at + make_interval(hours => new.phi_days * 24) then
     raise exception 'phi_until must be exactly sprayed_at + % days (in hours)', new.phi_days using errcode = 'check_violation';
   end if;
@@ -52,7 +66,8 @@ begin
   end if;
   if new.phi_source = 'label' then
     select l.product_id, l.sign_off_by, l.phi_days, l.rei_hours into lu from label_uses l where l.id = new.label_use_id and l.farm_id = new.farm_id
-      and l.crop_id in (select pl.crop_id from job_plantings jp join plantings pl on pl.id = jp.planting_id where jp.job_id = new.job_id and jp.farm_id = new.farm_id);   -- m6-0029: the label of a crop of THIS job
+      and exists (select 1 from job_plantings jp where jp.job_id = new.job_id and jp.farm_id = new.farm_id)
+      and not exists (select 1 from job_plantings jp join plantings pl on pl.id = jp.planting_id where jp.job_id = new.job_id and jp.farm_id = new.farm_id and pl.crop_id <> l.crop_id);   -- m7 N1: the label is of the crop of EVERY planting of the job
     if not found or lu.sign_off_by is null or lu.product_id is distinct from new.product_id or lu.phi_days is distinct from new.phi_days or lu.rei_hours is distinct from new.rei_hours then
       raise exception 'a label waiting period must equal the signed label use it names' using errcode = 'check_violation';
     end if;
@@ -70,7 +85,7 @@ begin
     if new.phi_source = 'manual' then
       if new.phi_days is null or new.phi_days < 1 or new.rei_hours is null or new.rei_hours < 1 then raise exception 'a manual waiting period must be above zero' using errcode = 'check_violation'; end if;
       select * into sl from spray_floor(new.farm_id, o.job_id, o.product_id, o.id);     -- the labels of THIS product on THIS job's crops, whether or not the spray names one (m5-0021 finding 1)
-      if sl.n = 0 or sl.phi is null or sl.rei is null then
+      if sl.n = 0 or sl.missing > 0 or sl.phi is null or sl.rei is null then
         raise exception 'no label with a known waiting period and re-entry period exists for this product and crop: it cannot be typed by hand (it stays unknown = blocked)' using errcode = 'check_violation';
       end if;
       if new.phi_days < sl.phi or new.rei_hours < sl.rei then
@@ -96,10 +111,10 @@ begin
   foreach t in array case when is_worker then array[now(), new.harvested_at] when new.harvested_at >= now() - interval '5 minutes' then array[now()] else '{}'::timestamptz[] end loop
     select exists (
       select 1 from job_plantings jp join job_spray s on s.job_id = jp.job_id
-      left join lateral spray_floor(s.farm_id, s.job_id, s.product_id, s.id) lf on true   -- the FLOOR: every label that applies to this product on this job's crops
+      left join lateral spray_floor_planting(s.farm_id, s.job_id, s.product_id, s.id, jp.planting_id) lf on true   -- the FLOOR: the labels of THIS PLANTING's crop (m7 N1)
       left join lateral (select spray_first_end(s.farm_id, s.id) as fe) x on true         -- the EARLIEST end of the chain (m6-0029 A1)
-      where jp.planting_id = new.planting_id and x.fe <= t and not exists (select 1 from job_spray a where a.amends_id = s.id)
-        and (s.phi_until is null or s.phi_until >= t or s.rei_until is null or s.rei_until >= t
+      where jp.planting_id = new.planting_id  and (x.fe <= t or t >= now()) and /* at «now» EVERY recorded spray counts (m7 N2), even one that ends a few minutes ahead */ not exists (select 1 from job_spray a where a.amends_id = s.id)
+        and (s.phi_until is null or s.phi_until >= t or s.rei_until is null or s.rei_until >= t  or lf.n = 0 /* no label of this planting's crop = UNKNOWN = closed (m7 N1) */
              or (lf.phi is not null and s.sprayed_at + make_interval(hours => lf.phi * 24) >= t)
              or (lf.rei is not null and s.sprayed_at + make_interval(hours => lf.rei) >= t))) into clash;
     if clash then raise exception 'harvest blocked: a spray on this planting has an unknown or running waiting (PHI) or re-entry (REI) period' using errcode = 'check_violation'; end if;
@@ -108,6 +123,17 @@ begin
 end $$;
 
 
+
+-- team review m7 N1 (b): a planting cannot be linked to a job that ALREADY has a spray (the plantings of a job are fixed when it is sprayed: linking one afterwards dodged the label match)
+create function forbid_link_after_spray() returns trigger language plpgsql security definer set search_path = public, private, pg_temp as $$
+begin
+  if auth.uid() is not null and exists (select 1 from job_spray s where s.job_id = new.job_id and s.farm_id = new.farm_id) then
+    raise exception 'a planting cannot be added to a job that already has a spraying' using errcode = 'check_violation';
+  end if;
+  return new;
+end $$;
+create trigger job_plantings_no_link_after_spray before insert on job_plantings for each row execute function forbid_link_after_spray();
+revoke execute on function forbid_link_after_spray() from public, anon, authenticated;
 
 -- ---------------------------------------------------------------- 4
 do $$ declare r record;

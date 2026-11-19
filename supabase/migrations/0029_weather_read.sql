@@ -42,9 +42,11 @@ begin
   ), '[]'::jsonb);
 end $$;
 
+alter table parcels add constraint parcels_id_farm_unique unique (id, farm_id);       -- m7 N4: lets the fetch state point at (parcel, farm) together
 create table weather_fetch_state (
-  parcel_id uuid primary key references parcels(id) on delete cascade,
+  parcel_id uuid primary key,
   farm_id uuid not null references farms(id) on delete cascade,
+  foreign key (parcel_id, farm_id) references parcels (id, farm_id) on delete cascade,
   last_modified text, expires text, fetched_at timestamptz not null default now()
 );
 alter table weather_fetch_state enable row level security;     -- only the service role (it bypasses RLS) reads and writes it; the one policy says «nobody else» out loud

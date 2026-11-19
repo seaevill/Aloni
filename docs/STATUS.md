@@ -1,5 +1,7 @@
 # DURUM – Aloni (Bora'nın sayfası)
 
+> **m7 düzeltildi, ekip yeniden bakacak** (2 MUST + 1 SHOULD yerinde düzeltildi, önce kırmızı testle). Temiz çıkarsa 0022–0031'i birlikte yükleriz; ben yüklemeyi başlatmam.
+
 *Son güncelleme: 2026-11-19 (akşam). Her birleştirmede güncellenir. Burası dışında bir şey okumana gerek yok.*
 
 ## (a) Faz 1 ilerlemesi (tahmini, dürüst)
