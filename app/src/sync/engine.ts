@@ -3,7 +3,7 @@
 // 0001–0017 migrations and a real account trial). Every call is safe to repeat: ops carry their op_id, pull is a cursor.
 import type { AppDB, OutboxRow, Row } from '../db/schema';
 import { RPC_PREFIX } from '../repo';
-import { applyPulled, getCursor, markAcked, markRejected, setCursor, type ServerAnswer } from '../repo/sync-apply';
+import { applyPulled, getCursor, markAcked, markRejected, replaceWeather, setCursor, type ServerAnswer } from '../repo/sync-apply';
 
 export interface PulledRow { table: string; x: string; seq: number; row: Row }
 export interface PullAnswer { rows: PulledRow[]; more: boolean; reset: boolean; cursor: unknown }
@@ -12,6 +12,8 @@ export interface Transport {
   applyOps(ops: readonly Record<string, unknown>[]): Promise<Array<ServerAnswer & { op_id: string }>>;
   pull(farmId: string, cursor: unknown, limit: number): Promise<PullAnswer>;
   /** A queued server call (rpc:<name> in the outbox). ok:false = the server REFUSED it (final); a network or server failure THROWS (the op stays pending). */
+  /** The weather of the farm's parcels (farm_weather). Optional: a server without it simply shows no weather. */
+  weather?(farmId: string): Promise<Array<{ parcel_id: string; days: unknown[] }>>;
   rpc(name: string, args: Record<string, unknown>): Promise<{ ok: true } | { ok: false; code: string; reason: string }>;
 }
 
@@ -77,9 +79,26 @@ export async function pull(db: AppDB, tr: Transport, farmId: string): Promise<{ 
   return { written, reset };
 }
 
-/** One round: push, then pull. */
+const WEATHER_EVERY_MS = 10 * 60_000;
+const weatherAsked = new Map<string, number>();
+/** Fetches the weather (at most every 10 minutes per farm); true = the phone's weather was replaced. A failure leaves what the phone has and NEVER fails the round: the weather is information only. */
+export async function pullWeather(db: AppDB, tr: Transport, farmId: string, now: number): Promise<boolean> {
+  if (!tr.weather) return false;
+  const last = weatherAsked.get(farmId);
+  if (last !== undefined && now - last < WEATHER_EVERY_MS) return false;
+  try {
+    const parcels = await tr.weather(farmId);
+    weatherAsked.set(farmId, now);
+    if (!Array.isArray(parcels)) return false;
+    await replaceWeather(db, farmId, parcels);
+    return true;
+  } catch { return false; }
+}
+
+/** One round: push, then pull, then the weather. */
 export async function syncOnce(db: AppDB, tr: Transport, farmId: string) {
   const p = await push(db, tr, farmId);
   const q = await pull(db, tr, farmId);
-  return { sent: p.sent, rejected: p.rejected, written: q.written, reset: q.reset };
+  const weather = await pullWeather(db, tr, farmId, Date.now());
+  return { sent: p.sent, rejected: p.rejected, written: q.written, reset: q.reset, weather };
 }

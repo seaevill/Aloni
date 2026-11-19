@@ -212,3 +212,19 @@ rollback;
 - Bir kaydı sunucu reddederse (ör. bekleme süresi kuralı) telefonda «Δεν έγιναν δεκτές» listesinde durur; silinmez.
 - Senkronu geri kapatmak için: uygulamadan çıkış yap (Άλλα → Αποσύνδεση) ve yedeğinden dönülecekse §3.
 - Sunucu tarafında sorun çıkarsa: Supabase **Backups**'tan geri yükleme (RUNBOOK §10.3 ve «sistem kimliği» adımı) ve ardından senkronu yeniden aç.
+
+## 14. Hava durumunu açma (saatlik; ÖNCE 0029 uygulanmış ve Open-Meteo izni çözülmüş olmalı)
+
+**Ön koşullar (ikisi de sende):** (a) 0029 migration'ı ekip incelemesinden sonra birlikte uygulandı (`farm_weather` ve `weather_targets` oluşur); (b) Open-Meteo **ticari plan anahtarı** var. Ücretsiz sürüm ticari kullanıma kapalı: anahtar yoksa fonksiyon **hiçbir şey çekmez** (503 «no_licence_key» döner). Ücretli plan = para: **önce bana sor, birlikte karar verelim**. Anahtarı bana yazma; yalnızca aşağıdaki Supabase ekranına sen gir.
+
+1. **Fonksiyonu yükle** — bilgisayarda, depo klasöründe (CLI 2.122.1 sabit): `supabase functions deploy weather-fetch --project-ref <PROJE-KODU>`.
+ Doğru sonuç: «Deployed Functions …weather-fetch». (Bu, hava dışında hiçbir şeyi etkilemez.)
+2. **Anahtarı sakla** — Supabase → **Edge Functions → Secrets** → ad: `OPEN_METEO_API_KEY`, değer: Open-Meteo'dan aldığın anahtar → **Save**.
+3. **Bir kez elle dene** — Supabase → **Edge Functions → weather-fetch → Test**; başlık olarak proje **service_role** anahtarını `Authorization: Bearer …` biçiminde yalnızca bu test kutusuna gir.
+ Doğru sonuç: `{"ok":true,"parcels":N,"stored":N,"failed":[]}` (N = konumu olan parsel sayısı). Sonra Table Editor → `weather_daily`: bugünün satırları görünür.
+4. **Saatlik çalıştır (pg_cron)** — Supabase → **SQL Editor** → aşağıdaki iki komutu çalıştır (`<PROJE-KODU>` ve `<SERVICE-KEY>` yerine kendi değerlerin; anahtar Vault'ta saklanır, takvim satırında görünmez):
+ `select vault.create_secret('<SERVICE-KEY>', 'weather_service_key');`
+ `select cron.schedule('weather-fetch', '7 * * * *', $$ select net.http_post(url := 'https://<PROJE-KODU>.supabase.co/functions/v1/weather-fetch', headers := jsonb_build_object('Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'weather_service_key'))) $$);`
+5. **Telefonda gör** — senkron açıksa ≤10 dakika içinde **Σήμερα**'daki hava kartı dolar (en düşük/en yüksek, rüzgâr, yağış). Veri yoksa kart «—» gösterir; hiçbir şey uydurulmaz.
+
+**Geri dönüş:** saatlik çalışmayı durdurmak için SQL Editor: `select cron.unschedule('weather-fetch');`. Fonksiyonu silmek gerekmez. Telefonda önceki hava verisi kalır, yeni gelmez. Hava yalnızca bilgidir; hiçbir kural bundan karar vermez ve bildirim göndermez.

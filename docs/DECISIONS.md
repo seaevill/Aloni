@@ -160,6 +160,7 @@
 | 2026-11-16 | "FieldWise" name is taken; new name needed before a domain | docs/reviews/3-marketing.md |
 | 2026-11-16 | Ραδίκια and Άγρια merged into one product, Ραδίκια άγρια; 17 products | Bora: they are the same |
 | 2026-10-17 | Κλούβες order app built (Claude version + offline PWA) | docs/PROJECT-HISTORY.md |
-<<<<<<< HEAD
 | 2026-11-19 | Order link step 1: the Κλούβες backup is read by hand (More → Παραγγελίες), stored on the phone only (no server table, nothing sent back). Products are matched to crops only by identical name; the owner confirms. Crates not in quarters are skipped and counted. Supply = plantings whose waiting periods are over; held/unknown never count; no yield is estimated. Sowing hint is information only (rule SOW unsigned). Temporary – Bora will confirm | docs/BACKLOG.md |
+<<<<<<< HEAD
 | 2026-11-19 | Golden cases: all 27 are shape-checked, 9 run against the engine from the fixture files (A04, A05, A06, A07, A08, REI, NEG-PHI ×2, NEG-P0-2), 18 skipped for lack of engine code and counted in STATUS. Skipped is never shown as passed | app/tests/unit/golden.test.ts |
+| 2026-11-19 | Weather end-to-end written, nothing deployed: migration 0029 (farm_weather for owner/worker, weather_targets for the service role only), weather job fetches nothing without the commercial Open-Meteo key, phone fills the strip from farm_weather (≤ every 10 min, a failure never fails the sync), RUNBOOK §14 for Bora. 0029 not applied: needs the team review first. Temporary – Bora will confirm | RUNBOOK.md §14 |

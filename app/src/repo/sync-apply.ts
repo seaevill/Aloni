@@ -44,6 +44,14 @@ export async function applyPulled(db: AppDB, farmId: string, rows: ReadonlyArray
   return n;
 }
 
+/** The weather of this farm as the server shows it (one entry per parcel: its days). Device-local, information only: replaces what this phone had, never queued, never part of a backup restore of records. */
+export async function replaceWeather(db: AppDB, farmId: string, parcels: ReadonlyArray<{ parcel_id: string; days: unknown[] }>): Promise<void> {
+  await db.transaction('rw', db.weather, async () => {
+    await db.weather.where('farm_id').equals(farmId).delete();
+    for (const p of parcels) if (typeof p.parcel_id === 'string' && Array.isArray(p.days)) await db.weather.put({ id: p.parcel_id, farm_id: farmId, parcel_id: p.parcel_id, days: p.days });
+  });
+}
+
 const cursorKey = (farmId: string) => `sync_cursor:${farmId}`;
 /** The pull position of this phone for one farm ({x, s, g, v} as the server hands it out; null = from the start). Device-local: never queued. */
 export async function getCursor(db: AppDB, farmId: string): Promise<unknown> { return (await db.settings.get(cursorKey(farmId)))?.value ?? null; }

@@ -31,7 +31,7 @@ export function createRunner(d: Deps): { tick: () => Promise<'skipped' | 'ok' | 
         if (!tr) return 'skipped';
         const r = await syncOnce(d.db, tr, d.farm());
         syncError.value = undefined;
-        if (r.written > 0 || r.sent > 0 || r.rejected > 0) d.changed();
+        if (r.written > 0 || r.sent > 0 || r.rejected > 0 || r.weather) d.changed();
         return 'ok';
       } catch (e) {
         syncError.value = e instanceof Error ? e.message : 'sync failed';
