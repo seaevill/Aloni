@@ -18,6 +18,7 @@ test('Κλούβες backup: loaded by hand, crates per crop this week, an unkno
   await expect(page.getByTestId('orders-skipped')).toBeVisible();
   await expect(page.getByTestId('orders-unmapped')).toBeVisible();
   await expect(page.getByTestId('orders-spinach-free')).toBeVisible();
+  await page.getByTestId('orders-map').locator('summary').click();           // the matching is folded away
   await page.getByTestId('orders-map-p2').selectOption('rocket');           // the owner maps it by hand
   await expect(page.getByTestId('orders-rocket-week')).toContainText('3');
   await page.reload();

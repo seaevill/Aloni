@@ -2,16 +2,21 @@ import { useEffect, useState } from 'preact/hooks';
 import { activeFarm, dataVersion, db } from '../db';
 import { loadOrders, saveMap, saveOrders } from '../orders/store';
 import { CATALOG, cropName } from '../crops/catalog';
-import { lang, t } from '../i18n';
+import { lang, t, tn } from '../i18n';
 import { formatQty } from '../i18n/format';
 import { cratesByCrop, mondayOf, parseBackup, suggestCropMap, type KlouvesOrders } from '../orders/klouves';
 import { sowHint, supplyByCrop, type SowHint } from '../orders/available';
+import { copyText, dispatchDay, dispatchText, fractionText } from '../orders/dispatch';
 import { athensToday } from '../plantings/planting';
 import { BackBar } from './BackBar';
 import { useRows } from './useRows';
 
 const SOW_TEXT: Record<SowHint, () => string> = { ready: () => '', held: () => t('orders.sow.held'), none: () => t('orders.sow.none') };
 const DAY = 86_400_000;
+const DAY_LABEL = new Intl.DateTimeFormat('el-GR', { weekday: 'long', day: 'numeric', month: 'numeric', timeZone: 'Europe/Athens' });
+const shiftDay = (iso: string, d: number): string => new Date(Date.parse(`${iso}T12:00:00Z`) + d * DAY).toISOString().slice(0, 10);
+const dayLabel = (iso: string): string => DAY_LABEL.format(new Date(`${iso}T12:00:00Z`));
+const COPY_NOTE = { shared: '', copied: 'dispatch.copied', manual: 'dispatch.manual', cancelled: '' } as const;
 
 /** More → «Διαθέσιμες κλούβες»: the Κλούβες backup (read by hand, one way), what is ordered per crop, and what can be cut now. Waiting-period-held plantings never count as supply. */
 export function Orders({ onBack }: { onBack: () => void }) {
@@ -19,6 +24,8 @@ export function Orders({ onBack }: { onBack: () => void }) {
   const [map, setMap] = useState<Record<string, string>>({});
   const [bad, setBad] = useState(false); const [note, setNote] = useState(0);
   const crops = useRows('crops'); const plantings = useRows('plantings'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const harvests = useRows('job_harvest'); const labels = useRows('label_uses');
+  const [offset, setOffset] = useState(0); const [copied, setCopied] = useState<keyof typeof COPY_NOTE | ''>('');
+  const crops = useRows('crops'); const plantings = useRows('plantings'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const harvests = useRows('job_harvest');
   const farm = activeFarm.value;
   useEffect(() => {
     let live = true;
@@ -45,6 +52,11 @@ export function Orders({ onBack }: { onBack: () => void }) {
   const before = cratesByCrop(lastWeek === undefined ? undefined : orders?.weeks[lastWeek], map);
   const supply = supplyByCrop(new Date().toISOString(), crops.rows ?? [], plantings.rows ?? [], links.rows ?? [], sprays.rows ?? [], harvests.rows ?? [], labels.rows ?? []);
   const slugs = CATALOG.filter((c) => now.bySlug[c.slug] !== undefined || before.bySlug[c.slug] !== undefined);
+  const date = shiftDay(today, offset);
+  const clients = dispatchDay(orders, map, date);
+  const dispatchTxt = dispatchText(clients, { header: t('dispatch.header', { day: dayLabel(date) }), total: (q, n) => tn('dispatch.total', n, { q }) });
+  const copy = async () => setCopied(await copyText(dispatchTxt, { share: typeof navigator.share === 'function' ? (d) => navigator.share(d) : undefined, clipboard: navigator.clipboard }));
+  const heldSlug = (slug: string | undefined): boolean => { const s = slug === undefined ? undefined : supply[slug]; return s !== undefined && s.free === 0 && s.held + s.unknown > 0; }; // nothing free but something held or unknown: shown in red, never counted as supply
   const unmapped = new Set([...now.unmapped, ...before.unmapped]).size;
   return (
     <section data-testid="orders">
@@ -54,6 +66,32 @@ export function Orders({ onBack }: { onBack: () => void }) {
       <label class="btn secondary">{t('orders.import')}<input type="file" accept=".json,application/json" hidden data-testid="orders-file" onChange={(e) => void load((e.target as HTMLInputElement).files?.[0])} /></label>
       {bad && <p class="msg error" role="alert" data-testid="orders-bad">{t('orders.bad')}</p>}
       {note > 0 && <p class="muted" role="status" data-testid="orders-skipped">{t('orders.skipped', { n: formatQty(note) })}</p>}
+      {orders && !orders.days && <p class="muted" data-testid="dispatch-reimport">{t('dispatch.reimport')}</p>}
+      {orders?.days && (
+        <section data-testid="dispatch">
+          <h2>{t('dispatch.title')}</h2>
+          <div class="seg" data-testid="dispatch-days">
+            <button aria-label={t('dispatch.prev')} data-testid="dispatch-prev" onClick={() => { setOffset(offset - 1); setCopied(''); }}>{t('dispatch.prev.mark')}</button>
+            <button aria-pressed={offset === 0} data-testid="dispatch-today" onClick={() => { setOffset(0); setCopied(''); }}>{t('dispatch.today')}</button>
+            <button aria-pressed={offset === 1} data-testid="dispatch-tomorrow" onClick={() => { setOffset(1); setCopied(''); }}>{t('dispatch.tomorrow')}</button>
+            <button aria-label={t('dispatch.next')} data-testid="dispatch-next" onClick={() => { setOffset(offset + 1); setCopied(''); }}>{t('dispatch.next.mark')}</button>
+          </div>
+          <p class="muted" data-testid="dispatch-date">{dayLabel(date)}</p>
+          {clients.length === 0 && <p class="muted" data-testid="dispatch-none">{t('dispatch.none')}</p>}
+          {clients.map((c) => (
+            <div class="card" key={c.clientId} data-testid="dispatch-client">
+              <strong>{c.name}</strong>
+              {c.items.map((i) => (
+                <small key={i.productId} data-testid="dispatch-item">{t('labeluse.line', { name: i.name, value: fractionText(i.qty) })}{i.slug === undefined && <span class="badge unsigned"> {t('dispatch.unmapped')}</span>}{heldSlug(i.slug) && <span class="badge blocked" data-testid="dispatch-held"> {t('dispatch.held')}</span>}</small>
+              ))}
+              <small data-testid="dispatch-client-total">{tn('dispatch.total', c.total, { q: fractionText(c.total) })}</small>
+            </div>
+          ))}
+          {clients.length > 0 && <button class="btn" data-testid="dispatch-copy" onClick={() => void copy()}>{t('dispatch.copy')}</button>}
+          {copied !== '' && COPY_NOTE[copied] !== '' && <p class="msg" role="status" data-testid="dispatch-copied">{t(COPY_NOTE[copied])}</p>}
+          {copied === 'manual' && <textarea class="input" readOnly rows={6} value={dispatchTxt} data-testid="dispatch-text" onFocus={(e) => (e.target as HTMLTextAreaElement).select()} />}
+        </section>
+      )}
       {!orders && <p class="muted" data-testid="orders-empty">{t('orders.empty')}</p>}
       {orders && slugs.length === 0 && <p class="muted" data-testid="orders-none">{t('orders.none')}</p>}
       {slugs.map((c) => {
@@ -72,8 +110,8 @@ export function Orders({ onBack }: { onBack: () => void }) {
       {slugs.length > 0 && <p class="muted">{t('orders.sow.note')}</p>}
       {unmapped > 0 && <p class="muted" data-testid="orders-unmapped">{t('orders.unmapped', { n: formatQty(unmapped) })}</p>}
       {orders && (
-        <section class="card" data-testid="orders-map">
-          <strong>{t('orders.map.title')}</strong>
+        <details class="card" data-testid="orders-map">
+          <summary>{t('orders.map.toggle', { n: orders.products.length })}</summary>
           {orders.products.map((p) => (
             <label class="field" key={p.id}>{p.name}
               <select class="input" value={map[p.id] ?? ''} data-testid={`orders-map-${p.id}`} onChange={(e) => void choose(p.id, (e.target as HTMLSelectElement).value)}>
@@ -82,7 +120,7 @@ export function Orders({ onBack }: { onBack: () => void }) {
               </select>
             </label>
           ))}
-        </section>
+        </details>
       )}
     </section>
   );
