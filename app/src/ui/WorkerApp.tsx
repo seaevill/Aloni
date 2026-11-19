@@ -98,7 +98,6 @@ export function WorkerApp() {
       {!real && <p class="muted">{t('worker.demoNote')}</p>}
       {!real && <h2>{t('worker.choose')}</h2>}
       {!real && <div class="seg two big">{people.map((w) => <button key={w.id} aria-pressed={w.id === me.id} onClick={() => workerView.value = w.id}>{text(w.name)}</button>)}</div>}
-      <div class="seg big">{TABS.map(([id, k]) => <button key={id} aria-pressed={tabId === id} data-testid={`worker-tab-${id}`} onClick={() => { setHarvestSaved(false); setTabId(id); }}>{t(k)}</button>)}</div>
 
       {tabId === 'jobs' && (
         <>
@@ -165,6 +164,7 @@ export function WorkerApp() {
           <button class="btn big" data-testid="observe-save" onClick={saveObservation}>{t('worker.observe.save')}</button>
         </>
       )}
+      <div class="seg big worker-tray" data-testid="worker-tray">{TABS.map(([id, k]) => <button key={id} aria-pressed={tabId === id} data-testid={`worker-tab-${id}`} onClick={() => { setHarvestSaved(false); setTabId(id); }}>{t(k)}</button>)}</div>
       <button class="btn secondary" data-testid="worker-exit" onClick={() => { workerView.value = undefined; }}>{t('worker.exit')}</button>
     </main>
   );
