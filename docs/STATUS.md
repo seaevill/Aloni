@@ -6,7 +6,7 @@
 | Parça | % | Not |
 |---|---:|---|
 | Kayıtlar (tarla, ekim, ürün, ilaçlama, hasat, stok) | 88 | düzeltme, düzenleme, tank karışımı var; fotoğraf deposu (0028) yazıldı, uygulanmadı |
-| Güvenlik | 80 | 0022–0029 ekip incelemesi bekliyor; açık MUST bilinmiyor |
+| Güvenlik | 85 | 0022–0029: ekibin son incelemesindeki 1 MUST + 4 SHOULD + 2 LOW yerinde düzeltildi (önce kırmızı test); **ekip tekrar bakacak** |
 | Görünüm | 72 | Σήμερα, tarla detayı, ürün detayı, Αποθήκη prototip düzeninde; Άλλα menüsü üstte; Μητρώο, işçi ekranı kaldı |
 | Senkron / işçi | 70 | kod hazır, LIVE kapalı; gerçek hesapla denenmedi |
 | Hava / bildirim | 65 | hava: sunucu işi + 0029 + telefon doldurma yazıldı, **hiçbiri açık değil** (RUNBOOK §14); bildirim: 16 kural listelenir, hepsi «imzasız = bildirim yok» |
@@ -35,7 +35,7 @@
 ## (d) Senden beklenen kararlar ve onaylar (varsayılan önerimle)
 | # | Karar | Önerim (varsayılan) |
 |---|---|---|
-| 1 | **Apply 0022–0029** | Ekip «MUST kapandı» dedikten sonra hepsini birlikte uygula (RUNBOOK §10). Şu an açık MUST bilinmiyor; ekip yeniden bakıyor. 0029 yalnızca hava okuma fonksiyonları ekler. |
+| 1 | **Apply 0022–0029** | Ekip «MUST kapandı» dedikten sonra hepsini birlikte uygula (RUNBOOK §10). `docs/reviews/team/2026-11-19-m6-0029.md`'deki MUST ve SHOULD'lar düzeltildi; ekibin yeniden bakması bekleniyor. Bu kontrolü (açık MUST var mı) uygulamadan önce yine yaparım. 0029 yalnızca hava okuma fonksiyonları ekler. |
 | 2 | **Hava verisi / Open-Meteo ücretli plan** (para) | Ücretsiz sürüm ticari kullanıma kapalı; anahtar olmadan fonksiyon hiçbir şey çekmez. Karar: ücretli plan alınsın mı? Alana kadar hava kartı «—» kalır. |
 | 3 | **EPPO**: Σέλινο, Μυρώνι, Βλήτα için kod yok | Boş kalsın (dökümde «συμπληρώστε» uyarısı). 14 kod ekip kontrolünden geçti. |
 | 4 | **OpenFreeMap şartları** okunamadı (site bu ortamdan açılmıyor) | Şartları sen ya da ekip openfreemap.org/tos'tan oku. Uygun değilse sağlayıcıyı değiştiririz; o zamana kadar harita yalnızca sahip isteyince açılır. |

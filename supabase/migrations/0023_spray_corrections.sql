@@ -23,7 +23,8 @@ begin
     raise exception 'rei_until must be exactly sprayed_at + % hours', new.rei_hours using errcode = 'check_violation';
   end if;
   if new.phi_source = 'label' then
-    select l.product_id, l.sign_off_by, l.phi_days, l.rei_hours into lu from label_uses l where l.id = new.label_use_id and l.farm_id = new.farm_id;
+    select l.product_id, l.sign_off_by, l.phi_days, l.rei_hours into lu from label_uses l where l.id = new.label_use_id and l.farm_id = new.farm_id
+      and l.crop_id in (select pl.crop_id from job_plantings jp join plantings pl on pl.id = jp.planting_id where jp.job_id = new.job_id and jp.farm_id = new.farm_id);   -- m6-0029: the label of a crop of THIS job
     if not found or lu.sign_off_by is null or lu.product_id is distinct from new.product_id or lu.phi_days is distinct from new.phi_days or lu.rei_hours is distinct from new.rei_hours then
       raise exception 'a label waiting period must equal the signed label use it names' using errcode = 'check_violation';
     end if;
@@ -39,6 +40,8 @@ begin
     if length(btrim(coalesce(new.amend_reason, ''))) = 0 then raise exception 'a correction needs a reason' using errcode = 'check_violation'; end if;
     -- team review m5-0024 MUST 1: the END of a spraying can never move earlier by a correction (an unknown wait could be back-dated past the late-entry rule and the harvest opened at once).
     -- A LATER end is fine (a longer wait). The floor of the harvest gate is therefore always counted from the LATEST of the original and the corrected end.
+    -- team review m6-0029 MUST A1: nor LATER than the server's clock (the original may carry the 5-minute tolerance, a correction never goes beyond it or beyond now): the spray stays in the harvest gate
+    if new.sprayed_at > greatest(now(), o.sprayed_at) then raise exception 'a correction cannot move the end of a spraying later than now' using errcode = 'check_violation'; end if;
     if new.sprayed_at < o.sprayed_at then raise exception 'a correction cannot move the end of a spraying earlier than it was recorded' using errcode = 'check_violation'; end if;
     -- review SHOULD 2: a correction that names no label keeps the label of the record it corrects (the chain keeps it; the floor reads every label of the chain)
     if new.label_use_id is null then new.label_use_id := o.label_use_id; end if;
@@ -75,8 +78,10 @@ begin
   if new.amends_id is null then return null; end if;
   select * into o from job_spray where id = new.amends_id and farm_id = new.farm_id;
   if not found or (new.qty_str is not distinct from o.qty_str and new.lot_key is not distinct from o.lot_key) then return null; end if;
-  select exists (select 1 from stock_movements m where m.farm_id = new.farm_id and m.job_id = new.job_id and m.direction = 'in' and m.reason = 'spray_correction' and m.xmin::text::bigint = (txid_current() % 4294967296)),
-         exists (select 1 from stock_movements m where m.farm_id = new.farm_id and m.job_id = new.job_id and m.direction = 'out' and m.reason = 'spray' and m.xmin::text::bigint = (txid_current() % 4294967296)) into back, taken;
+  -- m6-0029 SHOULD A2: the movements are recognised by WHAT they are (job, lot, quantity, reason, not older than the record they correct), not by the transaction number: inside apply_ops
+  -- (every op in a savepoint) xmin is the sub-transaction's, so the old check rejected a correct phone group at COMMIT.
+  select exists (select 1 from stock_movements m where m.farm_id = new.farm_id and m.job_id = new.job_id and m.direction = 'in' and m.reason = 'spray_correction' and m.lot_key is not distinct from o.lot_key and m.qty_str is not distinct from o.qty_str and m.created_at >= o.created_at),
+         exists (select 1 from stock_movements m where m.farm_id = new.farm_id and m.job_id = new.job_id and m.direction = 'out' and m.reason = 'spray' and m.lot_key is not distinct from new.lot_key and m.qty_str is not distinct from new.qty_str and m.created_at >= o.created_at) into back, taken;
   if o.qty_str is not null and not back then raise exception 'a correction of the quantity or the lot needs the old quantity put back in the stock (a movement) in the same transaction' using errcode = 'check_violation'; end if;
   if new.qty_str is not null and not taken then raise exception 'a correction of the quantity or the lot needs the new quantity taken out of the stock (a movement) in the same transaction' using errcode = 'check_violation'; end if;
   return null;

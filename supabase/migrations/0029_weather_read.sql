@@ -3,7 +3,17 @@
 --                          sensor values rank before a forecast), the day's strongest wind and gust taken from the hourly rows of that same run (a maximum: nothing is averaged or rounded). A value
 --                          that is not there stays null (never 0). Somebody who is not an owner or worker of the farm is REFUSED (an error, not an empty answer).
 --  * weather_targets()     where the weather function must fetch: every parcel with a position that is not deleted. For the service role only (the scheduled function); no signed-in user, no anon.
+--  * weather rows (SHOULD, m6-0029 A4): written by the SERVICE ROLE only. The owner policy of 0004 («for all») let the owner insert a fake `station` row that outranks the forecast for every worker; the owner keeps READ
+--    only, nobody signed in can insert, update or delete (the privileges are taken away as well as the policy).
 -- It is information only: no rule reads these functions, nothing is decided or sent from them.
+
+-- the per-command owner policies of 0019: the SELECT ones stay, the writing ones go
+drop policy weather_daily_insert on weather_daily; drop policy weather_daily_update on weather_daily; drop policy weather_daily_delete on weather_daily;
+drop policy weather_hourly_insert on weather_hourly; drop policy weather_hourly_update on weather_hourly; drop policy weather_hourly_delete on weather_hourly;
+do $$ begin
+  if exists (select 1 from pg_roles where rolname = 'authenticated') then revoke insert, update, delete, truncate on weather_daily, weather_hourly from authenticated; end if;
+  if exists (select 1 from pg_roles where rolname = 'anon') then revoke insert, update, delete, truncate on weather_daily, weather_hourly from anon; end if;
+end $$;
 
 create function farm_weather(p_farm uuid) returns jsonb language plpgsql stable security definer set search_path = public, pg_temp as $$
 declare d0 constant date := (now() at time zone 'Europe/Athens')::date;

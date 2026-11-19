@@ -26,6 +26,12 @@ begin
   new.edits := old.edits || jsonb_build_array(jsonb_build_object('at', to_char(now() at time zone 'utc', 'YYYY-MM-DD"T"HH24:MI:SS"Z"'), 'reason', why, 'before', before_));
   return new;
 end $$;
+-- team review m6-0029 (SHOULD, 0024:29–30): a NEW row starts with an empty history, whatever the phone sent
+create function start_edit_history() returns trigger language plpgsql set search_path = public, pg_temp as $$
+begin new.edits := '[]'::jsonb; new.edit_reason := null; return new; end $$;
+create trigger parcels_edit_history_new before insert on parcels for each row execute function start_edit_history();
+create trigger plantings_edit_history_new before insert on plantings for each row execute function start_edit_history();
+revoke execute on function start_edit_history() from public, anon, authenticated;
 create trigger parcels_edit_history before update on parcels for each row execute function write_edit_history();
 create trigger plantings_edit_history before update on plantings for each row execute function write_edit_history();
 revoke execute on function write_edit_history() from public, anon, authenticated;

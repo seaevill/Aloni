@@ -59,6 +59,7 @@ describe('phone ↔ server contract', () => {
       { table: 'job_plantings', row: spray.jobPlantings[0], op: 'insert' }, { table: 'job_spray', row: spray.spray, op: 'insert' },
       { table: 'jobs', row: bare.job, op: 'insert' }, { table: 'job_plantings', row: bare.jobPlantings[0], op: 'insert' }, { table: 'job_spray', row: bare.spray, op: 'insert' }, { table: 'job_spray', row: wait.row, op: 'insert' },
       { table: 'job_harvest', row: harvest, op: 'insert' }, { table: 'observations', row: obs, op: 'insert' },
+      { table: 'job_plantings', row: { ...spray.jobPlantings[0], id: id(26), job_id: id(18) }, op: 'insert' },   // the planned job has its planting (the label of a spray must be of a crop of the job)
       ...(done.ok ? [{ table: 'jobs', row: done.job, op: 'update' as const }, { table: 'job_spray', row: done.spray, op: 'insert' as const }] : []),
     ] as const;
     for (const w of writes) await putMany(db, [w]); // one op per write: the committed ops file has no groups (groups are tested in sync-engine.test.ts and by 0010's SQL tests)
