@@ -479,5 +479,6 @@
   "ready.migration.confirm": "I confirm: changes up to {v} were applied",
   "ready.advisor.confirm": "I confirm: the Advisor check was done",
   "ready.all": "Everything is ready. Sign-in is not switched on from here; that is a separate step.",
-  "ready.some": "{n} things are missing. Sign-in stays closed."
+  "ready.some": "{n} things are missing. Sign-in stays closed.",
+  "spray.error.mixed": "Choose plantings of the same crop. For two crops make two records, because each crop has its own label."
 }

@@ -24,7 +24,7 @@ export interface SprayContext { /** Sprays of this product already in force on t
 /** An end time older than this (before the record) is a LATE entry: allowed (a forgotten spraying must still reach the legal record), but it needs a reason and is marked. */
 export const LATE_AFTER_DAYS = 7;
 export const isLate = (sprayedAt: string, nowIso: string): boolean => Date.parse(sprayedAt) < Date.parse(nowIso) - LATE_AFTER_DAYS * 86400000;
-export interface SprayErrors { plantings: boolean; product: boolean; applicator: boolean; time: boolean; dose: boolean; doseUnit: boolean; qty: boolean; water: boolean; lateReason: boolean; overReason: boolean; doseReason: boolean }
+export interface SprayErrors { plantings: boolean; mixedCrops: boolean; product: boolean; applicator: boolean; time: boolean; dose: boolean; doseUnit: boolean; qty: boolean; water: boolean; lateReason: boolean; overReason: boolean; doseReason: boolean }
 export type SprayResult =
   | { ok: true; job: Row; jobPlantings: Row[]; spray: Row; movement: Row | undefined; flags: Flag[] }
   | { ok: false; errors: SprayErrors };
@@ -44,7 +44,7 @@ export function buildSpray(input: SprayInput, ctx: SprayContext, farmId: string,
   const qty = input.qty.trim() === '' ? undefined : positive(input.qty);
   const water = input.water.trim() === '' ? undefined : parseDecimal(input.water);
   const errors: SprayErrors = {
-    plantings: input.plantingIds.length === 0, product: !input.productId, applicator: !input.applicatorId, time: !parseInstant(input.sprayedAt).known,
+    plantings: input.plantingIds.length === 0, mixedCrops: new Set(ctx.plantings.map((p) => p.crop_id)).size > 1, product: !input.productId, applicator: !input.applicatorId, time: !parseInstant(input.sprayedAt).known,
     dose: !dose, doseUnit: !input.doseUnit || !DOSE_UNITS.includes(input.doseUnit),
     qty: (input.qty.trim() !== '' && !qty) || (input.lotKey !== undefined && !qty), // a lot needs the quantity taken from it; a typed quantity must be readable
     water: water !== undefined && !water.known,

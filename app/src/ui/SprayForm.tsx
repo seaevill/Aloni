@@ -144,6 +144,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
       )}
       {failed && !r.ok && <p class="msg error" role="alert" data-testid="spray-error">{t('spray.error.fill')}</p>}
       {failed && !r.ok && r.errors.dose && dose.trim() !== '' && <p class="msg error" role="alert">{t('spray.error.dose')}</p>}
+      {failed && !r.ok && r.errors.mixedCrops && <p class="msg error" role="alert" data-testid="spray-mixed-error">{t('spray.error.mixed')}</p>}
       {failed && !r.ok && r.errors.qty && <p class="msg error" role="alert">{t('spray.error.qty')}</p>}
       {failed && !r.ok && r.errors.lateReason && <p class="msg error" role="alert" data-testid="spray-late-error">{t('spray.late.error')}</p>}
       {failed && !r.ok && r.errors.overReason && <p class="msg error" role="alert" data-testid="spray-over-error">{t('spray.over.error')}</p>}

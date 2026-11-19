@@ -8,6 +8,9 @@ declare f constant uuid := '11111111-1111-1111-1111-111111111111'; p constant uu
         lu constant uuid := 'cccccccc-1111-0000-0000-000000000001'; j constant uuid := gen_random_uuid(); sp uuid; unk uuid; t timestamptz;
 begin
   insert into jobs(id,farm_id,kind,status,worker_id,product_id,done_at) values (j,f,'spray','done',w,prod,'2026-10-24 22:00+00');
+  -- the job's plantings tell which label uses apply (0022): without them a manual waiting period has no label to be compared with
+  insert into plantings(id,farm_id,parcel_id,crop_id,area_str,sown_on,status) values ('dddddddd-0000-0000-0000-0000000008a1',f,p,crop2,0.25,'2026-10-01','growing');
+  insert into job_plantings(farm_id,job_id,planting_id) values (f,j,'dddddddd-0000-0000-0000-0000000008a1');
   -- PHI/REI are absolute hours from the entered end time. The spraying ended 2026-10-24 22:00 UTC = 25 Oct 01:00 Athens; the clocks go back that morning.
   t := '2026-10-24 22:00+00';
   insert into job_spray(id,farm_id,job_id,product_id,applicator_id,label_use_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,created_at)
