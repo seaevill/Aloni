@@ -1,7 +1,7 @@
 import { parseWhole } from '@aloni/rules-core';
 import { useState } from 'preact/hooks';
 import { dataVersion, db, realFarmId } from '../db';
-import { formatDateTime, t, tn } from '../i18n';
+import { formatDate, formatDateTime, t, tn } from '../i18n';
 import { put } from '../repo';
 import { buildHarvest, harvestGate } from '../spray/harvest';
 import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
@@ -27,6 +27,7 @@ export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = 
   const blocked = gate && !gate.ok ? gate : undefined;
   const live = plantings.rows?.filter((p) => !p.deleted_at) ?? [];
   const name = (p: Row) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) });
+  const labelOf = (p: Row): string => [name(p), p.sown_on ? formatDate(text(p.sown_on)) : ''].filter(Boolean).join(' · '); // the sowing date tells two plantings of the same crop in one field apart
   const step = (d: 1 | -1) => { const n = parseWhole<'Crates'>(crates); const cur = n.known ? n.value : 0; setCrates(cur + d < 1 ? '' : `${cur + d}`); }; // the counter buttons: +1 / −1, never below 1
   const save = async () => {
     const r = buildHarvest({ plantingId: planting, crates, harvestedAt: at, note }, links.rows ?? [], sprays.rows ?? [], farmId, new Date().toISOString(), crypto.randomUUID());
@@ -41,7 +42,12 @@ export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = 
     <section>
       <h1>{t('harvest.add')}</h1>
       <h2>{t('harvest.planting')}</h2>
-      <div class="seg two">{live.map((p) => <button key={p.id} aria-pressed={planting === p.id} onClick={() => setPlanting(p.id)}>{name(p)}</button>)}</div>
+      {[...new Set(live.map((p) => text(p.parcel_id)))].map((pid) => (
+        <div key={pid}>
+          <h3>{text(parcels.rows?.find((x) => x.id === pid)?.name)}</h3>
+          <div class="seg two">{live.filter((p) => text(p.parcel_id) === pid).map((p) => <button key={p.id} aria-pressed={planting === p.id} onClick={() => setPlanting(p.id)}>{labelOf(p)}</button>)}</div>
+        </div>
+      ))}
       {blocked && <p class="badge blocked" role="alert" data-testid="harvest-blocked">{reason}</p>}
       {big ? (
         <>

@@ -60,3 +60,7 @@ nav.tabs .ico { font-size:var(--fs-20); line-height:1; }
 /* the tab bar: line icons, ONE line per label */
 nav.tabs .ico svg { display:block; width:var(--icon); height:var(--icon); }
 nav.tabs .lbl { white-space:nowrap; overflow-wrap:normal; line-height:1.15; }
+/* a closed button LOOKS closed (grey, no green fill) and still answers a press (the worker is told why) */
+.btn:disabled, .btn[aria-disabled="true"], .seg button:disabled, .seg.big button.go:disabled, .seg.big button.go[aria-disabled="true"] { background:var(--card); border-color:var(--line); color:var(--muted); font-weight:600; }
+.toast .btn { min-height:var(--tap-big); }
+h3 { font-size:var(--fs-18); font-weight:800; margin:var(--sp-12) 0 var(--sp-6); }

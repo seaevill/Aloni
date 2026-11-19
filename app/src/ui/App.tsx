@@ -12,6 +12,9 @@ import { Toast } from './Toast';
 import { AUTH_ENABLED } from '../config';
 import { session } from '../auth/gotrue';
 import { useRows } from './useRows';
+import { useEffect } from 'preact/hooks';
+import { activeFarm, db } from '../db';
+import { putLocal } from '../repo';
 
 // Keys are spelled out as literals so the i18n key test can see them (no dynamic t(`tab.${id}`)).
 const Icon = ({ d, dots = false }: { d: string; dots?: boolean }) => (
@@ -31,6 +34,9 @@ const TABS: Array<{ id: Tab; icon: preact.JSX.Element; label: I18nKey }> = [
 export function App() {
   const screen = { today: Today, crops: Crops, parcels: Parcels, stock: Stock, more: More }[tab.value];
   const Screen = screen;
+  // the worker view survives a reload: the roster worker being shown is kept on THIS phone (a device-local setting, never synced)
+  useEffect(() => { void db.settings.get('worker_view').then((r) => { const v = r?.value as { id?: unknown; farm?: unknown } | null | undefined; if (v && typeof v.id === 'string' && typeof v.farm === 'string' && workerView.value === undefined) { activeFarm.value = v.farm; workerView.value = v.id; } }); }, []);
+  useEffect(() => { void putLocal(db, 'worker_view', workerView.value === undefined ? null : { id: workerView.value, farm: activeFarm.value }); }, [workerView.value]);
   const roster = useRows('workers');
   const isWorkerAccount = AUTH_ENABLED && !!session.value && !!roster.rows?.some((w) => !w.deleted_at && w.user_id === session.value?.user_id); // a roster worker's own account: no owner screens
   if (isWorkerAccount || workerView.value !== undefined) return <><WorkerApp /><Toast /></>;
