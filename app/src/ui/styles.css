@@ -192,3 +192,5 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 .seg button.pick[aria-pressed="true"] { background:var(--green); border-color:var(--green); color:var(--white); font-weight:700; }
 .update-bar { display:flex; align-items:center; justify-content:space-between; gap:var(--sp-8); }
 .update-bar .btn { min-height:var(--tap); margin:0; }
+/* an overdue job or heading: red + bold, never colour alone (the heading says «Καθυστερημένες») */
+.late { color:var(--danger); font-weight:700; }

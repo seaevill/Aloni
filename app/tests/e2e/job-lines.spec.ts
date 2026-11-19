@@ -17,7 +17,8 @@ test('no raw ISO date on Σήμερα, Ψεκασμοί, Μητρώο or the wor
   await expect(page.getByTestId('worker-app')).toBeVisible();
   expect(await page.getByTestId('worker-app').innerText()).not.toMatch(ISO);
   const locked = page.locator('[data-testid="worker-job"].locked');
-  if ((await locked.count()) > 0) {
+  {
+    await expect(locked.first()).toBeVisible(); // the demo has sprays with unknown waiting periods: at least one job is closed
     const done = locked.first().getByTestId('job-done');
     await done.evaluate((e) => e.scrollIntoView({ block: 'center' })); // clear of the bottom tray
     await done.click({ force: true });
