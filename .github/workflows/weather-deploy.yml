@@ -1,0 +1,106 @@
+name: Weather function deploy (manual)
+
+# Deploys the Edge Function `weather-fetch` to the Supabase project. It uses the SAME three controls as the migrate workflow (this file does not touch that one):
+#   1. job `guard` (no environment, no secrets): started by hand, from `main` only, confirm typed correctly, and the EXACT commit has green `check`, `sql` and production Workers Builds results;
+#   2. the GitHub ENVIRONMENT `supabase-production`: the job `deploy` cannot start (no step can read a secret) until the environment's required reviewer approves;
+#   3. the word DEPLOY (mode=deploy AND confirm=DEPLOY), checked in `guard` and again right before the deploy.
+# mode=dry-run checks the target project and lists what WOULD be deployed; it changes nothing. Secrets (environment `supabase-production`, the same as the migrate workflow): SUPABASE_ACCESS_TOKEN
+# and SUPABASE_PROJECT_REF. The function needs NO secret of its own (Supabase gives it SUPABASE_URL and the service key itself; MET Norway needs no key). If the token was made with limited rights
+# it must also be allowed to deploy Edge Functions (RUNBOOK §14, step 1). Nothing is scheduled by this workflow (that is migration 0030 + RUNBOOK §14 step 4).
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'dry-run checks the project and lists the function files, changes nothing; deploy really deploys'
+        type: choice
+        options: [dry-run, deploy]
+        default: dry-run
+      confirm:
+        description: 'Type DEPLOY to allow mode=deploy (ignored for dry-run)'
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+  checks: read
+
+concurrency:
+  group: weather-deploy
+  cancel-in-progress: false
+
+env:
+  SUPABASE_CLI_VERSION: 2.122.1          # the same pin as the migrate workflow
+  EXPECT_PROJECT_NAME: aloni
+  EXPECT_REGION: eu-central-1
+
+jobs:
+  guard:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Mode, confirmation and the exact commit
+        env:
+          MODE: ${{ inputs.mode }}
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          set -euo pipefail
+          [ "$(git rev-parse HEAD)" = "$GITHUB_SHA" ] || { echo "::error::checked-out commit is not $GITHUB_SHA"; exit 1; }
+          if [ "$MODE" = deploy ]; then
+            [ "$CONFIRM" = DEPLOY ] || { echo "::error::mode=deploy needs the confirm field to be exactly DEPLOY. Nothing was deployed."; exit 1; }
+          fi
+          echo "mode=$MODE commit=$GITHUB_SHA"
+      - name: The CI and the production deploy of THIS commit are green
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/check-runs?per_page=100" | bash scripts/ci-gate.sh "$GITHUB_SHA"
+
+  deploy:
+    needs: guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: supabase-production      # the required-reviewer approval happens HERE, before any step of this job runs
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: The same commit, checked again after the approval
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [ "$(git rev-parse HEAD)" = "$GITHUB_SHA" ] || { echo "::error::checked-out commit is not $GITHUB_SHA"; exit 1; }
+          gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/check-runs?per_page=100" | bash scripts/ci-gate.sh "$GITHUB_SHA"
+      - uses: supabase/setup-cli@v1
+        with:
+          version: ${{ env.SUPABASE_CLI_VERSION }}
+      - name: The target is the right project (Supabase Management API)
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          set -euo pipefail
+          [[ "$SUPABASE_PROJECT_REF" =~ ^[a-z]{20}$ ]] || { echo "::error::SUPABASE_PROJECT_REF does not look like a project reference (20 lowercase letters)"; exit 1; }
+          code=$(curl -sS -o project.json -w '%{http_code}' -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" "https://api.supabase.com/v1/projects/$SUPABASE_PROJECT_REF" || true)
+          [ "$code" = 200 ] || { rm -f project.json; echo "::error::reading the project answered HTTP $code (401/403 = the token is revoked, expired or lacks the right to read this project). Nothing was deployed."; exit 1; }
+          jq -e --arg ref "$SUPABASE_PROJECT_REF" --arg name "$EXPECT_PROJECT_NAME" --arg region "$EXPECT_REGION" '.id == $ref and .name == $name and .region == $region' project.json >/dev/null \
+            || { echo "::error::the project is not the expected one (expected name=$EXPECT_PROJECT_NAME region=$EXPECT_REGION). Nothing was deployed."; rm -f project.json; exit 1; }
+          jq -r '"target project: name=\(.name) region=\(.region) status=\(.status)"' project.json
+          rm -f project.json
+      - name: What would be deployed (changes nothing)
+        run: |
+          set -euo pipefail
+          find supabase/functions/weather-fetch supabase/functions/_shared -type f ! -name '*.sample.json' | sort
+      - name: Deploy the function
+        if: inputs.mode == 'deploy'
+        env:
+          CONFIRM: ${{ inputs.confirm }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          set -euo pipefail
+          [ "$CONFIRM" = DEPLOY ] || { echo "::error::mode=deploy needs the confirm field to be exactly DEPLOY. Nothing was deployed."; exit 1; }
+          supabase functions deploy weather-fetch --project-ref "$SUPABASE_PROJECT_REF" --use-api
