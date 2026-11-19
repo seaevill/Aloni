@@ -14,6 +14,7 @@ import { EmptyState, ErrorState } from './states';
 import { Title, nameOf, retry } from './screens';
 import { useRows, type Rows } from './useRows';
 import { dayOf, farmDay, parseDays, type Day } from '../weather/strip';
+import { todaySummary } from '../summary/today';
 import { useWeather } from './useWeather';
 import type { Row } from '../db/schema';
 
@@ -111,6 +112,8 @@ export function Today() {
   const jobs = useRows('jobs'); const workers = useRows('workers'); const links = useRows('job_plantings'); const sprays = useRows('job_spray');
   const weatherRows = useWeather();
   const weatherOf = new Map(weatherRows.map((w) => [w.parcel_id, parseDays(w.days)] as const));
+  const harvestRows = useRows('job_harvest');
+  const summary = todaySummary(athensToday(new Date()) ?? '', sprays.rows ?? [], harvestRows.rows ?? [], jobs.rows ?? [], (id) => text(workers.rows?.find((w) => w.id === id)?.name), (id) => nameOf(products.rows?.find((p) => p.id === id) ?? {}));
   const openJobs = (jobs.rows ?? []).filter((j) => !j.deleted_at && j.kind === 'spray' && j.status === 'planned');
   const live = (q: Rows) => q.rows?.filter((r) => !r.deleted_at) ?? [];
   const demo = activeFarm.value !== realFarmId.value;
@@ -154,6 +157,15 @@ export function Today() {
       {planned && <p class="msg" role="status" data-testid="job-saved">{t('job.saved')}</p>}
       {harvested && <p class="msg" role="status" data-testid="harvest-saved">{t('harvest.saved')}</p>}
       {recorded && <p class="msg" role="status" data-testid="spray-saved">{t('spray.saved')}</p>}
+      {loaded && has && (
+        <section class="card" data-testid="today-who">
+          <strong>{t('today.who')}</strong>
+          {summary.done.length === 0 && summary.harvests === 0 && summary.overdue.length === 0 && <small data-testid="today-who-none">{t('today.who.none')}</small>}
+          {summary.done.map((d) => <small key={d.sprayId} data-testid="today-who-done">{t('today.who.done', { worker: d.worker || t('value.unknown'), product: d.product })}</small>)}
+          {summary.harvests > 0 && <small data-testid="today-who-crates">{t('today.who.crates', { n: formatQty(summary.crates) })}</small>}
+          {summary.overdue.length > 0 && <small class="late" data-testid="today-who-overdue">{t('today.who.overdue', { n: summary.overdue.length })}</small>}
+        </section>
+      )}
       {loaded && has && <h2>{t('worker.jobs')}</h2>}
       {loaded && has && openJobs.length === 0 && <p class="muted" data-testid="jobs-none">{t('today.jobs.none')}</p>}
       {openJobs.map((j) => <div class="card" key={j.id} data-testid="job-planned">{t('job.planned.line', { product: nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {}), worker: text(workers.rows?.find((w) => w.id === j.worker_id)?.name), date: text(j.planned_for) })}</div>)}

@@ -530,5 +530,10 @@
   "golive.start": "Switch sync on",
   "golive.busy": "Uploading… do not close the app.",
   "golive.failed": "Sync did NOT switch on. Nothing changed on the phone; your data is safe and you can try again.",
-  "golive.on": "Sync is on."
+  "golive.on": "Sync is on.",
+  "today.who": "Done today",
+  "today.who.none": "Nothing recorded today yet.",
+  "today.who.done": "{worker}: sprayed {product}",
+  "today.who.crates": "Crates cut: {n}",
+  "today.who.overdue": "Open jobs from earlier days: {n}"
 }

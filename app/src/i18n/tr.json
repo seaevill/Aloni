@@ -530,5 +530,10 @@
   "golive.start": "Senkronu aç",
   "golive.busy": "Veriler yükleniyor… uygulamayı kapatmayın.",
   "golive.failed": "Senkron AÇILMADI. Telefonda hiçbir şey değişmedi; verileriniz güvende, yeniden deneyebilirsiniz.",
-  "golive.on": "Senkron açık."
+  "golive.on": "Senkron açık.",
+  "today.who": "Bugün yapılanlar",
+  "today.who.none": "Bugün henüz kayıt yok.",
+  "today.who.done": "{worker}: {product} ilaçladı",
+  "today.who.crates": "Kesilen kasa: {n}",
+  "today.who.overdue": "Önceki günlerden kalan açık işler: {n}"
 }
