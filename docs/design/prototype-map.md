@@ -34,3 +34,7 @@ Prototipte bu iki ekranın karşılığı YOK (yalnızca ilaçlama kaydı/CSV li
 - ✔ Koyu üst bant ve geri düğmesi bandın içinde; ✔ indirme düğmeleri sayfanın en üstünde (prototipteki «Export CSV» gibi).
 - ✘ Tür filtre düğmeleri; ✘ kart düzeni (Μητρώο resmi kayıt sütunlarını gösterdiği için tablo/satır düzeni korunuyor).
 - Görüntü: `docs/design/compare/register.png` (soldan sağa: prototip, önce, sonra; 375 px).
+## Fark listesi – İşçi ekranı (bu PR)
+- ✔ Üç sekme (Δουλειές / Συγκομιδή / Σημείωση) ekranın altında bulanık eylem tepsisinde; ✔ düğmeler 72 px; ✔ sabit kaydet düğmeleri tepsinin üstünde.
+- ✘ Tema B örneğindeki büyük «Έγινε» tek düğmesi (birden fazla iş olduğu için kart içinde kalıyor).
+- Görüntü: `docs/design/compare/worker.png` (önce | sonra, 375 px). Öz puan 7/10.

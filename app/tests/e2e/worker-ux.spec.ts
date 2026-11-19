@@ -45,6 +45,7 @@ test('a locked «Έγινε» looks closed and says WHY when it is pressed', asy
   await expect(done).toBeVisible();
   // the demo's older sprays have unknown waiting periods: the button is closed
   await expect(done).toBeDisabled();
+  await done.evaluate((e) => e.scrollIntoView({ block: 'center' }));        // clear of the bottom tray
   await done.click({ force: true });
   await expect(page.getByTestId('worker-lock-why').first()).toBeVisible();
   const bg = await done.evaluate((e) => getComputedStyle(e).backgroundColor);

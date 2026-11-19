@@ -174,3 +174,8 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 .wx.dark .wx-source strong { text-decoration:underline; }
 
 @media print { .detail .band { background:none; color:inherit; margin:0 0 var(--sp-8); padding:0; } .detail .band h1 { color:inherit; } }
+
+/* Worker screen (theme B): the three actions sit in a tray that stays at the bottom of the screen on a blurred bar; the buttons are 72 px */
+.worker-tray { position:sticky; bottom:0; z-index:3; margin:var(--sp-16) calc(-1 * var(--sp-16)) 0; padding:var(--sp-8) var(--sp-16) calc(var(--sp-8) + env(safe-area-inset-bottom)); background:var(--bar); }
+@supports ((backdrop-filter:none) or (-webkit-backdrop-filter:none)) { .worker-tray { -webkit-backdrop-filter:var(--blur-bar); backdrop-filter:var(--blur-bar); } }
+[data-testid="worker-app"] .btn[data-testid$="-save"], [data-testid="worker-app"] .btn[data-testid="job-confirm"] { bottom:calc(var(--tap-big) + var(--sp-24)); }   /* above the tray */
