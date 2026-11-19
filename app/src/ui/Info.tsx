@@ -23,7 +23,7 @@ export function Info({ onBack }: { onBack: () => void }) {
   return (
     <section>
       <BackBar onBack={onBack} />
-      <h1>{t('info.title')}</h1>
+      <h1 tabIndex={-1}>{t('info.title')}</h1>
       <p class="draft" role="note">{t('info.draft')}</p>
 
       <h2>{t('info.controller.title')}</h2>

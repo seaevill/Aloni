@@ -15,7 +15,7 @@ export function History({ readOnly, onBack }: { readOnly: boolean; onBack: () =>
   return (
     <section class="history" data-testid="history">
       <BackBar onBack={onBack} testId="history-back" />
-      <h1>{t('history.title')}</h1>
+      <h1 tabIndex={-1}>{t('history.title')}</h1>
       <Sprays readOnly={readOnly} />
       <Harvests />
       {edited.length > 0 && <h2>{t('history.edits')}</h2>}

@@ -101,7 +101,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
     <section class="detail">
       <header class="band">
         <BackBar onBack={() => onDone(false)} testId="spray-back" />
-        <h1>{t('spray.add')}</h1>
+        <h1 tabIndex={-1}>{t('spray.add')}</h1>
       </header>
       {inMix > 0 && <p class="msg" role="status" data-testid="spray-mix-note">{t('spray.mix.note', { n: inMix })}</p>}
       {needs && <p class="msg error" role="alert" tabIndex={-1} data-testid="spray-needs">{t('spray.needs')}</p>}

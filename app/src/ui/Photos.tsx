@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { activeFarm, dataVersion, db, realFarmId } from '../db';
 import type { MediaRow } from '../db/schema';
-import { t, tn, type I18nKey } from '../i18n';
+import { formatDateTime, t, tn, type I18nKey } from '../i18n';
 import { storePhoto } from '../media/photo';
 import { EmptyState } from './states';
 import { BackBar } from './BackBar';
@@ -50,9 +50,16 @@ export function Photos({ onBack }: { onBack: () => void }) {
     dataVersion.value++;
   };
 
+  useEffect(() => {      // Escape closes the full-size photo
+    if (!open) return undefined;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(undefined); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open]);
   if (open) {
+    const nth = (rows ?? []).findIndex((m) => m.id === open.id) + 1;
     return (
-      <section>
+      <section role="dialog" aria-modal="true" aria-label={t('photos.viewer', { n: nth, total: rows ? String(rows.length) : '', when: formatDateTime(open.created_at) })} data-testid="photo-viewer">
         <button class="btn secondary" onClick={() => setOpen(undefined)}>{t('photos.close')}</button>
         <Picture m={open} big />
       </section>
@@ -62,7 +69,7 @@ export function Photos({ onBack }: { onBack: () => void }) {
   return (
     <section>
       <BackBar onBack={onBack} />
-      <h1>{t('photos.title')}</h1>
+      <h1 tabIndex={-1}>{t('photos.title')}</h1>
       <input ref={input} type="file" accept="image/*" hidden aria-hidden="true" tabIndex={-1} onChange={(e) => void pick(e)} />
       {demo ? <p class="muted" data-testid="photos-demo-note">{t('photos.demoActive')}</p>
         : rows && rows.length > 0 && <button class="btn" data-testid="photo-add" onClick={add}>{t('photos.add')}</button>}
