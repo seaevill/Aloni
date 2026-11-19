@@ -73,7 +73,8 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const lu = label ? readUse(label) : undefined;
   const labelDose = lu && lu.dose.known ? { min: formatDose(known(lu.dose.value.min)), max: formatDose(known(lu.dose.value.max)), single: lu.dose.value.kind === 'single', unit: lu.dose.value.unit } : undefined;
   const perStr = unit !== undefined && /^(ml|g|l|kg)\/str$/.test(unit) ? unit.split('/')[0] : undefined;
-  const area = chosen.reduce<Decimal | undefined>((sum, p) => { const a = parseDecimal(String(p.area_str ?? '')); return a.known ? (sum === undefined ? a.value : (addDecimal(sum, a.value) as Decimal)) : sum; }, undefined);
+  const areasKnown = chosen.every((p) => parseDecimal(String(p.area_str ?? '')).known);      // a total for only part of the area would mislead: no hint then
+  const area = !areasKnown ? undefined : chosen.reduce<Decimal | undefined>((sum, p) => { const a = parseDecimal(String(p.area_str ?? '')); return a.known ? (sum === undefined ? a.value : (addDecimal(sum, a.value) as Decimal)) : sum; }, undefined);
   const totalHint = perStr && typedDose.known && area !== undefined ? { area: String(area), dose: String(typedDose.value), u: perStr, total: mulDecimal(area, typedDose.value) } : undefined;   // text only, exact decimals: never written into a field
   const today0 = athensToday(new Date()) ?? '';
   const freshLots = myLots.filter((l) => !(typeof l.expiry === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(l.expiry) && l.expiry < today0));   // not expired (an unreadable or missing expiry is not «expired»)
@@ -90,7 +91,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
     dataVersion.value++;
     if (!more) { onDone(true); return; }
     // tank mix: the plantings, the times and the applicator stay; the next product starts empty (its own label, dose, lot and waiting periods)
-    setInMix(inMix + 1); setProductId(''); setDose(''); setUnit(undefined); setLotKey(undefined); setQty(''); setWater(''); setNote(''); setPrescription(''); setFailed(false);
+    setInMix(inMix + 1); setProductId(''); setDose(''); setUnit(undefined); setLotKey(undefined); setQty(''); setQtyUnknown(false); setWater(''); setNote(''); setPrescription(''); setFailed(false);
   };
   const toggle = (id: string) => setSel(sel.includes(id) ? sel.filter((x) => x !== id) : [...sel, id]);
   const unitText = text(product?.unit);
@@ -108,7 +109,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
       <div class="seg two">{live(plantings).map((p) => <button key={p.id} aria-pressed={sel.includes(p.id)} disabled={chosen.length > 0 && !sel.includes(p.id) && p.crop_id !== chosen[0]?.crop_id} onClick={() => toggle(p.id)}>{plantingName(p)}</button>)}</div>
       {chosen.length > 0 && <p class="muted" data-testid="spray-onecrop">{t('spray.oneCrop')}</p>}
       <h2>{t('spray.product')}</h2>
-      <div class="seg two">{live(products).map((p) => <button key={p.id} aria-pressed={productId === p.id} onClick={() => { setProductId(p.id); setLotKey(undefined); setQty(''); pickLabelDefaults(chosen.length ? live(labels).find((l) => l.product_id === p.id && l.crop_id === chosen[0].crop_id) : undefined); }}>{nameOf(p)}</button>)}</div>
+      <div class="seg two">{live(products).map((p) => <button key={p.id} aria-pressed={productId === p.id} onClick={() => { setProductId(p.id); setLotKey(undefined); setQty(''); setQtyUnknown(false); pickLabelDefaults(chosen.length ? live(labels).find((l) => l.product_id === p.id && l.crop_id === chosen[0].crop_id) : undefined); }}>{nameOf(p)}</button>)}</div>
       {productId && chosen.length > 0 && (
         <div class="card" data-testid="spray-label"><strong>{t('spray.label.title')}</strong>
           {label ? <><span class={`badge ${statusOf(label)}`}>{badgeText(label, statusOf(label))}</span><Lines row={label} /></> : <span class="badge blocked">{t('spray.flag.label_none')}</span>}
