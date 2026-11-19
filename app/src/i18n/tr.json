@@ -582,5 +582,6 @@
   "detail.osde": "ΟΣΔΕ kodu",
   "detail.weather": "Bugünkü hava",
   "detail.plantings": "Ekimler",
-  "detail.sprays": "Son ilaçlamalar"
+  "detail.sprays": "Son ilaçlamalar",
+  "detail.lastspray": "Son ilaçlama"
 }

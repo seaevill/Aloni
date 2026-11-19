@@ -7,6 +7,7 @@ import { archived, restored } from '../parcels/parcel'; // generic: set / clear 
 import { validDate } from '../plantings/planting';
 import { put } from '../repo';
 import type { Row } from '../db/schema';
+import { CropDetail } from './CropDetail';
 import { EditTrail } from './EditTrail';
 import { PlantingForm, STATUS_KEYS } from './PlantingForm';
 import { tab } from './nav';
@@ -24,13 +25,15 @@ const statusText = (v: unknown): string => {
 
 /** Crops in use, each with its plantings (parcel · area · sowing date · status). Adding is only for the real farm. */
 export function Crops() {
-  const [adding, setAdding] = useState(false); const [editing, setEditing] = useState<Row | undefined>(undefined);
+  const [adding, setAdding] = useState(false); const [editing, setEditing] = useState<Row | undefined>(undefined); const [shownId, setShownId] = useState<string | undefined>(undefined);
   const crops = useRows('crops');
   const plantings = useRows('plantings');
   const parcels = useRows('parcels');
   const liveParcels = parcels.rows?.filter((p) => !p.deleted_at) ?? [];
   if (adding) return <PlantingForm parcels={liveParcels} onDone={() => setAdding(false)} />;
   if (editing) return <PlantingForm parcels={liveParcels} existing={editing} onDone={() => setEditing(undefined)} />;
+  const shownCrop = crops.rows?.find((c0) => c0.id === shownId);
+  if (shownCrop) return <CropDetail crop={shownCrop} onBack={() => setShownId(undefined)} />;
   const demo = activeFarm.value !== realFarmId.value;
   const live = plantings.rows?.filter((p) => !p.deleted_at) ?? [];
   const parcelName = (id: unknown) => { const p = parcels.rows?.find((r) => r.id === id); return p ? String(p.name) : t('value.unknown'); };
@@ -59,7 +62,8 @@ export function Crops() {
       <Status q={{ ...crops, rows: shown && shown.length === 0 ? [] : shown ?? null }} message={t('list.empty')}
         action={canAdd ? { label: t('planting.add'), run: () => setAdding(true) } : undefined} />
       {shown?.map((c) => (
-        <div class="card" key={c.id}>{nameOf(c)}{typeof c.latin === 'string' && <small>{c.latin}</small>}<UnsyncedMark id={c.id} />
+        <div class="card" key={c.id}>
+          <button class="row" data-testid="crop-open" onClick={() => setShownId(String(c.id))}><span>{nameOf(c)}{typeof c.latin === 'string' && <small>{c.latin}</small>}</span><span aria-hidden="true" class="chev" /></button><UnsyncedMark id={c.id} />
           {live.filter((p) => p.crop_id === c.id).map((p) => (
             <div class="line" key={p.id} data-testid="planting">
               <span>{dot(parcelName(p.parcel_id), formatArea(p.area_str as string | number))}</span>

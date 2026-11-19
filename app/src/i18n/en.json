@@ -582,5 +582,6 @@
   "detail.osde": "IACS (ΟΣΔΕ) code",
   "detail.weather": "Weather today",
   "detail.plantings": "Plantings",
-  "detail.sprays": "Last sprayings"
+  "detail.sprays": "Last sprayings",
+  "detail.lastspray": "Last spraying"
 }

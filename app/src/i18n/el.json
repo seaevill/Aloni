@@ -582,5 +582,6 @@
   "detail.osde": "Κωδικός ΟΣΔΕ",
   "detail.weather": "Καιρός σήμερα",
   "detail.plantings": "Φυτείες",
-  "detail.sprays": "Τελευταίοι ψεκασμοί"
+  "detail.sprays": "Τελευταίοι ψεκασμοί",
+  "detail.lastspray": "Τελευταίος ψεκασμός"
 }

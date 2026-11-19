@@ -69,3 +69,18 @@ test('parcel detail (prototype): the facts, the boundary sketch or its absence, 
   await expect(page.getByTestId('parcel-open')).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test('crop detail (prototype): plantings of the crop and its last spraying with the waiting period; back to the list', async ({ page }) => {
+  const errors = await iphone(page);
+  await page.getByTestId('empty-state').locator('button').nth(1).click();               // the demo farm
+  await page.locator('nav.tabs [data-tab="crops"]').click();
+  await page.getByTestId('crop-open').first().click();
+  const d = page.getByTestId('crop-detail');
+  await expect(d).toBeVisible();
+  await expect(d.getByTestId('detail-planting').first()).toBeVisible();
+  await expect(d.getByTestId('detail-lastspray').or(d.getByTestId('detail-nospray'))).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
+  await page.getByTestId('detail-back').click();
+  await expect(page.getByTestId('crop-open').first()).toBeVisible();
+  expect(errors).toEqual([]);
+});
