@@ -24,3 +24,4 @@ Kaynak: `reference/prototype/index.html` (v2 tıklanabilir prototip, 780 px ekra
 
 ## İlaçlama formu ve işçi ekranı
 Prototipte bu iki ekranın karşılığı YOK (yalnızca ilaçlama kaydı/CSV listesi var). Tasarım 2 mockup'ı (`docs/design/theme-2026-11/winner-B.html`, `docs/design/applied/t2/worker-*.png`) kart dilini verir: büyük kartlar, tek karar, 72 px «Έγινε / Δεν έγινε», kilitliyken gri. Uygulama bu dili izliyor (öz puan 7/10). Mockup'ın «bulanık eylem tepsisi» (sabit alt tepsi) henüz yok → BACKLOG.
+- ✔ Hasat 7/28 gün karoları (kesilen kasa, 7 ve 28 gün); ✘ Alerts listesi; ✘ «Forecast run» notu; ✘ demo bandı başlığın içinde değil (uygulamada tüm ekranların üstünde).

@@ -621,5 +621,7 @@
   "orders.map.title": "Ürünleri ekinlerle eşle",
   "orders.map.none": "— yok (sayılmaz)",
   "orders.line.week": "Bu hafta: {a} kasa · geçen hafta: {b}",
-  "orders.line.free": "Kesime hazır: {n} ekim · 7 günde kesilen: {c} kasa"
+  "orders.line.free": "Kesime hazır: {n} ekim · 7 günde kesilen: {c} kasa",
+  "today.kpi.cut7": "7 günde kasa",
+  "today.kpi.cut28": "28 günde kasa"
 }
