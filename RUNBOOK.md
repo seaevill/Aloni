@@ -135,29 +135,58 @@ Actions çalışmazsa: sırayla `0001_core` → … → `0012_phone_contract` (v
 ## 11. Yeni görünümü (Tasarım 2, 2026-11) geri almak
 Görünüm yalnızca iki dosyada: `app/src/ui/tokens.css` (renk, ölçü, gölge) ve `app/src/ui/styles.css`. Mantık, veri ve metin değişmedi. Beğenmezsen: GitHub → **Pull requests → Closed** → «Görünüm: …» (theme) başlıklı PR'ı aç → **Revert** → açılan PR'ı birleştir (CI yeşil olunca). Her görünüm PR'ı tek commit olarak birleşir; en yenisinden başlayıp eskiye doğru hepsini geri alırsan uygulama tamamen eski renklere döner. Geri alma, verini ya da kayıtlarını etkilemez. Kararın kaydı: `docs/design/theme-2026-11/README.md`.
 
-## 12. Gerçek hesap denemesi (adım adım; her adımı sen tıklarsın)
-**Önkoşul:** 0001–0018 Supabase'e uygulanmış ve «verify» yeşil olmalı (0017 ve 0018 için «uygula» demen gerekir). Giriş ve davet ekranları **kapalı** gelir (`AUTH_ENABLED = false`); Claude'a «denemeyi aç» dediğinde proje adresini ve genel (publishable) anahtarı koyup ayrı bir PR'la açar. **Gizli (secret/service) anahtarı hiçbir yere yazma.**
-1. **Supabase → Authentication → Sign In / Providers:** yalnızca **Email** açık; **Confirm email** açık; Google/Apple vb. kapalı. **URL Configuration → Site URL** = uygulamanın adresi.
-2. **Sahip hesabı:** uygulamada **Περισσότερα → Σύνδεση** → e-postan → «Αποστολή κωδικού» → e-postadaki kodu yaz → «Σύνδεση». Girince kartta **«Κωδικός κτήματος: …»** (çiftlik kodu) görünür; onu kopyala. İlk çiftlik ve sahip üyeliği (bir kez, SQL Editor) **bu kodla** açılır — telefonun çiftlik kodu ile sunucudaki çiftlik kodu aynı olmak zorunda: `insert into farms(id, name) values ('<çiftlik kodu>', 'Bora''nın çiftliği'); insert into farm_members(farm_id, user_id, role) values ('<çiftlik kodu>', '<senin User UID>', 'owner');` (User UID: Authentication → Users). Davetle gelen işçinin telefonu çiftlik kodunu davetten kendisi alır.
-3. **Veri sorumlusu:** **Περισσότερα → Πληροφορίες** → ad, adres, telefon. (Bunlar olmadan davet **kapalı** kalır; sunucu da reddeder.)
-4. **Test işçisi davet et:** **Περισσότερα → Εργάτες** → işçi ekle (ör. «Δοκιμή») → altında **Πρόσκληση** → ikinci bir e-posta adresin → «Αποθήκευση πρόσκλησης» → «Η πρόσκληση αποθηκεύτηκε».
-5. **İşçi girişi:** başka bir telefonda (ya da gizli sekmede) uygulamayı aç → **Σύνδεση** → o ikinci e-posta → kod → giriş. İlk girişte davet otomatik kabul edilir.
-6. **İşçi ürün/ilaçlama ekleyemiyor (SQL Editor, hiçbir şey kalıcı olmaz — hep `rollback`):** `<işçi>` = Authentication → Users'ta işçinin **User UID**'i, `<çiftlik>` = farms tablosundaki id.
+## 12. Gerçek hesap denemesi (tek tıklama listesi; her adımı sen yaparsın)
+Her adımda: **Nerede** (ekran adı) → **Ne yap** → **Doğru sonuç**. Sonuç farklıysa **dur**, ekran görüntüsünü Claude'a gönder; sonraki adıma geçme. Gizli (secret/service) anahtarı ve parolaları hiçbir yere yazma.
+
+**Önkoşul:** 0001–0021 Supabase'e uygulanmış ve «verify» yeşil (son: run 44483049902). Giriş ve davet ekranları **kapalı** gelir (`AUTH_ENABLED = false`); açmak için Claude'a «denemeyi aç» dersin, o proje adresini ve genel (publishable) anahtarı koyup ayrı bir PR'la açar.
+
+**0. Hazırlık kartı** — Uygulama → **Άλλα** → «Σύνδεση λογαριασμού: τι λείπει».
+ Ne yap: eksik satırları tamamla (çiftlik adı burada; veri sorumlusu → adım 3; ΑΦΜ → Άλλα → Μητρώο ψεκασμών; migration ve Advisor için «Επιβεβαιώνω» düğmeleri).
+ Doğru sonuç: beş satırın hepsi yeşil «Έτοιμο»; altta «Όλα είναι έτοιμα…». (Kart hiçbir şeyi açmaz.)
+
+**1. Auth ayarları** — Supabase → **Authentication → Sign In / Providers**, sonra **URL Configuration**.
+ Ne yap: yalnızca **Email** açık; **Confirm email** açık; Google/Apple vb. kapalı; **Site URL** = uygulamanın adresi.
+ Doğru sonuç: başka sağlayıcı açık değil; Site URL doğru.
+
+**2. Sahip hesabı** — Uygulama → **Άλλα → Σύνδεση** → e-posta → «Αποστολή κωδικού» → e-postadaki kod → «Σύνδεση».
+ Ne yap: girince kartta **«Κωδικός κτήματος: …»** çıkar, kopyala. Supabase → **SQL Editor**'da (bir kez): `insert into farms(id, name) values ('<çiftlik kodu>', 'Bora''nın çiftliği'); insert into farm_members(farm_id, user_id, role) values ('<çiftlik kodu>', '<senin User UID>', 'owner');` (User UID: Authentication → Users). Telefonun çiftlik kodu ile sunucudaki aynı olmak zorunda.
+ Doğru sonuç: giriş kartında e-postan görünür; sayfayı yenileyince hâlâ girişli.
+
+**3. Veri sorumlusu** — Uygulama → **Άλλα → Πληροφορίες**.
+ Ne yap: ad, adres, telefon → kaydet.
+ Doğru sonuç: «Αποθηκεύτηκε»; bunlar olmadan 4. adımdaki davet düğmesi **kapalı** kalır (sunucu da reddeder).
+
+**4. Test işçisi davet et** — Uygulama → **Άλλα → Εργάτες**.
+ Ne yap: işçi ekle (ör. «Δοκιμή») → altında **Πρόσκληση** → ikinci e-posta adresin → «Αποθήκευση πρόσκλησης».
+ Doğru sonuç: «Η πρόσκληση αποθηκεύτηκε».
+
+**5. İşçi girişi** — başka telefon ya da gizli sekme → uygulama → **Άλλα → Σύνδεση** → ikinci e-posta → kod.
+ Doğru sonuç: giriş olur, davet otomatik kabul edilir; işçi yalnızca «Δουλειές / Συγκομιδή / Σημείωση» ekranlarını görür (Αποθήκη, fiyat, sipariş yok).
+
+**6. İşçi ürün ekleyemiyor** — Supabase → **SQL Editor** (her şey `rollback`; `<işçi>` = Authentication → Users'ta işçinin User UID'i, `<çiftlik>` = farms tablosundaki id):
 ```sql
 begin; set local role authenticated; select set_config('request.jwt.claims', '{"sub":"<işçi>","role":"authenticated"}', true);
 insert into products(farm_id, name, type, unit) values ('<çiftlik>', 'x', 'fungicide', 'kg');
 rollback;
 ```
-Beklenen: **hata** (permission denied / row-level security). Hata yerine «Success» görürsen **dur** ve ekran görüntüsünü gönder.
-7. **İşçi başka çiftliği göremiyor:** önce `insert into farms(name) values ('Deneme 2') returning id;` (sonunda silinecek), sonra
+ Doğru sonuç: **hata** (permission denied / row-level security). «Success» görürsen **dur**.
+
+**7. İşçi başka çiftliği göremiyor** — SQL Editor: önce `insert into farms(name) values ('Deneme 2') returning id;` sonra
 ```sql
 begin; set local role authenticated; select set_config('request.jwt.claims', '{"sub":"<işçi>","role":"authenticated"}', true);
 select count(*) as gorunen_ciftlik from farms;
 rollback;
 ```
-Beklenen: **1**.
-8. **Anonim `apply_ops` reddi:** `begin; set local role anon; select apply_ops('[]'::jsonb); rollback;` Beklenen: **permission denied for function apply_ops**.
-9. **Zincir doğrulama:** `select * from verify_spray_chain('<çiftlik>');` Beklenen: **0 satır** (boş). Satır gelirse ekran görüntüsünü gönder.
-10. **Panel kontrolü:** Supabase → sol menü **Advisors** → **Security Advisor** sekmesi → *Refresh* → ekran görüntüsü; sonra **Performance Advisor** sekmesi → ekran görüntüsü; sonra sol menü **Table Editor** → tablo listesinde her tabloda **RLS** rozeti açık olmalı (ekran görüntüsü). Sadece bakarsın. Hedef: «RLS Disabled in Public» ve herkese açık fonksiyon uyarısı **yok**. Çıkanları çevirmeden bana göster.
-11. **Temizlik:** Authentication → Users → test işçisini sil; `delete from farms where name = 'Deneme 2';`.
+ Doğru sonuç: **1**.
 
+**8. Anonim `apply_ops` reddi** — SQL Editor: `begin; set local role anon; select apply_ops('[]'::jsonb); rollback;`
+ Doğru sonuç: **permission denied for function apply_ops**.
+
+**9. Zincir doğrulama** — SQL Editor: `select * from verify_spray_chain('<çiftlik>');`
+ Doğru sonuç: **0 satır** (boş).
+
+**10. Panel kontrolü (sadece bakarsın)** — Supabase → sol menü **Advisors → Security Advisor → Refresh** (ekran görüntüsü), **Performance Advisor** (ekran görüntüsü), **Table Editor** (her tabloda **RLS** rozeti açık, ekran görüntüsü).
+ Doğru sonuç: «RLS Disabled in Public» ve herkese açık fonksiyon uyarısı **yok**. Çıkanları çevirmeden Claude'a göster.
+
+**11. Temizlik** — Authentication → Users → test işçisini sil; SQL Editor: `delete from farms where name = 'Deneme 2';`
+ Doğru sonuç: Users listesinde test işçisi yok; `select count(*) from farms where name = 'Deneme 2';` → 0.
