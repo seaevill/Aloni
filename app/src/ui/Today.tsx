@@ -13,6 +13,8 @@ import { SprayForm } from './SprayForm';
 import { EmptyState, ErrorState } from './states';
 import { Title, nameOf, retry } from './screens';
 import { useRows, type Rows } from './useRows';
+import { dayOf, farmDay, parseDays, type Day } from '../weather/strip';
+import { useWeather } from './useWeather';
 import type { Row } from '../db/schema';
 
 // Σήμερα (Design 2): the date and the farm, ONE big card for the most urgent thing, the weather strip (empty until the data exists), a card per field with its cut counter,
@@ -26,19 +28,41 @@ const BADGE = { unknown: { cls: 'badge blocked', mark: MARK.blocked }, from: { c
 const DASH = '\u2014';
 const DAY_MS = 86_400_000;
 
-interface FieldCard { p: Row; state: 'free' | 'from' | 'unknown'; at: string; late: boolean; source: string; crops: string }
+interface FieldCard { weather: string; p: Row; state: 'free' | 'from' | 'unknown'; at: string; late: boolean; source: string; crops: string }
 
-/** The five days of the weather strip: every value is «—» until a forecast exists (the Open-Meteo function is not switched on). */
-function WeatherStrip() {
-  const base = Date.parse(`${athensToday(new Date()) ?? '1970-01-01'}T12:00:00Z`);
+/** The five days of the weather strip, from the stored weather of every parcel. A day without data shows «—» and the line under it says there is none. */
+function WeatherStrip({ perParcel }: { perParcel: ReadonlyArray<readonly Day[]> }) {
+  const today = athensToday(new Date()) ?? '1970-01-01';
+  const base = Date.parse(`${today}T12:00:00Z`);
+  const dates = [0, 1, 2, 3, 4].map((i) => new Date(base + i * DAY_MS).toISOString().slice(0, 10));
+  const days = dates.map((d) => farmDay(perParcel, d));
+  const any = days.some((d) => d !== undefined);
   return (
     <section class="wx card" data-testid="weather-strip" aria-label={t('today.weather')}>
       <div class="wx-row">
-        {[0, 1, 2, 3, 4].map((i) => <div class={i === 0 ? 'd today' : 'd'} key={i}><span class="dn">{formatDate(new Date(base + i * DAY_MS).toISOString().slice(0, 10))}</span><span class="t">{DASH}</span></div>)}
+        {dates.map((date, i) => {
+          const d = days[i];
+          return (
+            <div class={i === 0 ? 'd today' : 'd'} key={date} data-testid="wx-day">
+              <span class="dn">{formatDate(date)}</span>
+              <span class="t" data-testid="wx-temp">{d && d.tmin !== undefined && d.tmax !== undefined ? t('wx.temp', { min: formatQty(d.tmin), max: formatQty(d.tmax) }) : DASH}</span>
+              <span class="r" data-testid="wx-rain">{d && d.rain !== undefined ? t('wx.rain', { mm: formatQty(d.rain) }) : DASH}</span>
+            </div>
+          );
+        })}
       </div>
-      <p class="muted wx-none">{t('today.weather.none')}</p>
+      {!any && <p class="muted wx-none">{t('today.weather.none')}</p>}
     </section>
   );
+}
+
+/** One line for a field card: today's weather of THAT parcel (information only). Nothing when there is no data. */
+function fieldWeather(days: readonly Day[], today: string): string {
+  const d = dayOf(days, today);
+  if (!d || d.tmin === undefined || d.tmax === undefined) return '';
+  const rain = d.rain !== undefined ? t('wx.rain', { mm: formatQty(d.rain) }) : '';
+  const gust = d.gust !== undefined ? t('wx.gust', { kmh: formatQty(d.gust) }) : '';
+  return [t('wx.temp', { min: formatQty(d.tmin), max: formatQty(d.tmax) }), rain, gust].filter((x) => x !== '').join(' · ');
 }
 
 /** First start: three short steps, in the order the farmer will do them. */
@@ -63,6 +87,7 @@ function Fields({ cards, onUrgent }: { cards: FieldCard[]; onUrgent: () => void 
           <div class={c.state === 'unknown' ? 'card field blocked' : 'card field'} key={c.p.id} data-testid="cut" data-state={c.state}>
             <div class="field-head"><strong>{text(c.p.name)}</strong>{typeof c.p.area_str !== 'undefined' && <span class="muted">{formatArea(c.p.area_str as number | string)}</span>}</div>
             {c.crops && <small>{c.crops}</small>}
+            {c.weather && <small data-testid="field-weather">{c.weather}</small>}
             <span class={look.cls} data-testid="cut-line">{line}</span>
             {c.source && <small data-testid="cut-source">{c.source}</small>}
             {c.late && <span class="badge warn" data-testid="cut-late">{t('cut.late')}</span>}
@@ -84,6 +109,8 @@ export function Today() {
   const rows = [useRows('parcels'), useRows('plantings'), useRows('products'), useRows('stock_lots'), useRows('crops')];
   const [parcels, plantings, products, lots, crops] = rows;
   const jobs = useRows('jobs'); const workers = useRows('workers'); const links = useRows('job_plantings'); const sprays = useRows('job_spray');
+  const weatherRows = useWeather();
+  const weatherOf = new Map(weatherRows.map((w) => [w.parcel_id, parseDays(w.days)] as const));
   const openJobs = (jobs.rows ?? []).filter((j) => !j.deleted_at && j.kind === 'spray' && j.status === 'planned');
   const live = (q: Rows) => q.rows?.filter((r) => !r.deleted_at) ?? [];
   const demo = activeFarm.value !== realFarmId.value;
@@ -99,7 +126,7 @@ export function Today() {
   const cards: FieldCard[] = live(parcels).map((p) => {
     const c = cutFromParcel(p.id, now, plantings.rows ?? [], links.rows ?? [], sprays.rows ?? []);
     const crops_ = [...new Set(live(plantings).filter((x) => x.parcel_id === p.id).map((x) => nameOf(crops.rows?.find((c2) => c2.id === x.crop_id) ?? {})))].join(', ');
-    return { p, state: c.state, at: c.state === 'from' ? c.at : '', late: c.state === 'from' && c.late === true, source: c.state === 'from' ? t(c.source === 'manual' ? 'cut.source.manual' : 'cut.source.label') : '', crops: crops_ };
+    return { weather: fieldWeather(weatherOf.get(p.id) ?? [], athensToday(new Date()) ?? ''), p, state: c.state, at: c.state === 'from' ? c.at : '', late: c.state === 'from' && c.late === true, source: c.state === 'from' ? t(c.source === 'manual' ? 'cut.source.manual' : 'cut.source.label') : '', crops: crops_ };
   });
   const urgent = cards.find((c) => c.state === 'unknown') ?? cards.filter((c) => c.state === 'from').sort((a, b) => a.at.localeCompare(b.at))[0];
   const today = athensToday(new Date()) ?? '';
@@ -122,7 +149,7 @@ export function Today() {
           <button class="btn lime" data-testid="urgent-action" onClick={() => setHistory(true)}>{t('today.urgent.action')}</button>
         </section>
       )}
-      {loaded && has && <WeatherStrip />}
+      {loaded && has && <WeatherStrip perParcel={[...weatherOf.values()]} />}
       {loaded && has && <Fields cards={cards} onUrgent={() => setHistory(true)} />}
       {planned && <p class="msg" role="status" data-testid="job-saved">{t('job.saved')}</p>}
       {harvested && <p class="msg" role="status" data-testid="harvest-saved">{t('harvest.saved')}</p>}

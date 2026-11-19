@@ -463,5 +463,8 @@
   "welcome.2.body": "Start with one field and its planting.",
   "welcome.3": "or see the demo",
   "welcome.3.body": "Made-up data to show how it works. It never mixes with your own.",
-  "unit.str": "stremma"
+  "unit.str": "stremma",
+  "wx.temp": "{min}–{max}°",
+  "wx.rain": "{mm} mm",
+  "wx.gust": "gusts {kmh} km/h"
 }
