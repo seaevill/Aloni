@@ -14,7 +14,7 @@ import { EmptyState, ErrorState } from './states';
 import { Title, nameOf, retry } from './screens';
 import { useRows, type Rows } from './useRows';
 import { dayOf, farmDay, parseDays, type Day } from '../weather/strip';
-import { todaySummary } from '../summary/today';
+import { todaySummary, cutCrates } from '../summary/today';
 import { useWeather } from './useWeather';
 import type { Row } from '../db/schema';
 
@@ -166,6 +166,8 @@ export function Today() {
         <section class="kpis" data-testid="today-kpis">
           <div class="kpi"><small>{t('today.kpi.parcels')}</small><strong>{formatQty(live(parcels).length)}</strong></div>
           <div class="kpi"><small>{t('today.kpi.crops')}</small><strong>{formatQty(cropsInUse)}</strong></div>
+          <div class="kpi" data-testid="today-cut7"><small>{t('today.kpi.cut7')}</small><strong>{formatQty(cutCrates(harvestRows.rows ?? [], new Date().toISOString(), 7))}</strong></div>
+          <div class="kpi" data-testid="today-cut28"><small>{t('today.kpi.cut28')}</small><strong>{formatQty(cutCrates(harvestRows.rows ?? [], new Date().toISOString(), 28))}</strong></div>
           <div class="kpi wide" data-testid="today-canharvest"><small>{t('today.kpi.harvest')}</small><strong>{formatQty(cards.filter((c) => c.state === 'free').length)}</strong><small>{t('today.kpi.held', { n: cards.filter((c) => c.state !== 'free').length })}</small></div>
         </section>
       )}

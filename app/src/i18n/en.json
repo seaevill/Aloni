@@ -621,5 +621,7 @@
   "orders.map.title": "Match products to crops",
   "orders.map.none": "— none (not counted)",
   "orders.line.week": "This week: {a} crates · last week: {b}",
-  "orders.line.free": "Ready to cut: {n} plantings · cut in 7 days: {c} crates"
+  "orders.line.free": "Ready to cut: {n} plantings · cut in 7 days: {c} crates",
+  "today.kpi.cut7": "Crates, 7 days",
+  "today.kpi.cut28": "Crates, 28 days"
 }

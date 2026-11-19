@@ -37,6 +37,8 @@ Bu dosya benim iş listem. Bitirdiğimi `[x]` ile işaretlerim. `docs/reviews/te
 ## E5 – Kalite
 - [x] Kalan golden vakalar (yalnızca veri); geçen/atlanan sayısı STATUS'ta. *Bitti:* sayı yazılı.
 - [ ] e2e: tank karışımı, düzeltme, harita, işçi daveti (sahip tarafı da). *Bitti:* her biri için 375 px testi yeşil.
+- [ ] Kalan golden vakalar (yalnızca veri); geçen/atlanan sayısı STATUS'ta. *Bitti:* sayı yazılı.
+- [x] e2e: tank karışımı, düzeltme, harita, işçi daveti (sahip tarafı da). *Bitti:* her biri için 375 px testi yeşil. *Not:* hepsi 375 px testi olarak mevcut ve CI yeşil: tank `spray.spec` :198, düzeltme :164, harita `map.spec`, işçi daveti sahip tarafı `live-auth.spec` :53, işçi tarafı `live-worker.spec` :32.
 
 ## E6 – Bora kararları
 - [x] STATUS.md «(d)» bölümünde sade dille, varsayılan önerimle: EPPO onayı, OpenFreeMap şartları, Hintçe kontrolü, logo, veri sorumlusu bilgileri, LIVE. *Bitti:* bölüm güncel.

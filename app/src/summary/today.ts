@@ -1,4 +1,4 @@
-import { addDecimal, parseDecimal, type Decimal } from '@aloni/rules-core';
+import { addDecimal, parseDecimal, parseWhole, type Decimal } from '@aloni/rules-core';
 import type { Row } from '../db/schema';
 import { effectiveSprays } from '../spray/spray';
 
@@ -19,4 +19,16 @@ export function todaySummary(today: string, sprays: readonly Row[], harvests: re
   for (const h of cut) { const q = parseDecimal(String(h.crates_str ?? '')); if (q.known) sum = addDecimal(sum as Decimal, q.value); }
   const overdue = jobs.filter((j) => !j.deleted_at && j.kind === 'spray' && j.status === 'planned' && typeof j.planned_for === 'string' && j.planned_for < today);
   return { done, crates: String(sum), harvests: cut.length, overdue };
+}
+
+/** The crates cut (logged harvests, whole crates) in the last `days` days up to `nowIso`; an entry with an unreadable crate count or time counts for nothing. */
+export function cutCrates(harvests: readonly Row[], nowIso: string, days: number): number {
+  const since = new Date(Date.parse(nowIso) - days * 86_400_000).toISOString();
+  let sum = Number('0');
+  for (const h of harvests) {
+    const n = parseWhole<'Crates'>(typeof h.crates_str === 'string' ? h.crates_str : '');
+    const at = typeof h.harvested_at === 'string' ? h.harvested_at : '';
+    if (n.known && at >= since && at <= nowIso) sum += n.value;
+  }
+  return sum;
 }
