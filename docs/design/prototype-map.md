@@ -11,7 +11,7 @@ Kaynak: `reference/prototype/index.html` (v2 tıklanabilir prototip, 780 px ekra
 | 3 | **Parcel detail** – kroki, Location/Area/Elevation/OPEKEPE tablosu, Alerts | `Χωράφια` listesi + düzenleme formu (`screens.tsx`, `ParcelForm`) | **detay ekranı yok** | 3 | Tarla detay ekranı (kroki yerine harita sınırı, bilgi tablosu, ekimler, hava, ilaçlama geçmişi) |
 | 4 | **Orders → sowing** – sipariş/tedarik, ekim önerisi, «Not on these parcels» | yok | **eksik** | 0 | Κλούβες bağlantısı + ekim önerisi (E4) |
 | 5 | **Why? sheet** – öneri gerekçesi | yok | **eksik** | 0 | Kural gerekçesi sayfası (imzasız kural: yalnızca veri) |
-| 6 | **Spray log / CSV** | `Μητρώο ψεκασμών` (`ui/Register.tsx`) | var | 7 | Prototipin tablo düzeni |
+| 6 | **Spray log / CSV** | `Μητρώο ψεκασμών` (`ui/Register.tsx`) | **yeniden düzenlendi** (koyu bant + geri, indirme düğmeleri üstte; tablo düzeni aynı) | 7 | tür filtre düğmeleri (Spray/Sow/…); kart düzeni (tablo yerine) |
 | 7 | **Stock** | `Αποθήκη` (`ui/Stock.tsx`) | **yeniden düzenlendi** (koyu bant, tür filtre düğmeleri, etiketli kart, kalan miktar + son kullanma + onaylı etiketten bekleme süresi) | 7 | FRAC/IRAC grup etiketi ve etken madde adı (veride yok); kartın tamamına dokununca açılma |
 | 8 | **More** | `Άλλα` (`ui/More.tsx`) | var (ek kartlar: hazırlık, sihirbaz, bildirim) | 6 | – |
 | 9 | **Today (Greek)** | `Σήμερα` el | = 1 | 7 | – |
@@ -29,3 +29,8 @@ Prototipte bu iki ekranın karşılığı YOK (yalnızca ilaçlama kaydı/CSV li
 - ✔ Koyu üst bant; ✔ tür filtre düğmeleri (Όλα / Λίπασμα / …); ✔ ürün adı + tür etiketi + ruhsat no etiketi; ✔ kalan miktar, son kullanma, bekleme süresi (yalnızca ONAYLI etiketten, ürün–ekin başına).
 - ✘ FRAC/IRAC grup etiketi ve etken madde (uygulamanın veri modelinde yok; uydurulmaz); ✘ son uygulanan grup uyarısı (rotasyon kuralı imzasız: karar vermez); ✘ kartın tamamı tek dokunuşla açılmıyor (iki ayrı düğme).
 - Görüntü: `docs/design/compare/stock.png` (sol prototip, sağ uygulama, 375 px). Diğer sekmeler (ekin listesi, tarla listesi, Άλλα): `crops-list.png`, `parcels-list.png`, `more.png` (şimdiki durum, değişmemiş).
+
+## Fark listesi – Μητρώο (bu PR)
+- ✔ Koyu üst bant ve geri düğmesi bandın içinde; ✔ indirme düğmeleri sayfanın en üstünde (prototipteki «Export CSV» gibi).
+- ✘ Tür filtre düğmeleri; ✘ kart düzeni (Μητρώο resmi kayıt sütunlarını gösterdiği için tablo/satır düzeni korunuyor).
+- Görüntü: `docs/design/compare/register.png` (soldan sağa: prototip, önce, sonra; 375 px).

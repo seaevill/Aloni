@@ -46,8 +46,11 @@ export function Register({ onBack }: { onBack: () => void }) {
   const warnings = () => downloadText(`aloni-${demo ? 'demo-' : ''}register-warnings-${day}.csv`, toMachineCsv(['record_id', 'warning_code'], warningLines(data).map((w) => [w.record_id, w.warning_code])), 'text/csv;charset=utf-8');
   const csv = () => downloadText(`aloni-${demo ? 'demo-' : ''}psekasmoi-prosxedio-${stamp.split(' ')[0]}.csv`, toCsv(`${t('register.draft')} — ${holderLine}`, COLUMNS.map((c) => t(COL_KEYS[c])), lines), 'text/csv;charset=utf-8');
   return (
-    <section class="register" data-testid="register">
-      <h1>{t('register.title')}{demo && <span class="badge">{t('badge.demo')}</span>}</h1>
+    <section class="register detail" data-testid="register">
+      <header class="band">
+        <div class="noprint"><BackBar onBack={onBack} /></div>
+        <h1>{t('register.title')}{demo && <span class="badge">{t('badge.demo')}</span>}</h1>
+      </header>
       <p class="badge blocked" data-testid="register-draft">{t('register.draft')}</p>
       {fillIn.length > 0 && <p class="card" data-testid="register-fillin">{fillText}</p>}
       <p class="muted">{t('register.generated', { d: stamp })}</p>
@@ -60,7 +63,6 @@ export function Register({ onBack }: { onBack: () => void }) {
         </label>
       )}
       <div class="noprint">
-        <BackBar onBack={onBack} />
         <button class="btn" data-testid="register-csv" onClick={csv}>{t('register.csv')}</button>
         <button class="btn" data-testid="register-csv-machine" onClick={machine}>{t('register.csv.machine')}</button>
         <button class="btn" data-testid="register-csv-warnings" onClick={warnings}>{t('register.csv.warnings')}</button>
