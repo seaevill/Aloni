@@ -656,7 +656,6 @@
   "spray.flag.quantity_unknown": "Quantity unknown",
   "spray.oneCrop": "One crop per entry.",
   "job.error.nolabel": "Cannot assign: the label data for this crop is missing.",
-  "job.planned.line": "{product} · {worker} · {date}",
   "today.fields": "Fields",
   "orders.map.title": "Match products to crops",
   "jobs.group.overdue": "Overdue",
