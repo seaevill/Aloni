@@ -182,3 +182,7 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 
 /* the worker's toast sits at the TOP: it never covers the next job's buttons */
 [data-testid="worker-app"] ~ .toast { top:calc(var(--sp-8) + env(safe-area-inset-top)); bottom:auto; }
+
+/* harvest picker: the chosen crop is filled (never colour alone: it also carries a ✓), the others have a clear border */
+.seg button.pick { border-color:var(--field); }
+.seg button.pick[aria-pressed="true"] { background:var(--green); border-color:var(--green); color:var(--white); font-weight:800; }
