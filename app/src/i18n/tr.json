@@ -493,7 +493,7 @@
   "spray.correct.note": "İlk kayıt olduğu gibi kalır. Düzeltme, nedeniyle birlikte yeni bir kayıttır. Ürün değişmez.",
   "spray.correct.reason": "Düzeltme nedeni",
   "spray.correct.reason.error": "Düzeltme nedenini yazın: düzeltmenin her zaman bir nedeni vardır.",
-  "spray.correct.earlier": "Bekleme süresi ilk kayıttan daha erken bitemez.",
+  "spray.correct.earlier": "İlaçlamanın bitişi kaydedilenden daha erkene alınamaz.",
   "spray.correct.time.error": "Geçersiz tarih ya da saat.",
   "spray.correct.qty": "Partiden alınan miktar",
   "spray.correct.open": "Düzelt",
@@ -561,5 +561,7 @@
   "notify.nokey": "Bildirimler bu sürümde henüz kullanılamıyor.",
   "notify.unsupported": "Bu telefon ya da tarayıcı bildirimleri desteklemiyor.",
   "notify.denied": "Bildirim izni verilmedi.",
-  "notify.saved": "Kaydedildi."
+  "notify.saved": "Kaydedildi.",
+  "worker.start": "İlaçlamanın başlangıç saati",
+  "worker.start.error": "İlaçlamanın ne zaman başladığını yazın. Başlangıç bitişten sonra olamaz."
 }
