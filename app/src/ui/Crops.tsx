@@ -7,6 +7,7 @@ import { archived, restored } from '../parcels/parcel'; // generic: set / clear 
 import { validDate } from '../plantings/planting';
 import { put } from '../repo';
 import type { Row } from '../db/schema';
+import { EditTrail } from './EditTrail';
 import { PlantingForm, STATUS_KEYS } from './PlantingForm';
 import { tab } from './nav';
 import { nameOf, Status, Title } from './screens';
@@ -23,12 +24,13 @@ const statusText = (v: unknown): string => {
 
 /** Crops in use, each with its plantings (parcel · area · sowing date · status). Adding is only for the real farm. */
 export function Crops() {
-  const [adding, setAdding] = useState(false);
+  const [adding, setAdding] = useState(false); const [editing, setEditing] = useState<Row | undefined>(undefined);
   const crops = useRows('crops');
   const plantings = useRows('plantings');
   const parcels = useRows('parcels');
   const liveParcels = parcels.rows?.filter((p) => !p.deleted_at) ?? [];
   if (adding) return <PlantingForm parcels={liveParcels} onDone={() => setAdding(false)} />;
+  if (editing) return <PlantingForm parcels={liveParcels} existing={editing} onDone={() => setEditing(undefined)} />;
   const demo = activeFarm.value !== realFarmId.value;
   const live = plantings.rows?.filter((p) => !p.deleted_at) ?? [];
   const parcelName = (id: unknown) => { const p = parcels.rows?.find((r) => r.id === id); return p ? String(p.name) : t('value.unknown'); };
@@ -63,6 +65,8 @@ export function Crops() {
               <span>{dot(parcelName(p.parcel_id), formatArea(p.area_str as string | number))}</span>
               <small>{dot(sown(p), statusText(p.status), text(p.variety), text(p.lot_label))}</small>
               <UnsyncedMark id={p.id} />
+              {!demo && <button class="row" data-testid="planting-edit" onClick={() => setEditing(p)}><span>{t('edit.open')}</span><span aria-hidden="true" class="chev" /></button>}
+              <EditTrail row={p} />
               {!demo && <button class="btn secondary" onClick={() => void archive(p)}>{t('planting.archive')}</button>}
             </div>
           ))}

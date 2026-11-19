@@ -498,5 +498,21 @@
   "spray.correct.qty": "Ποσότητα από την παρτίδα",
   "spray.correct.open": "Διόρθωση",
   "spray.correct.was": "Αρχική καταχώριση: δόση {dose}, {when}",
-  "spray.correct.why": "Διορθώθηκε: {reason}"
+  "spray.correct.why": "Διορθώθηκε: {reason}",
+  "edit.title": "Επεξεργασία",
+  "edit.note": "Η αλλαγή αποθηκεύεται με τον λόγο της· οι προηγούμενες τιμές μένουν στο ιστορικό αλλαγών.",
+  "edit.reason": "Λόγος αλλαγής",
+  "edit.reason.error": "Γράψτε τον λόγο της αλλαγής: κάθε αλλαγή έχει λόγο.",
+  "edit.open": "Επεξεργασία",
+  "edit.trail": "Αλλαγές ({n})",
+  "edit.was": "{when} · {reason} · πριν: {values}",
+  "edit.f.name": "όνομα",
+  "edit.f.area": "εμβαδόν",
+  "edit.f.topo": "τοπογραφία",
+  "edit.f.sown": "σπορά",
+  "edit.f.status": "κατάσταση",
+  "edit.f.variety": "ποικιλία",
+  "edit.f.lot": "παρτίδα",
+  "history.edits": "Αλλαγές χωραφιών και φυτειών",
+  "edit.f.osde": "κωδικός ΟΣΔΕ"
 }
