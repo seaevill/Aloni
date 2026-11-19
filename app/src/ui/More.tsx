@@ -12,6 +12,7 @@ import { Workers } from './Workers';
 import { workerView } from './nav';
 import { Backup } from './Backup';
 import { GoLive } from './GoLive';
+import { Notifications } from './Notifications';
 import { Readiness } from './Readiness';
 import { SignIn } from './SignIn';
 import { showUndo } from './Toast';
@@ -53,6 +54,7 @@ export function More() {
       <SignIn />
       <Backup />
       <SettingsBox />
+      <Notifications />
       {activeFarm.value === DEMO_FARM_ID && <button class="row" data-testid="open-worker-view" onClick={() => { workerView.value = ''; }}><span>{t('more.workerView')}</span><span aria-hidden="true" class="chev" /></button>}
       <button class="row" data-testid="open-register" onClick={() => setView('register')}><span>{t('register.open')}</span><span aria-hidden="true" class="chev" /></button>
       <button class="row" data-testid="open-workers" onClick={() => setView('workers')}><span>{t('workers.open')}</span><span aria-hidden="true" class="chev" /></button>
