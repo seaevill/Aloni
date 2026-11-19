@@ -15,6 +15,7 @@ import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
 import type { Row } from '../db/schema';
 import { Lines, badgeText } from './LabelUses';
 import { UNIT_KEYS } from './LabelUseForm';
+import { BackBar } from './BackBar';
 import { nameOf } from './screens';
 import { useRows } from './useRows';
 
@@ -89,8 +90,11 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const needs = live(plantings).length === 0 || live(products).length === 0 || live(workers).length === 0;
 
   return (
-    <section>
-      <h1>{t('spray.add')}</h1>
+    <section class="detail">
+      <header class="band">
+        <BackBar onBack={() => onDone(false)} testId="spray-back" />
+        <h1>{t('spray.add')}</h1>
+      </header>
       {inMix > 0 && <p class="msg" role="status" data-testid="spray-mix-note">{t('spray.mix.note', { n: inMix })}</p>}
       {needs && <p class="msg error" role="alert" data-testid="spray-needs">{t('spray.needs')}</p>}
       <h2>{t('spray.plantings')}</h2>
