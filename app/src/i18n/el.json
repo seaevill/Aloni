@@ -133,6 +133,7 @@
   "product.unit.l": "Λίτρα (L)",
   "product.unit.kg": "Κιλά (kg)",
   "product.photo": "Φωτογραφία ετικέτας (προαιρετικό)",
+  "product.noreg": "Λείπει ο αριθμός έγκρισης του προϊόντος (χρειάζεται για τον έλεγχο)",
   "product.save": "Αποθήκευση",
   "product.cancel": "Ακύρωση",
   "product.archive": "Αρχειοθέτηση",

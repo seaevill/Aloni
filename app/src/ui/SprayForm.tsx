@@ -110,6 +110,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
       {chosen.length > 0 && <p class="muted" data-testid="spray-onecrop">{t('spray.oneCrop')}</p>}
       <h2>{t('spray.product')}</h2>
       <div class="seg two">{live(products).map((p) => <button key={p.id} aria-pressed={productId === p.id} onClick={() => { setProductId(p.id); setLotKey(undefined); setQty(''); setQtyUnknown(false); pickLabelDefaults(chosen.length ? live(labels).find((l) => l.product_id === p.id && l.crop_id === chosen[0].crop_id) : undefined); }}>{nameOf(p)}</button>)}</div>
+      {product && !text(product.reg_no) && <p class="badge warn bi" role="note" data-testid="spray-noreg">{t('product.noreg')}</p>}
       {productId && chosen.length > 0 && (
         <div class="card" data-testid="spray-label"><strong>{t('spray.label.title')}</strong>
           {label ? <><span class={`badge ${statusOf(label)}`}>{badgeText(label, statusOf(label))}</span><Lines row={label} /></> : <span class="badge blocked">{t('spray.flag.label_none')}</span>}

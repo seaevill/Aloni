@@ -67,6 +67,7 @@ export function Stock() {
         return (
           <div class="card product-card" key={r.id} data-testid="product"><strong>{nameOf(r)}</strong>
             <div class="tags">{typeText(r.type) && <span class="tag">{typeText(r.type)}</span>}{text(r.reg_no) && <span class="tag">{text(r.reg_no)}</span>}</div>
+            {!text(r.reg_no) && <span class="badge warn" data-testid="product-noreg">{t('product.noreg')}</span>}
             <small>{dot(r.qty == null ? '' : `${formatQty(r.qty as number | string)} ${text(r.unit)}`)}</small>
             {moves.rows && <small data-testid="product-stock">{t('stock.balance', { qty: stockText(r, moves.rows) })}</small>}
             {exp && <small data-testid="product-expiry">{t('stock.expiry', { date: formatDateLong(exp) })}</small>}
