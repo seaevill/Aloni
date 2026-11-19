@@ -431,5 +431,8 @@
   "job.error.fill": "Fill in what is missing: plantings, product, worker, date, dose and unit.",
   "job.error.unit": "Choose the dose unit.",
   "job.planned.title": "Planned jobs",
-  "job.planned.line": "{product} · {worker} · {date}"
+  "job.planned.line": "{product} · {worker} · {date}",
+  "spray.flag.max_apps_exceeded": "Over the label's maximum applications",
+  "spray.over.reason": "Why the maximum applications are exceeded",
+  "spray.over.error": "This application passes the label's maximum: write the reason."
 }
