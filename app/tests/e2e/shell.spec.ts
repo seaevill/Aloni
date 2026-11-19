@@ -19,7 +19,7 @@ test('shell: five tabs in Greek, 375 px, no horizontal scroll', async ({ page })
 
 test('tabs switch screens', async ({ page }) => {
   await page.goto('/');
-  for (const [id, title] of [['crops', 'Καλλιέργειες'], ['parcels', 'Χωράφια'], ['stock', 'Αποθήκη'], ['more', 'Περισσότερα'], ['today', 'Σήμερα']]) {
+  for (const [id, title] of [['crops', 'Καλλιέργειες'], ['parcels', 'Χωράφια'], ['stock', 'Αποθήκη'], ['more', 'Άλλα'], ['today', 'Σήμερα']]) {
     await page.locator(`nav.tabs [data-tab="${id}"]`).click();
     await expect(page.locator('h1')).toContainText(title);
   }
@@ -76,7 +76,7 @@ test('Information screen: draft legal texts, offline-safe, marked for lawyer rev
   await expect(page.getByTestId('info-disclaimer')).toContainText('Δεν αποτελούν συνταγή');
   await context.setOffline(true);
   await page.getByRole('button', { name: 'Επιστροφή' }).click();
-  await expect(page.locator('h1')).toHaveText('Περισσότερα');
+  await expect(page.locator('h1')).toHaveText('Άλλα');
 });
 
 test('controller details: entered once, kept in the database, shown in the notice, gate opens', async ({ page }) => {
