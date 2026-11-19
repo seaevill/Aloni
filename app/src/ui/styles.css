@@ -3,13 +3,15 @@ html, body { margin:0; background:var(--bg); color:var(--fg); font:var(--fs-16)/
 #app { min-height:100dvh; display:flex; flex-direction:column; }
 main { flex:1; padding:var(--sp-16) var(--sp-16) calc(var(--main-pad-bottom) + env(safe-area-inset-bottom)); max-width:var(--max-w); width:100%; margin:0 auto; }
 h2 { font-size:var(--fs-22); font-weight:800; line-height:1.15; letter-spacing:var(--ls-h2); margin:var(--sp-16) 0 var(--sp-8); }
-h1 { font-size:var(--fs-30); font-weight:800; line-height:1.05; letter-spacing:var(--ls-title); margin:0 0 var(--sp-12); display:flex; flex-wrap:wrap; gap:var(--sp-8); align-items:center; overflow-wrap:anywhere; }
+h1 { font-size:var(--fs-30); font-weight:800; line-height:1.05; letter-spacing:var(--ls-title); margin:0 0 var(--sp-12); display:flex; flex-wrap:wrap; gap:var(--sp-8); align-items:center; overflow-wrap:break-word; hyphens:auto; }
 .badge { font-size:var(--fs-14); font-weight:700; background:var(--warn); color:var(--white); padding:var(--sp-2) var(--sp-8); border-radius:var(--r-pill); }
-.card { overflow-wrap:anywhere; background:var(--card); border:0; box-shadow:var(--shadow-card); border-radius:var(--r-card); padding:var(--sp-12) var(--sp-14); margin:0 0 var(--sp-10); }
+.card { overflow-wrap:break-word; hyphens:auto; background:var(--card); border:0; box-shadow:var(--shadow-card); border-radius:var(--r-card); padding:var(--sp-12) var(--sp-14); margin:0 0 var(--sp-10); }
 .card small { display:block; font-size:var(--fs-14); color:var(--muted); }
 nav.tabs { position:fixed; left:0; right:0; bottom:0; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); background:var(--card); border-top:var(--bw-1) solid var(--line); padding-bottom:env(safe-area-inset-bottom); }
 nav.tabs button { min-width:0; padding:0 var(--sp-2); line-height:1.15; text-align:center; overflow-wrap:anywhere; min-height:var(--tap); border:0; background:none; font:inherit; font-size:var(--fs-14); color:var(--tab); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--sp-2); }
 nav.tabs button[aria-current="page"] { color:var(--forest-2); font-weight:700; }
+nav.tabs button { min-width:0; padding:0 var(--sp-2); line-height:1.15; text-align:center; overflow-wrap:break-word; hyphens:auto; min-height:var(--tap); border:0; background:none; font:inherit; font-size:var(--fs-14); color:var(--tab); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--sp-2); }
+nav.tabs button[aria-current="page"] { color:var(--forest-2); font-weight:800; }
 nav.tabs button[aria-current="page"] .ico { background:var(--lime); color:var(--on-lime); border-radius:var(--r-pill); padding:var(--sp-2) var(--sp-14); }
 @supports ((backdrop-filter:none) or (-webkit-backdrop-filter:none)) { nav.tabs { background:var(--bar); -webkit-backdrop-filter:var(--blur-bar); backdrop-filter:var(--blur-bar); } }
 nav.tabs .ico { font-size:var(--fs-20); line-height:1; }
@@ -17,7 +19,7 @@ nav.tabs .ico { font-size:var(--fs-20); line-height:1; }
 .btn.secondary { background:var(--card); color:var(--green); }
 .btn.danger { border-color:var(--warn); color:var(--warn); background:var(--card); }
 .seg { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--sp-8); margin:0 0 var(--sp-12); }
-.seg button { min-width:0; padding:0 var(--sp-6); overflow-wrap:anywhere; min-height:var(--tap); font:inherit; border-radius:var(--r-btn); border:var(--bw-2) solid var(--line); background:var(--card); }
+.seg button { min-width:0; padding:0 var(--sp-6); overflow-wrap:break-word; hyphens:auto; min-height:var(--tap); font:inherit; border-radius:var(--r-btn); border:var(--bw-2) solid var(--line); background:var(--card); }
 .seg button[aria-pressed="true"] { border-color:var(--green); font-weight:700; color:var(--green); }
 .msg { color:var(--green); font-weight:600; }
 .muted { color:var(--muted); }
@@ -59,7 +61,9 @@ nav.tabs .ico { font-size:var(--fs-20); line-height:1; }
 .card .badge.blocked { font-weight:700; }
 /* the tab bar: line icons, ONE line per label */
 nav.tabs .ico svg { display:block; width:var(--icon); height:var(--icon); }
-nav.tabs .lbl { white-space:nowrap; overflow-wrap:normal; line-height:1.15; }
+nav.tabs .lbl { white-space:normal; overflow-wrap:normal; hyphens:manual; text-align:center; line-height:1.15; }
+.wx-row .d span { white-space:nowrap; }
+.filters .tag-btn { flex:0 0 auto; white-space:nowrap; }
 /* a closed button LOOKS closed (grey, no green fill) and still answers a press (the worker is told why) */
 .btn:disabled, .btn[aria-disabled="true"], .seg button:disabled, .seg.big button.go:disabled, .seg.big button.go[aria-disabled="true"] { background:var(--card); border-color:var(--line); color:var(--muted); font-weight:600; }
 .toast .btn { min-height:var(--tap-big); }
@@ -161,7 +165,7 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 
 .detail .band .latin { margin:0; font-style:italic; color:var(--white); }
 /* Αποθήκη, prototype layout: dark band, type filters, product cards with tags */
-.filters { display:flex; flex-wrap:wrap; gap:var(--sp-8); margin:0 0 var(--sp-12); }
+.filters { display:flex; flex-wrap:nowrap; overflow-x:auto; gap:var(--sp-8); margin:0 0 var(--sp-12); }
 .tag-btn { flex:0 0 auto; min-height:var(--tap); padding:0 var(--sp-14); font:inherit; border-radius:var(--r-btn); border:var(--bw-2) solid var(--line); background:var(--card); color:var(--fg); }
 .tag-btn[aria-pressed="true"] { background:var(--forest-2); border-color:var(--forest-2); color:var(--white); font-weight:700; }
 .tags { display:flex; flex-wrap:wrap; gap:var(--sp-8); margin:var(--sp-6) 0; }

@@ -12,3 +12,6 @@
   --tap:56px; --sketch-h:220px; --map-h:56vh; --tap-step:36px; --tap-big:72px; --thumb:96px; --dot:10px; --btn-min-w:96px; --max-w:640px; --nav-h:72px; --main-pad-bottom:88px;
   --shadow-card:0 1px 0 rgba(14,28,18,.06),0 4px 14px rgba(14,28,18,.06); --blur-bar:blur(22px) saturate(170%);
 }
+
+/* very narrow phones (≤300 px): buttons stack in one column. Lives here because tokens.css is the only file allowed to hold px values. */
+@media (max-width:300px) { main .seg, main .seg.two, main .pair, main .actions2 { grid-template-columns:1fr; } } /* `main` makes it win over styles.css, which loads later */
