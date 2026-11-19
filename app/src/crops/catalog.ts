@@ -2,7 +2,7 @@ import type { Row } from '../db/schema';
 import { uuidv5 } from '../db/uuid';
 
 /**
- * The crops Bora grows (slugs shared with Κλούβες). Names only: no crate weights, no doses, nothing agronomic.
+ * The crops Bora grows (slugs shared with Κλούβες; his 17 crops of 2026-11-19 are all here). Names only: no crate weights, no doses, nothing agronomic.
  * A crop row is created in the real farm the first time it is planted (so the Crops tab only lists what is in use).
  */
 export const CATALOG = [
@@ -12,10 +12,18 @@ export const CATALOG = [
   { slug: 'dill', el: 'Άνηθος', tr: 'Dereotu', en: 'Dill', latin: 'Anethum graveolens' },
   { slug: 'coriander', el: 'Κόλιανδρο', tr: 'Kişniş', en: 'Coriander', latin: 'Coriandrum sativum' },
   { slug: 'chicory', el: 'Ραδίκια άγρια', tr: 'Yabani hindiba (radika)', en: 'Wild chicory', latin: 'Cichorium intybus' },
-  { slug: 'endive', el: 'Αντίδια', tr: 'Endivyen', en: 'Endive', latin: 'Cichorium endivia' },
+  { slug: 'endive', el: 'Αντίδια', tr: 'Endivyen (kıvırcık hindiba)', en: 'Endive', latin: 'Cichorium endivia' },
   { slug: 'chard', el: 'Σέσκουλα', tr: 'Pazı', en: 'Swiss chard', latin: 'Beta vulgaris subsp. vulgaris (Cicla group)' },
   { slug: 'onion', el: 'Κρεμμύδι (φρέσκο)', tr: 'Taze soğan', en: 'Spring onion', latin: 'Allium cepa' },
   { slug: 'leek', el: 'Πράσο', tr: 'Pırasa', en: 'Leek', latin: 'Allium ampeloprasum var. porrum' },
+  // Bora's list of 2026-11-19 (Greek + Turkish names as he wrote them). English names are plain/transliterated; the Latin name is left EMPTY where I am not sure (never guessed). Not agronomic data.
+  { slug: 'vlita', el: 'Βλήτα', tr: 'Horoz ibiği yaprağı (vlita)', en: 'Vlita (amaranth greens)', latin: 'Amaranthus' },
+  { slug: 'kaukalithra', el: 'Καυκαλήθρα', tr: 'Kafkalitra (yabani maydanozgil)', en: 'Kaukalithra (wild umbellifer green)', latin: '' },
+  { slug: 'cabbage', el: 'Λάχανα', tr: 'Lahana (yaprak)', en: 'Cabbage (leaves)', latin: 'Brassica oleracea' },
+  { slug: 'myroni', el: 'Μυρώνι', tr: 'Mironi (yabani rezene benzeri ot)', en: 'Myroni (wild herb)', latin: '' },
+  { slug: 'beet', el: 'Παντζάρια', tr: 'Pancar', en: 'Beetroot', latin: 'Beta vulgaris' },
+  { slug: 'radish', el: 'Ραπάνι', tr: 'Turp', en: 'Radish', latin: 'Raphanus sativus' },
+  { slug: 'celery', el: 'Σέλινο', tr: 'Kereviz (yaprak)', en: 'Celery (leaves)', latin: 'Apium graveolens' },
 ] as const;
 export type CatalogCrop = (typeof CATALOG)[number];
 /** The crop's name in a language; a language without crop names of its own (Hindi) shows the Greek one. */

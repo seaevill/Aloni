@@ -64,3 +64,13 @@ describe('storage', () => {
     for (const c of CATALOG) expect(Object.keys(c).sort()).toEqual(['el', 'en', 'latin', 'slug', 'tr']);
   });
 });
+
+describe('Bora\'s crop list (2026-11-19)', () => {
+  it('all 17 crops are in the catalog with the Greek and Turkish names he wrote; slugs are unique; a Latin name is empty rather than guessed', () => {
+    const wanted: Array<[string, string]> = [['Άνηθος', 'Dereotu'], ['Αντίδια', 'Endivyen (kıvırcık hindiba)'], ['Βλήτα', 'Horoz ibiği yaprağı (vlita)'], ['Καυκαλήθρα', 'Kafkalitra (yabani maydanozgil)'], ['Κόλιανδρο', 'Kişniş'], ['Κρεμμύδι (φρέσκο)', 'Taze soğan'], ['Λάχανα', 'Lahana (yaprak)'], ['Μαϊντανός', 'Maydanoz'], ['Μυρώνι', 'Mironi (yabani rezene benzeri ot)'], ['Παντζάρια', 'Pancar'], ['Πράσο', 'Pırasa'], ['Ραδίκια άγρια', 'Yabani hindiba (radika)'], ['Ραπάνι', 'Turp'], ['Ρόκα', 'Roka'], ['Σέλινο', 'Kereviz (yaprak)'], ['Σέσκουλα', 'Pazı'], ['Σπανάκι', 'Ispanak']];
+    for (const [el, tr] of wanted) expect(CATALOG.some((c) => c.el === el && c.tr === tr), el).toBe(true);
+    expect(CATALOG).toHaveLength(17);
+    expect(new Set(CATALOG.map((c) => c.slug)).size).toBe(17);
+    for (const c of CATALOG) expect(typeof c.latin).toBe('string');
+  });
+});
