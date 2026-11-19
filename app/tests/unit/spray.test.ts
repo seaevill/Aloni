@@ -52,9 +52,18 @@ describe('a spray is RECORDED even with a weak label, marked, with the PHI unkno
   it('dose against the label: outside the range or another unit is flagged, inside is not', () => {
     const range = withSignOff(labelRow({ kind: 'range', doseMin: field('0,02'), doseMax: field('0,03') }), 'A', '2026-11-17', now)!;
     expect(build(input({ dose: '0,025' }), ctx({ label: range })).flags).toEqual([]);
-    expect(build(input({ dose: '0,031' }), ctx({ label: range })).flags).toEqual(['dose_outside_label']);
-    expect(build(input({ dose: '0,019' }), ctx({ label: range })).flags).toEqual(['dose_outside_label']);
-    expect(build(input({ doseUnit: 'g/str' }), ctx({ label: range })).flags).toEqual(['dose_unit_differs']);
+    const why = { doseReason: 'agronomist advised a stronger dose' };   // outside the label: the reason is REQUIRED now (the record is still never refused for it)
+    expect(build(input({ dose: '0,031', ...why }), ctx({ label: range })).flags).toEqual(['dose_outside_label']);
+    expect(build(input({ dose: '0,019', ...why }), ctx({ label: range })).flags).toEqual(['dose_outside_label']);
+    expect(build(input({ doseUnit: 'g/str', ...why }), ctx({ label: range })).flags).toEqual(['dose_unit_differs']);
+  });
+  it('a dose outside the label (or in another unit) needs a REASON, which is kept on the record; inside the label none is asked', () => {
+    const range = withSignOff(labelRow({ kind: 'range', doseMin: field('0,02'), doseMax: field('0,03') }), 'A', '2026-11-17', now)!;
+    expect(buildSpray(input({ dose: '0,031' }), ctx({ label: range }), F, now, ids)).toMatchObject({ ok: false, errors: { doseReason: true } });
+    expect(buildSpray(input({ doseUnit: 'g/str' }), ctx({ label: range }), F, now, ids)).toMatchObject({ ok: false, errors: { doseReason: true } });
+    expect(build(input({ dose: '0,031', doseReason: 'advised' }), ctx({ label: range })).spray.note).toBe('[dose] advised');
+    expect(buildSpray(input({ dose: '0,025' }), ctx({ label: range }), F, now, ids)).toMatchObject({ ok: true });
+    expect(buildSpray(input({ dose: '0,5' }), ctx({ label: undefined }), F, now, ids)).toMatchObject({ ok: true });   // no label = nothing to compare with (marked «no label» instead)
   });
   it('an expired lot and a negative stock are flagged (the spray still happened)', () => {
     expect(build(input(), ctx({ lot: { ...lot, expiry: '2026-01-01' } })).flags).toContain('lot_expired');
@@ -66,7 +75,7 @@ describe('a spray is RECORDED even with a weak label, marked, with the PHI unkno
 });
 
 describe('a LATE entry (the end of the spraying is more than 7 days before the record): allowed, but it needs a reason and is marked; the waiting periods do not change', () => {
-  const noError = { applicator: false, dose: false, doseUnit: false, plantings: false, product: false, qty: false, time: false, water: false, lateReason: false, overReason: false };
+  const noError = { applicator: false, dose: false, doseUnit: false, plantings: false, product: false, qty: false, time: false, water: false, lateReason: false, overReason: false, doseReason: false };
   it.each([['exactly 7 days before the record', '2026-11-13T10:00:00Z'], ['earlier today', '2026-11-20T01:00:00Z']])('%s: no reason needed, no mark', (_n, at) => {
     const r = build(input({ sprayedAt: at }), ctx());
     expect(r.flags).toEqual([]);
@@ -103,7 +112,7 @@ describe('what a spray record cannot be without', () => {
     ['unreadable quantity', { qty: 'abc' }, 'qty'], ['a lot without a quantity', { qty: '' }, 'qty'], ['unreadable water', { water: '1.000x' }, 'water'],
   ] as const)('%s is refused', (_n, over, key) => {
     const r = buildSpray(input(over as Partial<SprayInput>), ctx(), F, now, ids);
-    expect(r).toEqual({ ok: false, errors: { applicator: false, dose: false, doseUnit: false, plantings: false, product: false, qty: false, time: false, water: false, lateReason: false, overReason: false, [key]: true } });
+    expect(r).toEqual({ ok: false, errors: { applicator: false, dose: false, doseUnit: false, plantings: false, product: false, qty: false, time: false, water: false, lateReason: false, overReason: false, doseReason: false, [key]: true } });
   });
   it('without a lot no stock movement is made', () => expect(build(input({ lotKey: undefined, qty: '' }), ctx()).movement).toBeUndefined());
 });

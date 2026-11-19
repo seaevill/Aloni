@@ -434,5 +434,8 @@
   "job.planned.line": "{product} · {worker} · {date}",
   "spray.flag.max_apps_exceeded": "Over the label's maximum applications",
   "spray.over.reason": "Why the maximum applications are exceeded",
-  "spray.over.error": "This application passes the label's maximum: write the reason."
+  "spray.over.error": "This application passes the label's maximum: write the reason.",
+  "spray.dose.reason": "Why the dose is outside the label",
+  "spray.dose.error": "The dose is outside the label: write the reason.",
+  "spray.error.unit": "Choose the dose unit."
 }

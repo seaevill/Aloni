@@ -8,6 +8,8 @@ import { putMany } from '../repo';
 import { balanceOf, effectiveLots } from '../stock/stock';
 import { athensToday } from '../plantings/planting';
 import { exceedsMax, priorApps } from '../spray/apps';
+import { doseOutsideLabel } from '../spray/spray';
+import { parseDecimal } from '@aloni/rules-core';
 import { buildSpray, isLate, type Flag, type SprayInput } from '../spray/spray';
 import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
 import type { Row } from '../db/schema';
@@ -42,7 +44,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const [qty, setQty] = useState('');
   const [water, setWater] = useState('');
   const [note, setNote] = useState('');
-  const [lateReason, setLateReason] = useState(''); const [overReason, setOverReason] = useState('');
+  const [lateReason, setLateReason] = useState(''); const [overReason, setOverReason] = useState(''); const [doseReason, setDoseReason] = useState('');
   const [failed, setFailed] = useState(false);
 
   const chosen = live(plantings).filter((p) => sel.includes(p.id));
@@ -52,8 +54,10 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const lot = myLots.find((l) => l.lot_key === lotKey);
   const balance = lot ? balanceOf((moves.rows ?? []).filter((m) => m.lot_key === lotKey)) : undefined;
   const sprayedAt = athensInstant(when) ?? '';
-  const input: SprayInput = { plantingIds: sel, productId, applicatorId: workerId, sprayedAt, dose, doseUnit: unit, lotKey, qty, water, note, lateReason, overReason };
+  const input: SprayInput = { plantingIds: sel, productId, applicatorId: workerId, sprayedAt, dose, doseUnit: unit, lotKey, qty, water, note, lateReason, overReason, doseReason };
   const prior = priorApps(sprays.rows ?? [], links.rows ?? [], sel, productId);
+  const typedDose = parseDecimal(dose);
+  const outside = typedDose.known && unit !== undefined && doseOutsideLabel(label, typedDose.value, unit); // the reason field appears only for a dose outside the label
   const over = exceedsMax(label, prior); // the reason field appears only when this spraying passes the signed label's maximum
   const late = sprayedAt !== '' && isLate(sprayedAt, new Date().toISOString()); // the reason field appears only for a late entry
   const ids = { job: crypto.randomUUID(), spray: crypto.randomUUID(), movement: crypto.randomUUID(), plantingLinks: sel.map(() => crypto.randomUUID()) };
@@ -105,6 +109,11 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
           <input class="input" value={overReason} autoComplete="off" data-testid="spray-over-reason" onInput={(e) => setOverReason((e.target as HTMLInputElement).value)} />
         </label>
       )}
+      {outside && (
+        <label class="field">{t('spray.dose.reason')}
+          <input class="input" value={doseReason} autoComplete="off" data-testid="spray-dose-reason" onInput={(e) => setDoseReason((e.target as HTMLInputElement).value)} />
+        </label>
+      )}
       <label class="field">{t('spray.dose')}
         <input class="input" value={dose} inputMode="decimal" autoComplete="off" data-testid="spray-dose" onInput={(e) => setDose((e.target as HTMLInputElement).value)} />
       </label>
@@ -138,6 +147,8 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
       {failed && !r.ok && r.errors.qty && <p class="msg error" role="alert">{t('spray.error.qty')}</p>}
       {failed && !r.ok && r.errors.lateReason && <p class="msg error" role="alert" data-testid="spray-late-error">{t('spray.late.error')}</p>}
       {failed && !r.ok && r.errors.overReason && <p class="msg error" role="alert" data-testid="spray-over-error">{t('spray.over.error')}</p>}
+      {failed && !r.ok && r.errors.doseReason && <p class="msg error" role="alert" data-testid="spray-dose-error">{t('spray.dose.error')}</p>}
+      {failed && !r.ok && r.errors.doseUnit && <p class="msg error" role="alert" data-testid="spray-unit-error">{t('spray.error.unit')}</p>}
       {failed && !r.ok && r.errors.water && <p class="msg error" role="alert">{t('spray.error.water')}</p>}
       <button class="btn" data-testid="spray-save" onClick={() => void save()}>{t('spray.save')}</button>
       <button class="btn secondary" onClick={() => onDone(false)}>{t('product.cancel')}</button>

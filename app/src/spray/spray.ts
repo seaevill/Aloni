@@ -17,15 +17,23 @@ export interface SprayInput {
   lateReason?: string;
   /** Why one more application passes the signed label's maximum (required then). */
   overReason?: string;
+  /** Why a dose outside the label's own range (or in another unit) is used (required then). */
+  doseReason?: string;
 }
 export interface SprayContext { /** Sprays of this product already in force on the most-sprayed chosen planting. */ priorApps?: number; label: Row | undefined; plantings: readonly Row[]; lot: Row | undefined; lotBalance: string | undefined; today: string; /** Demo seed only: history is written without a reason. */ historic?: true }
 /** An end time older than this (before the record) is a LATE entry: allowed (a forgotten spraying must still reach the legal record), but it needs a reason and is marked. */
 export const LATE_AFTER_DAYS = 7;
 export const isLate = (sprayedAt: string, nowIso: string): boolean => Date.parse(sprayedAt) < Date.parse(nowIso) - LATE_AFTER_DAYS * 86400000;
-export interface SprayErrors { plantings: boolean; product: boolean; applicator: boolean; time: boolean; dose: boolean; doseUnit: boolean; qty: boolean; water: boolean; lateReason: boolean; overReason: boolean }
+export interface SprayErrors { plantings: boolean; product: boolean; applicator: boolean; time: boolean; dose: boolean; doseUnit: boolean; qty: boolean; water: boolean; lateReason: boolean; overReason: boolean; doseReason: boolean }
 export type SprayResult =
   | { ok: true; job: Row; jobPlantings: Row[]; spray: Row; movement: Row | undefined; flags: Flag[] }
   | { ok: false; errors: SprayErrors };
+/** true when the label has a dose and this one is outside its range or typed in another unit: never refused (it really happened), but a REASON is required and it is marked. */
+export function doseOutsideLabel(label: Row | undefined, dose: Decimal, unit: DoseUnit): boolean {
+  if (!label) return false;
+  const u = readUse(label);
+  return u.dose.known && (u.dose.value.unit !== unit || compareDecimal(dose, u.dose.value.min) < 0 || compareDecimal(dose, u.dose.value.max) > 0);
+}
 export interface Ids { job: string; spray: string; movement: string; plantingLinks: readonly string[] }
 
 const positive = (s: string): Decimal | undefined => { const p = parseDecimal(s); return p.known && compareDecimal(p.value, '0' as Decimal) > 0 ? p.value : undefined; };
@@ -41,12 +49,14 @@ export function buildSpray(input: SprayInput, ctx: SprayContext, farmId: string,
     qty: (input.qty.trim() !== '' && !qty) || (input.lotKey !== undefined && !qty), // a lot needs the quantity taken from it; a typed quantity must be readable
     water: water !== undefined && !water.known,
     lateReason: !ctx.historic && parseInstant(input.sprayedAt).known && isLate(input.sprayedAt, nowIso) && (input.lateReason ?? '').trim() === '',
-    overReason: false,
+    overReason: false, doseReason: false,
   };
   const late = !ctx.historic && parseInstant(input.sprayedAt).known && isLate(input.sprayedAt, nowIso);
   const labelNow = ctx.label && ctx.label.product_id === input.productId && ctx.plantings.every((p) => p.crop_id === ctx.label?.crop_id) ? ctx.label : undefined;
   const over = !ctx.historic && ctx.priorApps !== undefined && exceedsMax(labelNow, ctx.priorApps); // no count given = not judged (never assumed 0)
   errors.overReason = over && (input.overReason ?? '').trim() === '';
+  const outside = !ctx.historic && !!dose && !!input.doseUnit && doseOutsideLabel(labelNow, dose, input.doseUnit);
+  errors.doseReason = outside && (input.doseReason ?? '').trim() === '';
   if (Object.values(errors).some(Boolean) || !dose || !input.doseUnit) return { ok: false, errors };
 
   const flags: Flag[] = [];
@@ -68,7 +78,7 @@ export function buildSpray(input: SprayInput, ctx: SprayContext, farmId: string,
     id: ids.spray, farm_id: farmId, job_id: ids.job, product_id: input.productId, applicator_id: input.applicatorId, sprayed_at: input.sprayedAt,
     dose_str: dose, dose_unit: input.doseUnit, label_state: state, created_at: nowIso,
     ...(label ? { label_use_id: label.id } : {}), ...(input.lotKey ? { lot_key: input.lotKey } : {}), ...(qty ? { qty_str: qty } : {}),
-    ...(water?.known ? { water_l: water.value } : {}), ...(input.note.trim() || over ? { note: [input.note.trim(), over ? `[max_apps] ${(input.overReason ?? '').trim()}` : ''].filter(Boolean).join('\n') } : {}),
+    ...(water?.known ? { water_l: water.value } : {}), ...(input.note.trim() || over || outside ? { note: [input.note.trim(), over ? `[max_apps] ${(input.overReason ?? '').trim()}` : '', outside ? `[dose] ${(input.doseReason ?? '').trim()}` : ''].filter(Boolean).join('\n') } : {}),
     ...(late ? { late_reason: (input.lateReason ?? '').trim() } : {}),
   };
   if (signed?.known) { // only a SignedLabelUse feeds the waiting periods

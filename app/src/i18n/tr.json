@@ -434,5 +434,8 @@
   "job.planned.line": "{product} · {worker} · {date}",
   "spray.flag.max_apps_exceeded": "Etiketin azami uygulama sayısı aşıldı",
   "spray.over.reason": "Uygulama sınırı aşımının nedeni",
-  "spray.over.error": "Bu uygulama etiket sınırını aşıyor: nedenini yazın."
+  "spray.over.error": "Bu uygulama etiket sınırını aşıyor: nedenini yazın.",
+  "spray.dose.reason": "Etiket dışı dozun nedeni",
+  "spray.dose.error": "Doz etiketin dışında: nedenini yazın.",
+  "spray.error.unit": "Doz birimini seçin."
 }
