@@ -193,3 +193,40 @@ test('«Διόρθωση»: every field can be corrected with a reason; the orig
   await expect(page.getByTestId('spray')).toHaveCount(1);
   expect(errors).toEqual([]);
 });
+
+test('TANK MIX: two products in one go, each its own record (own label, dose, waiting period) joined by a mix; shown together; the corrections stay per product', async ({ page }) => {
+  const errors = await iphone(page);
+  await setup(page, true);
+  await tab(page, 'stock');
+  await page.locator('main').getByRole('button', { name: 'Προσθήκη προϊόντος' }).click();
+  await inputs(page).nth(0).fill('Score 25');
+  await page.getByRole('button', { name: 'Μυκητοκτόνο' }).click(); await page.getByRole('button', { name: 'Κιλά (kg)' }).click();
+  await page.getByTestId('product-save').click();
+  await tab(page, 'today');
+  await page.getByTestId('spray-open').click();
+  await page.getByRole('button', { name: 'Σπανάκι · Κάτω Κάμπος' }).click();
+  await page.getByRole('button', { name: 'Γιώργος' }).click();
+  await fillStart(page);
+  await page.getByRole('button', { name: 'Kocide 2000' }).click();
+  await expect(page.getByTestId('spray-dose')).toHaveValue('0,025');
+  await page.locator('.seg button[aria-pressed="true"]', { hasText: 'ml/στρ.' }).waitFor();
+  await page.getByTestId('spray-save-mix').click();                      // product 1 saved; the form stays for product 2
+  await expect(page.getByTestId('spray-mix-note')).toBeVisible();
+  await page.getByRole('button', { name: 'Score 25' }).click();
+  await page.getByTestId('spray-dose').fill('0,05');
+  await page.getByRole('button', { name: 'ml/στρ.', exact: true }).click();
+  await page.getByTestId('spray-save').click();
+  await openHistory(page);
+  const cards = page.getByTestId('spray');
+  await expect(cards).toHaveCount(2);                                    // one record per product
+  await expect(cards.first().getByTestId('spray-mix')).toContainText('Μείγμα με:');
+  await expect(cards.last().getByTestId('spray-mix')).toContainText('Μείγμα με:');
+  const mixIds = await page.evaluate(() => new Promise<string[]>((done) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const q = r.result.transaction('job_spray').objectStore('job_spray').getAll(); q.onsuccess = () => done((q.result as Array<{ mix_id?: string }>).map((x) => String(x.mix_id))); }; }));
+  expect(new Set(mixIds).size).toBe(1); expect(mixIds[0]).not.toBe('undefined');   // the same mix id on both
+  await cards.first().getByTestId('spray-correct-open').click();                   // correcting ONE product leaves the mix and the other record alone
+  await page.getByTestId('corr-dose').fill('0,03');
+  await page.getByTestId('corr-reason').fill('typo');
+  await page.getByTestId('corr-save').click();
+  await expect(cards).toHaveCount(2);
+  expect(errors).toEqual([]);
+});

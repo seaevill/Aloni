@@ -332,3 +332,10 @@ describe('start time, BBCH and prescription number (0025)', () => {
     expect('bbch' in build(input(), ctx()).spray).toBe(false);   // not relevant = not stored (never invented)
   });
 });
+
+describe('tank mix (0026)', () => {
+  it('a record of a mix carries the mix id; without one there is no mix_id (never invented)', () => {
+    expect(build(input({ mixId: 'mix1' }), ctx()).spray.mix_id).toBe('mix1');
+    expect('mix_id' in build(input(), ctx()).spray).toBe(false);
+  });
+});

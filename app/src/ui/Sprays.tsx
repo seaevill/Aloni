@@ -65,6 +65,13 @@ function chainOf(r: Row, all: readonly Row[]): Row[] {
   return out;
 }
 
+/** The other products of the same tank mix, shown on every record of the mix. */
+function mixNames(r: Row, inForce: readonly Row[], products: readonly Row[]): string {
+  if (typeof r.mix_id !== 'string') return '';
+  const others = inForce.filter((x) => x.mix_id === r.mix_id && x.id !== r.id).map((x) => nameOf(products.find((p) => p.id === x.product_id) ?? {}));
+  return others.length ? t('spray.mix.with', { names: others.join(', ') }) : '';
+}
+
 /** The sprays that were recorded, newest first: who sprayed, what, when, the marks, and the waiting periods (unknown ones in red: the harvest is blocked). */
 export function Sprays({ readOnly = false }: { readOnly?: boolean }) {
   const [entering, setEntering] = useState(''); const [correcting, setCorrecting] = useState('');
@@ -77,6 +84,7 @@ export function Sprays({ readOnly = false }: { readOnly?: boolean }) {
     return {
       r, phi, rei: waitLine(r, 'rei_hours'), flags: (Array.isArray(r.flags) ? r.flags : []) as Flag[],
       trail: chainOf(r, sprays.rows ?? []),
+      mixWith: mixNames(r, list, products.rows ?? []),
       title: nameOf(products.rows?.find((p) => p.id === r.product_id) ?? {}), crops: [...new Set(cropNames)].join(', '),
       by: t('spray.by', { name: String(workers.rows?.find((w) => w.id === r.applicator_id)?.name ?? t('value.unknown')) }),
       when: formatDateTime(text(r.sprayed_at)),
@@ -95,6 +103,7 @@ export function Sprays({ readOnly = false }: { readOnly?: boolean }) {
           {!readOnly && !c.phi && entering !== c.r.id && <button class="btn secondary" data-testid="wait-open" onClick={() => setEntering(c.r.id)}>{t('spray.phi.enter')}</button>}
           {entering === c.r.id && <WaitEntry spray={c.r} onDone={() => setEntering('')} />}
           {c.rei && <small data-testid="spray-rei">{c.rei}</small>}
+          {c.mixWith && <small data-testid="spray-mix">{c.mixWith}</small>}
           {c.trail.map((o) => <small key={String(o.id)} data-testid="spray-trail">{t('spray.correct.was', { dose: comma(o.dose_str), when: formatDateTime(text(o.sprayed_at)) })}</small>)}
           {typeof c.r.amends_id === 'string' && <small data-testid="spray-why">{t('spray.correct.why', { reason: text(c.r.amend_reason) })}</small>}
           {!readOnly && correcting !== c.r.id && <button class="row" data-testid="spray-correct-open" onClick={() => setCorrecting(c.r.id)}><span>{t('spray.correct.open')}</span><span aria-hidden="true" class="chev" /></button>}

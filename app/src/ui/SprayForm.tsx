@@ -38,6 +38,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const [productId, setProductId] = useState('');
   const [workerId, setWorkerId] = useState('');
   const [when, setWhen] = useState(athensLocalNow(new Date()) ?? '');
+  const [mixDraft] = useState(() => crypto.randomUUID()); const [inMix, setInMix] = useState(0);   // tank mix: the records saved so far with «+ another product»
   const [startWhen, setStartWhen] = useState(''); const [bbch, setBbch] = useState(''); const [prescription, setPrescription] = useState('');   // the start is REQUIRED and never pre-filled (a guess is not a record)
   const [dose, setDose] = useState('');
   const [unit, setUnit] = useState<(typeof DOSE_UNITS)[number] | undefined>(undefined);
@@ -55,28 +56,33 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const lot = myLots.find((l) => l.lot_key === lotKey);
   const balance = lot ? balanceOf((moves.rows ?? []).filter((m) => m.lot_key === lotKey)) : undefined;
   const sprayedAt = athensInstant(when) ?? '';
-  const input: SprayInput = { plantingIds: sel, productId, applicatorId: workerId, sprayedAt, startedAt: athensInstant(startWhen), bbch, prescription, dose, doseUnit: unit, lotKey, qty, water, note, lateReason, overReason, doseReason };
+  const input: SprayInput = { plantingIds: sel, productId, applicatorId: workerId, sprayedAt, startedAt: athensInstant(startWhen), bbch, prescription, mixId: inMix > 0 ? mixDraft : undefined, dose, doseUnit: unit, lotKey, qty, water, note, lateReason, overReason, doseReason };
   const prior = priorApps(sprays.rows ?? [], links.rows ?? [], sel, productId);
   const typedDose = parseDecimal(dose);
   const outside = typedDose.known && unit !== undefined && doseOutsideLabel(label, typedDose.value, unit); // the reason field appears only for a dose outside the label
   const over = exceedsMax(label, prior); // the reason field appears only when this spraying passes the signed label's maximum
   const late = sprayedAt !== '' && isLate(sprayedAt, new Date().toISOString()); // the reason field appears only for a late entry
   const ids = { job: crypto.randomUUID(), spray: crypto.randomUUID(), movement: crypto.randomUUID(), plantingLinks: sel.map(() => crypto.randomUUID()) };
-  const r = buildSpray(input, { priorApps: prior, label, plantings: chosen, lot, lotBalance: balance, today: athensToday(new Date()) ?? '' }, realFarmId.value, new Date().toISOString(), ids);
+  const sprayCtx = { priorApps: prior, label, plantings: chosen, lot, lotBalance: balance, today: athensToday(new Date()) ?? '' };
+  const r = buildSpray(input, sprayCtx, realFarmId.value, new Date().toISOString(), ids);
+  const rMix = buildSpray({ ...input, mixId: mixDraft }, sprayCtx, realFarmId.value, new Date().toISOString(), ids);   // the same record as the FIRST product of a tank mix
   const pickLabelDefaults = (l: Row | undefined) => { // the label's own unit (and a single dose) are offered as a start; nothing is chosen for him otherwise
     if (!l) return;
     const u = readUse(l);
     if (u.dose.known) { setUnit(u.dose.value.unit); if (u.dose.value.kind === 'single' && dose === '') setDose(formatDose(known(u.dose.value.min))); }
   };
   const plantingName = (p: Row) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: String(parcels.rows?.find((x) => x.id === p.parcel_id)?.name ?? '') });
-  const save = async () => {
-    if (!r.ok) { setFailed(true); return; }
+  const save = async (more: boolean) => {
+    const rec = more ? rMix : r;
+    if (!rec.ok) { setFailed(true); return; }
     await putMany(db, [
-      { table: 'jobs', row: r.job, op: 'insert' }, ...r.jobPlantings.map((row) => ({ table: 'job_plantings', row, op: 'insert' as const })),
-      { table: 'job_spray', row: r.spray, op: 'insert' }, ...(r.movement ? [{ table: 'stock_movements', row: r.movement, op: 'insert' as const }] : []),
+      { table: 'jobs', row: rec.job, op: 'insert' }, ...rec.jobPlantings.map((row) => ({ table: 'job_plantings', row, op: 'insert' as const })),
+      { table: 'job_spray', row: rec.spray, op: 'insert' }, ...(rec.movement ? [{ table: 'stock_movements', row: rec.movement, op: 'insert' as const }] : []),
     ]);
     dataVersion.value++;
-    onDone(true);
+    if (!more) { onDone(true); return; }
+    // tank mix: the plantings, the times and the applicator stay; the next product starts empty (its own label, dose, lot and waiting periods)
+    setInMix(inMix + 1); setProductId(''); setDose(''); setUnit(undefined); setLotKey(undefined); setQty(''); setWater(''); setNote(''); setPrescription(''); setFailed(false);
   };
   const toggle = (id: string) => setSel(sel.includes(id) ? sel.filter((x) => x !== id) : [...sel, id]);
   const unitText = text(product?.unit);
@@ -85,6 +91,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
   return (
     <section>
       <h1>{t('spray.add')}</h1>
+      {inMix > 0 && <p class="msg" role="status" data-testid="spray-mix-note">{t('spray.mix.note', { n: inMix })}</p>}
       {needs && <p class="msg error" role="alert" data-testid="spray-needs">{t('spray.needs')}</p>}
       <h2>{t('spray.plantings')}</h2>
       <div class="seg two">{live(plantings).map((p) => <button key={p.id} aria-pressed={sel.includes(p.id)} onClick={() => toggle(p.id)}>{plantingName(p)}</button>)}</div>
@@ -159,7 +166,8 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
       {failed && !r.ok && r.errors.doseReason && <p class="msg error" role="alert" data-testid="spray-dose-error">{t('spray.dose.error')}</p>}
       {failed && !r.ok && r.errors.doseUnit && <p class="msg error" role="alert" data-testid="spray-unit-error">{t('spray.error.unit')}</p>}
       {failed && !r.ok && r.errors.water && <p class="msg error" role="alert">{t('spray.error.water')}</p>}
-      <button class="btn" data-testid="spray-save" onClick={() => void save()}>{t('spray.save')}</button>
+      <button class="btn" data-testid="spray-save" onClick={() => void save(false)}>{t('spray.save')}</button>
+      <button class="btn secondary" data-testid="spray-save-mix" onClick={() => void save(true)}>{t('spray.mix.more')}</button>
       <button class="btn secondary" onClick={() => onDone(false)}>{t('product.cancel')}</button>
     </section>
   );

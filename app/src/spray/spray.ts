@@ -19,6 +19,8 @@ export interface SprayInput {
   bbch?: string;
   /** Prescription number (Greek professional use), optional. */
   prescription?: string;
+  /** Tank mix: every product of one mix is its own record; they share this id (0026). */
+  mixId?: string;
   /** «Λόγος καθυστέρησης»: required when the end time is more than LATE_AFTER_DAYS before the record. */
   lateReason?: string;
   /** Why one more application passes the signed label's maximum (required then). */
@@ -87,6 +89,7 @@ export function buildSpray(input: SprayInput, ctx: SprayContext, farmId: string,
   const spray: Row = {
     id: ids.spray, farm_id: farmId, job_id: ids.job, product_id: input.productId, applicator_id: input.applicatorId, sprayed_at: input.sprayedAt,
     dose_str: dose, dose_unit: input.doseUnit, label_state: state, created_at: nowIso, ...(input.startedAt ? { started_at: input.startedAt } : {}),
+    ...(input.mixId ? { mix_id: input.mixId } : {}),
     ...((input.bbch ?? '').trim() ? { bbch: (input.bbch ?? '').trim() } : {}), ...((input.prescription ?? '').trim() ? { prescription_no: (input.prescription ?? '').trim() } : {}),
     ...(label ? { label_use_id: label.id } : {}), ...(input.lotKey ? { lot_key: input.lotKey } : {}), ...(qty ? { qty_str: qty } : {}),
     ...(water?.known ? { water_l: water.value } : {}), ...(input.note.trim() || over || outside ? { note: [input.note.trim(), over ? `[max_apps] ${(input.overReason ?? '').trim()}` : '', outside ? `[dose] ${(input.doseReason ?? '').trim()}` : ''].filter(Boolean).join('\n') } : {}),
