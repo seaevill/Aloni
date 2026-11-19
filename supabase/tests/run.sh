@@ -29,6 +29,7 @@ psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m2_0015.sql || { echo "FAILED: s
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/invite.sql || { echo "FAILED: supabase/tests/invite.sql"; exit 1; }; echo "SQL invitation tests OK"
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m3_0019.sql || { echo "FAILED: supabase/tests/m3_0019.sql"; exit 1; }; echo "SQL m3-0019 tests OK"
 bash supabase/tests/m3_verify.sh || { echo "FAILED: m3_verify.sh"; exit 1; }
+bash supabase/tests/rls_gate.sh || { echo "FAILED: rls_gate.sh"; exit 1; }
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m4_0020.sql || { echo "FAILED: supabase/tests/m4_0020.sql"; exit 1; }; echo "SQL m4-0020 tests OK"
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m4_0021.sql || { echo "FAILED: supabase/tests/m4_0021.sql"; exit 1; }; echo "SQL m4-0021 tests OK"
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m5_0022.sql || { echo "FAILED: supabase/tests/m5_0022.sql"; exit 1; }; echo "SQL m5-0022 tests OK"

@@ -61,3 +61,15 @@ Lint is a safety net, not a proof. The real guarantee comes from types (`Known<T
 - Look in `docs/reviews/team/` (the team's independent reviews) **before** writing «apply». If any review names an **open MUST** finding against that migration, or against one it depends on, do NOT ask for the apply: fix it first (in place while the migration is applied nowhere, otherwise in a new numbered file) with a red test as the **real `authenticated` owner**, and wait for the team to mark it CLOSED.
 - In the report to Bora, write one line saying that check was made: «docs/reviews/team: açık MUST yok» (or the list of open ones).
 - Every finding of a review gets a test (`supabase/tests/m7_review.sql` is the model); a SHOULD finding is fixed or answered in DECISIONS with the reason.
+
+## Branch names (rule of 2026-11-19: a reused name made a push fail and a PR point at an old commit)
+- A branch name is **date + topic**: `<MMDD>-<topic>`, e.g. `1119-h2-harvest`. Never a bare topic (`weather-ui`): an old merged branch with that name may still exist.
+- Before `git push`, run `bash scripts/branch-free.sh <branch>`: it checks the form and `git ls-remote --heads origin <branch>` is empty. Only then push and open the PR.
+
+## SQL tables (rule of 2026-11-19)
+- A new table comes with RLS **ON** and at least one policy **`TO authenticated`** in the **same PR** (a service-role-only table gets one explicit deny policy `to authenticated using (false)`). Never a policy TO public.
+- CI proves it: `supabase/tests/verify_applied.sql` is the check (RLS off, RLS without policy, policy not limited to authenticated are problems) and `supabase/tests/rls_gate.sh` proves the check goes red for each of the three and green with a correct table.
+- Applied migrations (0022–0029 until the team has re-reviewed them) are **frozen**: a new need = a NEW file 0030+.
+
+## Unknown values (rule of 2026-11-19)
+- `NaN`, `0`, `''` are never stand-ins for «unknown»: use `Known<T>` or `null`/`undefined` and show «—» / «άγνωστο». The lint rule D05 (numeric default) also catches NaN; do not work around it, change the type.
