@@ -179,22 +179,14 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
       <label class="field">{t('spray.bbch')}<input class="input" value={bbch} inputMode="numeric" autoComplete="off" data-testid="spray-bbch" onInput={(e) => setBbch((e.target as HTMLInputElement).value)} /></label>
       {failed && !r.ok && r.errors.bbch && <p class="msg error" role="alert" tabIndex={-1}>{t('spray.bbch.error')}</p>}
       <label class="field">{t('spray.prescription')}<input class="input" value={prescription} autoComplete="off" data-testid="spray-prescription" onInput={(e) => setPrescription((e.target as HTMLInputElement).value)} /></label>
-      {failed && !r.ok && r.errors.qty && <p class="msg error" role="alert">{t('spray.error.qty')}</p>}
-      {failed && !r.ok && r.errors.lateReason && <p class="msg error" role="alert" data-testid="spray-late-error">{t('spray.late.error')}</p>}
-      {failed && !r.ok && r.errors.overReason && <p class="msg error" role="alert" data-testid="spray-over-error">{t('spray.over.error')}</p>}
-      {failed && !r.ok && r.errors.doseReason && <p class="msg error" role="alert" data-testid="spray-dose-error">{t('spray.dose.error')}</p>}
-      {failed && !r.ok && r.errors.doseUnit && <p class="msg error" role="alert" data-testid="spray-unit-error">{t('spray.error.unit')}</p>}
-      {failed && !r.ok && r.errors.water && <p class="msg error" role="alert">{t('spray.error.water')}</p>}
-      <button class="btn" data-testid="spray-save" onClick={() => void submit(() => save(false))} disabled={busy}>{t('spray.save')}</button>
-      <button class="btn secondary" data-testid="spray-save-mix" onClick={() => void submit(() => save(true))} disabled={busy}>{t('spray.mix.more')}</button>
       {failed && !r.ok && r.errors.qty && <p class="msg error" role="alert" tabIndex={-1}>{t('spray.error.qty')}</p>}
       {failed && !r.ok && r.errors.lateReason && <p class="msg error" role="alert" tabIndex={-1} data-testid="spray-late-error">{t('spray.late.error')}</p>}
       {failed && !r.ok && r.errors.overReason && <p class="msg error" role="alert" tabIndex={-1} data-testid="spray-over-error">{t('spray.over.error')}</p>}
       {failed && !r.ok && r.errors.doseReason && <p class="msg error" role="alert" tabIndex={-1} data-testid="spray-dose-error">{t('spray.dose.error')}</p>}
       {failed && !r.ok && r.errors.doseUnit && <p class="msg error" role="alert" tabIndex={-1} data-testid="spray-unit-error">{t('spray.error.unit')}</p>}
       {failed && !r.ok && r.errors.water && <p class="msg error" role="alert" tabIndex={-1}>{t('spray.error.water')}</p>}
-      <button class="btn" data-testid="spray-save" onClick={() => void save(false)}>{t('spray.save')}</button>
-      <button class="btn secondary" data-testid="spray-save-mix" onClick={() => void save(true)}>{t('spray.mix.more')}</button>
+      <button class="btn" data-testid="spray-save" onClick={() => void submit(() => save(false))} disabled={busy}>{t('spray.save')}</button>
+      <button class="btn secondary" data-testid="spray-save-mix" onClick={() => void submit(() => save(true))} disabled={busy}>{t('spray.mix.more')}</button>
       <button class="btn secondary" onClick={() => onDone(false)}>{t('product.cancel')}</button>
     </section>
   );
