@@ -66,7 +66,7 @@ describe('the database rows', () => {
     const f = parseForecast(sample('icon_eu'), 'icon_eu', ISSUED)!;
     const { hourly, daily } = toDbRows('farm-1', 'parcel-1', f);
     expect(hourly).toHaveLength(4); expect(daily).toHaveLength(2);
-    expect(hourly[3]).toEqual({ parcel_id: 'parcel-1', farm_id: 'farm-1', kind: 'forecast', issued_at: ISSUED, model: 'icon_eu', cell_elev_m: 38, at: '2026-11-20T01:00:00Z', temp_c: null, rh_pct: 93, wind_kmh: 2.9, gust_kmh: 6, rain_mm: 0 });
+    expect(hourly[3]).toEqual({ parcel_id: 'parcel-1', farm_id: 'farm-1', kind: 'forecast', issued_at: ISSUED, model: 'icon_eu', cell_elev_m: 38, at: '2026-11-20T01:00:00Z', temp_c: null, dewpoint_c: null, rh_pct: 93, wind_kmh: 2.9, gust_kmh: 6, rain_mm: 0 });
     expect(daily[0]).toMatchObject({ day: '2026-11-20', tmin: 1.9, tmax: 14.2, rain_mm: 0, kind: 'forecast', model: 'icon_eu' });
   });
 });

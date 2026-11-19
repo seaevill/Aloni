@@ -5,12 +5,13 @@
 // environment, never from the repository.
 //
 // Models are DATA, not code (Open-Meteo changes model ids; DECISIONS 2026-11-17): ICON-EU first, ECMWF IFS HRES as the fallback. A missing value stays null — never 0, never a guess.
+import type { Forecast as CommonForecast } from './weather/types.ts';
 export type Model = 'icon_eu' | 'ecmwf_ifs';
 export const MODELS: readonly Model[] = ['icon_eu', 'ecmwf_ifs'];
 export const FREE_BASE = 'https://api.open-meteo.com/v1/forecast';
 export const COMMERCIAL_BASE = 'https://customer-api.open-meteo.com/v1/forecast';
 
-export interface HourRow { at: string; temp_c: number | null; rh_pct: number | null; wind_kmh: number | null; gust_kmh: number | null; rain_mm: number | null; cloud_pct: number | null }
+export interface HourRow { at: string; temp_c: number | null; dewpoint_c: number | null; rh_pct: number | null; wind_kmh: number | null; gust_kmh: number | null; rain_mm: number | null; cloud_pct: number | null }
 export interface DayRow { day: string; tmin: number | null; tmax: number | null; rain_mm: number | null; sunrise: string | null; sunset: string | null }
 export interface Forecast { model: Model; issued_at: string; cell_elev_m: number | null; hours: HourRow[]; days: DayRow[] }
 export type Fetcher = (url: string) => Promise<{ ok: boolean; status: number; json: () => Promise<unknown> }>;
@@ -49,7 +50,7 @@ export function parseForecast(json: unknown, model: Model, issuedAt: string): Fo
   if (!Array.isArray(ht) || !Array.isArray(dt)) return undefined;
   const h = (n: string) => series(o?.hourly, n, ht.length); const d = (n: string) => series(o?.daily, n, dt.length);
   const hours: HourRow[] = []; const temp = h('temperature_2m');
-  ht.forEach((t, i) => { const at = typeof t === 'string' ? athensWallToUtc(t) : null; if (at) hours.push({ at, temp_c: num(temp[i]), rh_pct: num(h('relative_humidity_2m')[i]), wind_kmh: num(h('wind_speed_10m')[i]), gust_kmh: num(h('wind_gusts_10m')[i]), rain_mm: num(h('precipitation')[i]), cloud_pct: num(h('cloud_cover')[i]) }); });
+  ht.forEach((t, i) => { const at = typeof t === 'string' ? athensWallToUtc(t) : null; if (at) hours.push({ at, temp_c: num(temp[i]), dewpoint_c: null, rh_pct: num(h('relative_humidity_2m')[i]), wind_kmh: num(h('wind_speed_10m')[i]), gust_kmh: num(h('wind_gusts_10m')[i]), rain_mm: num(h('precipitation')[i]), cloud_pct: num(h('cloud_cover')[i]) }); });
   if (hours.length === 0 || hours.every((r) => r.temp_c === null)) return undefined;
   const days: DayRow[] = dt.flatMap((day, i) => (typeof day === 'string' ? [{ day, tmin: num(d('temperature_2m_min')[i]), tmax: num(d('temperature_2m_max')[i]), rain_mm: num(d('precipitation_sum')[i]), sunrise: typeof d('sunrise')[i] === 'string' ? athensWallToUtc(String(d('sunrise')[i])) : null, sunset: typeof d('sunset')[i] === 'string' ? athensWallToUtc(String(d('sunset')[i])) : null }] : []));
   return { model, issued_at: issuedAt, cell_elev_m: num(o?.elevation), hours, days };
@@ -72,10 +73,10 @@ export async function fetchForecast(lat: number, lon: number, fetcher: Fetcher, 
 }
 
 /** The rows for `weather_hourly` / `weather_daily` (0003 + 0005): kind «forecast», the model name as plain data, the cell's elevation. Cloud cover has no column yet (the frost rule needs it: a later migration). */
-export function toDbRows(farmId: string, parcelId: string, f: Forecast) {
+export function toDbRows(farmId: string, parcelId: string, f: CommonForecast) {
   const common = { parcel_id: parcelId, farm_id: farmId, kind: 'forecast', issued_at: f.issued_at, model: f.model, cell_elev_m: f.cell_elev_m };
   return {
-    hourly: f.hours.map((r) => ({ ...common, at: r.at, temp_c: r.temp_c, rh_pct: r.rh_pct, wind_kmh: r.wind_kmh, gust_kmh: r.gust_kmh, rain_mm: r.rain_mm })),
+    hourly: f.hours.map((r) => ({ ...common, at: r.at, temp_c: r.temp_c, dewpoint_c: r.dewpoint_c, rh_pct: r.rh_pct, wind_kmh: r.wind_kmh, gust_kmh: r.gust_kmh, rain_mm: r.rain_mm })),
     daily: f.days.map((r) => ({ ...common, day: r.day, tmin: r.tmin, tmax: r.tmax, rain_mm: r.rain_mm })),
   };
 }
