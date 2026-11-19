@@ -63,3 +63,16 @@ describe('invitations from the app', () => {
     await expect(invite(E, 'tok', 'f1', 'w@example.org', undefined, fake({}, false).f)).rejects.toThrow('HTTP 401');
   });
 });
+
+describe('withdrawing an invitation', () => {
+  it('lists the open invitations of the farm (a failure is an empty list) and deletes one by id', async () => {
+    const a = fake([{ id: 'i1', email: 'w@example.org', worker_id: 'w1' }, { nope: 1 }]);
+    const { openInvitations, withdrawInvitation } = await import('../../src/auth/gotrue');
+    expect(await openInvitations(E, 'tok', 'f1', a.f)).toEqual([{ id: 'i1', email: 'w@example.org', worker_id: 'w1' }]);
+    expect(a.calls[0]!.url).toBe('https://x.example/rest/v1/invitations?farm_id=eq.f1&accepted_at=is.null&select=id,email,worker_id');
+    expect(await openInvitations(E, 'tok', 'f1', fake({}, false).f)).toEqual([]);
+    const d = fake({}); await withdrawInvitation(E, 'tok', 'i1', d.f);
+    expect(d.calls[0]).toMatchObject({ url: 'https://x.example/rest/v1/invitations?id=eq.i1', init: { method: 'DELETE' } });
+    await expect(withdrawInvitation(E, 'tok', 'i1', fake({}, false).f)).rejects.toThrow('HTTP 401');
+  });
+});

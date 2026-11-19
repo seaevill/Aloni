@@ -421,5 +421,7 @@
   "invite.sent": "Davet kaydedildi. İşçi bu e-postayla giriş yapar.",
   "invite.error": "Davet kaydedilemedi. E-postayı ve bağlantıyı kontrol edin.",
   "sync.error": "Gönderilemedi. Yeniden denenecek.",
-  "signin.farmId": "Çiftlik kodu: {id}"
+  "signin.farmId": "Çiftlik kodu: {id}",
+  "invite.openLine": "Açık davet: {email}",
+  "invite.withdraw": "Geri çek"
 }

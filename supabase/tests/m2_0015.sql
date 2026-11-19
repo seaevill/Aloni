@@ -20,6 +20,7 @@ begin
   insert into job_spray(id,farm_id,job_id,product_id,applicator_id,label_use_id,sprayed_at,dose_str,dose_unit,label_state) values ('55555555-0000-0000-0000-000000000901',f,'eeeeeeee-0000-0000-0000-000000000901',prod,w1,lu,t,0.025,'ml/str','unsigned');
 end $$;
 -- (1) THE FLOOR from the signed label use (PHI 7 / REI 24). The original spray names it but its own waiting period is unknown (label_state unsigned, no PHI).
+set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
 do $$
 declare f constant uuid := '11111111-1111-1111-1111-111111111111'; prod constant uuid := 'aaaaaaaa-0000-0000-0000-000000000001'; lu constant uuid := 'cccccccc-1111-0000-0000-000000000001'; lu_unsigned constant uuid := 'cccccccc-1111-0000-0000-000000000003';
         w1 constant uuid := 'bbbbbbbb-0000-0000-0000-000000000001'; t timestamptz := (select sprayed_at from job_spray where id = '55555555-0000-0000-0000-000000000901');
@@ -35,6 +36,7 @@ begin
     raise exception '(1a'') a correction without a label use escaped the signed floor';
   exception when check_violation then null; end;
 end $$;
+reset role; set test.uid = '';
 do $$
 declare f constant uuid := '11111111-1111-1111-1111-111111111111'; prod constant uuid := 'aaaaaaaa-0000-0000-0000-000000000001'; lu constant uuid := 'cccccccc-1111-0000-0000-000000000001'; w1 constant uuid := 'bbbbbbbb-0000-0000-0000-000000000001'; t timestamptz := (select sprayed_at from job_spray where id = '55555555-0000-0000-0000-000000000901');
 begin
@@ -43,11 +45,18 @@ begin
   insert into job_spray(id,farm_id,job_id,product_id,applicator_id,label_use_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,amends_id,amend_reason)
     values ('55555555-0000-0000-0000-000000000903',f,'eeeeeeee-0000-0000-0000-000000000901',prod,w1,lu,t,0.025,'ml/str','unsigned',1,1,'manual',t + interval '1 day',t + interval '1 hour','55555555-0000-0000-0000-000000000901','x');
   set session_replication_role = origin;
+end $$;
+set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111';
+begin
   begin insert into job_harvest(farm_id,planting_id,harvested_at,crates_str) values (f,'dddddddd-0000-0000-0000-000000000901',now(),1); raise exception '(1b) the harvest gate trusted a short stored PHI instead of the signed label floor';
   exception when check_violation then null; end;
 end $$;
+reset role; set test.uid = '';
 
 -- (2) received_at is the SERVER's clock: a supplied value is ignored, so «late» cannot be dodged
+set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
 do $$
 declare f constant uuid := '11111111-1111-1111-1111-111111111111'; prod constant uuid := 'aaaaaaaa-0000-0000-0000-000000000001'; w1 constant uuid := 'bbbbbbbb-0000-0000-0000-000000000001'; t timestamptz := now() - interval '20 days'; r record;
 begin
@@ -59,19 +68,21 @@ begin
   insert into job_harvest(id,farm_id,planting_id,harvested_at,crates_str,received_at) values ('66666666-0000-0000-0000-000000000902',f,'dddddddd-0000-0000-0000-000000000902',now(), 1, '2020-01-01');
   if (select received_at from job_harvest where id = '66666666-0000-0000-0000-000000000902') < now() - interval '1 minute' then raise exception '(2) a harvest took received_at from the writer'; end if;
 end $$;
+reset role; set test.uid = '';
 
 -- (3) a restored server has another identity: the generation token changes BY ITSELF (no administrator step), so phones that held a cursor start again
-do $$
-declare f constant uuid := '11111111-1111-1111-1111-111111111111'; cur jsonb; res jsonb; g_before text := sync_generation();
-begin
-  cur := pull(f, null, 5)->'cursor';
-  if (pull(f, cur, 5)->>'reset')::boolean is not false then raise exception '(3) setup: a fresh cursor was reset'; end if;
-  update sync_meta set system_id = 'another-server';       -- what a dump restored on another server looks like to this server
-  if sync_generation() = g_before then raise exception '(3) the generation did not change although the server identity did'; end if;
-  res := pull(f, cur, 5);
-  if (res->>'reset')::boolean is not true then raise exception '(3) a cursor of the old server identity was not reset'; end if;
-  update sync_meta set system_id = (select system_id from (select system_identifier::text as system_id from pg_control_system()) s);   -- back to this server
-end $$;
+create temp table g3 as select private.sync_generation() as g;
+set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
+create temp table c3 as select pull('11111111-1111-1111-1111-111111111111', null, 5)->'cursor' as c;
+do $$ begin if (pull('11111111-1111-1111-1111-111111111111', (select c from c3), 5)->>'reset')::boolean is not false then raise exception '(3) setup: a fresh cursor was reset'; end if; end $$;
+reset role; set test.uid = '';
+update sync_meta set system_id = 'another-server';       -- what a dump restored on another server looks like to this server
+do $$ begin if private.sync_generation() = (select g from g3) then raise exception '(3) the generation did not change although the server identity did'; end if; end $$;
+set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
+do $$ begin if (pull('11111111-1111-1111-1111-111111111111', (select c from c3), 5)->>'reset')::boolean is not true then raise exception '(3) a cursor of the old server identity was not reset'; end if; end $$;
+reset role; set test.uid = '';
+update sync_meta set system_id = server_identity();   -- back to this server
+drop table g3, c3;
 
 -- (4) rows that became visible to a worker WITHOUT changing themselves: the manager gives her job another product, and links another planting to it
 reset role; set test.uid = '';
