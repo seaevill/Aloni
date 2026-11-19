@@ -13,6 +13,7 @@ test('harvest counter: +1 buttons, nothing blocks a planting that was never spra
   await page.getByRole('button', { name: 'Σπανάκι · Κάτω Κάμπος' }).click();
   for (let i = 0; i < 3; i += 1) await page.getByTestId('harvest-more').click();
   await expect(page.getByTestId('harvest-crates')).toHaveValue('3');
+  await page.getByTestId('harvest-cutby-option').first().click();                       // «Ποιος έκοψε» is required
   await page.getByTestId('harvest-save').click();
   await expect(page.getByTestId('harvest-saved')).toBeVisible();
   await openHistory(page);
@@ -46,6 +47,7 @@ test('after a SIGNED spray the harvest is blocked until the waiting period has r
   await page.getByRole('button', { name: 'Σπανάκι · Κάτω Κάμπος' }).click();
   await page.getByTestId('harvest-crates').fill('5');
   await expect(page.getByTestId('harvest-blocked')).toHaveCount(0);
+  await page.getByTestId('harvest-cutby-option').first().click();                       // «Ποιος έκοψε» is required
   await page.getByTestId('harvest-save').click();
   await openHistory(page);
   await expect(page.getByTestId('harvest')).toContainText('5 κλούβες');
@@ -78,7 +80,26 @@ test('after an UNSIGNED spray the PHI is unknown: blocked even far in the future
   await page.getByTestId('harvest-open').click();
   await page.getByRole('button', { name: 'Σπανάκι · Κάτω Κάμπος' }).click();
   await page.getByTestId('harvest-crates').fill('2');
+  await page.getByTestId('harvest-cutby-option').first().click();                       // «Ποιος έκοψε» is required
   await page.getByTestId('harvest-save').click();
   await openHistory(page);
   await expect(page.getByTestId('harvest')).toContainText('2 κλούβες');
+});
+
+test('«Ποιος έκοψε» is required: without a cutter nothing is saved and the screen says why; with one it is kept and shown', async ({ page }) => {
+  const errors = await iphone(page);
+  await setup(page, true);
+  await closeHistory(page);
+  await page.getByTestId('harvest-open').click();
+  await page.getByRole('button', { name: 'Σπανάκι · Κάτω Κάμπος' }).click();
+  await page.getByTestId('harvest-more').click();
+  await page.getByTestId('harvest-save').click();
+  await expect(page.getByTestId('harvest-cutby-error')).toBeVisible();
+  await expect(page.getByTestId('harvest-saved')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Γιώργος' }).click();
+  await page.getByTestId('harvest-save').click();
+  await expect(page.getByTestId('harvest-saved')).toBeVisible();
+  await openHistory(page);
+  await expect(page.getByTestId('harvest')).toContainText('Γιώργος');
+  expect(errors).toEqual([]);
 });

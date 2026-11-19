@@ -631,5 +631,9 @@
   "more.menu": "Menü",
   "more.settings": "Ayarlar ve bağlantı",
   "wx.source": "Veri: {name} · {when}",
-  "wx.stale": "eski veri"
+  "wx.stale": "eski veri",
+  "harvest.cutby": "Kim kesti",
+  "harvest.cutby.none": "Önce işçi listesine işçi ekleyin (Άλλα → Εργάτες).",
+  "harvest.cutby.error": "Kimin kestiğini seçin.",
+  "harvest.cutby.line": "Kesen: {name}"
 }

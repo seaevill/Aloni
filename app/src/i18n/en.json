@@ -631,5 +631,9 @@
   "more.menu": "Menu",
   "more.settings": "Settings and sign-in",
   "wx.source": "Data: {name} · {when}",
-  "wx.stale": "old data"
+  "wx.stale": "old data",
+  "harvest.cutby": "Who cut it",
+  "harvest.cutby.none": "Add workers to the roster first (More → Workers).",
+  "harvest.cutby.error": "Choose who cut it.",
+  "harvest.cutby.line": "Cut by: {name}"
 }

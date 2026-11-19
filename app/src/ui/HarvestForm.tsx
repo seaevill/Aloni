@@ -19,7 +19,9 @@ const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 const MARK = { lock: '🔒' } as const;
 
 export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = false }: { onDone: (saved: boolean) => void; farmId?: string; actorId?: string; big?: boolean }) {
-  const plantings = useRows('plantings'); const crops = useRows('crops'); const parcels = useRows('parcels'); const links = useRows('job_plantings'); const sprays = useRows('job_spray');
+  const plantings = useRows('plantings'); const crops = useRows('crops'); const parcels = useRows('parcels'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const workers = useRows('workers');
+  const roster = (workers.rows ?? []).filter((w) => !w.deleted_at);
+  const [cutBy, setCutBy] = useState(actorId ?? '');       // a worker's own phone sends her roster entry; the owner picks
   const [planting, setPlanting] = useState('');
   const [crates, setCrates] = useState('');
   const [when, setWhen] = useState(athensLocalNow(new Date()) ?? '');
@@ -33,7 +35,7 @@ export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = 
   const labelOf = (p: Row): string => [name(p), p.sown_on ? formatDate(text(p.sown_on)) : ''].filter(Boolean).join(' · '); // the sowing date tells two plantings of the same crop in one field apart
   const step = (d: 1 | -1) => { const n = parseWhole<'Crates'>(crates); const cur = n.known ? n.value : 0; setCrates(cur + d < 1 ? '' : `${cur + d}`); }; // the counter buttons: +1 / −1, never below 1
   const save = async () => {
-    const r = buildHarvest({ plantingId: planting, crates, harvestedAt: at, note }, links.rows ?? [], sprays.rows ?? [], farmId, new Date().toISOString(), crypto.randomUUID());
+    const r = buildHarvest({ plantingId: planting, crates, harvestedAt: at, note, cutBy }, links.rows ?? [], sprays.rows ?? [], farmId, new Date().toISOString(), crypto.randomUUID());
     if (!r.ok) { setFailed(true); return; }
     await put(db, 'job_harvest', actorId ? { ...r.row, actor_id: actorId } : r.row, 'insert');
     dataVersion.value++;
@@ -72,6 +74,14 @@ export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = 
           </div>
         </>
       )}
+      {actorId === undefined && (
+        <>
+          <h2>{t('harvest.cutby')}</h2>
+          {roster.length === 0 && <p class="msg error" role="alert" data-testid="harvest-noroster">{t('harvest.cutby.none')}</p>}
+          <div class="seg two" data-testid="harvest-cutby">{roster.map((w) => <button key={w.id} aria-pressed={cutBy === w.id} data-testid="harvest-cutby-option" onClick={() => setCutBy(w.id)}>{text(w.name)}</button>)}</div>
+          {failed && cutBy === '' && <p class="msg error" role="alert" data-testid="harvest-cutby-error">{t('harvest.cutby.error')}</p>}
+        </>
+      )}
       {failed && !parseWhole<'Crates'>(crates).known && <p class="msg error" role="alert">{t('harvest.error.crates')}</p>}
       <label class="field">{t('harvest.time')}
         <input class="input" type="datetime-local" value={when} onInput={(e) => setWhen((e.target as HTMLInputElement).value)} />
@@ -89,16 +99,17 @@ export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = 
 export function Harvests() {
   const rows = useRows('job_harvest'); const plantings = useRows('plantings'); const crops = useRows('crops'); const parcels = useRows('parcels');
   const list = [...(rows.rows ?? [])].sort((a, b) => text(b.harvested_at).localeCompare(text(a.harvested_at)));
+  const people = useRows('workers');
   const cards = list.map((h) => {
     const p = plantings.rows?.find((x) => x.id === h.planting_id);
     const n = parseWhole<'Crates'>(text(h.crates_str));
-    return { h, title: t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p?.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p?.parcel_id)?.name) }), count: n.known ? tn('harvest.count', n.value) : t('value.unknown'), when: formatDateTime(text(h.harvested_at)) };
+    return { h, title: t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p?.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p?.parcel_id)?.name) }), count: n.known ? tn('harvest.count', n.value) : t('value.unknown'), when: formatDateTime(text(h.harvested_at)), who: t('harvest.cutby.line', { name: text(people.rows?.find((w) => w.id === h.cut_by)?.name) || t('value.unknown') }) };
   });
   return (
     <>
       <h2>{t('harvest.title')}</h2>
       {rows.rows && cards.length === 0 && <p class="muted">{t('harvest.empty')}</p>}
-      {cards.map((c) => <div class="card" key={c.h.id} data-testid="harvest">{c.title}<small>{c.count}</small><small>{c.when}</small></div>)}
+      {cards.map((c) => <div class="card" key={c.h.id} data-testid="harvest">{c.title}<small>{c.count}</small><small>{c.when}</small><small data-testid="harvest-who">{c.who}</small></div>)}
     </>
   );
 }

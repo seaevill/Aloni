@@ -70,17 +70,17 @@ begin
     values ('cccccccc-1111-0000-0000-000000000002',f,prod,crop2,'zero-phi','single','ml/str',0.025,0,24,3,'Test Agronomist','2026-11-01','fp');
   insert into job_spray(farm_id,job_id,product_id,applicator_id,label_use_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,created_at)
     values (f,j_rei,prod,w,'cccccccc-1111-0000-0000-000000000002', now() - interval '1 hour',0.025,'ml/str','signed',0,24,'label', now() - interval '1 hour', now() + interval '23 hours', now() - interval '1 hour' + interval '1 minute');
-  begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,pl_rei,5,now()); raise exception 'a new harvest started during the REI'; exception when check_violation then null; end;
+  begin insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001',f,pl_rei,5,now()); raise exception 'a new harvest started during the REI'; exception when check_violation then null; end;
   -- a harvest that REALLY happened earlier is recorded, never lost: it is entered later, inside the PHI of a spray (here: 30 minutes ago), and it shows as a conflict
-  insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,pl_rei,5,now() - interval '30 minutes');
+  insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001',f,pl_rei,5,now() - interval '30 minutes');
   select count(*) into n from harvest_conflicts where planting_id = pl_rei and rei_problem = 'rei_running'; if n <> 1 then raise exception 'conflict not visible (%)', n; end if;
   -- a spray entered LATER that conflicts with an older harvest: both records stay, the conflict is visible
-  insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,pl_old,7,now() - interval '2 hours');
+  insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001',f,pl_old,7,now() - interval '2 hours');
   insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,created_at) values (f,j_old,prod,w,now() - interval '3 hours',0.025,'ml/str','unsigned',now() - interval '3 hours' + interval '1 minute');
   select count(*) into n from harvest_conflicts where planting_id = pl_old and phi_problem = 'phi_unknown'; if n <> 1 then raise exception 'late spray conflict not visible (%)', n; end if;
   select count(*) into n from job_harvest where planting_id in (pl_rei, pl_old); if n <> 2 then raise exception 'a conflicting record was lost'; end if;
   -- a spray AFTER the harvest is no conflict
-  insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,pl_old,1,now() - interval '4 hours');
+  insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001',f,pl_old,1,now() - interval '4 hours');
   select count(*) into n from harvest_conflicts where planting_id = pl_old and harvested_at < now() - interval '3 hours 30 minutes'; if n <> 0 then raise exception 'a harvest BEFORE the spray was called a conflict'; end if;
 end $$;
 

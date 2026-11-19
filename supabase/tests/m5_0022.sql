@@ -54,7 +54,7 @@ end $$;
 set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
 do $$ declare f constant uuid := '11111111-1111-1111-1111-111111111111';
 begin
-  begin insert into job_harvest(farm_id,planting_id,harvested_at,crates_str) values (f,'dddddddd-0000-0000-0000-000000000942',now(),1);
+  begin insert into job_harvest(cut_by,farm_id,planting_id,harvested_at,crates_str) values ('bbbbbbbb-0000-0000-0000-000000000001',f,'dddddddd-0000-0000-0000-000000000942',now(),1);
     raise exception '(1d) the harvest gate opened on day 3 for a spray with an empty label_use_id (label PHI 7)';
   exception when check_violation then null; end;
 end $$;

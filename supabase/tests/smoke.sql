@@ -153,8 +153,8 @@ begin
   begin update job_spray set note = 'x'; raise exception 'spray update allowed'; exception when insufficient_privilege then null; end;
   -- harvest: crates as a whole number above zero
   insert into plantings(id,farm_id,parcel_id,crop_id,area_str,sown_on,status) values ('dddddddd-0000-0000-0000-000000000009',f,p,crop2,0.25,'2026-11-17','growing'); -- never sprayed
-  insert into job_harvest(farm_id,planting_id,crates_str,harvested_at,note,device_id,actor_id) values (f,'dddddddd-0000-0000-0000-000000000009',12,now(),'x','dev','act');
-  begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,pl,0,now()); raise exception 'zero crates accepted'; exception when check_violation then null; end;
+  insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at,note,device_id,actor_id) values ('bbbbbbbb-0000-0000-0000-000000000001',f,'dddddddd-0000-0000-0000-000000000009',12,now(),'x','dev','act');
+  begin insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001',f,pl,0,now()); raise exception 'zero crates accepted'; exception when check_violation then null; end;
   begin update job_harvest set crates_str = 99; raise exception 'harvest update allowed'; exception when insufficient_privilege then null; end;
   -- a LATE entry must carry its reason (the phone checks it too; the server does not trust the phone)
   insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,flags,late_reason) values (f,job2,prod,w,'2026-10-01 08:00+00',0.025,'ml/str','unsigned',array['late_entry'],'Forgot to write it');
@@ -176,21 +176,21 @@ begin
   insert into job_spray(farm_id,job_id,product_id,applicator_id,label_use_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,created_at) values (f,ok_j,prod,w,'cccccccc-1111-0000-0000-000000000001',now() - interval '10 days',0.025,'ml/str','signed',7,24,'label',now() - interval '3 days',now() - interval '9 days',now() - interval '10 days' + interval '1 hour');
   insert into job_spray(farm_id,job_id,product_id,applicator_id,label_use_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,created_at) values (f,run_j,prod,w,'cccccccc-1111-0000-0000-000000000001',now() - interval '1 day',0.025,'ml/str','signed',7,24,'label',now() + interval '6 days',now(),now() - interval '1 day' + interval '1 hour');
   insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,created_at) values (f,unk_j,prod,w,now() - interval '30 days',0.025,'ml/str','unsigned',now() - interval '30 days' + interval '1 hour');
-  insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,ok_pl,5,now());
-  begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,run_pl,5,now() + interval '10 days'); raise exception 'harvest inside the PHI accepted with a future time'; exception when check_violation then null; end;
-  begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,run_pl,5,now()); raise exception 'harvest inside the PHI accepted'; exception when check_violation then null; end;
-  begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,unk_pl,5,now()); raise exception 'harvest with an UNKNOWN PHI accepted'; exception when check_violation then null; end;
-  begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,ok_pl,5,now() + interval '2 days'); raise exception 'a future harvest time accepted'; exception when check_violation then null; end;
+  insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001',f,ok_pl,5,now());
+  begin insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001',f,run_pl,5,now() + interval '10 days'); raise exception 'harvest inside the PHI accepted with a future time'; exception when check_violation then null; end;
+  begin insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001',f,run_pl,5,now()); raise exception 'harvest inside the PHI accepted'; exception when check_violation then null; end;
+  begin insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001',f,unk_pl,5,now()); raise exception 'harvest with an UNKNOWN PHI accepted'; exception when check_violation then null; end;
+  begin insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001',f,ok_pl,5,now() + interval '2 days'); raise exception 'a future harvest time accepted'; exception when check_violation then null; end;
   -- Bora's own entry (an amending row) unblocks it, but only when it has run out
   insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,amends_id,amend_reason,created_at)
     select f,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,7,24,'manual',sprayed_at + interval '7 days',sprayed_at + interval '24 hours',id,'label values entered by the owner',created_at + interval '1 hour' from job_spray where job_id = unk_j;
-  insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,unk_pl,5,now());
+  insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001',f,unk_pl,5,now());
   -- the boundary: AT the very instant the waiting period ends it is still blocked (the phone blocks it too: strictly after the end is free)
   insert into plantings(id,farm_id,parcel_id,crop_id,area_str,sown_on,status) values ('dddddddd-0000-0000-0000-0000000000a4',f,p,crop2,0.25,'2026-11-17','growing');
   insert into jobs(id,farm_id,kind,status,worker_id,product_id,done_at) values ('eeeeeeee-0000-0000-0000-0000000000a4',f,'spray','done',w,prod,now());
   insert into job_plantings(farm_id,job_id,planting_id) values (f,'eeeeeeee-0000-0000-0000-0000000000a4','dddddddd-0000-0000-0000-0000000000a4');
   insert into job_spray(farm_id,job_id,product_id,applicator_id,label_use_id,sprayed_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,created_at) values (f,'eeeeeeee-0000-0000-0000-0000000000a4',prod,w,'cccccccc-1111-0000-0000-000000000001',now() - interval '7 days',0.025,'ml/str','signed',7,24,'label',now(),now() - interval '6 days',now() - interval '7 days' + interval '1 hour');
-  begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values (f,'dddddddd-0000-0000-0000-0000000000a4',5,now()); raise exception 'harvest at the exact end instant accepted'; exception when check_violation then null; end;
+  begin insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001',f,'dddddddd-0000-0000-0000-0000000000a4',5,now()); raise exception 'harvest at the exact end instant accepted'; exception when check_violation then null; end;
 end $$;
 
 -- 0008: job assignment and observations as the phone writes them (run as the table owner, before `set role`)
@@ -301,8 +301,8 @@ do $$ declare n int; begin
 end $$;
 -- 0007: a WORKER'S harvest is checked too, although a worker cannot read job_spray (the check must run with the owner's rights)
 do $$ begin
-  begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values ('11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-0000000000a2',5,now()); raise exception 'worker harvest inside the PHI accepted'; exception when check_violation then null; end;
-  insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values ('11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-0000000000a1',3,now()); -- a clear planting: allowed
+  begin insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-0000000000a2',5,now()); raise exception 'worker harvest inside the PHI accepted'; exception when check_violation then null; end;
+  insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-0000000000a1',3,now()); -- a clear planting: allowed
 end $$;
 
 -- 0009: a worker's pushed ops go through the SAME rights: products and sprays are refused (rejected with a reason), nothing is applied

@@ -39,7 +39,7 @@ end $$;
 set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
 do $$ declare f constant uuid := '11111111-1111-1111-1111-111111111111';
 begin
-  begin insert into job_harvest(farm_id,planting_id,harvested_at,crates_str) values (f,'dddddddd-0000-0000-0000-000000000921',now(),1); raise exception '(1b) the harvest gate opened on day 3 against an unsigned label with PHI 7';
+  begin insert into job_harvest(cut_by,farm_id,planting_id,harvested_at,crates_str) values ('bbbbbbbb-0000-0000-0000-000000000001',f,'dddddddd-0000-0000-0000-000000000921',now(),1); raise exception '(1b) the harvest gate opened on day 3 against an unsigned label with PHI 7';
   exception when check_violation then null; end;
 end $$;
 reset role; set test.uid = '';

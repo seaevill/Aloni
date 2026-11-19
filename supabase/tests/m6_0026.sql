@@ -36,7 +36,7 @@ declare f constant uuid := '11111111-1111-1111-1111-111111111111'; pa constant u
         t timestamptz := (select sprayed_at from job_spray where id = '55555555-0000-0000-0000-00000000097a');
 begin
   -- the harvest gate: day 8, product A's wait (7 days) is over, product B's (14 days) is not: the LONGEST wait of the mix blocks
-  begin insert into job_harvest(farm_id,planting_id,harvested_at,crates_str) values (f,'dddddddd-0000-0000-0000-000000000971',now(),1);
+  begin insert into job_harvest(cut_by,farm_id,planting_id,harvested_at,crates_str) values ('bbbbbbbb-0000-0000-0000-000000000001',f,'dddddddd-0000-0000-0000-000000000971',now(),1);
     raise exception '(0026) the harvest passed although a product of the mix still has a running waiting period';
   exception when check_violation then null; end;
   -- ATTACK: correcting ONE product's end time (later) or applicator: refused (they belong to the whole mix)

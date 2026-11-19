@@ -37,7 +37,7 @@ begin
   insert into job_spray(id,farm_id,job_id,product_id,applicator_id,sprayed_at,started_at,dose_str,dose_unit,label_state,amends_id,amend_reason)
     values ('55555555-0000-0000-0000-0000000010b1',f,'eeeeeeee-0000-0000-0000-0000000010a1',pq,w1,now() - interval '1 minute',now() - interval '40 minutes',0.025,'ml/str','none','55555555-0000-0000-0000-0000000010a1','later, not in the future');
   -- the harvest gate keeps the spray (still unknown): harvest refused
-  begin insert into job_harvest(farm_id,planting_id,harvested_at,crates_str) values (f,'dddddddd-0000-0000-0000-0000000010a1',now(),1); raise exception '(A1) the harvest opened after the correction';
+  begin insert into job_harvest(cut_by,farm_id,planting_id,harvested_at,crates_str) values ('bbbbbbbb-0000-0000-0000-000000000001',f,'dddddddd-0000-0000-0000-0000000010a1',now(),1); raise exception '(A1) the harvest opened after the correction';
   exception when check_violation then null; end;
 end $$;
 do $$ begin
