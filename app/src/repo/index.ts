@@ -34,9 +34,13 @@ export const actorId = (db: AppDB) => localId(db, 'actor_id');
 
 export type Op = 'insert' | 'update';
 
+/** The time of an outbox entry, STRICTLY increasing within this app: two writes in the same millisecond would otherwise tie, and the order the server sees them in (queued calls, ops) would be random. */
+let lastAt = 0;
+const stamp = (): string => { let t = Date.now(); if (t <= lastAt) t = lastAt + 1; lastAt = t; return new Date(t).toISOString(); };
+
 interface Ids { device_id: string; actor_id: string }
 async function enqueue(db: AppDB, farmId: string, table: string, rowId: string, op: Op, row: unknown, ids: Ids, group?: { id: string; size: number }): Promise<void> {
-  await db.outbox.add({ op_id: crypto.randomUUID(), farm_id: farmId, table, row_id: rowId, op, row, ...ids, at: new Date().toISOString(), status: 'pending', ...(group ? { group_id: group.id, group_size: group.size } : {}) });
+  await db.outbox.add({ op_id: crypto.randomUUID(), farm_id: farmId, table, row_id: rowId, op, row, ...ids, at: stamp(), status: 'pending', ...(group ? { group_id: group.id, group_size: group.size } : {}) });
 }
 
 /** Where a restored record came from: its own device_id/actor_id are kept; only a record that never had one gets the backup's phone (never the restoring phone). */

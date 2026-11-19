@@ -118,3 +118,14 @@ describe('putMany: several records in ONE transaction', () => {
     expect(await db.parcels.count()).toBe(0);
   });
 });
+
+describe('the outbox keeps the order of the writes', () => {
+  it('two writes in the same millisecond get strictly increasing times', async () => {
+    const { newDb, TEST_FARM_ID: F } = await import('../helpers/factories');
+    const db = await newDb();
+    for (let i = 0; i < 20; i++) await put(db, 'parcels', { id: `p${i}`, farm_id: F, name: 'P', area_str: '1' }, 'insert');
+    const times = (await db.outbox.toArray()).sort((a, b) => a.row_id.localeCompare(b.row_id, undefined, { numeric: true })).map((o) => o.at);
+    expect(new Set(times).size).toBe(20);
+    expect([...times].sort()).toEqual(times);
+  });
+});
