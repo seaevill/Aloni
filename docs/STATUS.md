@@ -32,3 +32,24 @@
 ## (d) Senden beklenen kararlar ve onaylar
 - **Apply:** 0022–0028 **onay bekliyor** (0028 yeni: fotoğraf deposu). docs/reviews/team/'de ekibin yeniden bakması gerekiyor (MUST'lar düzeltildi ama «kapandı» notu yok). Öneri: ekip kapattıktan sonra hepsini birlikte uygula.
 - Diğer kararlar (EPPO, OpenFreeMap, Hintçe, logo, veri sorumlusu, LIVE) E6'da yazılacak.
+## Canlıya geçiş kontrol listesi (LIVE'ı açmadan önce; sırayla)
+1. ☐ Ekip 0022–0028 için `docs/reviews/team/`'de «MUST kapandı» yazdı.
+2. ☐ 0022–0028 **birlikte** uygulandı, `verify` yeşil (RUNBOOK §10).
+3. ☐ Supabase **Advisors** (Security + Performance) temiz.
+4. ☐ Gerçek hesap denemesi yapıldı (RUNBOOK §12, 11 adım).
+5. ☐ Άλλα → «Σύνδεση λογαριασμού: τι λείπει» kartı beş satırda yeşil (veri sorumlusu, çiftlik adı, ΑΦΜ, migration 0028, Advisor).
+6. ☐ Telefonda taze **yedek** alındı.
+7. ☐ Claude'a «LIVE aç» dersin → proje adresi + genel anahtar ile ayrı PR → birleşir.
+8. ☐ Άλλα → «Άνοιγμα συγχρονισμού» (RUNBOOK §13) → «Ο συγχρονισμός είναι ανοιχτός».
+
+## (d) Senden beklenen kararlar ve onaylar (varsayılan önerimle)
+| # | Karar | Önerim (varsayılan) |
+|---|---|---|
+| 1 | **Apply 0022–0028** | Ekip «MUST kapandı» dedikten sonra hepsini birlikte uygula. Şu an açık MUST bilinmiyor (ekip yeniden bakıyor). |
+| 2 | **EPPO**: Σέλινο, Μυρώνι, Βλήτα için kod yok | Boş kalsın (dökümde «συμπληρώστε» uyarısı çıkar). 14 kod ekip kontrolünden geçti. |
+| 3 | **OpenFreeMap şartları** okunamadı (site bu ortamdan açılmıyor) | Şartları sen ya da ekip openfreemap.org/tos'tan oku (anahtarsız kullanım, atıf, adil kullanım). Uygun değilse harita sağlayıcısını değiştiririz; o zamana kadar harita yalnızca sahip isteyince açılır. |
+| 4 | **Hintçe kontrolü** | `docs/i18n/hi-print.html`'i yazdırıp Hintçe bilen işçiye okut; yanlışları yazdır, ben düzeltirim. |
+| 5 | **Logo / ikon** | Şimdilik geçici ikon (yeşil zemin). Logo hazır olunca gönder; ben PNG'leri üretirim. |
+| 6 | **Veri sorumlusu bilgileri** (ad, adres, telefon) ve **ΑΦΜ** | Άλλα → Πληροφορίες'e sen yaz; depoya hiçbir yerde yazılmaz. İşçi daveti bunlar olmadan kapalı. |
+| 7 | **LIVE** | Yukarıdaki listenin 1–6. adımı bittikten sonra aç. |
+| 8 | **Hava verisi** (Open-Meteo lisansı) | Kişisel/ticari olmayan kullanım için ücretsiz; ticari kullanımda ücretli plan gerekir. Lisans netleşene kadar hava şeridi boş («—») kalır. Edge Function henüz iskelet (aşağıda BACKLOG E4). |
