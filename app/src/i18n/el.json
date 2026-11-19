@@ -488,5 +488,15 @@
   "register.fill.iacs": "κωδικός ΟΣΔΕ χωραφιού",
   "register.fill.eppo": "κωδικός EPPO καλλιέργειας",
   "register.fill.bbch": "στάδιο BBCH",
-  "register.fill.dose": "δόση ανά εκτάριο (η δόση δεν είναι ανά στρέμμα)"
+  "register.fill.dose": "δόση ανά εκτάριο (η δόση δεν είναι ανά στρέμμα)",
+  "spray.correct.title": "Διόρθωση ψεκασμού",
+  "spray.correct.note": "Η αρχική καταχώριση μένει όπως ήταν. Η διόρθωση είναι νέα εγγραφή με τον λόγο της. Το προϊόν δεν αλλάζει.",
+  "spray.correct.reason": "Λόγος διόρθωσης",
+  "spray.correct.reason.error": "Γράψτε τον λόγο της διόρθωσης: η διόρθωση έχει πάντα λόγο.",
+  "spray.correct.earlier": "Η αναμονή δεν μπορεί να λήγει νωρίτερα από την αρχική καταχώριση.",
+  "spray.correct.time.error": "Μη έγκυρη ημερομηνία ή ώρα.",
+  "spray.correct.qty": "Ποσότητα από την παρτίδα",
+  "spray.correct.open": "Διόρθωση",
+  "spray.correct.was": "Αρχική καταχώριση: δόση {dose}, {when}",
+  "spray.correct.why": "Διορθώθηκε: {reason}"
 }

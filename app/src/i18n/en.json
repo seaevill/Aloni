@@ -488,5 +488,15 @@
   "register.fill.iacs": "IACS parcel code",
   "register.fill.eppo": "crop EPPO code",
   "register.fill.bbch": "BBCH stage",
-  "register.fill.dose": "dose per hectare (the dose is not per area)"
+  "register.fill.dose": "dose per hectare (the dose is not per area)",
+  "spray.correct.title": "Correct the spraying",
+  "spray.correct.note": "The original stays as it was. The correction is a new record with its reason. The product does not change.",
+  "spray.correct.reason": "Reason for the correction",
+  "spray.correct.reason.error": "Write the reason for the correction: a correction always has one.",
+  "spray.correct.earlier": "The waiting period cannot end earlier than the original record.",
+  "spray.correct.time.error": "Invalid date or time.",
+  "spray.correct.qty": "Quantity taken from the lot",
+  "spray.correct.open": "Correct",
+  "spray.correct.was": "Original: dose {dose}, {when}",
+  "spray.correct.why": "Corrected: {reason}"
 }
