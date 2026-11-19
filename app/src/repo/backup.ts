@@ -7,7 +7,8 @@ import { actorId, deviceId, isAppendOnly, put, putLocal, putSetting, refreshPend
 
 export const BACKUP_FORMAT = 'aloni-backup';
 export const BACKUP_VERSION = 1;
-const DEVICE_ONLY = new Set(['device_id', 'actor_id', 'last_backup_at']); // never part of a backup
+const DEVICE_ONLY = new Set(['device_id', 'actor_id', 'last_backup_at', 'auth_session', 'worker_view']); // never part of a backup (the sign-in session holds tokens: it must NEVER leave the phone in a file)
+const isDeviceOnly = (key: string): boolean => DEVICE_ONLY.has(key) || key.startsWith('sync_cursor:');
 export type BackupErrorCode = 'format' | 'version' | 'sha256' | 'demo' | 'conflict';
 export class BackupError extends Error { constructor(readonly code: BackupErrorCode) { super(code); } }
 
@@ -21,7 +22,7 @@ export interface Backup {
 export async function makeBackup(db: AppDB, farm: { id: string; name: string }, appVersion: string): Promise<Backup> {
   const tables: Record<string, Row[]> = {};
   for (const t of FARM_TABLES) tables[t] = await db[t].where('farm_id').equals(farm.id).toArray();
-  const settings = (await db.settings.toArray()).filter((s) => !DEVICE_ONLY.has(s.key));
+  const settings = (await db.settings.toArray()).filter((s) => !isDeviceOnly(s.key));
   const media: MediaEntry[] = [];
   for (const { data, ...meta } of await db.media.where('farm_id').equals(farm.id).toArray()) {
     media.push({ ...meta, data_base64: await blobToBase64(new Blob([data], { type: meta.mime })) });
@@ -67,7 +68,7 @@ export async function restoreBackup(db: AppDB, backup: Backup, localFarmId: stri
   let rows = 0;
   await db.transaction('rw', db.tables, async () => {
     if (backup.farm.id !== localFarmId) {
-      const mine = (await db.settings.toArray()).filter((s) => !DEVICE_ONLY.has(s.key));
+      const mine = (await db.settings.toArray()).filter((s) => !isDeviceOnly(s.key));
       await db.farms.delete(localFarmId);
       await db.outbox.where('farm_id').equals(localFarmId).delete(); // nothing may stay queued under the farm id that is gone...
       await db.farms.put({ id: backup.farm.id, name: backup.farm.name, is_demo: false });

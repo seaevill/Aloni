@@ -134,3 +134,18 @@ describe('restore never overwrites, keeps the original identities, and says what
     expect(ops.filter((o) => o.table === 'settings').map((o) => o.farm_id)).toEqual([TEST_FARM_ID]);
   });
 });
+
+describe('device-only settings never leave the phone in a backup file', () => {
+  it('the sign-in session (tokens), the worker view and the sync cursors are not exported', async () => {
+    const { putLocal } = await import('../../src/repo');
+    const db = await newDb();
+    await db.farms.put({ id: TEST_FARM_ID, name: 'Aloni', is_demo: false });
+    await putLocal(db, 'auth_session', { access_token: 'SECRET-TOKEN', refresh_token: 'SECRET-REFRESH' });
+    await putLocal(db, 'worker_view', { id: 'w1', farm: TEST_FARM_ID });
+    await putLocal(db, `sync_cursor:${TEST_FARM_ID}`, { x: '1' });
+    await putLocal(db, 'controller', { name: 'T' });
+    const b = await makeBackup(db, { id: TEST_FARM_ID, name: 'Aloni' }, 'test');
+    expect(b.settings.map((s) => s.key)).toEqual(['controller']);
+    expect(JSON.stringify(b)).not.toContain('SECRET');
+  });
+});
