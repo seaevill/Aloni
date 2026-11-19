@@ -2,7 +2,7 @@
   /* ONE place for every colour, size, space, corner and shadow of the screens. The values are the ones the app has always had; a new look changes only this file. */
   --bg:#edf2e8; --fg:#0e1c12; --green:#134a2b; --card:#fff; --line:#c9d5c3; --field:#6b7062; --warn:#6e1708;
   --white:#fff; --muted:#2d4033; --tab:#2d4033; --amber-bg:#ffedc2; --amber-fg:#432c00; --danger:#6e1708; --calm-bg:#eaf8c4; --calm-fg:#0e2a16;
-  --forest-2:#0b3520; --lime:#c6f062; --on-lime:#0e2a16; --bar:rgba(237,242,232,.74);    /* theme 2026-11 (docs/design/theme-2026-11): lime only as a FILL behind dark text, never as text */
+  --forest-2:#0b3520; --card-on-dark:#164a2e; --lime:#c6f062; --on-lime:#0e2a16; --bar:rgba(237,242,232,.74);    /* theme 2026-11 (docs/design/theme-2026-11): lime only as a FILL behind dark text, never as text */
   --font:"Commissioner",system-ui,-apple-system,"Segoe UI",sans-serif; --lh:1.4;
   --fs-14:14px; --fs-16:16px; --fs-18:18px; --fs-20:20px; --fs-22:22px; --fs-30:30px; --icon:24px; --ls-title:-.025em; --ls-h2:-.015em; --fs-count:40px;
   --font-hi:"Commissioner","Noto Sans Devanagari",system-ui,-apple-system,"Segoe UI",sans-serif;

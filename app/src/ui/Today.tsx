@@ -31,15 +31,24 @@ const DAY_MS = 86_400_000;
 
 interface FieldCard { weather: string; p: Row; state: 'free' | 'from' | 'unknown'; at: string; late: boolean; source: string; crops: string }
 
-/** The five days of the weather strip, from the stored weather of every parcel. A day without data shows «—» and the line under it says there is none. */
+/** «Weather now» (prototype layout): four tiles for today from the stored weather of every parcel, then the five-day strip. A tile without data shows «—»; nothing is invented. */
 function WeatherStrip({ perParcel }: { perParcel: ReadonlyArray<readonly Day[]> }) {
   const today = athensToday(new Date()) ?? '1970-01-01';
   const base = Date.parse(`${today}T12:00:00Z`);
   const dates = [0, 1, 2, 3, 4].map((i) => new Date(base + i * DAY_MS).toISOString().slice(0, 10));
   const days = dates.map((d) => farmDay(perParcel, d));
+  const now = days[0];
   const any = days.some((d) => d !== undefined);
+  const val = (n: number | undefined, key: 'wx.kmh' | 'wx.pct'): string => (n === undefined ? DASH : t(key, { v: formatQty(n) }));
   return (
-    <section class="wx card" data-testid="weather-strip" aria-label={t('today.weather')}>
+    <section class="wx dark" data-testid="weather-strip" aria-label={t('today.weather')}>
+      <h2>{t('today.weather')}</h2>
+      <div class="tiles">
+        <div class="tile"><small>{t('wx.maxmin')}</small><strong data-testid="wx-now-temp">{now && now.tmax !== undefined && now.tmin !== undefined ? t('wx.temp', { min: formatQty(now.tmin), max: formatQty(now.tmax) }) : DASH}</strong></div>
+        <div class="tile"><small>{t('wx.wind')}</small><strong>{val(now?.wind, 'wx.kmh')}</strong>{now?.gust !== undefined && <small>{t('wx.gust', { kmh: formatQty(now.gust) })}</small>}</div>
+        <div class="tile"><small>{t('wx.humidity')}</small><strong>{val(now?.rh, 'wx.pct')}</strong></div>
+        <div class="tile"><small>{t('wx.rain.today')}</small><strong>{now?.rain === undefined ? DASH : t('wx.rain', { mm: formatQty(now.rain) })}</strong></div>
+      </div>
       <div class="wx-row">
         {dates.map((date, i) => {
           const d = days[i];
@@ -52,7 +61,7 @@ function WeatherStrip({ perParcel }: { perParcel: ReadonlyArray<readonly Day[]> 
           );
         })}
       </div>
-      {!any && <p class="muted wx-none">{t('today.weather.none')}</p>}
+      {!any && <p class="wx-none">{t('today.weather.none')}</p>}
     </section>
   );
 }
@@ -135,10 +144,10 @@ export function Today() {
   const today = athensToday(new Date()) ?? '';
   return (
     <section class="today">
-      <header class="today-head">
+      <header class="today-head band">
         <p class="date" data-testid="today-date">{today ? formatDate(today) : ''}</p>
         <Title k="today.title" />
-        <p class="farm muted" data-testid="today-farm">{farmLabel(activeFarm.value)}</p>
+        <p class="farm" data-testid="today-farm">{farmLabel(activeFarm.value)}</p>
       </header>
       {rows.some((q) => q.failed) && <ErrorState onRetry={retry} />}
       {loaded && !has && <Welcome />}
@@ -153,6 +162,13 @@ export function Today() {
         </section>
       )}
       {loaded && has && <WeatherStrip perParcel={[...weatherOf.values()]} />}
+      {loaded && has && (
+        <section class="kpis" data-testid="today-kpis">
+          <div class="kpi"><small>{t('today.kpi.parcels')}</small><strong>{formatQty(live(parcels).length)}</strong></div>
+          <div class="kpi"><small>{t('today.kpi.crops')}</small><strong>{formatQty(cropsInUse)}</strong></div>
+          <div class="kpi wide" data-testid="today-canharvest"><small>{t('today.kpi.harvest')}</small><strong>{formatQty(cards.filter((c) => c.state === 'free').length)}</strong><small>{t('today.kpi.held', { n: cards.filter((c) => c.state !== 'free').length })}</small></div>
+        </section>
+      )}
       {loaded && has && <Fields cards={cards} onUrgent={() => setHistory(true)} />}
       {planned && <p class="msg" role="status" data-testid="job-saved">{t('job.saved')}</p>}
       {harvested && <p class="msg" role="status" data-testid="harvest-saved">{t('harvest.saved')}</p>}

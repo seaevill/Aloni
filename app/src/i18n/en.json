@@ -563,5 +563,15 @@
   "notify.denied": "Permission for notifications was not given.",
   "notify.saved": "Saved.",
   "worker.start": "Start time of the spraying",
-  "worker.start.error": "Write when the spraying started. The start cannot be after the end."
+  "worker.start.error": "Write when the spraying started. The start cannot be after the end.",
+  "wx.maxmin": "Today max / min",
+  "wx.wind": "Wind",
+  "wx.humidity": "Humidity",
+  "wx.rain.today": "Rain today",
+  "wx.kmh": "{v} km/h",
+  "wx.pct": "{v}%",
+  "today.kpi.parcels": "Parcels",
+  "today.kpi.crops": "Crops",
+  "today.kpi.harvest": "Fields with no waiting period today",
+  "today.kpi.held": "{n} waiting or unknown"
 }
