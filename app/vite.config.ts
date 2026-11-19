@@ -43,5 +43,5 @@ export default defineConfig({
       },
     }),
   ],
-  test: { environment: 'node', include: ['tests/unit/**/*.test.ts'] },
+  test: { environment: 'node', include: ['tests/unit/**/*.test.ts'], setupFiles: ['tests/helpers/setup-lang.ts'] },
 });

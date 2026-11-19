@@ -16,15 +16,37 @@ export const LANG_META: Record<Lang, { locale: string; label: string }> = { el: 
 export const dictionaries: Record<Lang, Record<string, string>> = { el, tr, en, hi };
 const LOCALES: Record<Lang, string> = { el: LANG_META.el.locale, tr: LANG_META.tr.locale, en: LANG_META.en.locale, hi: LANG_META.hi.locale };
 
+/** The first of the phone's languages we have a text for (hi, tr, en); nothing else matches: Greek stays the default. */
+export function pickLang(preferred: readonly string[]): Lang {
+  for (const p of preferred) {
+    const code = p.toLowerCase().split('-')[0];
+    if (code === 'el' || code === 'tr' || code === 'en' || code === 'hi') return code;
+  }
+  return 'el'; // Greek first
+}
+const isLang = (s: string | null): s is Lang => s === 'el' || s === 'tr' || s === 'en' || s === 'hi';
+
 function initialLang(): Lang {
   try {
     const s = localStorage.getItem('lang');
-    if (s === 'el' || s === 'tr' || s === 'en' || s === 'hi') return s;
+    if (isLang(s)) return s;
   } catch { /* storage may be unavailable */ }
-  return 'el'; // Greek first
+  try { return pickLang(navigator.languages ?? []); } catch { return 'el'; }
+}
+
+/** A worker's own language on her own phone: it applies while the worker view is open and never changes the owner's saved language. */
+export const WORKER_LANG_KEY = 'worker_lang';
+export function workerLang(): Lang | undefined {
+  try { const s = localStorage.getItem(WORKER_LANG_KEY); return isLang(s) ? s : undefined; } catch { return undefined; }
+}
+export function setWorkerLang(l: Lang) { lang.value = l; try { localStorage.setItem(WORKER_LANG_KEY, l); } catch { /* ignore */ } }
+/** Back to the owner's language (the saved one, or the phone's default). */
+export function restoreOwnerLang() {
+  try { const s = localStorage.getItem('lang'); lang.value = isLang(s) ? s : pickLang(navigator.languages ?? []); } catch { lang.value = 'el'; }
 }
 
 export const lang = signal<Lang>(initialLang());
+try { document.documentElement.lang = lang.value; } catch { /* no document (unit tests) */ }
 
 export function setLang(l: Lang) {
   lang.value = l;
