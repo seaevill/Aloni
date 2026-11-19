@@ -4,6 +4,7 @@ import type { MediaRow } from '../db/schema';
 import { t, tn, type I18nKey } from '../i18n';
 import { storePhoto } from '../media/photo';
 import { EmptyState } from './states';
+import { BackBar } from './BackBar';
 
 const MSG_KEYS: Record<'saved' | 'duplicate' | 'error', I18nKey> = { saved: 'photos.saved', duplicate: 'photos.duplicate', error: 'photos.error' };
 
@@ -60,8 +61,8 @@ export function Photos({ onBack }: { onBack: () => void }) {
   const add = () => input.current?.click();
   return (
     <section>
+      <BackBar onBack={onBack} />
       <h1>{t('photos.title')}</h1>
-      <button class="btn secondary" onClick={onBack}>{t('info.back')}</button>
       <input ref={input} type="file" accept="image/*" hidden aria-hidden="true" tabIndex={-1} onChange={(e) => void pick(e)} />
       {demo ? <p class="muted" data-testid="photos-demo-note">{t('photos.demoActive')}</p>
         : rows && rows.length > 0 && <button class="btn" data-testid="photo-add" onClick={add}>{t('photos.add')}</button>}

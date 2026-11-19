@@ -2,6 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { db, realFarmId } from '../db';
 import { t } from '../i18n';
 import { EMPTY_CONTROLLER, canInviteWorkers, loadController, saveController, type Controller } from '../legal/controller';
+import { BackBar } from './BackBar';
 
 /** Settings → Information: draft legal texts. The owner enters the data controller details once; they live in the database, never in the repo. */
 export function Info({ onBack }: { onBack: () => void }) {
@@ -21,6 +22,7 @@ export function Info({ onBack }: { onBack: () => void }) {
 
   return (
     <section>
+      <BackBar onBack={onBack} />
       <h1>{t('info.title')}</h1>
       <p class="draft" role="note">{t('info.draft')}</p>
 
@@ -39,7 +41,6 @@ export function Info({ onBack }: { onBack: () => void }) {
       <h2>{t('info.disclaimer.title')}</h2>
       <p class="card" data-testid="info-disclaimer">{t('info.disclaimer.body')}</p>
 
-      <button class="btn secondary" onClick={onBack}>{t('info.back')}</button>
     </section>
   );
 }

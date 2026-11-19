@@ -14,6 +14,7 @@ import { nameOf } from './screens';
 import { useRows } from './useRows';
 import type { Flag } from '../spray/spray';
 import type { DoseUnit } from '@aloni/rules-core';
+import { BackBar } from './BackBar';
 
 const COL_KEYS: Record<Column, I18nKey> = {
   when: 'register.col.when', parcel: 'register.col.parcel', crop: 'register.col.crop', area: 'register.col.area', product: 'register.col.product', reg_no: 'register.col.reg_no', dose: 'register.col.dose',
@@ -54,7 +55,7 @@ export function Register({ onBack }: { onBack: () => void }) {
         </label>
       )}
       <div class="noprint">
-        <button class="btn secondary" onClick={onBack}>{t('info.back')}</button>
+        <BackBar onBack={onBack} />
         <button class="btn" data-testid="register-csv" onClick={csv}>{t('register.csv')}</button>
         <button class="btn" data-testid="register-csv-machine" onClick={machine}>{t('register.csv.machine')}</button>
         <button class="btn" data-testid="register-csv-warnings" onClick={warnings}>{t('register.csv.warnings')}</button>
