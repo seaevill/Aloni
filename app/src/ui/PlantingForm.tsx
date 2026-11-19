@@ -19,7 +19,7 @@ const NO_ERRORS: PlantingErrors = { parcel: false, crop: false, area: undefined,
 /** Add a planting: parcel, crop chip, area, sowing date (today unless changed), status. Offline, saves at once. A too-large area only warns. */
 export function PlantingForm({ parcels, onDone, existing }: { parcels: Row[]; onDone: () => void; existing?: Row }) {
   const { busy, submit } = useSubmit();
-  const [parcelId, setParcelId] = useState(typeof existing?.parcel_id === 'string' ? existing.parcel_id : '');
+  const [parcelId, setParcelId] = useState(typeof existing?.parcel_id === 'string' ? existing.parcel_id : parcels.length === 1 ? String(parcels[0].id) : '');
   const [why, setWhy] = useState(''); const [whyMissing, setWhyMissing] = useState(false);
   const [slug, setSlug] = useState('');
   const [variety, setVariety] = useState(typeof existing?.variety === 'string' ? existing.variety : '');
@@ -77,6 +77,7 @@ export function PlantingForm({ parcels, onDone, existing }: { parcels: Row[]; on
       </label>
       {errors.area === 'missing' && <p class="msg error" role="alert">{t('parcel.error.area.missing')}</p>}
       {errors.area === 'invalid' && <p class="msg error" role="alert">{t('parcel.error.area.invalid')}</p>}
+      {errors.area === 'implausible' && <p class="msg error" role="alert">{t('parcel.error.area.big')}</p>}
       {bigger && <p class="msg warn" role="status" data-testid="planting-warn">{t('planting.warn.bigger', { parcel: formatArea(parcel.area_str as string | number) })}</p>}
 
       <label class="field">{t('planting.sown')}
