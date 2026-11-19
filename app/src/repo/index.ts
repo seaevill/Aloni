@@ -109,3 +109,7 @@ export async function putRpc(db: AppDB, farmId: string, name: string, rowId: str
 export async function putLocal(db: AppDB, key: string, value: unknown): Promise<void> {
   await db.settings.put({ key, value });
 }
+/** Removes a device-local setting (never queued). */
+export async function delLocal(db: AppDB, key: string): Promise<void> {
+  await db.settings.delete(key);
+}

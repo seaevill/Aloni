@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { activeFarm, dataVersion, db } from '../db';
 import { AUTH_ENABLED, DEMO_FARM_ID, SYNC_CONNECTED } from '../config';
 import { session } from '../auth/gotrue';
@@ -69,11 +69,15 @@ export function WorkerApp() {
   const doseText = (j: Row) => t('labeluse.dosevalue', { v: formatDose(known(text(j.dose_str) as Decimal)), unit: t(UNIT_KEYS[j.dose_unit as keyof typeof UNIT_KEYS]) });
 
   /** The job disappears at once and the action is KEPT on the phone at once (settings «held_actions»); it is written as a record after 10 s, or at the next start; «Αναίρεση» removes the entry. */
+  const holding = useRef(new Set<string>());      // a synchronous guard per job: a second tap while the first is being kept does nothing
   const hold = async (job: Row, h: Omit<Held, 'id' | 'at'>) => {
+    if (holding.current.has(job.id)) return;
+    holding.current.add(job.id);
     const entry: Held = { id: crypto.randomUUID(), at: new Date().toISOString(), ...h };
-    await holdAction(db, entry);
     setHeld([...held, job.id]); setOpen(undefined); setNote('');
-    showHeldUndo(t('worker.committed'), async () => { await cancelHeld(db, entry.id); setHeld((x) => x.filter((id) => id !== job.id)); }, async () => { await commitHeld(db, entry.id); dataVersion.value++; setHeld((x) => x.filter((id) => id !== job.id)); }, HOLD_MS);
+    try { await holdAction(db, entry); } catch (e) { holding.current.delete(job.id); setHeld((x) => x.filter((id) => id !== job.id)); throw e; }
+    showHeldUndo(t('worker.committed'), async () => { await cancelHeld(db, entry.id); holding.current.delete(job.id); setHeld((x) => x.filter((id) => id !== job.id)); },
+      async () => { try { await commitHeld(db, entry.id); dataVersion.value++; } catch { /* the entry stays and is written at the next start */ } holding.current.delete(job.id); setHeld((x) => x.filter((id) => id !== job.id)); }, HOLD_MS);
   };
   const confirmDone = (job: Row) => {
     const at = athensInstant(when); const start = athensInstant(startWhen);
@@ -92,8 +96,8 @@ export function WorkerApp() {
     const row = buildObservation(parcel, kind, note, me, farm, new Date().toISOString(), crypto.randomUUID());
     if (!row) return undefined;
     const entry: Held = { id: crypto.randomUUID(), at: new Date().toISOString(), writes: [{ table: 'observations', row, op: 'insert' }] };
-    return holdAction(db, entry).then(() => showHeldUndo(t('worker.committed'), () => cancelHeld(db, entry.id), async () => { await commitHeld(db, entry.id); dataVersion.value++; }, HOLD_MS));
-    setNote(''); setKind(undefined);
+    setNote(''); setKind(undefined);           // the form is cleared AT ONCE: a second tap cannot save the same observation again
+    return holdAction(db, entry).then(() => showHeldUndo(t('worker.committed'), () => cancelHeld(db, entry.id), async () => { try { await commitHeld(db, entry.id); dataVersion.value++; } catch { /* written at the next start */ } }, HOLD_MS));
   };
   const TABS: Array<['jobs' | 'harvest' | 'observe', I18nKey]> = [['jobs', 'worker.tab.jobs'], ['harvest', 'worker.tab.harvest'], ['observe', 'worker.tab.observe']];
 
