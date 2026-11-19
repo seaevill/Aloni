@@ -48,9 +48,11 @@ export async function spray(page: Page) {
   await page.getByRole('button', { name: 'Kocide 2000' }).click();
   await page.getByRole('button', { name: 'Γιώργος' }).click();
   await fillStart(page);
-  await expect(page.getByTestId('spray-dose')).toHaveValue('0,025'); // the label's own single dose is offered as a start
+  await expect(page.getByTestId('spray-dose')).toHaveValue('');           // nothing is filled in for the owner
+  await page.getByTestId('spray-dose-same').click();                       // «Ίδια με την ετικέτα»: a tap copies the label's own single dose and unit
+  await expect(page.getByTestId('spray-dose')).toHaveValue('0,025');
   await page.locator('.seg button[aria-pressed="true"]', { hasText: 'ml/στρ.' }).waitFor();
-  await page.locator('h2:has-text("Παρτίδα") + .seg button').first().click(); // the only lot
+  // the only lot is preselected (exactly one lot that is not expired)
   await page.getByTestId('spray-qty').fill('0,25');
 }
 

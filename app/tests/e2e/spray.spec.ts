@@ -21,7 +21,7 @@ test('a spray with a SIGNED label: recorded with «Ψέκασε», the exact wai
   await expect(page.getByTestId('spray-label')).toContainText('Υπογραφή γεωπόνου: Test Agronomist');
   await page.getByRole('button', { name: 'Γιώργος' }).click();
   await fillStart(page);
-  await page.locator('h2:has-text("Παρτίδα") + .seg button').first().click();
+  await page.getByTestId('spray-dose-same').click();                       // the dose is not prefilled: a tap copies the label's
   await page.getByTestId('spray-qty').fill('0,25');
   await expect(page.getByTestId('spray-flags')).toHaveCount(0); // signed, in range, in date, stock enough
   await page.getByTestId('spray-save').click();
@@ -209,8 +209,10 @@ test('TANK MIX: two products in one go, each its own record (own label, dose, wa
   await page.getByRole('button', { name: 'Γιώργος' }).click();
   await fillStart(page);
   await page.getByRole('button', { name: 'Kocide 2000' }).click();
+  await page.getByTestId('spray-dose-same').click();                  // nothing is prefilled: a tap copies the label's dose
   await expect(page.getByTestId('spray-dose')).toHaveValue('0,025');
   await page.locator('.seg button[aria-pressed="true"]', { hasText: 'ml/στρ.' }).waitFor();
+  await page.getByTestId('spray-qty-unknown').check();                    // the only lot is preselected and needs a quantity: «Δεν ξέρω» keeps this test about the mix
   await page.getByTestId('spray-save-mix').click();                      // product 1 saved; the form stays for product 2
   await expect(page.getByTestId('spray-mix-note')).toBeVisible();
   await page.getByRole('button', { name: 'Score 25' }).click();

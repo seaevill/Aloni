@@ -7,7 +7,7 @@ import type { Flag } from './spray';
 // The app suggests, never chooses: the dose is typed by the owner (the label's own dose is only offered as a start by the form); a weak label is marked on the job, never silently accepted.
 
 export interface JobInput { plantingIds: readonly string[]; productId: string; workerId: string; dose: string; doseUnit: DoseUnit | undefined; plannedFor: string }
-export interface JobErrors { plantings: boolean; product: boolean; worker: boolean; dose: boolean; doseUnit: boolean; plannedFor: boolean }
+export interface JobErrors { plantings: boolean; product: boolean; worker: boolean; dose: boolean; doseUnit: boolean; plannedFor: boolean; /** no label data (none or blocked) for this crop: a job cannot be planned for it */ label: boolean }
 export type JobResult = { ok: true; job: Row; jobPlantings: Row[]; flags: Flag[] } | { ok: false; errors: JobErrors };
 export interface JobIds { job: string; plantingLinks: readonly string[] }
 const LABEL_FLAG = { none: 'label_none', blocked: 'label_blocked', unsigned: 'label_unsigned', changed: 'label_changed' } as const;
@@ -17,8 +17,11 @@ export function buildJob(input: JobInput, ctx: { label: Row | undefined; plantin
   const positive: Decimal | undefined = dose.known && compareDecimal(dose.value, '0' as Decimal) > 0 ? dose.value : undefined;
   const errors: JobErrors = {
     plantings: input.plantingIds.length === 0, product: !input.productId, worker: !input.workerId, dose: !positive,
-    doseUnit: !input.doseUnit || !DOSE_UNITS.includes(input.doseUnit), plannedFor: !/^\d{4}-\d{2}-\d{2}$/.test(input.plannedFor),
+    doseUnit: !input.doseUnit || !DOSE_UNITS.includes(input.doseUnit), plannedFor: !/^\d{4}-\d{2}-\d{2}$/.test(input.plannedFor), label: false,
   };
+  const label0 = ctx.label && ctx.label.product_id === input.productId && ctx.plantings.every((p) => p.crop_id === ctx.label?.crop_id) ? ctx.label : undefined;
+  const st0 = label0 ? statusOf(label0) : 'none';
+  errors.label = st0 === 'none' || st0 === 'blocked';      // the app never plans a spray for a crop it has no complete label data for (recording one that already happened stays possible)
   if (Object.values(errors).some(Boolean) || !positive || !input.doseUnit) return { ok: false, errors };
   const label = ctx.label && ctx.label.product_id === input.productId && ctx.plantings.every((p) => p.crop_id === ctx.label?.crop_id) ? ctx.label : undefined;
   const state = label ? statusOf(label) : 'none';

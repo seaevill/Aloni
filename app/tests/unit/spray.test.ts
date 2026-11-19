@@ -351,3 +351,14 @@ describe('a correction never moves the end earlier (team review 0024, MUST 1)', 
     expect(run(T0).ok).toBe(true); expect(run('2026-11-20T08:30:00Z').ok).toBe(true);
   });
 });
+
+describe('an unknown quantity is a flagged «δεν ξέρω» (T6)', () => {
+  it('a lot without a typed quantity is refused unless «δεν ξέρω» is ticked; then the record is kept with the flag and NO stock movement', () => {
+    const refused = buildSpray(input({ qty: '' }), ctx(), F, now, ids);
+    expect(refused.ok).toBe(false); expect(!refused.ok && refused.errors.qty).toBe(true);
+    const ok = buildSpray(input({ qty: '', qtyUnknown: true }), ctx(), F, now, ids);
+    expect(ok.ok).toBe(true);
+    if (!ok.ok) return;
+    expect(ok.flags).toContain('quantity_unknown'); expect(ok.movement).toBeUndefined(); expect(ok.spray.qty_str).toBeUndefined();
+  });
+});
