@@ -1,6 +1,13 @@
 # DURUM – Aloni (Bora'nın sayfası)
 
-> **m7 düzeltildi, ekip yeniden bakacak** (2 MUST + 1 SHOULD yerinde düzeltildi, önce kırmızı testle). Temiz çıkarsa 0022–0031'i birlikte yükleriz; ben yüklemeyi başlatmam.
+## SABAH RAPORU (gece çalışması, 2026-11-19 → 20)
+- **Ekibin yeniden bakacağı SQL commit'i:** `4586098` (m7: N1 ekim başına etiket, N2 bitiş ≤ şimdi + kapı, N3 stok/`sync_xid`; bağımsız alt ajan incelemesi: «NO MUST»). Sonradan yalnızca yeni dosyalar eklendi: 0030 (hava takvimi), 0031 («Ποιος έκοψε»). 0022–0029'a dokunulmadı. Temiz çıkarsa 0022–0031'i birlikte yükleriz; ben başlatmam.
+- **Biten T'ler:** T0 m7 düzeltmeleri (#185) · T1 birleştirme-işareti testi (#186) · T3 tek-vuruş kaydet kilidi (#188) · T4 işçi «kaydedildi = kaydedildi» (#189).
+- **PR'da / sırada (CI bekliyor, gece içinde birleşecek):** T6 formlar seçim yapmaz (#191) · T5 siparişler çiftlik başına (#190) · T2 güncelleme çubuğu (#187). T7 (adres + Geri) kodu hazır, T2'den sonra PR olacak.
+- **Kalanlar:** T8–T20 (Σήμερα, iş satırları, sipariş/dağıtım, işçi dili/Hintçe, hasat seçici, demo, düzen hataları, tasarım dili, Μητρώο doğruluğu, geliştirici bölümü, KVKK belgeleri, erişilebilirlik).
+- **Her PR'ı bağımsız bir alt ajan inceledi** (yalnızca diff + CLAUDE.md); bulunan MUST'lar merge'den önce düzeltildi (T2: 2, T4: 3, T6: 1).
+- **iPhone kontrol listesi (decisions.md §5) — yalnızca bitmiş maddeler:** henüz sadece madde 5 (aynı anda iki kez «Καταγραφή» = 1 kayıt; T3) ve madde 6'nın yarısı (T6: «Δόση» boş, «Ίδια με την ετικέτα» ile dolar) hazır. Diğerleri sonraki PR'larla.
+- **Sorular (≤3):** (1) Bir iş «karışık ürün» (marul+roka) ise şu an etiket seçilemez ve PHI bilinmeyen kalır (güvenli); karışık işleri ayrı ayrı mı kaydedelim? (2) Sahip için ilaçlama bitişi artık «şimdi»den ileri olamaz: telefon saati 1–2 dk ilerideyse kayıt reddedilir; saati otomatik düzeltelim mi? (3) Daha önceki 0028 fotoğraf deposu için ekip yeniden bakacak: uygulama sırası konusunda tercihin var mı?
 
 *Son güncelleme: 2026-11-19 (akşam). Her birleştirmede güncellenir. Burası dışında bir şey okumana gerek yok.*
 
