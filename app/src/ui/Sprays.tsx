@@ -9,6 +9,7 @@ import type { Row } from '../db/schema';
 import { FLAG_KEYS } from './SprayForm';
 import { nameOf } from './screens';
 import { UnsyncedMark } from './states';
+import { SprayCorrection } from './SprayCorrection';
 import { useRows } from './useRows';
 
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
@@ -55,9 +56,18 @@ function WaitEntry({ spray, onDone }: { spray: Row; onDone: () => void }) {
   );
 }
 
+const comma = (v: unknown): string => text(v).split('.').join(',');
+/** The earlier rows a correction replaced, newest first: the original stays visible next to its correction. */
+function chainOf(r: Row, all: readonly Row[]): Row[] {
+  const out: Row[] = [];
+  let cur: Row | undefined = r;
+  while (cur && typeof cur.amends_id === 'string' && out.length < 20) { const prev: Row | undefined = all.find((x) => x.id === cur?.amends_id); if (prev) out.push(prev); cur = prev; }
+  return out;
+}
+
 /** The sprays that were recorded, newest first: who sprayed, what, when, the marks, and the waiting periods (unknown ones in red: the harvest is blocked). */
 export function Sprays({ readOnly = false }: { readOnly?: boolean }) {
-  const [entering, setEntering] = useState('');
+  const [entering, setEntering] = useState(''); const [correcting, setCorrecting] = useState('');
   const sprays = useRows('job_spray'); const links = useRows('job_plantings'); const plantings = useRows('plantings');
   const crops = useRows('crops'); const products = useRows('products'); const workers = useRows('workers');
   const list = effectiveSprays(sprays.rows ?? []).sort((a, b) => text(b.sprayed_at).localeCompare(text(a.sprayed_at)));
@@ -66,6 +76,7 @@ export function Sprays({ readOnly = false }: { readOnly?: boolean }) {
     const phi = waitLine(r, 'phi_days');
     return {
       r, phi, rei: waitLine(r, 'rei_hours'), flags: (Array.isArray(r.flags) ? r.flags : []) as Flag[],
+      trail: chainOf(r, sprays.rows ?? []),
       title: nameOf(products.rows?.find((p) => p.id === r.product_id) ?? {}), crops: [...new Set(cropNames)].join(', '),
       by: t('spray.by', { name: String(workers.rows?.find((w) => w.id === r.applicator_id)?.name ?? t('value.unknown')) }),
       when: formatDateTime(text(r.sprayed_at)),
@@ -84,6 +95,10 @@ export function Sprays({ readOnly = false }: { readOnly?: boolean }) {
           {!readOnly && !c.phi && entering !== c.r.id && <button class="btn secondary" data-testid="wait-open" onClick={() => setEntering(c.r.id)}>{t('spray.phi.enter')}</button>}
           {entering === c.r.id && <WaitEntry spray={c.r} onDone={() => setEntering('')} />}
           {c.rei && <small data-testid="spray-rei">{c.rei}</small>}
+          {c.trail.map((o) => <small key={String(o.id)} data-testid="spray-trail">{t('spray.correct.was', { dose: comma(o.dose_str), when: formatDateTime(text(o.sprayed_at)) })}</small>)}
+          {typeof c.r.amends_id === 'string' && <small data-testid="spray-why">{t('spray.correct.why', { reason: text(c.r.amend_reason) })}</small>}
+          {!readOnly && correcting !== c.r.id && <button class="row" data-testid="spray-correct-open" onClick={() => setCorrecting(c.r.id)}><span>{t('spray.correct.open')}</span><span aria-hidden="true" class="chev" /></button>}
+          {correcting === c.r.id && <SprayCorrection spray={c.r} onDone={() => setCorrecting('')} />}
           <UnsyncedMark id={c.r.id} />
         </div>
       ))}

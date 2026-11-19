@@ -157,3 +157,37 @@ test('a label an UNSIGNED spray used is not edited in place: a change makes a NE
   expect(all).toHaveLength(2);
   expect(all.find((x) => !x.deleted_at)).toMatchObject({ supersedes_id: oldRow.id, change_reason: 'label revised', phi_days: '10' });
 });
+
+test('«Διόρθωση»: every field can be corrected with a reason; the original stays next to it; a changed quantity moves the stock exactly; the end can not go earlier', async ({ page }) => {
+  const errors = await iphone(page);
+  await setup(page, true);
+  await spray(page);
+  await page.getByTestId('spray-save').click();
+  await openHistory(page);
+  await page.getByTestId('spray-correct-open').click();
+  await page.getByTestId('corr-dose').fill('0,03');
+  await page.getByTestId('corr-qty').fill('0,5');
+  await page.getByTestId('corr-save').click();
+  await expect(page.getByTestId('corr-reason-error')).toBeVisible();   // no reason: refused
+  await page.getByTestId('corr-reason').fill('typed wrong');
+  const when = await page.getByTestId('corr-time').inputValue();
+  const earlier = new Date(`${when}:00Z`); earlier.setUTCDate(earlier.getUTCDate() - 1);
+  await page.getByTestId('corr-time').fill(earlier.toISOString().slice(0, 16));
+  await page.getByTestId('corr-save').click();
+  await expect(page.getByTestId('corr-earlier')).toBeVisible();        // the waiting period would end earlier than the original: refused
+  await page.getByTestId('corr-time').fill(when);
+  await page.getByTestId('corr-save').click();
+  const card = page.getByTestId('spray');
+  await expect(card).toHaveCount(1);                                   // the correction is the record in force
+  await expect(card.getByTestId('spray-trail')).toContainText('δόση 0,025');   // the original is shown next to it
+  await expect(card.getByTestId('spray-why')).toContainText('typed wrong');
+  await expect(card.getByTestId('spray-phi')).toContainText('Αναμονή λήγει');  // the waiting periods are kept
+  await closeHistory(page);
+  await tab(page, 'stock');
+  await page.getByTestId('stock-open').click();
+  await expect(page.getByTestId('lot-balance')).toHaveText('Υπόλοιπο: 4 kg'); // 4,5 − 0,25 (spray) + 0,25 (taken back) − 0,5 (corrected quantity), exact
+  await page.reload();
+  await openHistory(page);
+  await expect(page.getByTestId('spray')).toHaveCount(1);
+  expect(errors).toEqual([]);
+});
