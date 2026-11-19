@@ -29,7 +29,17 @@ export function More() {
   if (view === 'photos') return <Photos onBack={() => setView('main')} />;
   return (
     <section>
-      <h1>{t('more.title')}</h1>
+      <header class="today-head band"><h1>{t('more.title')}</h1></header>
+      <nav class="menu" data-testid="more-menu" aria-label={t('more.menu')}>
+        {activeFarm.value === DEMO_FARM_ID && <button class="row" data-testid="open-worker-view" onClick={() => { workerView.value = ''; }}><span>{t('more.workerView')}</span><span aria-hidden="true" class="chev" /></button>}
+        <button class="row" data-testid="open-orders" onClick={() => setView('orders')}><span>{t('orders.open')}</span><span aria-hidden="true" class="chev" /></button>
+        <button class="row" data-testid="open-register" onClick={() => setView('register')}><span>{t('register.open')}</span><span aria-hidden="true" class="chev" /></button>
+        <button class="row" data-testid="open-workers" onClick={() => setView('workers')}><span>{t('workers.open')}</span><span aria-hidden="true" class="chev" /></button>
+        <button class="row" data-testid="open-photos" onClick={() => setView('photos')}><span>{t('photos.title')}</span><span aria-hidden="true" class="chev" /></button>
+        <button class="row" data-testid="open-info" onClick={() => setView('info')}><span>{t('more.info')}</span><span aria-hidden="true" class="chev" /></button>
+      </nav>
+
+      <h2>{t('more.settings')}</h2>
 
       <h2>{t('more.language')}</h2>
       <div class="seg">
@@ -57,12 +67,6 @@ export function More() {
       <Backup />
       <SettingsBox />
       <Notifications />
-      {activeFarm.value === DEMO_FARM_ID && <button class="row" data-testid="open-worker-view" onClick={() => { workerView.value = ''; }}><span>{t('more.workerView')}</span><span aria-hidden="true" class="chev" /></button>}
-      <button class="row" data-testid="open-orders" onClick={() => setView('orders')}><span>{t('orders.open')}</span><span aria-hidden="true" class="chev" /></button>
-      <button class="row" data-testid="open-register" onClick={() => setView('register')}><span>{t('register.open')}</span><span aria-hidden="true" class="chev" /></button>
-      <button class="row" data-testid="open-workers" onClick={() => setView('workers')}><span>{t('workers.open')}</span><span aria-hidden="true" class="chev" /></button>
-      <button class="row" data-testid="open-photos" onClick={() => setView('photos')}><span>{t('photos.title')}</span><span aria-hidden="true" class="chev" /></button>
-      <button class="row" data-testid="open-info" onClick={() => setView('info')}><span>{t('more.info')}</span><span aria-hidden="true" class="chev" /></button>
       {legacyKept.value && <p class="draft" role="note">{t('more.legacyKept')}</p>}
       <p class="muted">{t('more.version', { v: APP_VERSION })}</p>
     </section>

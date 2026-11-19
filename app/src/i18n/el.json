@@ -627,5 +627,7 @@
   "stock.filter": "Φίλτρο ανά είδος",
   "stock.filter.all": "Όλα ({n})",
   "stock.phi": "Αναμονή (εγκεκριμένη ετικέτα): {list}",
-  "stock.phi.item": "{crop} {n} ημ."
+  "stock.phi.item": "{crop} {n} ημ.",
+  "more.menu": "Μενού",
+  "more.settings": "Ρυθμίσεις και σύνδεση"
 }
