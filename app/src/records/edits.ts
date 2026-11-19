@@ -31,7 +31,8 @@ export function applyEdit(existing: Row, changes: Record<string, unknown>, reaso
   }
   if (Object.keys(before).length === 0) return { kind: 'nochange' };
   if (reason.trim() === '') return { kind: 'reason' };
-  return { kind: 'ok', row: { ...next, updated_at: nowIso, edits: [...editsOf(existing), { at: nowIso, reason: reason.trim(), before }] } };
+  // `edit_reason` is what the SERVER reads: it writes the history entry itself (previous values from its own database, its own clock); the local `edits` copy is for the screen until the next pull
+  return { kind: 'ok', row: { ...next, updated_at: nowIso, edit_reason: reason.trim(), edits: [...editsOf(existing), { at: nowIso, reason: reason.trim(), before }] } };
 }
 
 /** A stored decimal text («12.5») in the farmer's comma form for a form box («12,5»); anything else is an empty box. */

@@ -140,7 +140,7 @@ export function buildWaitEntry(original: Row, phiText: string, reiText: string, 
 /** What the farmer may change in a recorded spraying. The job and the product never change (a wrong product = a new spraying). */
 export interface CorrectionInput { dose: string; doseUnit: DoseUnit | undefined; sprayedAt: string; applicatorId: string; qty: string; water: string; note: string; reason: string; startedAt?: string; bbch?: string; prescription?: string }
 export interface CorrectionContext { /** every stock movement of this phone: the spray's own «out» movement is found by its job */ movements: readonly Row[]; lotBalance: string | undefined }
-export interface CorrectionErrors { start: boolean; bbch: boolean; dose: boolean; doseUnit: boolean; time: boolean; applicator: boolean; qty: boolean; water: boolean; reason: boolean; earlier: boolean }
+export interface CorrectionErrors { endEarlier: boolean; start: boolean; bbch: boolean; dose: boolean; doseUnit: boolean; time: boolean; applicator: boolean; qty: boolean; water: boolean; reason: boolean; earlier: boolean }
 export type CorrectionResult = { ok: true; spray: Row; movements: Row[] } | { ok: false; errors: CorrectionErrors };
 
 /**
@@ -160,6 +160,7 @@ export function buildCorrection(original: Row, input: CorrectionInput, ctx: Corr
   const re = at.known && reiHours ? reiEnd(input.sprayedAt, reiHours) : undefined;
   const before = (x: { known: boolean; value?: unknown } | undefined, old: unknown): boolean => x?.known === true && typeof x.value === 'string' && typeof old === 'string' && Date.parse(x.value) < Date.parse(old);
   const errors: CorrectionErrors = {
+    endEarlier: at.known && typeof original.sprayed_at === 'string' && Date.parse(input.sprayedAt) < Date.parse(original.sprayed_at),   // the server refuses an earlier end (a wait could be back-dated)
     start: input.startedAt !== undefined && !validStart(input.startedAt, input.sprayedAt), bbch: (input.bbch ?? '').trim() !== '' && !/^[0-9]{2}$/.test((input.bbch ?? '').trim()),
     dose: !dose, doseUnit: !input.doseUnit || !DOSE_UNITS.includes(input.doseUnit), time: !at.known, applicator: !input.applicatorId,
     qty: hasLot && !qty, water: water !== undefined && !water.known, reason: input.reason.trim() === '',

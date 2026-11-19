@@ -57,6 +57,7 @@ test('«Έγινε» without signal waits in the outbox and says so; with signal
   await expect(page.getByTestId('worker-job')).toHaveCount(1);
   await context.setOffline(true);
   await page.getByTestId('job-done').click();
+  await page.getByTestId('worker-start').fill(new Date(Date.now() - 3_600_000).toISOString().slice(0, 16));
   await page.getByTestId('job-confirm').click();
   // 10 seconds to take it back, then it is queued
   await expect(page.getByTestId('worker-waiting')).toContainText('Αποθηκεύτηκε · θα σταλεί όταν έχει σήμα', { timeout: 20000 });
@@ -66,6 +67,6 @@ test('«Έγινε» without signal waits in the outbox and says so; with signal
   await page.evaluate(() => window.dispatchEvent(new Event('online')));
   await expect(page.getByTestId('worker-finished')).toHaveCount(1, { timeout: 20000 });
   expect(state.completions).toHaveLength(1);
-  expect(Object.keys(state.completions[0]!).sort()).toEqual(['p_job', 'p_late_reason', 'p_ended_at', 'p_note'].sort());
+  expect(Object.keys(state.completions[0]!).sort()).toEqual(['p_job', 'p_late_reason', 'p_ended_at', 'p_started_at', 'p_note'].sort());
   expect(state.completions[0]).toMatchObject({ p_job: 'job1', p_note: null, p_late_reason: null });
 });
