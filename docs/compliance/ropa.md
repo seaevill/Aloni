@@ -8,10 +8,10 @@ Status 2026-11-19: **draft**. Every legal basis below is a proposal "for the law
 | Worker | e-mail (auth user, only if the worker has an account) | sign-in by one-time code | contract | until the account is revoked |
 | Worker | phone (`workers.phone`, optional) | reach the worker | consent | until removed |
 | Worker | `actor_id`, `cut_by`, `applicator_id` on spray/harvest/observation rows | who did what (inspection record) | legal duty | ≥ 3 years, append-only |
-| Worker | `device_id` (random id per phone, in the outbox) | sync de-duplication | legitimate interest / contract | while the outbox exists |
+| Worker | `device_id` (random id per phone, in the outbox) | sync de-duplication | contract (the lawyer decides whether the notice must also name legitimate interest) | while the outbox exists |
 | Worker / owner | timestamps of each action | records must show when | legal duty | with the row |
-| Owner / worker | photos (`media`) | field evidence | contract | until deleted; GPS/EXIF is stripped on import (re-encoded, tested in `photo-exif.spec.ts`) |
+| Owner / worker | photos (`media`) | field evidence | contract | until deleted; every photo is decoded and re-encoded as JPEG before storing, so GPS/EXIF is dropped; a file that cannot be decoded is not stored at all (`photo-exif.spec.ts`) |
 | Owner | business name, address, phone, VAT id (`settings`) | inspection register header | legal duty | until changed |
 | – | one-time-code e-mail provider | sign-in mail | **TBD: EU provider with a DPA** (open decision) | – |
 
-Not collected: location tracking, advertising ids, analytics, contacts. Recipients: hosting provider (processor, EU) once LIVE. Transfers outside the EU: none planned (weather data is fetched server-side with field coordinates only; MET Norway is in the EEA).
+Not collected: location tracking, advertising ids, analytics, contacts. Recipients: hosting provider (processor, EU) once LIVE. Transfers outside the EU: **to be confirmed by the lawyer** (hosting is planned in the EU; the CDN/Pages provider and the weather provider still have to be checked; weather is fetched server-side with field coordinates only).

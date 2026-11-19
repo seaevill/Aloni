@@ -14,3 +14,5 @@
 3. Records held by the 3-year duty are scheduled for deletion on their date; the owner is told which and until when.
 
 **Public page** `/delete-account` (static, el + en): says the two flows above and who to write to. It is only added together with LIVE.
+
+Note for the lawyer: the worker notice says other data is deleted when the working relationship ends; this design pseudonymises the roster row instead. One of the two texts must be aligned.
