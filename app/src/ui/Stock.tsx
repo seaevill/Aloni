@@ -49,8 +49,8 @@ export function Stock() {
           {moves.rows && <small data-testid="product-stock">{t('stock.balance', { qty: stockText(r, moves.rows) })}</small>}
           {text(r.label_photo_id) && <div class="photos"><MediaThumb id={text(r.label_photo_id)} /></div>}
           <UnsyncedMark id={r.id} />
-          <button class="btn secondary" data-testid="stock-open" onClick={() => setLots(r)}>{t('stock.open')}</button>
-          <button class="btn secondary" data-testid="labeluse-open" onClick={() => setOpen(r)}>{t('labeluse.open')}</button>
+          <button class="row" data-testid="stock-open" onClick={() => setLots(r)}><span>{t('stock.open')}</span><span aria-hidden="true" class="chev" /></button>
+          <button class="row" data-testid="labeluse-open" onClick={() => setOpen(r)}><span>{t('labeluse.open')}</span><span aria-hidden="true" class="chev" /></button>
           {!demo && <button class="btn secondary" onClick={() => void archive(r)}>{t('product.archive')}</button>}
         </div>
       ))}
