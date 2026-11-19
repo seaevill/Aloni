@@ -631,5 +631,9 @@
   "more.menu": "Μενού",
   "more.settings": "Ρυθμίσεις και σύνδεση",
   "wx.source": "Δεδομένα: {name} · {when}",
-  "wx.stale": "παλιά δεδομένα"
+  "wx.stale": "παλιά δεδομένα",
+  "harvest.cutby": "Ποιος έκοψε",
+  "harvest.cutby.none": "Πρώτα προσθέστε εργάτες στη λίστα (Άλλα → Εργάτες).",
+  "harvest.cutby.error": "Επιλέξτε ποιος έκοψε.",
+  "harvest.cutby.line": "Έκοψε: {name}"
 }

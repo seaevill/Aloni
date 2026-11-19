@@ -78,16 +78,16 @@ end $$;
 set role app_user;
 set test.uid = '00000000-0000-0000-0000-0000000000b2';
 do $$ begin
-  begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values ('11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-000000000705',1,now() + interval '2 minutes'); raise exception '(c) a worker harvest 2 minutes in the future was accepted'; exception when check_violation then null; end;
-  begin insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values ('11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-000000000704',1,now() - interval '2 hours'); raise exception '(c) a worker harvest dated back INTO a running PHI/REI was accepted'; exception when check_violation then null; end;
-  insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values ('11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-000000000705',1,now() - interval '1 hour');   -- a free planting: fine
+  begin insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-000000000705',1,now() + interval '2 minutes'); raise exception '(c) a worker harvest 2 minutes in the future was accepted'; exception when check_violation then null; end;
+  begin insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-000000000704',1,now() - interval '2 hours'); raise exception '(c) a worker harvest dated back INTO a running PHI/REI was accepted'; exception when check_violation then null; end;
+  insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-000000000705',1,now() - interval '1 hour');   -- a free planting: fine
   begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000705', now() + interval '2 minutes', p_started_at => (now() + interval '2 minutes') - interval '30 minutes'); raise exception '(c) a worker spraying that ends 2 minutes in the future was accepted'; exception when check_violation then null; end;
 end $$;
 set test.uid = '00000000-0000-0000-0000-0000000000a1';
 do $$ begin
   -- the owner keeps his tolerance of 5 minutes, and may RECORD an earlier harvest that conflicts (it is kept and shown, see harvest_conflicts)
-  insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values ('11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-000000000705',2,now() + interval '2 minutes');
-  insert into job_harvest(farm_id,planting_id,crates_str,harvested_at) values ('11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-000000000704',3,now() - interval '2 hours');
+  insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-000000000705',2,now() + interval '2 minutes');
+  insert into job_harvest(cut_by,farm_id,planting_id,crates_str,harvested_at) values ('bbbbbbbb-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-000000000704',3,now() - interval '2 hours');
 end $$;
 
 -- (e) «late» is judged by the SERVER's clock (the server's clock, now()): a spraying that reached the server more than 7 days after it ended is kept and marked, whatever the phone's clock said

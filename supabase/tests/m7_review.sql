@@ -38,7 +38,7 @@ end $$;
 -- the harvest gate: the latest of the original and the corrected end counts (here 14 days from the corrected end)
 do $$ declare f constant uuid := '11111111-1111-1111-1111-111111111111';
 begin
-  begin insert into job_harvest(farm_id,planting_id,harvested_at,crates_str) values (f,'dddddddd-0000-0000-0000-000000000991',now(),1); raise exception '(MUST 1) the harvest opened after a correction';
+  begin insert into job_harvest(cut_by,farm_id,planting_id,harvested_at,crates_str) values ('bbbbbbbb-0000-0000-0000-000000000001',f,'dddddddd-0000-0000-0000-000000000991',now(),1); raise exception '(MUST 1) the harvest opened after a correction';
   exception when check_violation then null; end;
 end $$;
 -- SHOULD 2: a correction that names no label keeps the chain's label; the label is archived; a later typed PHI 10 against label 14 is refused

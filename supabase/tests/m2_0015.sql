@@ -50,7 +50,7 @@ set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
 do $$
 declare f constant uuid := '11111111-1111-1111-1111-111111111111';
 begin
-  begin insert into job_harvest(farm_id,planting_id,harvested_at,crates_str) values (f,'dddddddd-0000-0000-0000-000000000901',now(),1); raise exception '(1b) the harvest gate trusted a short stored PHI instead of the signed label floor';
+  begin insert into job_harvest(cut_by,farm_id,planting_id,harvested_at,crates_str) values ('bbbbbbbb-0000-0000-0000-000000000001',f,'dddddddd-0000-0000-0000-000000000901',now(),1); raise exception '(1b) the harvest gate trusted a short stored PHI instead of the signed label floor';
   exception when check_violation then null; end;
 end $$;
 reset role; set test.uid = '';
@@ -65,7 +65,7 @@ begin
   select * into r from job_spray where id = '55555555-0000-0000-0000-000000000902';
   if r.received_at < now() - interval '1 minute' then raise exception '(2) received_at was taken from the writer: %', r.received_at; end if;
   if not ('late_entry' = any (r.flags)) then raise exception '(2) a 20-day-old spray was not marked late because the writer supplied received_at'; end if;
-  insert into job_harvest(id,farm_id,planting_id,harvested_at,crates_str,received_at) values ('66666666-0000-0000-0000-000000000902',f,'dddddddd-0000-0000-0000-000000000902',now(), 1, '2020-01-01');
+  insert into job_harvest(cut_by,id,farm_id,planting_id,harvested_at,crates_str,received_at) values ('bbbbbbbb-0000-0000-0000-000000000001','66666666-0000-0000-0000-000000000902',f,'dddddddd-0000-0000-0000-000000000902',now(), 1, '2020-01-01');
   if (select received_at from job_harvest where id = '66666666-0000-0000-0000-000000000902') < now() - interval '1 minute' then raise exception '(2) a harvest took received_at from the writer'; end if;
 end $$;
 reset role; set test.uid = '';

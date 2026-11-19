@@ -22,7 +22,7 @@ async function realRecords() {
   const s = buildSpray({ plantingIds: ['pl1'], productId: 'prod', applicatorId: 'w1', sprayedAt: '2026-11-20T08:00:00Z', startedAt: '2026-11-20T07:30:00Z', dose: '0,025', doseUnit: 'ml/str', lotKey: undefined, qty: '', water: '', note: '' },
     { label: undefined, plantings: [planting], lot: undefined, lotBalance: undefined, today: '2026-11-20' }, F, now, { job: 'job1', spray: 'sp1', movement: 'mv1', plantingLinks: ['jp1'] });
   if (!s.ok) throw new Error('setup');
-  const h = buildHarvest({ plantingId: 'pl2', crates: '12', harvestedAt: '2026-11-20T09:00:00Z', note: '' }, [], [], F, now, 'h1'); if (!h.ok) throw new Error('setup');
+  const h = buildHarvest({ plantingId: 'pl2', crates: '12', harvestedAt: '2026-11-20T09:00:00Z', note: '', cutBy: 'w1' }, [], [], F, now, 'h1'); if (!h.ok) throw new Error('setup');
   const o = buildObservation('p1', 'pest', 'aphids', w.row, F, now, 'o1'); if (!o) throw new Error('setup');
   await putMany(db, [
     { table: 'workers', row: w.row, op: 'insert' }, { table: 'jobs', row: s.job, op: 'insert' }, { table: 'job_plantings', row: s.jobPlantings[0], op: 'insert' },

@@ -32,8 +32,8 @@ export function harvestGate(plantingId: string, at: string, links: readonly Row[
   return until === undefined ? { ok: true } : { ok: false, reason: 'running', until, source, by, ...(late ? { late: true as const } : {}) };
 }
 
-export interface HarvestInput { plantingId: string; crates: string; harvestedAt: string; note: string }
-export type HarvestResult = { ok: true; row: Row } | { ok: false; planting: boolean; crates: boolean; time: boolean; gate: Gate | undefined };
+export interface HarvestInput { plantingId: string; crates: string; harvestedAt: string; note: string; /** «Ποιος έκοψε»: the id of a roster worker. Required. */ cutBy: string }
+export type HarvestResult = { ok: true; row: Row } | { ok: false; planting: boolean; crates: boolean; time: boolean; cutBy: boolean; gate: Gate | undefined };
 
 /** The clock's ISO time has milliseconds; the waiting-period logic reads whole UTC seconds. An unreadable «now» stays unreadable (and so blocks). */
 const wholeSeconds = (iso: string): string => iso.replace(/\.\d+Z$/, 'Z');
@@ -45,10 +45,10 @@ const wholeSeconds = (iso: string): string => iso.replace(/\.\d+Z$/, 'Z');
 export function buildHarvest(input: HarvestInput, links: readonly Row[], sprayRows: readonly Row[], farmId: string, nowIso: string, id: string): HarvestResult {
   const crates = parseWhole<'Crates'>(input.crates);
   const now = wholeSeconds(nowIso);
-  const bad = { planting: !input.plantingId, crates: !crates.known || crates.value < 1, time: !parseInstant(input.harvestedAt).known || input.harvestedAt > now };
+  const bad = { planting: !input.plantingId, cutBy: input.cutBy.trim() === '', crates: !crates.known || crates.value < 1, time: !parseInstant(input.harvestedAt).known || input.harvestedAt > now };
   const gate = input.plantingId ? harvestGate(input.plantingId, now, links, sprayRows) : undefined;
-  if (bad.planting || bad.crates || bad.time || !gate?.ok) return { ok: false, ...bad, gate: gate?.ok ? undefined : gate };
-  return { ok: true, row: { id, farm_id: farmId, planting_id: input.plantingId, crates_str: input.crates.trim(), harvested_at: input.harvestedAt, created_at: nowIso, ...(input.note.trim() ? { note: input.note.trim() } : {}) } };
+  if (bad.planting || bad.crates || bad.time || bad.cutBy || !gate?.ok) return { ok: false, ...bad, gate: gate?.ok ? undefined : gate };
+  return { ok: true, row: { id, farm_id: farmId, planting_id: input.plantingId, cut_by: input.cutBy, crates_str: input.crates.trim(), harvested_at: input.harvestedAt, created_at: nowIso, ...(input.note.trim() ? { note: input.note.trim() } : {}) } };
 }
 
 export type Cut = { state: 'free' } | { state: 'unknown' } | { state: 'from'; at: string; source: Source; late?: true };

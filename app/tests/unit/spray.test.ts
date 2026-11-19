@@ -187,18 +187,20 @@ describe('harvest gate: only a KNOWN waiting period that has run out unblocks; n
   });
   it('buildHarvest refuses while blocked and keeps the typed crate count; crates must be a whole number above 0', () => {
     const sp = [signedSpray()];
-    const base = { plantingId: 'pl1', crates: '12', harvestedAt: '2026-11-21T00:00:00Z', note: '' };
-    expect(buildHarvest(base, links, sp, F, now, 'h1')).toEqual({ ok: false, planting: false, time: true, crates: false, gate: { ok: false, reason: 'running', until: '2026-11-27T08:00:00Z', source: 'label', by: 'phi' } });
+    const base = { plantingId: 'pl1', crates: '12', harvestedAt: '2026-11-21T00:00:00Z', note: '', cutBy: 'w1' };
+    expect(buildHarvest(base, links, sp, F, now, 'h1')).toEqual({ ok: false, planting: false, time: true, crates: false, cutBy: false, gate: { ok: false, reason: 'running', until: '2026-11-27T08:00:00Z', source: 'label', by: 'phi' } });
     // the gate looks at NOW, never at the typed harvest time: a future time cannot be used to step over the PHI
     const future = buildHarvest({ ...base, harvestedAt: '2026-11-28T00:00:00Z' }, links, sp, F, now, 'h1');
-    expect(future).toEqual({ ok: false, planting: false, crates: false, time: true, gate: { ok: false, reason: 'running', until: '2026-11-27T08:00:00Z', source: 'label', by: 'phi' } });
+    expect(future).toEqual({ ok: false, planting: false, crates: false, time: true, cutBy: false, gate: { ok: false, reason: 'running', until: '2026-11-27T08:00:00Z', source: 'label', by: 'phi' } });
     const later = '2026-11-28T00:00:00.000Z';
-    expect(buildHarvest({ ...base, harvestedAt: '2026-11-28T00:00:00Z' }, links, sp, F, later, 'h1')).toEqual({ ok: true, row: { id: 'h1', farm_id: 'farm', planting_id: 'pl1', crates_str: '12', harvested_at: '2026-11-28T00:00:00Z', created_at: later } });
-    expect(buildHarvest({ ...base, harvestedAt: '2026-11-21T00:00:00Z' }, links, sp, F, later, 'h1')).toEqual({ ok: true, row: { id: 'h1', farm_id: 'farm', planting_id: 'pl1', crates_str: '12', harvested_at: '2026-11-21T00:00:00Z', created_at: later } }); // a past time, PHI over now: recorded
-    expect(buildHarvest({ ...base, harvestedAt: 'Invalid Date' }, links, sp, F, later, 'h1')).toEqual({ ok: false, planting: false, crates: false, time: true, gate: undefined });
-    expect(buildHarvest(base, links, sp, F, 'Invalid Date', 'h1')).toEqual({ ok: false, planting: false, crates: false, time: false, gate: { ok: false, reason: 'time' } }); // an unreadable «now» blocks
-    for (const bad of ['', '0', '1,5', 'abc', '-2']) expect(buildHarvest({ ...base, crates: bad, harvestedAt: '2026-11-28T00:00:00Z' }, links, sp, F, later, 'h'), bad).toEqual({ ok: false, planting: false, time: false, crates: true, gate: undefined });
-    expect(buildHarvest({ ...base, plantingId: '' }, links, sp, F, later, 'h')).toEqual({ ok: false, planting: true, time: false, crates: false, gate: undefined });
+    expect(buildHarvest({ ...base, harvestedAt: '2026-11-28T00:00:00Z' }, links, sp, F, later, 'h1')).toEqual({ ok: true, row: { id: 'h1', farm_id: 'farm', planting_id: 'pl1', cut_by: 'w1', crates_str: '12', harvested_at: '2026-11-28T00:00:00Z', created_at: later } });
+    expect(buildHarvest({ ...base, harvestedAt: '2026-11-21T00:00:00Z' }, links, sp, F, later, 'h1')).toEqual({ ok: true, row: { id: 'h1', farm_id: 'farm', planting_id: 'pl1', cut_by: 'w1', crates_str: '12', harvested_at: '2026-11-21T00:00:00Z', created_at: later } }); // a past time, PHI over now: recorded
+    expect(buildHarvest({ ...base, harvestedAt: 'Invalid Date' }, links, sp, F, later, 'h1')).toEqual({ ok: false, planting: false, crates: false, time: true, cutBy: false, gate: undefined });
+    expect(buildHarvest(base, links, sp, F, 'Invalid Date', 'h1')).toEqual({ ok: false, planting: false, crates: false, time: false, cutBy: false, gate: { ok: false, reason: 'time' } }); // an unreadable «now» blocks
+    for (const bad of ['', '0', '1,5', 'abc', '-2']) expect(buildHarvest({ ...base, crates: bad, harvestedAt: '2026-11-28T00:00:00Z' }, links, sp, F, later, 'h'), bad).toEqual({ ok: false, planting: false, time: false, crates: true, cutBy: false, gate: undefined });
+    expect(buildHarvest({ ...base, plantingId: '' }, links, sp, F, later, 'h')).toEqual({ ok: false, planting: true, time: false, crates: false, cutBy: false, gate: undefined });
+    // «Ποιος έκοψε» is required: without it nothing is recorded
+    expect(buildHarvest({ ...base, cutBy: '', harvestedAt: '2026-11-28T00:00:00Z' }, links, sp, F, later, 'h')).toEqual({ ok: false, planting: false, time: false, crates: false, cutBy: true, gate: undefined });
   });
 });
 

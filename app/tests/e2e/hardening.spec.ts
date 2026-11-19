@@ -67,6 +67,7 @@ test('real farm, OFFLINE: the spray and harvest forms and the stock screens meet
   await page.getByTestId('harvest-open').click(); // saves offline
   await page.getByRole('button', { name: 'Σπανάκι · Κάτω Κάμπος' }).click();
   await page.getByTestId('harvest-more').click();
+  await page.getByTestId('harvest-cutby-option').first().click();                       // «Ποιος έκοψε» is required
   await page.getByTestId('harvest-save').click();
   await openHistory(page);
   await expect(page.getByTestId('harvest')).toContainText('1 κλούβα');
