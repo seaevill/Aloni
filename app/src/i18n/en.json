@@ -513,5 +513,6 @@
   "edit.f.status": "status",
   "edit.f.variety": "variety",
   "edit.f.lot": "lot",
-  "history.edits": "Changes to fields and plantings"
+  "history.edits": "Changes to fields and plantings",
+  "edit.f.osde": "IACS code"
 }

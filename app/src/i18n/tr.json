@@ -513,5 +513,6 @@
   "edit.f.status": "durum",
   "edit.f.variety": "çeşit",
   "edit.f.lot": "parti",
-  "history.edits": "Tarla ve ekim değişiklikleri"
+  "history.edits": "Tarla ve ekim değişiklikleri",
+  "edit.f.osde": "ΟΣΔΕ kodu"
 }

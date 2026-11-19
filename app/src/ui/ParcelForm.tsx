@@ -18,7 +18,7 @@ export function ParcelForm({ onDone, existing }: { onDone: () => void; existing?
   const [topo, setTopo] = useState<Topo | undefined>(TOPO.find((k) => k === existing?.topo_class));
   const [why, setWhy] = useState(''); const [whyMissing, setWhyMissing] = useState(false);
   const [pin, setPin] = useState<Pin | undefined>(undefined);
-  const [pinFailed, setPinFailed] = useState(false); const [osde, setOsde] = useState('');
+  const [pinFailed, setPinFailed] = useState(false); const [osde, setOsde] = useState(typeof existing?.opekepe_code === 'string' ? existing.opekepe_code : '');
   const [errors, setErrors] = useState<{ name: boolean; area: 'missing' | 'invalid' | undefined }>({ name: false, area: undefined });
 
   const takePin = async () => {
@@ -31,7 +31,7 @@ export function ParcelForm({ onDone, existing }: { onDone: () => void; existing?
     const r = buildParcel({ name, area, topo, pin, osde }, realFarmId.value, new Date().toISOString(), crypto.randomUUID());
     if (!r.ok) { setErrors({ name: r.name, area: r.area }); return; }
     if (existing) { // append-only: the row gets the new values, `edits` keeps the previous ones with the reason
-      const e = applyEdit(existing, { name: r.row.name, area_str: r.row.area_str, topo_class: r.row.topo_class }, why, new Date().toISOString());
+      const e = applyEdit(existing, { name: r.row.name, area_str: r.row.area_str, topo_class: r.row.topo_class, opekepe_code: r.row.opekepe_code }, why, new Date().toISOString());
       if (e.kind === 'nochange') { onDone(); return; }
       if (e.kind === 'reason') { setWhyMissing(true); return; }
       await put(db, 'parcels', e.row, 'update');
