@@ -22,9 +22,10 @@ Bu dosya benim iş listem. Bitirdiğimi `[x]` ile işaretlerim. `docs/reviews/te
 - [x] 0028 fotoğraf deposu (PR; apply bekliyor) (Supabase Storage, çiftlik başına özel bucket, RLS, işçi yalnızca kendi işinin fotoğrafı, SHA-256, boyut sınırı). *Bitti:* migration + önce kırmızı test (gerçek authenticated) + açık MUST yok.
 - [ ] EPPO kodları ekip listesine göre, her kodun yanında https://gd.eppo.int/taxon/KOD, kilitleyen test. *Bitti:* `eppo.ts` + test + mapping belgesi güncel.
 - [ ] Sihirbaz LIVE öncesi son adım olarak gözden geçirildi; STATUS'ta «canlıya geçiş kontrol listesi». *Bitti:* kontrol listesi STATUS'ta; sihirbaz testleri yeşil.
+- [x] Sihirbaz LIVE öncesi son adım olarak gözden geçirildi; STATUS'ta «canlıya geçiş kontrol listesi» (bu PR). Sihirbaz testleri yeşil (live e2e).
 
 ## E4 – Günlük fayda
-- [ ] Hava: Edge Function deploy hazırlığı (RUNBOOK'ta Bora'nın tıklayacağı adımlar) + veri gelince şerit dolsun. *Bitti:* RUNBOOK bölümü + veri geldiğinde şeridin dolduğunu gösteren test.
+- [ ] Hava (BÜYÜK, 4 parça): (i) `weather-fetch` gövdesini yaz (parselleri oku, Open-Meteo'dan çek, `weather_daily`'ye yaz); (ii) migration 0029: sahip/işçi için `farm_weather(p_farm)` okuma fonksiyonu + test; (iii) telefonda senkron turunda `weather` tablosunu doldur; (iv) RUNBOOK'a Bora'nın tıklayacağı deploy + pg_cron adımları. Şu an yalnızca iskelet var. Hava: Edge Function deploy hazırlığı (RUNBOOK'ta Bora'nın tıklayacağı adımlar) + veri gelince şerit dolsun. *Bitti:* RUNBOOK bölümü + veri geldiğinde şeridin dolduğunu gösteren test.
 - [ ] Sipariş bağlantısı 1. adım: Κλούβες JSON yedeği içe aktarma → «Διαθέσιμες κλούβες» ve ekim önerisi ekranı; PHI'de bekleyen hasat arz sayılmaz. *Bitti:* içe aktarma + ekran + PHI testi.
 - [ ] Bildirimler: imzalı kurallar için gösterim (gönderim yok, sessiz saat korunur). *Bitti:* ekran + «imzasız kural bildirim göstermez» testi.
 
@@ -33,4 +34,4 @@ Bu dosya benim iş listem. Bitirdiğimi `[x]` ile işaretlerim. `docs/reviews/te
 - [ ] e2e: tank karışımı, düzeltme, harita, işçi daveti (sahip tarafı da). *Bitti:* her biri için 375 px testi yeşil.
 
 ## E6 – Bora kararları
-- [ ] STATUS.md «(d)» bölümünde sade dille, varsayılan önerimle: EPPO onayı, OpenFreeMap şartları, Hintçe kontrolü, logo, veri sorumlusu bilgileri, LIVE. *Bitti:* bölüm güncel.
+- [x] STATUS.md «(d)» bölümünde sade dille, varsayılan önerimle: EPPO onayı, OpenFreeMap şartları, Hintçe kontrolü, logo, veri sorumlusu bilgileri, LIVE. *Bitti:* bölüm güncel.
