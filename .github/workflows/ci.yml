@@ -29,6 +29,10 @@ jobs:
       - name: E2E at 375 px (WebKit)
         run: npx playwright test --trace off
         working-directory: app
+      - name: Performance report (size and first load; only WARNS, never fails)
+        if: always()
+        continue-on-error: true
+        run: node scripts/perf-report.mjs
       - name: Upload screenshots of every screen (always)
         if: always()
         uses: actions/upload-artifact@v4
