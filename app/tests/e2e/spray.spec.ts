@@ -37,7 +37,7 @@ test('a spray with a SIGNED label: recorded with «Ψέκασε», the exact wai
   await closeHistory(page);
   await expect(page.getByTestId('cut').first()).toHaveAttribute('data-state', 'from'); // «Κοπή από …» from the signed label
   await closeHistory(page);
-  await expect(page.getByTestId('cut-line').first()).toContainText('Κοπή από');
+  await expect(page.getByTestId('cut-line').first()).toContainText('αναμονή έως');
   await closeHistory(page);
   await expect(page.getByTestId('cut-source').first()).toHaveText('Πηγή: υπογεγραμμένη ετικέτα');
   await tab(page, 'stock');
@@ -66,7 +66,7 @@ test('a spray with an UNSIGNED label is still recorded, marked, and its waiting 
   await closeHistory(page);
   await expect(page.getByTestId('cut').first()).toHaveAttribute('data-state', 'unknown'); // unknown waiting period: «άγνωστο», blocked
   await closeHistory(page);
-  await expect(page.getByTestId('cut-line').first()).toContainText('άγνωστο');
+  await expect(page.getByTestId('cut-line').first()).toContainText('Λείπει αναμονή');
 
   await openHistory(page);
   await card.getByTestId('wait-open').click(); // Bora types the label's values: a NEW row, the original stays
