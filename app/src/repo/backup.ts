@@ -42,7 +42,7 @@ export function parseBackup(text: string): Backup {
 }
 
 export interface Skipped { table: string; id: string; label: string }
-export interface Restored { rows: number; farmId: string; skipped: Skipped[] }
+export interface Restored { rows: number; added: number; updated: number; same: number; farmId: string; skipped: Skipped[] }
 
 const stable = (v: unknown): string => JSON.stringify(v, (_k, x: unknown) => (x && typeof x === 'object' && !Array.isArray(x) && !(x instanceof ArrayBuffer) ? Object.fromEntries(Object.entries(x).sort(([a], [b]) => a.localeCompare(b))) : x));
 const stampOf = (r: Row): string => String(r.updated_at ?? r.created_at ?? '');
@@ -65,7 +65,7 @@ export async function restoreBackup(db: AppDB, backup: Backup, localFarmId: stri
   await appActor(db);
   const origin = { device_id: backup.device_id };
   const skipped: Skipped[] = [];
-  let rows = 0;
+  let rows = 0; let added = 0; let updated = 0; let same = 0;
   await db.transaction('rw', db.tables, async () => {
     if (backup.farm.id !== localFarmId) {
       const mine = (await db.settings.toArray()).filter((s) => !isDeviceOnly(s.key));
@@ -77,10 +77,11 @@ export async function restoreBackup(db: AppDB, backup: Backup, localFarmId: stri
     for (const [table, list] of Object.entries(backup.tables)) {
       for (const r of list) {
         const local = await db.table<Row>(table).get(r.id);
-        if (local && stable(local) === stable(r)) continue;
+        if (local && stable(local) === stable(r)) { same += 1; continue; }
         if (local && (isAppendOnly(table) || stampOf(r) <= stampOf(local))) { skipped.push({ table, id: r.id, label: labelOf(local) }); continue; }
         await put(db, table, r, isAppendOnly(table) ? 'insert' : 'update', origin);
         rows += 1;
+        if (local) updated += 1; else added += 1;
       }
     }
     for (const s of backup.settings) {
@@ -95,7 +96,7 @@ export async function restoreBackup(db: AppDB, backup: Backup, localFarmId: stri
     }
   });
   await refreshPending(db);
-  return { rows, farmId: backup.farm.id, skipped };
+  return { rows, added, updated, same, farmId: backup.farm.id, skipped };
 }
 
 export const markBackupDone = (db: AppDB, atIso: string) => putLocal(db, 'last_backup_at', atIso);
