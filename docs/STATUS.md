@@ -1,58 +1,57 @@
 # DURUM – Aloni (Bora'nın sayfası)
 
-*Son güncelleme: 2026-11-19. Her birleştirmede güncellenir.*
+*Son güncelleme: 2026-11-19 (akşam). Her birleştirmede güncellenir. Burası dışında bir şey okumana gerek yok.*
 
 ## (a) Faz 1 ilerlemesi (tahmini, dürüst)
 | Parça | % | Not |
 |---|---:|---|
-| Kayıtlar (tarla, ekim, ürün, ilaçlama, hasat, stok) | 85 | düzeltme, düzenleme, tank karışımı var; fotoğraf deposu (0028) yok |
-| Güvenlik | 80 | 0022–0027 ekip incelemesi bekliyor; açık MUST bilinmiyor |
-| Görünüm | 66 | Bora istediği görünümü henüz görmüyor: prototip düzenine geçiş başlıyor (E2) |
-| Senkron / işçi | 70 | kod hazır, LIVE kapalı; denenmedi |
-| Hava / bildirim | 40 | hava ekranı hazır (veri yok), bildirimlerde 16 kuralın listesi var, hepsi «imzasız = bildirim yok» (gönderim yok) |
-| Sipariş | 10 | Κλούβες bağlantısı daha başlamadı (yalnızca tedarik tablosu hesabı) |
-| Hava / bildirim | 40 | hava ekranı hazır (veri yok), bildirim altyapısı hazır (gönderim yok) |
-| Sipariş | 40 | Κλούβες yedeğini elle yükleme + «Διαθέσιμες κλούβες» ekranı hazır (Daha fazla → Παραγγελίες); PHI bekleyen sayılmaz; otomatik bağlantı yok |
+| Kayıtlar (tarla, ekim, ürün, ilaçlama, hasat, stok) | 88 | düzeltme, düzenleme, tank karışımı var; fotoğraf deposu (0028) yazıldı, uygulanmadı |
+| Güvenlik | 80 | 0022–0029 ekip incelemesi bekliyor; açık MUST bilinmiyor |
+| Görünüm | 72 | Σήμερα, tarla detayı, ürün detayı, Αποθήκη prototip düzeninde; Άλλα menüsü üstte; Μητρώο, işçi ekranı kaldı |
+| Senkron / işçi | 70 | kod hazır, LIVE kapalı; gerçek hesapla denenmedi |
+| Hava / bildirim | 65 | hava: sunucu işi + 0029 + telefon doldurma yazıldı, **hiçbiri açık değil** (RUNBOOK §14); bildirim: 16 kural listelenir, hepsi «imzasız = bildirim yok» |
+| Sipariş | 40 | Κλούβες yedeğini elle yükleme + «Διαθέσιμες κλούβες» ekranı hazır; otomatik bağlantı yok |
+| Kural motoru (golden) | – | 27 vakanın 27'si şema kontrolünden geçiyor; **9 motorda çalışıyor, 18 atlandı** (motor kodu yok: don, püskürtme penceresi, rotasyon, azot, ekim, ruhsat, tuz, hasat tahmini) |
 
 ## (b) Bu turda telefonda ne değişti
-- İlaçlama düzeltmesi bitişi geriye alamıyor; işçi «Έγινε»de başlangıç saati soruluyor; tarla/ekim düzenlemede neden zorunlu.
-- **Σήμερα prototipin düzenine geçti** (koyu başlık bandı, koyu hava kartı 4 karo, KPI karoları). Sol prototip | sağ uygulama: `docs/design/compare/today.png`. Öz puan 7/10 (hasat 7/28 gün kasa karoları ve uyarı listesi henüz yok).
-- **Tarla detay ekranı geldi**: Χωράφια'da bir tarlaya dokununca koyu başlık, sınır kroki, bilgi tablosu, kesim durumu, hava, ekimler, son ilaçlamalar. Prototip | uygulama: `docs/design/compare/parcel-detail.png`. Öz puan 7/10.
-- **Tarla detay ekranı geldi**: Χωράφια'da bir tarlaya dokununca koyu başlık, sınır kroki, bilgi tablosu, kesim durumu, hava, ekimler, son ilaçlamalar. Prototip | uygulama: `docs/design/compare/parcel-detail.png`. Öz puan 7/10.
-- **Ürün detay ekranı geldi** (Καλλιέργειες'te ürüne dokun): ekimler + son ilaçlama ve bekleme süresi. Öz puan 5/10 (öneri kartları ve sipariş tablosu yok).
-- EPPO kodları ekip listesine göre güncellendi (14 kod dolu, 3 boş).
-- Ekran görüntüleri: `docs/design/screenshots-2026-11-19c/`.
+- **Σήμερα**: son 7 ve 28 günde kesilen kasa karoları eklendi. Prototip | uygulama: `docs/design/compare/today.png`. Öz puan 7/10.
+- **Χωράφια → tarla detayı** (kroki, bilgi tablosu, kesim durumu, hava, ekimler). `docs/design/compare/parcel-detail.png`. 7/10.
+- **Καλλιέργειες → ürün detayı** (ekimler, son ilaçlama + bekleme süresi). 5/10 (öneri kartları ve sipariş tablosu yok).
+- **Αποθήκη** prototip düzeninde: koyu başlık, tür filtre düğmeleri, etiketli kartlar, kalan miktar + son kullanma + onaylı etiketten bekleme süresi. `docs/design/compare/stock.png`. 7/10.
+- **Άλλα → Παραγγελίες**: Κλούβες yedek dosyanı yükle; ürünler ekinlere eşleşir (sen onaylarsın); ekin başına bu/geçen hafta sipariş, kesime hazır ekim sayısı, bekleyenler **sayılmaz**.
+- **Άλλα → Ειδοποιήσεις**: 16 kuralın listesi; agronom onayı kaydedilene kadar hiçbiri bildirim göndermez.
+- Başlangıç saati zorunlu (işçi «Έγινε»), düzeltme bitişi geriye alamaz, tarla/ekim düzenlemede neden zorunlu.
+- Karşılaştırma görüntüleri (sol prototip, sağ uygulama): `docs/design/compare/` (today, parcel-detail, stock, crops-list, parcels-list, more).
 
 ## (c) Telefonda deneyeceğin adımlar (en fazla 7)
-1. Άλλα → «Ειδοποιήσεις»: sessiz saatleri gör.
-2. Bir tarla ekle, «Επεξεργασία» ile alanı değiştir; neden iste.
-3. İlaçlama kaydet (başlangıç saati yaz), sonra «Διόρθωση» ile dozu düzelt.
-4. İki ürünü «Αποθήκευση και άλλο προϊόν» ile aynı karışıma kaydet.
-5. İşçi ekranında «Έγινε» (başlangıç saati iste).
-6. Σήμερα'da «bugün kim ne yaptı» kartına bak.
-7. Tarla formunda «Όρια στον χάρτη»yi aç (internet gerekir).
+1. Άλλα → Παραγγελίες: Κλούβες'ten aldığın yedek dosyasını yükle; ürün–ekin eşleşmelerini kontrol et.
+2. Αποθήκη: tür filtrelerine bas; bir ürünün altındaki «Αναμονή» satırı yalnızca onaylı etiketten gelir.
+3. Σήμερα: «Κλούβες 7/28 ημερών» karolarına bak (bir hasat kaydedince artar).
+4. Άλλα → Ειδοποιήσεις: 16 kural «χωρίς έγκριση» görünür; sessiz saatleri gör.
+5. İlaçlama kaydet (başlangıç saati yaz), sonra «Διόρθωση» ile dozu düzelt.
+6. İki ürünü «Αποθήκευση και άλλο προϊόν» ile aynı karışıma kaydet.
+7. İşçi ekranında «Έγινε» (başlangıç saati iste).
 
-## (d) Senden beklenen kararlar ve onaylar
-- **Apply:** 0022–0028 **onay bekliyor** (0028 yeni: fotoğraf deposu). docs/reviews/team/'de ekibin yeniden bakması gerekiyor (MUST'lar düzeltildi ama «kapandı» notu yok). Öneri: ekip kapattıktan sonra hepsini birlikte uygula.
-- Diğer kararlar (EPPO, OpenFreeMap, Hintçe, logo, veri sorumlusu, LIVE) E6'da yazılacak.
+## (d) Senden beklenen kararlar ve onaylar (varsayılan önerimle)
+| # | Karar | Önerim (varsayılan) |
+|---|---|---|
+| 1 | **Apply 0022–0029** | Ekip «MUST kapandı» dedikten sonra hepsini birlikte uygula (RUNBOOK §10). Şu an açık MUST bilinmiyor; ekip yeniden bakıyor. 0029 yalnızca hava okuma fonksiyonları ekler. |
+| 2 | **Hava verisi / Open-Meteo ücretli plan** (para) | Ücretsiz sürüm ticari kullanıma kapalı; anahtar olmadan fonksiyon hiçbir şey çekmez. Karar: ücretli plan alınsın mı? Alana kadar hava kartı «—» kalır. |
+| 3 | **EPPO**: Σέλινο, Μυρώνι, Βλήτα için kod yok | Boş kalsın (dökümde «συμπληρώστε» uyarısı). 14 kod ekip kontrolünden geçti. |
+| 4 | **OpenFreeMap şartları** okunamadı (site bu ortamdan açılmıyor) | Şartları sen ya da ekip openfreemap.org/tos'tan oku. Uygun değilse sağlayıcıyı değiştiririz; o zamana kadar harita yalnızca sahip isteyince açılır. |
+| 5 | **Hintçe kontrolü** | `docs/i18n/hi-print.html`'i yazdırıp Hintçe bilen işçiye okut. |
+| 6 | **Logo / ikon** | Şimdilik geçici ikon. Logo hazır olunca gönder. |
+| 7 | **Veri sorumlusu bilgileri** (ad, adres, telefon) ve **ΑΦΜ** | Άλλα → Πληροφορίες'e sen yaz; depoya yazılmaz. İşçi daveti bunlar olmadan kapalı. |
+| 8 | **Gerçek Κλούβες yedeği ile deneme** | Bir yedek dosyasını yükleyip eşleşmeleri kontrol et; yanlış eşleşme varsa söyle. |
+| 9 | **LIVE** | Aşağıdaki listenin 1–6. adımı bittikten sonra aç. |
+
 ## Canlıya geçiş kontrol listesi (LIVE'ı açmadan önce; sırayla)
-1. ☐ Ekip 0022–0028 için `docs/reviews/team/`'de «MUST kapandı» yazdı.
-2. ☐ 0022–0028 **birlikte** uygulandı, `verify` yeşil (RUNBOOK §10).
+1. ☐ Ekip 0022–0029 için `docs/reviews/team/`'de «MUST kapandı» yazdı.
+2. ☐ 0022–0029 **birlikte** uygulandı, `verify` yeşil (RUNBOOK §10).
 3. ☐ Supabase **Advisors** (Security + Performance) temiz.
 4. ☐ Gerçek hesap denemesi yapıldı (RUNBOOK §12, 11 adım).
 5. ☐ Άλλα → «Σύνδεση λογαριασμού: τι λείπει» kartı beş satırda yeşil (veri sorumlusu, çiftlik adı, ΑΦΜ, migration 0028, Advisor).
 6. ☐ Telefonda taze **yedek** alındı.
 7. ☐ Claude'a «LIVE aç» dersin → proje adresi + genel anahtar ile ayrı PR → birleşir.
 8. ☐ Άλλα → «Άνοιγμα συγχρονισμού» (RUNBOOK §13) → «Ο συγχρονισμός είναι ανοιχτός».
-
-## (d) Senden beklenen kararlar ve onaylar (varsayılan önerimle)
-| # | Karar | Önerim (varsayılan) |
-|---|---|---|
-| 1 | **Apply 0022–0028** | Ekip «MUST kapandı» dedikten sonra hepsini birlikte uygula. Şu an açık MUST bilinmiyor (ekip yeniden bakıyor). |
-| 2 | **EPPO**: Σέλινο, Μυρώνι, Βλήτα için kod yok | Boş kalsın (dökümde «συμπληρώστε» uyarısı çıkar). 14 kod ekip kontrolünden geçti. |
-| 3 | **OpenFreeMap şartları** okunamadı (site bu ortamdan açılmıyor) | Şartları sen ya da ekip openfreemap.org/tos'tan oku (anahtarsız kullanım, atıf, adil kullanım). Uygun değilse harita sağlayıcısını değiştiririz; o zamana kadar harita yalnızca sahip isteyince açılır. |
-| 4 | **Hintçe kontrolü** | `docs/i18n/hi-print.html`'i yazdırıp Hintçe bilen işçiye okut; yanlışları yazdır, ben düzeltirim. |
-| 5 | **Logo / ikon** | Şimdilik geçici ikon (yeşil zemin). Logo hazır olunca gönder; ben PNG'leri üretirim. |
-| 6 | **Veri sorumlusu bilgileri** (ad, adres, telefon) ve **ΑΦΜ** | Άλλα → Πληροφορίες'e sen yaz; depoya hiçbir yerde yazılmaz. İşçi daveti bunlar olmadan kapalı. |
-| 7 | **LIVE** | Yukarıdaki listenin 1–6. adımı bittikten sonra aç. |
-| 8 | **Hava verisi** (Open-Meteo lisansı) | Kişisel/ticari olmayan kullanım için ücretsiz; ticari kullanımda ücretli plan gerekir. Lisans netleşene kadar hava şeridi boş («—») kalır. Edge Function henüz iskelet (aşağıda BACKLOG E4). |
+9. ☐ (İsteğe bağlı, sonra) Hava: RUNBOOK §14.
