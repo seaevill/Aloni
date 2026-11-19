@@ -38,3 +38,6 @@ Prototipte bu iki ekranın karşılığı YOK (yalnızca ilaçlama kaydı/CSV li
 - ✔ Üç sekme (Δουλειές / Συγκομιδή / Σημείωση) ekranın altında bulanık eylem tepsisinde; ✔ düğmeler 72 px; ✔ sabit kaydet düğmeleri tepsinin üstünde.
 - ✘ Tema B örneğindeki büyük «Έγινε» tek düğmesi (birden fazla iş olduğu için kart içinde kalıyor).
 - Görüntü: `docs/design/compare/worker.png` (önce | sonra, 375 px). Öz puan 7/10.
+## Fark listesi – İlaçlama kaydı (bu PR)
+- ✔ Koyu üst bant ve geri düğmesi (tüm ayrıntı ekranlarıyla aynı dil). ✘ Tek ekranda uzun form (adım adım akış tema B'de var, uygulanmadı); ✘ sabit «Kaydet» tepsisi zaten var.
+- Görüntü: `docs/design/compare/spray-form.png` (önce | sonra, 375 px). Öz puan 6/10.
