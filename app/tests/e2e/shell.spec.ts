@@ -44,7 +44,8 @@ test('demo farm: load, see data, switch language, remove', async ({ page }) => {
   await expect(page.getByRole('status')).toContainText('φορτώθηκε');
   await page.locator('nav.tabs [data-tab="today"]').click();
   await expect(page.getByTestId('today-counts')).toContainText('Χωράφια: 5 · Καλλιέργειες: 10 · Φυτεύσεις: 16');
-  await expect(page.locator('h1 .badge')).toBeVisible();
+  await expect(page.getByTestId('demo-banner')).toBeVisible(); // the demo is marked in ONE place only
+  await expect(page.locator('h1 .badge')).toHaveCount(0);
   await page.locator('nav.tabs [data-tab="parcels"]').click();
   await expect(page.locator('.card')).toHaveCount(5);
   // Turkish

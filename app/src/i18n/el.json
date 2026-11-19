@@ -333,7 +333,7 @@
   "worker.exit": "Έξοδος από την προβολή εργάτη",
   "worker.tab.jobs": "Δουλειές",
   "worker.tab.harvest": "Συγκομιδή",
-  "worker.tab.observe": "Παρατήρηση",
+  "worker.tab.observe": "Σημείωση",
   "worker.jobs": "Σημερινές δουλειές",
   "worker.noJobs": "Δεν υπάρχουν δουλειές για σήμερα.",
   "worker.doneList": "Έχουν γίνει",
