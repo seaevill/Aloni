@@ -11,6 +11,8 @@
 | Senkron / işçi | 70 | kod hazır, LIVE kapalı; denenmedi |
 | Hava / bildirim | 40 | hava ekranı hazır (veri yok), bildirimlerde 16 kuralın listesi var, hepsi «imzasız = bildirim yok» (gönderim yok) |
 | Sipariş | 10 | Κλούβες bağlantısı daha başlamadı (yalnızca tedarik tablosu hesabı) |
+| Hava / bildirim | 40 | hava ekranı hazır (veri yok), bildirim altyapısı hazır (gönderim yok) |
+| Sipariş | 40 | Κλούβες yedeğini elle yükleme + «Διαθέσιμες κλούβες» ekranı hazır (Daha fazla → Παραγγελίες); PHI bekleyen sayılmaz; otomatik bağlantı yok |
 
 ## (b) Bu turda telefonda ne değişti
 - İlaçlama düzeltmesi bitişi geriye alamıyor; işçi «Έγινε»de başlangıç saati soruluyor; tarla/ekim düzenlemede neden zorunlu.

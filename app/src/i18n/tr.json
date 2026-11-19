@@ -604,5 +604,22 @@
   "notify.rules.unsigned": "Ziraat mühendisi onayı yok: yalnız bilgi, bildirim yok.",
   "notify.rules.allowed": "Onaylı: bildirim gönderebilir.",
   "notify.rules.quiet": "Onaylı, ama şu an sessiz saat.",
-  "notify.rules.off": "Onaylı, ama bildirimler kapalı."
+  "notify.rules.off": "Onaylı, ama bildirimler kapalı.",
+  "orders.open": "Siparişler ve mevcut kasalar",
+  "orders.title": "Mevcut kasalar",
+  "orders.note": "Klouves uygulamasının yedeğini (.json dosyası) yükle. Uygulama yalnız okur, geriye bir şey göndermez.",
+  "orders.import": "Klouves yedeğini yükle",
+  "orders.bad": "Bu dosya Klouves yedeği değil.",
+  "orders.skipped": "Çeyrek kasa olmayan {n} miktar atlandı.",
+  "orders.empty": "Henüz yedek yüklenmedi.",
+  "orders.none": "Eşleşen ürünler için bu veya geçen hafta sipariş yok.",
+  "orders.held": "Beklemede veya bekleme süresi bilinmiyor: {n} (sayılmaz)",
+  "orders.sow.none": "Sipariş var ama büyüyen ekim yok.",
+  "orders.sow.held": "Sipariş var ama tüm ekimler beklemede.",
+  "orders.sow.note": "Ekim kuralı ziraat mühendisince onaylanmadı: bu satırlar yalnız bilgidir, karar vermez.",
+  "orders.unmapped": "Sayılmıyor: eşleşmeyen {n} ürün.",
+  "orders.map.title": "Ürünleri ekinlerle eşle",
+  "orders.map.none": "— yok (sayılmaz)",
+  "orders.line.week": "Bu hafta: {a} kasa · geçen hafta: {b}",
+  "orders.line.free": "Kesime hazır: {n} ekim · 7 günde kesilen: {c} kasa"
 }

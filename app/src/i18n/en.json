@@ -604,5 +604,22 @@
   "notify.rules.unsigned": "No agronomist approval: information only, no notification.",
   "notify.rules.allowed": "Approved: may notify.",
   "notify.rules.quiet": "Approved, but it is quiet hours now.",
-  "notify.rules.off": "Approved, but notifications are off."
+  "notify.rules.off": "Approved, but notifications are off.",
+  "orders.open": "Orders and available crates",
+  "orders.title": "Available crates",
+  "orders.note": "Load the backup of the Klouves app (.json file). The app only reads it and sends nothing back.",
+  "orders.import": "Load Klouves backup",
+  "orders.bad": "That file is not a Klouves backup.",
+  "orders.skipped": "Skipped {n} quantities that are not in quarter crates.",
+  "orders.empty": "No backup loaded yet.",
+  "orders.none": "No orders this or last week for the mapped products.",
+  "orders.held": "Held or waiting period unknown: {n} (not counted)",
+  "orders.sow.none": "There are orders, but nothing is growing.",
+  "orders.sow.held": "There are orders, but every planting is held.",
+  "orders.sow.note": "The sowing rule is not approved by an agronomist: these lines are information only and decide nothing.",
+  "orders.unmapped": "Not counted: {n} products without a crop.",
+  "orders.map.title": "Match products to crops",
+  "orders.map.none": "— none (not counted)",
+  "orders.line.week": "This week: {a} crates · last week: {b}",
+  "orders.line.free": "Ready to cut: {n} plantings · cut in 7 days: {c} crates"
 }

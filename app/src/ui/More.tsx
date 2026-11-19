@@ -7,6 +7,7 @@ import { LANGS, LANG_META, lang, setLang, t } from '../i18n';
 import { Info } from './Info';
 import { Photos } from './Photos';
 import { SettingsBox } from './SettingsBox';
+import { Orders } from './Orders';
 import { Register } from './Register';
 import { Workers } from './Workers';
 import { workerView } from './nav';
@@ -19,9 +20,10 @@ import { showUndo } from './Toast';
 
 export function More() {
   const [msg, setMsg] = useState('');
-  const [view, setView] = useState<'main' | 'info' | 'photos' | 'workers' | 'register'>('main');
+  const [view, setView] = useState<'main' | 'info' | 'photos' | 'workers' | 'register' | 'orders'>('main');
   const pick = (id: string) => { activeFarm.value = id; dataVersion.value++; };
   if (view === 'info') return <Info onBack={() => setView('main')} />;
+  if (view === 'orders') return <Orders onBack={() => setView('main')} />;
   if (view === 'register') return <Register onBack={() => setView('main')} />;
   if (view === 'workers') return <Workers onBack={() => setView('main')} />;
   if (view === 'photos') return <Photos onBack={() => setView('main')} />;
@@ -56,6 +58,7 @@ export function More() {
       <SettingsBox />
       <Notifications />
       {activeFarm.value === DEMO_FARM_ID && <button class="row" data-testid="open-worker-view" onClick={() => { workerView.value = ''; }}><span>{t('more.workerView')}</span><span aria-hidden="true" class="chev" /></button>}
+      <button class="row" data-testid="open-orders" onClick={() => setView('orders')}><span>{t('orders.open')}</span><span aria-hidden="true" class="chev" /></button>
       <button class="row" data-testid="open-register" onClick={() => setView('register')}><span>{t('register.open')}</span><span aria-hidden="true" class="chev" /></button>
       <button class="row" data-testid="open-workers" onClick={() => setView('workers')}><span>{t('workers.open')}</span><span aria-hidden="true" class="chev" /></button>
       <button class="row" data-testid="open-photos" onClick={() => setView('photos')}><span>{t('photos.title')}</span><span aria-hidden="true" class="chev" /></button>
