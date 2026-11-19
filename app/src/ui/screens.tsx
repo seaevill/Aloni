@@ -19,7 +19,6 @@ export function Title({ k }: { k: I18nKey }) {
   return (
     <h1>
       {t(k)}
-      {activeFarm.value === DEMO_FARM_ID && <span class="badge">{t('badge.demo')}</span>}
     </h1>
   );
 }

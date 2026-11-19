@@ -40,7 +40,7 @@ export function ParcelForm({ onDone }: { onDone: () => void }) {
       </label>
       {errors.name && <p class="msg error" role="alert">{t('parcel.error.name')}</p>}
       <label class="field">{t('parcel.area')}
-        <input class="input" value={area} inputMode="decimal" autoComplete="off" onInput={(e) => setArea((e.target as HTMLInputElement).value)} />
+        <span class="inbox"><input class="input" value={area} inputMode="decimal" autoComplete="off" onInput={(e) => setArea((e.target as HTMLInputElement).value)} /><span class="unit">{t('unit.str')}</span></span>
       </label>
       {errors.area === 'missing' && <p class="msg error" role="alert">{t('parcel.error.area.missing')}</p>}
       {errors.area === 'invalid' && <p class="msg error" role="alert">{t('parcel.error.area.invalid')}</p>}

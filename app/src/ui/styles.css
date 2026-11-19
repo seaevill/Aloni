@@ -106,3 +106,17 @@ h3 { font-size:var(--fs-18); font-weight:800; margin:var(--sp-12) 0 var(--sp-6);
 .welcome { list-style:none; margin:0 0 var(--sp-12); padding:var(--sp-12) var(--sp-14); display:grid; gap:var(--sp-12); }
 .welcome li { display:flex; gap:var(--sp-12); align-items:flex-start; }
 .welcome .step { flex:none; display:inline-flex; align-items:center; justify-content:center; width:var(--tap-step); height:var(--tap-step); border-radius:var(--r-pill); background:var(--lime); color:var(--on-lime); font-weight:700; font-variant-numeric:tabular-nums; }
+
+/* Worker screen: big cards, one main action per job, a locked job is grey and says why */
+.job { padding:var(--sp-14); }
+.job-title { display:block; font-size:var(--fs-22); font-weight:800; margin:0 0 var(--sp-4); }
+.job.locked { background:var(--bg); border:var(--bw-2) solid var(--line); box-shadow:none; }
+.job .seg.big button span[aria-hidden="true"] { font-size:var(--fs-30); line-height:1; margin-inline-end:var(--sp-6); }
+
+/* Forms: label on top, the unit inside the box, the main button stays in reach */
+.inbox { position:relative; display:block; }
+.inbox .input { padding-inline-end:calc(var(--tap) + var(--sp-8)); }
+.inbox .unit { position:absolute; inset-inline-end:var(--sp-14); top:50%; transform:translateY(-50%); color:var(--muted); font-weight:700; pointer-events:none; }
+.btn[data-testid$="-save"], .btn[data-testid="job-confirm"] { position:sticky; bottom:calc(var(--nav-h) + var(--sp-8)); z-index:3; box-shadow:var(--shadow-card); }
+body { font-variant-numeric:tabular-nums; }
+input[type="date"], input[type="datetime-local"], input[type="time"] { min-height:var(--tap); font-size:var(--fs-18); }

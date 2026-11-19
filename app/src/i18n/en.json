@@ -68,7 +68,7 @@
   "warn.persist": "The browser does not guarantee the data will stay. Export a backup often.",
   "parcel.add": "Add a parcel",
   "parcel.name": "Parcel name",
-  "parcel.area": "Area in stremmata (στρ.)",
+  "parcel.area": "Area",
   "parcel.pin": "Take the position from GPS",
   "parcel.pin.set": "Latitude {lat} · longitude {lng} (±{acc} m)",
   "parcel.pin.error": "No position found. You can continue without it.",
@@ -88,7 +88,7 @@
   "planting.add": "Add planting",
   "planting.parcel": "Parcel",
   "planting.crop": "Crop",
-  "planting.area": "Area in stremma (στρ.)",
+  "planting.area": "Area",
   "planting.sown": "Sowing date",
   "planting.variety": "Variety (optional)",
   "planting.lot": "Lot (optional)",
@@ -462,5 +462,6 @@
   "welcome.2": "Add a field",
   "welcome.2.body": "Start with one field and its planting.",
   "welcome.3": "or see the demo",
-  "welcome.3.body": "Made-up data to show how it works. It never mixes with your own."
+  "welcome.3.body": "Made-up data to show how it works. It never mixes with your own.",
+  "unit.str": "stremma"
 }

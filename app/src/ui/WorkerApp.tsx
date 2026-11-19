@@ -91,7 +91,7 @@ export function WorkerApp() {
   return (
     <main data-testid="worker-app">
       {lang.value === 'hi' && <p class="badge warn bi" data-testid="hi-review">{ts('lang.review')}</p>}
-      <h1>{t('worker.title')}{!real && <span class="badge">{t('badge.demo')}</span>}</h1>
+      <h1>{t('worker.title')}</h1>
       {!real && <DemoBanner />}
       {!real && <p class="muted">{t('worker.demoNote')}</p>}
       {!real && <h2>{t('worker.choose')}</h2>}
@@ -104,7 +104,7 @@ export function WorkerApp() {
           <h2>{t('worker.jobs')}</h2>
           {open_.length === 0 && <p class="muted" data-testid="worker-nojobs">{t('worker.noJobs')}</p>}
           {open_.map((j) => (
-            <div class="card" key={j.id} data-testid="worker-job">{nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {})}
+            <div class={lockOf(j).state === 'none' ? 'card job' : 'card job locked'} key={j.id} data-testid="worker-job"><strong class="job-title">{nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {})}</strong>
               {plantingsOf(j).map((p) => <small key={p.id}>{plantingName(p)}</small>)}
               <small data-testid="worker-dose">{t('labeluse.line', { name: t('labeluse.dose'), value: doseText(j) })}</small>
               <small>{t('worker.fixed')}</small>
