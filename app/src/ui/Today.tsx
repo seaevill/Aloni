@@ -32,6 +32,9 @@ const DAY_MS = 86_400_000;
 interface FieldCard { weather: string; p: Row; state: 'free' | 'from' | 'unknown'; at: string; late: boolean; source: string; crops: string }
 
 /** «Weather now» (prototype layout): four tiles for today from the stored weather of every parcel, then the five-day strip. A tile without data shows «—»; nothing is invented. */
+const issuedText = (iso: string | undefined): string => (iso === undefined ? t('value.unknown') : formatDateTime(iso));
+const sourceLine = (p: { names: string[]; issued: string | undefined }): string => t('wx.source', { name: p.names.join(', '), when: issuedText(p.issued) });
+
 function WeatherStrip({ perParcel }: { perParcel: ReadonlyArray<readonly Day[]> }) {
   const today = athensToday(new Date()) ?? '1970-01-01';
   const base = Date.parse(`${today}T12:00:00Z`);
@@ -64,7 +67,7 @@ function WeatherStrip({ perParcel }: { perParcel: ReadonlyArray<readonly Day[]> 
       </div>
       {!any && <p class="wx-none">{t('today.weather.none')}</p>}
       {any && src && (
-        <p class="wx-source" data-testid="wx-source">{t('wx.source', { name: src.names.join(', '), when: src.issued === undefined ? t('value.unknown') : formatDateTime(src.issued) })}{src.stale && <strong data-testid="wx-stale"> {t('wx.stale')}</strong>}</p>
+        <p class="wx-source" data-testid="wx-source">{sourceLine(src)}{src.stale && <strong data-testid="wx-stale"> {t('wx.stale')}</strong>}</p>
       )}
     </section>
   );
