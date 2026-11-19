@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dictionaries, formatDate, formatDateLong, lang, ts } from '../../src/i18n';
+import { dictionaries, formatDate, formatDateLong, formatDateTime, lang, ts } from '../../src/i18n';
 
 describe('i18n', () => {
   it('el/tr/en have identical key sets', () => {
@@ -26,6 +26,11 @@ describe('i18n', () => {
   });
   it('long Greek dates use the genitive month', () => {
     expect(formatDateLong('2026-11-16')).toBe('Δευτέρα 16 Νοεμβρίου 2026');
+  });
+  it('Greek times are on the 24-hour clock (no «π.μ.» / «μ.μ.»), Athens time', () => {
+    expect(formatDateTime('2026-11-20T08:00:00Z')).toContain('10:00');
+    expect(formatDateTime('2026-11-20T19:30:00Z')).toContain('21:30');
+    expect(formatDateTime('2026-11-20T19:30:00Z')).not.toMatch(/π\.μ\.|μ\.μ\./);
   });
   it('uses Greek formats by default', () => {
     expect(lang.value).toBe('el');

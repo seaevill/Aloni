@@ -71,7 +71,7 @@ export function formatDate(iso: string): string {
 /** A UTC second «2026-11-20T08:00:00Z» -> «20 Νοε, 10:00» in Europe/Athens; an unusable value prints nothing made up (the caller shows «unknown»). */
 export function formatDateTime(iso: string): string {
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? t('value.unknown') : new Intl.DateTimeFormat(LOCALES[lang.value], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: TZ }).format(d);
+  return Number.isNaN(d.getTime()) ? t('value.unknown') : new Intl.DateTimeFormat(LOCALES[lang.value], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: TZ }).format(d); // 24-hour clock (Greek 12-hour «π.μ. μ.μ.» was hard to read)
 }
 
 /** «2026-11-20 10:00» in Europe/Athens (for records and exports: unambiguous in every language). */
