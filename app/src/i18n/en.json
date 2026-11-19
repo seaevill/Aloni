@@ -449,5 +449,15 @@
   "labeluse.signed.note": "This label is signed and never changes. A change creates a NEW unsigned label and archives the old one.",
   "labeluse.reason": "Why does the label change?",
   "labeluse.error.reason": "Write the reason for the change.",
-  "labeluse.used.note": "This label was already used in a spraying and its values do not change. A change creates a NEW label and archives the old one."
+  "labeluse.used.note": "This label was already used in a spraying and its values do not change. A change creates a NEW label and archives the old one.",
+  "signoff.saved": "Signature recorded.",
+  "today.fields": "Fields",
+  "today.weather": "Weather",
+  "today.weather.none": "No weather data yet.",
+  "today.urgent": "Most important today",
+  "today.urgent.unknown": "Unknown waiting period · {parcel}",
+  "today.urgent.wait": "Waiting ends {d} · {crop} · {parcel}",
+  "today.urgent.action": "See the sprayings",
+  "history.title": "History",
+  "job.add.plus": "+ Assign a job"
 }

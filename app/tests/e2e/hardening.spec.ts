@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { setup } from './helpers/farm';
+import { setup, openHistory, closeHistory } from './helpers/farm';
 import { iphone } from './helpers/iphone';
 
 const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
@@ -26,6 +26,7 @@ test('demo, OFFLINE: Σήμερα with «Κοπή ανά χωράφι», the reg
   for (const lang of ['EL', 'TR', 'EN']) {
     await language(page, lang);
     await tab(page, 'today');
+    await closeHistory(page);
     await expect(page.getByTestId('cut').first()).toBeVisible();
     await bar(page, `today ${lang}`);
     await tab(page, 'more');
@@ -67,8 +68,10 @@ test('real farm, OFFLINE: the spray and harvest forms and the stock screens meet
   await page.getByRole('button', { name: 'Σπανάκι · Κάτω Κάμπος' }).click();
   await page.getByTestId('harvest-more').click();
   await page.getByTestId('harvest-save').click();
+  await openHistory(page);
   await expect(page.getByTestId('harvest')).toContainText('1 κλούβα');
   await page.reload();
+  await openHistory(page);
   await expect(page.getByTestId('harvest')).toContainText('1 κλούβα');
   expect(errors).toEqual([]);
 });

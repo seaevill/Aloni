@@ -449,5 +449,15 @@
   "labeluse.signed.note": "Etiket imzalı ve değişmez. Değişiklik, imzasız YENİ bir etiket oluşturur ve eskisini arşivler.",
   "labeluse.reason": "Etiket neden değişiyor?",
   "labeluse.error.reason": "Değişikliğin nedenini yazın.",
-  "labeluse.used.note": "Bu etiket bir ilaçlamada kullanıldı, değerleri değişmez. Değişiklik YENİ bir etiket oluşturur ve eskisini arşivler."
+  "labeluse.used.note": "Bu etiket bir ilaçlamada kullanıldı, değerleri değişmez. Değişiklik YENİ bir etiket oluşturur ve eskisini arşivler.",
+  "signoff.saved": "İmza kaydedildi.",
+  "today.fields": "Tarlalar",
+  "today.weather": "Hava",
+  "today.weather.none": "Henüz hava verisi yok.",
+  "today.urgent": "Bugün en önemli",
+  "today.urgent.unknown": "Bekleme süresi bilinmiyor · {parcel}",
+  "today.urgent.wait": "Bekleme {d} günü bitiyor · {crop} · {parcel}",
+  "today.urgent.action": "İlaçlamalara bak",
+  "history.title": "Geçmiş",
+  "job.add.plus": "+ İş ata"
 }

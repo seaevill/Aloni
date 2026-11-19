@@ -53,3 +53,14 @@ export async function spray(page: Page) {
   await page.getByTestId('spray-qty').fill('0,25');
 }
 
+
+/** The records of the past live on «Ιστορικό»: open it unless it is already open. */
+export async function openHistory(page: Page): Promise<void> {
+  if (await page.getByTestId('history').isVisible()) return;
+  await page.getByTestId('history-open').click();
+}
+
+/** Back from «Ιστορικό» to Σήμερα (the cut counters live there). */
+export async function closeHistory(page: Page): Promise<void> {
+  if (await page.getByTestId('history').isVisible()) await page.getByTestId('history-back').click();
+}
