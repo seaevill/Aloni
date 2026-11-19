@@ -2,10 +2,11 @@ import { signal } from '@preact/signals';
 import { AppDB, type FarmRow } from './schema';
 import { importDemo, removeDemo, type PrototypeData } from './import-demo';
 import { migrateLegacyDb } from './legacy';
-import { guardAppendOnly, refreshPending } from '../repo';
+import { delLocal, guardAppendOnly, refreshPending } from '../repo';
 import { APP_NAME, DEMO_FARM_ID } from '../config';
 import { t } from '../i18n';
 import { commitAllHeld } from '../worker/held';
+import { demoOrders, mapKey, migrateUnkeyedOrders, ordersKey, saveOrders } from '../orders/store';
 
 export const db = new AppDB();
 guardAppendOnly(db);
@@ -26,6 +27,7 @@ export async function initDb() {
   await db.farms.put(real);
   realFarmId.value = real.id;
   activeFarm.value = real.id;
+  await migrateUnkeyedOrders(db, real.id);
   hasDemo.value = !!(await db.farms.get(DEMO_FARM_ID));
   lastBackupAt.value = (await db.settings.get('last_backup_at'))?.value as string | undefined;
   await commitAllHeld(db).catch(() => undefined);      // a worker's action held when the phone was closed (T4)
@@ -37,6 +39,7 @@ export async function initDb() {
 export async function loadDemo() {
   const data = (await import('../../../reference/prototype/data.json')).default as unknown as PrototypeData;
   await importDemo(db, data);
+  const sample = demoOrders(Date.now()); await saveOrders(db, DEMO_FARM_ID, sample.orders, sample.map);      // a fictional order list, in the demo farm only
   hasDemo.value = true;
   activeFarm.value = DEMO_FARM_ID;
   dataVersion.value++;
@@ -44,6 +47,7 @@ export async function loadDemo() {
 
 export async function deleteDemo() {
   await removeDemo(db);
+  await delLocal(db, ordersKey(DEMO_FARM_ID)); await delLocal(db, mapKey(DEMO_FARM_ID));      // the demo's order sample goes with it
   hasDemo.value = false;
   if (activeFarm.value === DEMO_FARM_ID) activeFarm.value = realFarmId.value;
   dataVersion.value++;
