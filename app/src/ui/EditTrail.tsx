@@ -6,7 +6,7 @@ import type { Row } from '../db/schema';
 import { STATUS_KEYS } from './PlantingForm';
 import { TOPO_KEYS } from './ParcelForm';
 
-const FIELD_KEYS: Record<string, I18nKey> = { name: 'edit.f.name', area_str: 'edit.f.area', topo_class: 'edit.f.topo', opekepe_code: 'edit.f.osde', sown_on: 'edit.f.sown', status: 'edit.f.status', variety: 'edit.f.variety', lot_label: 'edit.f.lot' };
+const FIELD_KEYS: Record<string, I18nKey> = { name: 'edit.f.name', area_str: 'edit.f.area', topo_class: 'edit.f.topo', opekepe_code: 'edit.f.osde', boundary: 'edit.f.boundary', sown_on: 'edit.f.sown', status: 'edit.f.status', variety: 'edit.f.variety', lot_label: 'edit.f.lot' };
 const text = (v: unknown): string => (typeof v === 'string' ? v : typeof v === 'number' ? String(v) : '');
 
 /** The previous value of one field, in the farmer's words (never a raw code). */
@@ -15,6 +15,7 @@ function shown(field: string, v: unknown): string {
   if (field === 'area_str') return formatArea(text(v));
   if (field === 'status') { const k = (STATUS_KEYS as Record<string, I18nKey>)[text(v)]; return k ? t(k) : text(v); }
   if (field === 'topo_class') { const k = (TOPO_KEYS as Record<string, I18nKey>)[text(v)]; return k ? t(k) : text(v); }
+  if (field === 'boundary') return t('map.has');
   if (field === 'sown_on') return formatDate(text(v));
   return text(v);
 }

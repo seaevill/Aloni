@@ -6,6 +6,8 @@ import { archived, buildParcel, TOPO, type Pin, type Topo } from '../parcels/par
 import { readPin } from '../parcels/pin';
 import { put } from '../repo';
 import { applyEdit, commaText } from '../records/edits';
+import { validBoundary, type Boundary } from '../map/geo';
+import { ParcelMap } from './ParcelMap';
 import type { Row } from '../db/schema';
 import { showUndo } from './Toast';
 
@@ -18,7 +20,8 @@ export function ParcelForm({ onDone, existing }: { onDone: () => void; existing?
   const [topo, setTopo] = useState<Topo | undefined>(TOPO.find((k) => k === existing?.topo_class));
   const [why, setWhy] = useState(''); const [whyMissing, setWhyMissing] = useState(false);
   const [pin, setPin] = useState<Pin | undefined>(undefined);
-  const [pinFailed, setPinFailed] = useState(false); const [osde, setOsde] = useState(typeof existing?.opekepe_code === 'string' ? existing.opekepe_code : '');
+  const [pinFailed, setPinFailed] = useState(false); const [boundary, setBoundary] = useState<Boundary | undefined>(validBoundary(existing?.boundary) ? existing.boundary : undefined); const [mapOpen, setMapOpen] = useState(false);
+  const [osde, setOsde] = useState(typeof existing?.opekepe_code === 'string' ? existing.opekepe_code : '');
   const [errors, setErrors] = useState<{ name: boolean; area: 'missing' | 'invalid' | undefined }>({ name: false, area: undefined });
 
   const takePin = async () => {
@@ -26,12 +29,13 @@ export function ParcelForm({ onDone, existing }: { onDone: () => void; existing?
     setPinFailed(!r.known);
     setPin(r.known ? r.value : undefined);
   };
+  if (mapOpen) return <ParcelMap initial={boundary} typedArea={area} onCancel={() => setMapOpen(false)} onDone={(b) => { setBoundary(b); setMapOpen(false); }} />;
   const titleKey: I18nKey = existing ? 'edit.title' : 'parcel.add';
   const save = async () => {
-    const r = buildParcel({ name, area, topo, pin, osde }, realFarmId.value, new Date().toISOString(), crypto.randomUUID());
+    const r = buildParcel({ name, area, topo, pin, osde, boundary }, realFarmId.value, new Date().toISOString(), crypto.randomUUID());
     if (!r.ok) { setErrors({ name: r.name, area: r.area }); return; }
     if (existing) { // append-only: the row gets the new values, `edits` keeps the previous ones with the reason
-      const e = applyEdit(existing, { name: r.row.name, area_str: r.row.area_str, topo_class: r.row.topo_class, opekepe_code: r.row.opekepe_code }, why, new Date().toISOString());
+      const e = applyEdit(existing, { name: r.row.name, area_str: r.row.area_str, topo_class: r.row.topo_class, opekepe_code: r.row.opekepe_code, boundary: r.row.boundary }, why, new Date().toISOString());
       if (e.kind === 'nochange') { onDone(); return; }
       if (e.kind === 'reason') { setWhyMissing(true); return; }
       await put(db, 'parcels', e.row, 'update');
@@ -72,6 +76,9 @@ export function ParcelForm({ onDone, existing }: { onDone: () => void; existing?
 
       {existing && <label class="field">{t('edit.reason')}<input class="input" value={why} autoComplete="off" data-testid="edit-reason" onInput={(e) => setWhy((e.target as HTMLInputElement).value)} /></label>}
       {whyMissing && why.trim() === '' && <p class="msg error" role="alert" data-testid="edit-reason-error">{t('edit.reason.error')}</p>}
+
+      <button class="row" data-testid="parcel-map-open" onClick={() => setMapOpen(true)}><span>{t('map.open')}</span><span aria-hidden="true" class="chev" /></button>
+      {boundary && <p class="muted" data-testid="parcel-boundary-set">{t('map.has')}</p>}
 
       <button class="btn secondary" onClick={() => void takePin()}>{t('parcel.pin')}</button>
       {pin && <p class="muted" data-testid="pin">{t('parcel.pin.set', { lat: formatQty(pin.lat), lng: formatQty(pin.lng), acc: formatQty(pin.accuracy_m) })}</p>}

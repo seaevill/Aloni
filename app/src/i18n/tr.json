@@ -535,5 +535,20 @@
   "today.who.none": "Bugün henüz kayıt yok.",
   "today.who.done": "{worker}: {product} ilaçladı",
   "today.who.crates": "Kesilen kasa: {n}",
-  "today.who.overdue": "Önceki günlerden kalan açık işler: {n}"
+  "today.who.overdue": "Önceki günlerden kalan açık işler: {n}",
+  "map.title": "Tarla sınırları (harita)",
+  "map.help": "Tarlanın köşelerine dokunun, şekli çift dokunuşla kapatın. Sonra köşeleri sürükleyebilirsiniz.",
+  "map.nowebgl": "Harita bu telefonda ya da tarayıcıda açılamıyor.",
+  "map.attribution": "Harita: OpenFreeMap © OpenMapTiles, veri OpenStreetMap.",
+  "map.area.none": "Henüz şekil yok.",
+  "map.area.line": "Haritadan alan: {map} dekar",
+  "map.area.diff": "Yazdığınız alan: {typed} dekar · fark %{pct}",
+  "map.area.notyped": "Henüz alan yazmadınız.",
+  "map.keep": "Sizin yazdığınız alan haritadan asla değişmez.",
+  "map.where": "Konumum",
+  "map.clear": "Şekli sil",
+  "map.save": "Sınırları kaydet",
+  "map.open": "Haritada sınırlar",
+  "map.has": "Haritada sınırlar belirlendi.",
+  "edit.f.boundary": "haritada sınırlar"
 }

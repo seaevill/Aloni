@@ -9,12 +9,15 @@ const BUDGET = { jsGzipKb: 350, cssGzipKb: 30, firstLoadMs: 3000 };   // provisi
 const dist = join(process.cwd(), 'app', 'dist', 'assets');
 const rows = readdirSync(dist).map((f) => { const b = readFileSync(join(dist, f)); return { f, raw: statSync(join(dist, f)).size, gz: /\.woff2$/.test(f) ? statSync(join(dist, f)).size : gzipSync(b).length }; });
 const sum = (re) => rows.filter((r) => re.test(r.f)).reduce((a, r) => a + r.gz, 0) / 1024;
-const js = sum(/\.js$/); const css = sum(/\.css$/);
+const html = readFileSync(join(process.cwd(), 'app', 'dist', 'index.html'), 'utf8');
+const initial = new Set([...html.matchAll(/assets\/([^"']+\.js)/g)].map((m) => m[1]));            // what the FIRST screen loads; the map and its drawing library load only when the owner opens a map
+const js = rows.filter((r) => initial.has(r.f)).reduce((a, r) => a + r.gz, 0) / 1024; const lazy = rows.filter((r) => /\.js$/.test(r.f) && !initial.has(r.f)).reduce((a, r) => a + r.gz, 0) / 1024;
+const css = sum(/\.css$/);
 const out = ['## Performance report', '', '| file | raw KB | gzip KB |', '|---|---:|---:|', ...rows.map((r) => `| ${r.f} | ${(r.raw / 1024).toFixed(1)} | ${(r.gz / 1024).toFixed(1)} |`), ''];
 const warn = [];
 if (js > BUDGET.jsGzipKb) warn.push(`JavaScript ${js.toFixed(0)} KB gzip is over the ${BUDGET.jsGzipKb} KB budget`);
 if (css > BUDGET.cssGzipKb) warn.push(`CSS ${css.toFixed(0)} KB gzip is over the ${BUDGET.cssGzipKb} KB budget`);
-out.push(`JavaScript total: ${js.toFixed(1)} KB gzip (budget ${BUDGET.jsGzipKb}) ${js > BUDGET.jsGzipKb ? '⚠' : '✓'}`, `CSS total: ${css.toFixed(1)} KB gzip (budget ${BUDGET.cssGzipKb}) ${css > BUDGET.cssGzipKb ? '⚠' : '✓'}`);
+out.push(`Lazy JavaScript (loaded on demand, e.g. the map): ${lazy.toFixed(1)} KB gzip`, `JavaScript on the first screen: ${js.toFixed(1)} KB gzip (budget ${BUDGET.jsGzipKb}) ${js > BUDGET.jsGzipKb ? '⚠' : '✓'}`, `CSS total: ${css.toFixed(1)} KB gzip (budget ${BUDGET.cssGzipKb}) ${css > BUDGET.cssGzipKb ? '⚠' : '✓'}`);
 try {
   const { webkit, chromium } = await import('playwright');
   const { spawn } = await import('node:child_process');

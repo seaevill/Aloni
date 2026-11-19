@@ -14,8 +14,13 @@
   "dependencies": {
     "@aloni/rules-core": "*",
     "@preact/signals": "^2.0.0",
+    "@turf/area": "^7.4.0",
+    "@turf/helpers": "^7.4.0",
     "dexie": "^4.0.0",
-    "preact": "^10.24.0"
+    "maplibre-gl": "^5.24.1",
+    "preact": "^10.24.0",
+    "terra-draw": "^1.40.0",
+    "terra-draw-maplibre-gl-adapter": "^1.5.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",

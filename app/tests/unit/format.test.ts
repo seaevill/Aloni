@@ -85,3 +85,11 @@ describe('a record\'s name', () => {
     expect(nameOf({ name_el: 'Σπανάκι', name_en: 'Spinach' })).toBe('Σπανάκι');
   });
 });
+
+import { formatDerived } from '../../src/i18n/format';
+describe('a derived number for the eye is cut, not rounded', () => {
+  it('cuts after the given decimals and drops trailing zeros', () => {
+    expect(formatDerived(10.129, 2)).toBe('10,12'); expect(formatDerived(10, 2)).toBe('10'); expect(formatDerived(0.0001, 2)).toBe('0'); expect(formatDerived(-9.99, 1)).toBe('\u22129,9');
+    expect(formatDerived(Number.NaN, 2)).toBe('— άγνωστο');
+  });
+});
