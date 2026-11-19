@@ -87,7 +87,7 @@ export function Workers({ onBack }: { onBack: () => void }) {
       {live.map((w) => (
         <div class="card" key={w.id} data-testid="worker">{String(w.name)}
           {!demo && <Invite worker={w} controller={controller} />}
-          {!demo && <button class="btn secondary" onClick={() => void archive(w)}>{t('product.archive')}</button>}
+          {!demo && <button class="btn quiet" onClick={() => void archive(w)}>{t('product.archive')}</button>}
         </div>
       ))}
     </section>

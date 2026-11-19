@@ -51,7 +51,7 @@ export function Stock() {
           <UnsyncedMark id={r.id} />
           <button class="row" data-testid="stock-open" onClick={() => setLots(r)}><span>{t('stock.open')}</span><span aria-hidden="true" class="chev" /></button>
           <button class="row" data-testid="labeluse-open" onClick={() => setOpen(r)}><span>{t('labeluse.open')}</span><span aria-hidden="true" class="chev" /></button>
-          {!demo && <button class="btn secondary" onClick={() => void archive(r)}>{t('product.archive')}</button>}
+          {!demo && <button class="btn quiet" onClick={() => void archive(r)}>{t('product.archive')}</button>}
         </div>
       ))}
     </section>

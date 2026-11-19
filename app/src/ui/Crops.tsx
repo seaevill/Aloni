@@ -67,7 +67,7 @@ export function Crops() {
               <UnsyncedMark id={p.id} />
               {!demo && <button class="row" data-testid="planting-edit" onClick={() => setEditing(p)}><span>{t('edit.open')}</span><span aria-hidden="true" class="chev" /></button>}
               <EditTrail row={p} />
-              {!demo && <button class="btn secondary" onClick={() => void archive(p)}>{t('planting.archive')}</button>}
+              {!demo && <button class="btn quiet" onClick={() => void archive(p)}>{t('planting.archive')}</button>}
             </div>
           ))}
         </div>
