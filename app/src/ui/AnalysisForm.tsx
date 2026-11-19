@@ -5,6 +5,7 @@ import { t, type I18nKey } from '../i18n';
 import { storePhoto } from '../media/photo';
 import { archived } from '../parcels/parcel';
 import { put } from '../repo';
+import { useSubmit } from './useSubmit';
 import type { Row } from '../db/schema';
 import { MediaThumb } from './Photos';
 import { showUndo } from './Toast';
@@ -14,6 +15,7 @@ const NONE = { date: false, ph: false, ec: false, ecUnit: false };
 
 /** Add a soil or water analysis for a parcel: date (chosen), optional lab / pH / EC (with the report's unit) / notes / report photo. Offline, saves at once. */
 export function AnalysisForm({ parcel, kind, onDone }: { parcel: Row; kind: Kind; onDone: () => void }) {
+  const { busy, submit } = useSubmit();
   const [v, setV] = useState({ sampledOn: '', lab: '', ph: '', ec: '', notes: '' });
   const [ecUnit, setEcUnit] = useState<EcUnit | undefined>(undefined);
   const [photoId, setPhotoId] = useState<string | undefined>(undefined);
@@ -64,7 +66,7 @@ export function AnalysisForm({ parcel, kind, onDone }: { parcel: Row; kind: Kind
       <input ref={file} type="file" accept="image/*" hidden aria-hidden="true" tabIndex={-1} onChange={(e) => void pick(e)} />
       <button class="btn secondary" onClick={() => file.current?.click()}>{t('analysis.photo')}</button>
       {photoId && <div class="photos"><MediaThumb id={photoId} /></div>}
-      <button class="btn" data-testid="analysis-save" onClick={() => void save()}>{t('product.save')}</button>
+      <button class="btn" data-testid="analysis-save" onClick={() => void submit(save)} disabled={busy}>{t('product.save')}</button>
       <button class="btn secondary" onClick={onDone}>{t('product.cancel')}</button>
     </section>
   );

@@ -7,6 +7,7 @@ import { t } from '../i18n';
 import { archived, restored } from '../parcels/parcel';
 import { put } from '../repo';
 import { buildWorker } from '../workers/worker';
+import { useSubmit } from './useSubmit';
 import type { Row } from '../db/schema';
 import { showUndo } from './Toast';
 import { useRows } from './useRows';
@@ -48,6 +49,7 @@ function Invite({ worker, controller }: { worker: Row; controller: Controller | 
 }
 
 export function Workers({ onBack }: { onBack: () => void }) {
+  const { busy, submit } = useSubmit();
   const [controller, setController] = useState<Controller | undefined>(undefined);
   useEffect(() => { if (AUTH_ENABLED) void loadController(db).then(setController); }, []);
   const [name, setName] = useState('');
@@ -80,7 +82,7 @@ export function Workers({ onBack }: { onBack: () => void }) {
             <input class="input" value={name} autoComplete="off" data-testid="worker-name" onInput={(e) => setName((e.target as HTMLInputElement).value)} />
           </label>
           {bad && <p class="msg error" role="alert">{t('workers.error.name')}</p>}
-          <button class="btn" data-testid="worker-add" onClick={() => void add()}>{t('workers.add')}</button>
+          <button class="btn" data-testid="worker-add" onClick={() => void submit(add)} disabled={busy}>{t('workers.add')}</button>
         </>
       )}
       {q.rows && live.length === 0 && <p class="muted" data-testid="workers-empty">{t('workers.empty')}</p>}

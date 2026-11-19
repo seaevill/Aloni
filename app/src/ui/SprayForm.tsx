@@ -12,6 +12,7 @@ import { doseOutsideLabel } from '../spray/spray';
 import { parseDecimal } from '@aloni/rules-core';
 import { buildSpray, isLate, type Flag, type SprayInput } from '../spray/spray';
 import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
+import { useSubmit } from './useSubmit';
 import type { Row } from '../db/schema';
 import { Lines, badgeText } from './LabelUses';
 import { UNIT_KEYS } from './LabelUseForm';
@@ -32,6 +33,7 @@ const text = (v: unknown): string => (typeof v === 'string' ? v : '');
  * shown as marks and saved on the record. The waiting period comes only from a signed label; otherwise it is unknown and the harvest stays blocked.
  */
 export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
+  const { busy, submit } = useSubmit();
   const plantings = useRows('plantings'); const crops = useRows('crops'); const parcels = useRows('parcels'); const products = useRows('products');
   const labels = useRows('label_uses'); const sprays = useRows('job_spray'); const links = useRows('job_plantings'); const lots = useRows('stock_lots'); const moves = useRows('stock_movements'); const workers = useRows('workers');
   const live = (q: { rows: Row[] | null }) => q.rows?.filter((r) => !r.deleted_at) ?? [];
@@ -170,8 +172,8 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
       {failed && !r.ok && r.errors.doseReason && <p class="msg error" role="alert" data-testid="spray-dose-error">{t('spray.dose.error')}</p>}
       {failed && !r.ok && r.errors.doseUnit && <p class="msg error" role="alert" data-testid="spray-unit-error">{t('spray.error.unit')}</p>}
       {failed && !r.ok && r.errors.water && <p class="msg error" role="alert">{t('spray.error.water')}</p>}
-      <button class="btn" data-testid="spray-save" onClick={() => void save(false)}>{t('spray.save')}</button>
-      <button class="btn secondary" data-testid="spray-save-mix" onClick={() => void save(true)}>{t('spray.mix.more')}</button>
+      <button class="btn" data-testid="spray-save" onClick={() => void submit(() => save(false))} disabled={busy}>{t('spray.save')}</button>
+      <button class="btn secondary" data-testid="spray-save-mix" onClick={() => void submit(() => save(true))} disabled={busy}>{t('spray.mix.more')}</button>
       <button class="btn secondary" onClick={() => onDone(false)}>{t('product.cancel')}</button>
     </section>
   );

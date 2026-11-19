@@ -8,6 +8,7 @@ import { put } from '../repo';
 import { applyEdit, commaText } from '../records/edits';
 import { validBoundary, type Boundary } from '../map/geo';
 import { ParcelMap } from './ParcelMap';
+import { useSubmit } from './useSubmit';
 import type { Row } from '../db/schema';
 import { showUndo } from './Toast';
 
@@ -15,6 +16,7 @@ export const TOPO_KEYS: Record<Topo, I18nKey> = { plain: 'parcel.topo.plain', sl
 
 /** Add a parcel: name + typed στρ. (+ optional GPS pin and terrain). No map needed, works offline, saves at once. */
 export function ParcelForm({ onDone, existing }: { onDone: () => void; existing?: Row }) {
+  const { busy, submit } = useSubmit();
   const [name, setName] = useState(typeof existing?.name === 'string' ? existing.name : '');
   const [area, setArea] = useState(commaText(existing?.area_str));
   const [topo, setTopo] = useState<Topo | undefined>(TOPO.find((k) => k === existing?.topo_class));
@@ -84,7 +86,7 @@ export function ParcelForm({ onDone, existing }: { onDone: () => void; existing?
       {pin && <p class="muted" data-testid="pin">{t('parcel.pin.set', { lat: formatQty(pin.lat), lng: formatQty(pin.lng), acc: formatQty(pin.accuracy_m) })}</p>}
       {pinFailed && <p class="muted" role="status">{t('parcel.pin.error')}</p>}
 
-      <button class="btn" data-testid="parcel-save" onClick={() => void save()}>{t('parcel.save')}</button>
+      <button class="btn" data-testid="parcel-save" onClick={() => void submit(save)} disabled={busy}>{t('parcel.save')}</button>
       <button class="btn secondary" onClick={onDone}>{t('parcel.cancel')}</button>
     </section>
   );

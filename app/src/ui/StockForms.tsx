@@ -4,6 +4,7 @@ import { t } from '../i18n';
 import { storePhoto } from '../media/photo';
 import { putMany } from '../repo';
 import { buildAdjustment, buildReceipt, type Direction } from '../stock/stock';
+import { useSubmit } from './useSubmit';
 import type { Row } from '../db/schema';
 import { MediaThumb } from './Photos';
 
@@ -11,6 +12,7 @@ const qtyKey = 'stock.error.qty';
 
 /** Receive stock: a lot (batch optional, expiry WITH year, nothing preselected) and its first movement. */
 export function ReceiveForm({ product, onDone }: { product: Row; onDone: () => void }) {
+  const { busy, submit } = useSubmit();
   const [batch, setBatch] = useState('');
   const [expiry, setExpiry] = useState('');
   const [qty, setQty] = useState('');
@@ -47,7 +49,7 @@ export function ReceiveForm({ product, onDone }: { product: Row; onDone: () => v
       <input ref={file} type="file" accept="image/*" hidden aria-hidden="true" tabIndex={-1} onChange={(e) => void pick(e)} />
       <button class="btn secondary" onClick={() => file.current?.click()}>{t('stock.field.photo')}</button>
       {photoId && <div class="photos"><MediaThumb id={photoId} /></div>}
-      <button class="btn" data-testid="receive-save" onClick={() => void save()}>{t('product.save')}</button>
+      <button class="btn" data-testid="receive-save" onClick={() => void submit(save)} disabled={busy}>{t('product.save')}</button>
       <button class="btn secondary" onClick={onDone}>{t('product.cancel')}</button>
     </section>
   );
@@ -55,6 +57,7 @@ export function ReceiveForm({ product, onDone }: { product: Row; onDone: () => v
 
 /** Adjust a lot: increase or decrease (chosen), a quantity, a reason. It adds a movement; nothing is edited or deleted. */
 export function AdjustForm({ lot, onDone }: { lot: Row; onDone: () => void }) {
+  const { busy, submit } = useSubmit();
   const [direction, setDirection] = useState<Direction | undefined>(undefined);
   const [qty, setQty] = useState('');
   const [reason, setReason] = useState('');
@@ -83,7 +86,7 @@ export function AdjustForm({ lot, onDone }: { lot: Row; onDone: () => void }) {
         <input class="input" value={reason} autoComplete="off" onInput={(e) => setReason((e.target as HTMLInputElement).value)} />
       </label>
       {bad.reason && <p class="msg error" role="alert">{t('stock.error.reason')}</p>}
-      <button class="btn" data-testid="adjust-save" onClick={() => void save()}>{t('product.save')}</button>
+      <button class="btn" data-testid="adjust-save" onClick={() => void submit(save)} disabled={busy}>{t('product.save')}</button>
       <button class="btn secondary" onClick={onDone}>{t('product.cancel')}</button>
     </section>
   );

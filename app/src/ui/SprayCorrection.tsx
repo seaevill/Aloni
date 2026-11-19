@@ -6,6 +6,7 @@ import { putMany } from '../repo';
 import { buildCorrection } from '../spray/spray';
 import { athensInstant, athensLocalNow } from '../spray/time';
 import { balanceOf } from '../stock/stock';
+import { useSubmit } from './useSubmit';
 import type { Row } from '../db/schema';
 import { UNIT_KEYS } from './LabelUseForm';
 import { nameOf } from './screens';
@@ -16,6 +17,7 @@ const comma = (v: unknown): string => text(v).split('.').join(',');
 
 /** «Διόρθωση»: every field of a recorded spraying can be corrected. The original stays; the correction is a NEW row with a required reason; a changed quantity moves the stock. */
 export function SprayCorrection({ spray, onDone }: { spray: Row; onDone: () => void }) {
+  const { busy, submit } = useSubmit();
   const workers = useRows('workers'); const moves = useRows('stock_movements');
   const [dose, setDose] = useState(comma(spray.dose_str)); const [unit, setUnit] = useState(DOSE_UNITS.find((u) => u === spray.dose_unit));
   const [when, setWhen] = useState(athensLocalNow(new Date(text(spray.sprayed_at))) ?? ''); const [who, setWho] = useState(text(spray.applicator_id));
@@ -52,7 +54,7 @@ export function SprayCorrection({ spray, onDone }: { spray: Row; onDone: () => v
       <label class="field">{t('spray.note')}<input class="input" value={note} autoComplete="off" onInput={(ev) => setNote((ev.target as HTMLInputElement).value)} /></label>
       <label class="field">{t('spray.correct.reason')}<input class="input" value={why} autoComplete="off" data-testid="corr-reason" onInput={(ev) => setWhy((ev.target as HTMLInputElement).value)} /></label>
       {e?.reason && <p class="msg error" role="alert" data-testid="corr-reason-error">{t('spray.correct.reason.error')}</p>}
-      <button class="btn" data-testid="corr-save" onClick={() => void save()}>{t('product.save')}</button>
+      <button class="btn" data-testid="corr-save" onClick={() => void submit(save)} disabled={busy}>{t('product.save')}</button>
       <button class="btn secondary" onClick={onDone}>{t('product.cancel')}</button>
     </div>
   );

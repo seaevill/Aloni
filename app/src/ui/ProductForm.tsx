@@ -1,4 +1,5 @@
 import { useRef, useState } from 'preact/hooks';
+import { useSubmit } from './useSubmit';
 import { dataVersion, db, realFarmId } from '../db';
 import { t, type I18nKey } from '../i18n';
 import { storePhoto } from '../media/photo';
@@ -15,6 +16,7 @@ const UNIT_KEYS: Record<ProductUnit, I18nKey> = { L: 'product.unit.l', kg: 'prod
 
 /** Add a product: name as printed, type and unit (both chosen), optional registration number and label photo (stays on the phone). Offline, saves at once. */
 export function ProductForm({ onDone }: { onDone: () => void }) {
+  const { busy, submit } = useSubmit();
   const [name, setName] = useState('');
   const [regNo, setRegNo] = useState('');
   const [type, setType] = useState<ProductType | undefined>(undefined);
@@ -70,7 +72,7 @@ export function ProductForm({ onDone }: { onDone: () => void }) {
       {photoId && <div class="photos"><MediaThumb id={photoId} /></div>}
       {photoFailed && <p class="msg error" role="alert">{t('photos.error')}</p>}
 
-      <button class="btn" data-testid="product-save" onClick={() => void save()}>{t('product.save')}</button>
+      <button class="btn" data-testid="product-save" onClick={() => void submit(save)} disabled={busy}>{t('product.save')}</button>
       <button class="btn secondary" onClick={onDone}>{t('product.cancel')}</button>
     </section>
   );
