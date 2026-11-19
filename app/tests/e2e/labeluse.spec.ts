@@ -153,11 +153,21 @@ test('approval: only a complete label can be signed (name + real date); editing 
   await page.getByTestId('labeluse-open').click();
   await expect(card.getByTestId('labeluse-status')).toContainText('Υπογραφή γεωπόνου: Test Agronomist'); // survives reload
 
-  await card.getByRole('button', { name: 'Επεξεργασία' }).click(); // change the PHI 7 → 3
-  await inputs(page).nth(1).fill('3');
+  await card.getByRole('button', { name: 'Επεξεργασία' }).click(); // change the PHI 7 → 3: a SIGNED label is never edited in place (0019)
+  await expect(page.getByTestId('labeluse-signed-note')).toBeVisible();
+  await inputs(page).nth(2).fill('3'); // (the first input of the form is the reason; the PHI box moved one place down)
   await page.getByTestId('labeluse-save').click();
-  await expect(card.getByTestId('labeluse-status')).toHaveText('Χωρίς υπογραφή γεωπόνου'); // the approval is gone
+  await expect(page.getByTestId('labeluse-signed-note').getByRole('alert')).toBeVisible();   // no reason: refused
+  await page.getByTestId('labeluse-reason').fill('manufacturer revised the label');
+  await page.getByTestId('labeluse-save').click();
+  await expect(card.getByTestId('labeluse-status')).toHaveText('Χωρίς υπογραφή γεωπόνου'); // the NEW label is unsigned; the old one is archived
   await expect(page.getByTestId('signoff-open')).toBeVisible();
+  const rows = await page.evaluate(() => new Promise<Array<Record<string, unknown>>>((done) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const q = r.result.transaction(['label_uses']).objectStore('label_uses').getAll(); q.onsuccess = () => done(q.result as Array<Record<string, unknown>>); }; }));
+  expect(rows).toHaveLength(2);
+  const oldRow = rows.find((x) => x.deleted_at)!; const newRow = rows.find((x) => !x.deleted_at)!;
+  expect(oldRow.sign_off).toMatchObject({ by: 'Test Agronomist' });                  // the signed row is kept as it was (archived)
+  expect(newRow).toMatchObject({ supersedes_id: oldRow.id, change_reason: 'manufacturer revised the label' });
+  expect(newRow.sign_off).toBeUndefined();
 
   await card.getByRole('button', { name: 'Αρχειοθέτηση' }).click();
   await expect(card).toHaveCount(0);

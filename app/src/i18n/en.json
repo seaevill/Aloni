@@ -185,7 +185,6 @@
   "signoff.note": "Record only a signature you really have from an agronomist. The app does not check it; if you change any value, the signature is removed.",
   "signoff.by": "Agronomist's name",
   "signoff.on": "Date of signature",
-  "signoff.saved": "Signature recorded.",
   "signoff.error.by": "Write the agronomist's name.",
   "signoff.error.date": "Invalid date.",
   "labeluse.status.signed": "Agronomist's signature: {by} · {on}",
@@ -446,5 +445,8 @@
   "register.vat.saved": "The VAT number was saved.",
   "register.holder": "Holding: {name} · VAT no.: {vat}",
   "register.holder.none": "[not set]",
-  "lang.review": "Translation to be checked by a native speaker"
+  "lang.review": "Translation to be checked by a native speaker",
+  "labeluse.signed.note": "This label is signed and never changes. A change creates a NEW unsigned label and archives the old one.",
+  "labeluse.reason": "Why does the label change?",
+  "labeluse.error.reason": "Write the reason for the change."
 }
