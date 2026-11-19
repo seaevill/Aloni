@@ -9,7 +9,7 @@ import type { RegisterData } from './register';
 // into the data. Values are the stored ones: nothing rounded, nothing translated. Dose and area are kept AS ENTERED (per στρέμμα) and ALSO given per hectare (exact decimal arithmetic, no rounding),
 // side by side. A field the app does not hold stays EMPTY and the warnings file says «fill in» (missing_*): nothing is invented.
 export const MACHINE_COLUMNS = [
-  'holder_name', 'holder_vat_id', 'record_id', 'amends_record_id',
+  'holder_name', 'holder_vat_id', 'record_id', 'amends_record_id', 'tank_mix_id',
   'product_trade_name', 'authorisation_number',
   'application_start', 'application_end',
   'dose_as_entered', 'dose_unit_as_entered', 'dose_per_ha', 'dose_per_ha_unit',
@@ -45,7 +45,7 @@ export function machineLines(d: RegisterData, holder: Holder): MachineLine[] {
       const ha = dosePerHa(text(s.dose_str), text(s.dose_unit));
       const area = l ? text(l.area_str_treated) : '';
       out.push({
-        holder_name: holder.name, holder_vat_id: holder.vatId, record_id: text(s.id), amends_record_id: text(s.amends_id),
+        holder_name: holder.name, holder_vat_id: holder.vatId, record_id: text(s.id), amends_record_id: text(s.amends_id), tank_mix_id: text(s.mix_id),
         product_trade_name: name(prod), authorisation_number: text(prod?.reg_no),
         application_start: s.started_at ? athensIso(text(s.started_at)) : '', application_end: athensIso(text(s.sprayed_at)),
         dose_as_entered: text(s.dose_str), dose_unit_as_entered: text(s.dose_unit), dose_per_ha: ha?.amount ?? '', dose_per_ha_unit: ha?.unit ?? '',

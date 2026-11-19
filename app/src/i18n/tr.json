@@ -519,5 +519,8 @@
   "spray.start.error": "İlaçlamanın ne zaman başladığını yazın. Başlangıç bitişten sonra olamaz.",
   "spray.bbch": "BBCH gelişme evresi, iki hane (isteğe bağlı)",
   "spray.bbch.error": "BBCH evresi iki hanelidir, örn. 14.",
-  "spray.prescription": "Reçete numarası (isteğe bağlı)"
+  "spray.prescription": "Reçete numarası (isteğe bağlı)",
+  "spray.mix.more": "Kaydet ve aynı karışıma başka ilaç ekle",
+  "spray.mix.note": "Tank karışımı: {n} ilaç kaydedildi. Sıradaki ilacı seçin; ekimler, saat ve işçi aynı kalır.",
+  "spray.mix.with": "Karışım: {names}"
 }

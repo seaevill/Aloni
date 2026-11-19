@@ -519,5 +519,8 @@
   "spray.start.error": "Write when the spraying started. The start cannot be after the end.",
   "spray.bbch": "BBCH growth stage, two digits (optional)",
   "spray.bbch.error": "The BBCH stage has two digits, e.g. 14.",
-  "spray.prescription": "Prescription number (optional)"
+  "spray.prescription": "Prescription number (optional)",
+  "spray.mix.more": "Save and add another product to the same mix",
+  "spray.mix.note": "Tank mix: {n} products recorded. Choose the next product; the plantings, the time and the applicator stay the same.",
+  "spray.mix.with": "Mix with: {names}"
 }
