@@ -15,7 +15,7 @@ export function ParcelForm({ onDone }: { onDone: () => void }) {
   const [area, setArea] = useState('');
   const [topo, setTopo] = useState<Topo | undefined>(undefined);
   const [pin, setPin] = useState<Pin | undefined>(undefined);
-  const [pinFailed, setPinFailed] = useState(false);
+  const [pinFailed, setPinFailed] = useState(false); const [osde, setOsde] = useState('');
   const [errors, setErrors] = useState<{ name: boolean; area: 'missing' | 'invalid' | undefined }>({ name: false, area: undefined });
 
   const takePin = async () => {
@@ -24,7 +24,7 @@ export function ParcelForm({ onDone }: { onDone: () => void }) {
     setPin(r.known ? r.value : undefined);
   };
   const save = async () => {
-    const r = buildParcel({ name, area, topo, pin }, realFarmId.value, new Date().toISOString(), crypto.randomUUID());
+    const r = buildParcel({ name, area, topo, pin, osde }, realFarmId.value, new Date().toISOString(), crypto.randomUUID());
     if (!r.ok) { setErrors({ name: r.name, area: r.area }); return; }
     await put(db, 'parcels', r.row, 'insert');
     dataVersion.value++;
@@ -44,6 +44,10 @@ export function ParcelForm({ onDone }: { onDone: () => void }) {
       </label>
       {errors.area === 'missing' && <p class="msg error" role="alert">{t('parcel.error.area.missing')}</p>}
       {errors.area === 'invalid' && <p class="msg error" role="alert">{t('parcel.error.area.invalid')}</p>}
+
+      <label class="field">{t('parcel.osde')}
+        <input class="input" value={osde} autoComplete="off" data-testid="parcel-osde" onInput={(e) => setOsde((e.target as HTMLInputElement).value)} />
+      </label>
 
       <h2>{t('parcel.topo.title')}</h2>
       <div class="seg">
