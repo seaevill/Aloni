@@ -80,6 +80,7 @@ test('the «expires soon» warning follows the setting in More (60 days by defau
   await page.locator('input.input').nth(0).fill('Κάτω Κάμπος');
   await page.locator('input.input').nth(1).fill('0,5');
   await page.getByTestId('parcel-save').click();
+  await page.getByTestId('parcel-open').first().click();
   await page.getByTestId('analysis-open').click();
   await page.getByTestId('analysis-add-soil').click();
   await page.locator('input[type=date]').fill('2026-11-10');

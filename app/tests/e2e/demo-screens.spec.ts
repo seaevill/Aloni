@@ -49,6 +49,7 @@ test('the demo farm fills every screen, read-only, in Greek at 375 px without ov
   await expect(page.getByTestId('receive-open')).toHaveCount(0);
   await noSideways('lots');
   await tab(page, 'parcels');
+  await page.getByTestId('parcel-open').first().click();
   await page.getByTestId('analysis-open').first().click();
   await expect(page.getByTestId('analysis').first()).toContainText('pH');
   await expect(page.getByTestId('analysis-add-soil')).toHaveCount(0);

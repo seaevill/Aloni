@@ -145,3 +145,16 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 .kpi strong { font-size:var(--fs-30); font-variant-numeric:tabular-nums; }
 .kpi small { font-size:var(--fs-14); color:var(--muted); }
 .kpi.wide { grid-column:1 / -1; }
+/* Parcel detail (prototype) */
+.detail h1 { margin:0 0 var(--sp-8); }
+.sketch { display:block; width:100%; max-height:var(--sketch-h); background:var(--card); border-radius:var(--r-card); margin:0 0 var(--sp-12); }
+.sketch polygon { fill:var(--lime); stroke:var(--forest-2); stroke-width:var(--bw-2); stroke-linejoin:round; }
+.facts { display:grid; gap:var(--sp-8); }
+.fact { display:flex; justify-content:space-between; gap:var(--sp-12); }
+.fact span { color:var(--muted); }
+
+/* a dark header band on a detail screen (prototype) */
+.detail .band { background:var(--forest-2); color:var(--white); margin:0 calc(-1 * var(--sp-16)) var(--sp-12); padding:var(--sp-4) var(--sp-16) var(--sp-14); border-radius:0 0 var(--r-card) var(--r-card); }
+.detail .band h1 { color:var(--white); margin:0; }
+.detail .band .topbar { background:none; backdrop-filter:none; position:static; margin:0; padding:0; }
+.detail .band .back { color:var(--white); }

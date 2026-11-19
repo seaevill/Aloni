@@ -573,5 +573,14 @@
   "today.kpi.parcels": "Tarla",
   "today.kpi.crops": "Ürün",
   "today.kpi.harvest": "Bugün beklemesi olmayan tarla",
-  "today.kpi.held": "{n} tarlada bekleme var ya da bilinmiyor"
+  "today.kpi.held": "{n} tarlada bekleme var ya da bilinmiyor",
+  "detail.sketch": "Tarla sınırı taslağı",
+  "detail.nosketch": "Haritada henüz sınır belirlenmedi.",
+  "detail.area": "Alan",
+  "detail.topo": "Arazi yapısı",
+  "detail.elevation": "Yükseklik",
+  "detail.osde": "ΟΣΔΕ kodu",
+  "detail.weather": "Bugünkü hava",
+  "detail.plantings": "Ekimler",
+  "detail.sprays": "Son ilaçlamalar"
 }

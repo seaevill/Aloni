@@ -573,5 +573,14 @@
   "today.kpi.parcels": "Parcels",
   "today.kpi.crops": "Crops",
   "today.kpi.harvest": "Fields with no waiting period today",
-  "today.kpi.held": "{n} waiting or unknown"
+  "today.kpi.held": "{n} waiting or unknown",
+  "detail.sketch": "Sketch of the field boundary",
+  "detail.nosketch": "No boundary on the map yet.",
+  "detail.area": "Area",
+  "detail.topo": "Terrain",
+  "detail.elevation": "Elevation",
+  "detail.osde": "IACS (ΟΣΔΕ) code",
+  "detail.weather": "Weather today",
+  "detail.plantings": "Plantings",
+  "detail.sprays": "Last sprayings"
 }
