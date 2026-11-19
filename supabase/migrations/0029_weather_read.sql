@@ -2,7 +2,9 @@
 --  * farm_weather(p_farm)  the days of every parcel of ONE farm, for its owner and its workers: today −2 … today +6 (Athens), per parcel and day the LATEST forecast run (analysis, station and
 --                          sensor values rank before a forecast), the day's strongest wind and gust taken from the hourly rows of that same run (a maximum: nothing is averaged or rounded). A value
 --                          that is not there stays null (never 0). Somebody who is not an owner or worker of the farm is REFUSED (an error, not an empty answer).
---  * weather_targets()     where the weather function must fetch: every parcel with a position that is not deleted. For the service role only (the scheduled function); no signed-in user, no anon.
+--  * weather_targets()     where the weather function must fetch: every parcel with a position that is not deleted, with the cache state of its last fetch (MET Norway asks us to respect Expires and to
+--                          use If-Modified-Since). For the service role only (the scheduled function); no signed-in user, no anon.
+--  * weather_fetch_state   that cache state, one row per parcel, EXACTLY as MET sent the two headers (text). Service role only: no policy, no privilege for anon / authenticated.
 --  * weather rows (SHOULD, m6-0029 A4): written by the SERVICE ROLE only. The owner policy of 0004 («for all») let the owner insert a fake `station` row that outranks the forecast for every worker; the owner keeps READ
 --    only, nobody signed in can insert, update or delete (the privileges are taken away as well as the policy).
 -- It is information only: no rule reads these functions, nothing is decided or sent from them.
@@ -24,7 +26,7 @@ begin
     from (
       select d.parcel_id as pid,
              jsonb_agg(jsonb_build_object('date', d.day, 'tmin', d.tmin, 'tmax', d.tmax, 'rain_mm', d.rain_mm, 'wind_kmh', h.wind, 'gust_kmh', h.gust, 'rh_pct', d.rh_pct,
-                                          'kind', d.kind, 'issued_at', d.issued_at) order by d.day) as days
+                                          'kind', d.kind, 'issued_at', d.issued_at, 'model', d.model) order by d.day) as days
       from (
         select distinct on (w.parcel_id, w.day) w.*
         from weather_daily w join parcels p on p.id = w.parcel_id and p.farm_id = w.farm_id and p.deleted_at is null
@@ -40,8 +42,21 @@ begin
   ), '[]'::jsonb);
 end $$;
 
-create function weather_targets() returns table (id uuid, farm_id uuid, lat numeric, lng numeric) language sql stable security definer set search_path = public, pg_temp as $$
-  select p.id, p.farm_id, p.lat, p.lng from parcels p where p.deleted_at is null and p.lat is not null and p.lng is not null;
+create table weather_fetch_state (
+  parcel_id uuid primary key references parcels(id) on delete cascade,
+  farm_id uuid not null references farms(id) on delete cascade,
+  last_modified text, expires text, fetched_at timestamptz not null default now()
+);
+alter table weather_fetch_state enable row level security;     -- only the service role (it bypasses RLS) reads and writes it; the one policy says «nobody else» out loud
+create policy weather_fetch_state_nobody on weather_fetch_state for select to authenticated using (false);
+do $$ begin
+  if exists (select 1 from pg_roles where rolname = 'authenticated') then revoke all on weather_fetch_state from authenticated; end if;
+  if exists (select 1 from pg_roles where rolname = 'anon') then revoke all on weather_fetch_state from anon; end if;
+end $$;
+
+create function weather_targets() returns table (id uuid, farm_id uuid, lat numeric, lng numeric, last_modified text, expires text) language sql stable security definer set search_path = public, pg_temp as $$
+  select p.id, p.farm_id, p.lat, p.lng, s.last_modified, s.expires from parcels p left join weather_fetch_state s on s.parcel_id = p.id
+  where p.deleted_at is null and p.lat is not null and p.lng is not null;
 $$;
 
 revoke execute on function farm_weather(uuid) from public;

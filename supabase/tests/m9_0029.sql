@@ -64,3 +64,21 @@ do $$ begin
   if exists (select 1 from weather_targets() where id in ('33333333-3333-3333-3333-3333333333a1','33333333-3333-3333-3333-3333333333a2')) then raise exception '(0029) a parcel without position or a deleted one is in the fetch list'; end if;
   if exists (select 1 from weather_targets() where lat is null or lng is null or farm_id is null) then raise exception '(0029) the fetch list has an incomplete row'; end if;
 end $$;
+
+-- MET Norway (beta source): the cache state of each parcel's last fetch (Expires / Last-Modified exactly as MET sent them) lives in weather_fetch_state: service role only. weather_targets hands
+-- it to the job; farm_weather passes the source (`model`) on so the screen can name it.
+reset role; set test.uid = '';
+insert into weather_fetch_state(parcel_id, farm_id, last_modified, expires, fetched_at) values ('33333333-3333-3333-3333-333333333333', '11111111-1111-1111-1111-111111111111', 'Thu, 19 Nov 2026 14:40:00 GMT', 'Thu, 19 Nov 2026 20:40:00 GMT', now());
+do $$ begin
+  if (select last_modified from weather_targets() where id = '33333333-3333-3333-3333-333333333333') <> 'Thu, 19 Nov 2026 14:40:00 GMT' or (select expires from weather_targets() where id = '33333333-3333-3333-3333-333333333333') <> 'Thu, 19 Nov 2026 20:40:00 GMT' then raise exception '(0029) the fetch list does not carry the cache state'; end if;
+  if (select last_modified from weather_targets() where id = '44444444-4444-4444-4444-444444444444') is not null then raise exception '(0029) a parcel never fetched has a cache state'; end if;
+end $$;
+set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
+do $$ begin
+  begin perform 1 from weather_fetch_state; raise exception '(0029) the owner read the fetch state'; exception when insufficient_privilege then null; end;
+  begin insert into weather_fetch_state(parcel_id, farm_id) values ('33333333-3333-3333-3333-333333333333', '11111111-1111-1111-1111-111111111111'); raise exception '(0029) the owner wrote the fetch state'; exception when insufficient_privilege then null; end;
+  if (select (farm_weather('11111111-1111-1111-1111-111111111111')->0->'days'->-1->>'model') is null) then raise exception '(0029) the days of farm_weather do not name their source (model)'; end if;
+end $$;
+set role anon;
+do $$ begin begin perform 1 from weather_fetch_state; raise exception '(0029) anon read the fetch state'; exception when insufficient_privilege then null; end; end $$;
+reset role; set test.uid = '';
