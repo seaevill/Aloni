@@ -124,3 +124,15 @@ export function supersede(old: Row, next: Row, reason: string, nowIso: string): 
   const { sign_off: _signature, ...rest } = next;
   return { archivedOld: { ...old, deleted_at: nowIso, updated_at: nowIso }, replacement: { ...rest, supersedes_id: old.id, change_reason: why } };
 }
+
+/** The values a spray relies on. Once a spray used the label use (or it is signed) these can only change through a NEW label use (migrations 0019/0020). */
+const SAFETY_COLUMNS = ['product_id', 'crop_id', 'dose_kind', 'dose_unit', 'dose_min', 'dose_max', 'phi_days', 'rei_hours', 'max_apps'] as const;
+export const safetyChanged = (a: Row, b: Row): boolean => SAFETY_COLUMNS.some((k) => (a[k] ?? null) !== (b[k] ?? null));
+
+/** Editing an unsigned replacement in place keeps its link to the label use it replaces and the reason (the phone sends the whole row; the server empties what is missing). */
+export function keepLinks(existing: Row, row: Row): Row {
+  const kept: Row = { ...row };
+  if (existing.supersedes_id !== undefined && existing.supersedes_id !== null) kept.supersedes_id = existing.supersedes_id;
+  if (existing.change_reason !== undefined && existing.change_reason !== null) kept.change_reason = existing.change_reason;
+  return kept;
+}
