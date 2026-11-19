@@ -112,3 +112,15 @@ export function withSignOff(row: Row, by: string, on: string, nowIso: string): R
   if (statusOf(row) === 'blocked' || !by.trim() || !isCalendarDate(on)) return undefined;
   return { ...row, sign_off: { by: by.trim(), on, fingerprint: fingerprint(readUse(row)) }, updated_at: nowIso };
 }
+
+
+/**
+ * A SIGNED label use never changes (migration 0019): a change is a NEW label use that names the one it replaces and says why; the old one is archived. Returns undefined when the reason is empty.
+ * The replacement carries NO signature (it must be signed again by the agronomist).
+ */
+export function supersede(old: Row, next: Row, reason: string, nowIso: string): { archivedOld: Row; replacement: Row } | undefined {
+  const why = reason.trim();
+  if (why === '') return undefined;
+  const { sign_off: _signature, ...rest } = next;
+  return { archivedOld: { ...old, deleted_at: nowIso, updated_at: nowIso }, replacement: { ...rest, supersedes_id: old.id, change_reason: why } };
+}

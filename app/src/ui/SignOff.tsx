@@ -5,7 +5,6 @@ import { withSignOff } from '../labels/label-use';
 import { athensToday } from '../plantings/planting';
 import { put } from '../repo';
 import type { Row } from '../db/schema';
-import { showUndo } from './Toast';
 
 /** Records that an agronomist approved EXACTLY these label values (name + real date). The app does not check the claim; editing any value removes it. */
 export function SignOff({ row, onDone }: { row: Row; onDone: () => void }) {
@@ -17,7 +16,6 @@ export function SignOff({ row, onDone }: { row: Row; onDone: () => void }) {
     if (!signed) { setFailed({ by: by.trim() === '', on: by.trim() !== '' }); return; }
     await put(db, 'label_uses', signed);
     dataVersion.value++;
-    showUndo(t('signoff.saved'), async () => { await put(db, 'label_uses', row); dataVersion.value++; });
     onDone();
   };
   return (

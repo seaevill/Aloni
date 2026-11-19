@@ -185,7 +185,6 @@
   "signoff.note": "Yalnızca ziraat mühendisinden gerçekten aldığınız imzayı kaydedin. Uygulama bunu kontrol etmez; bir değeri değiştirirseniz imza silinir.",
   "signoff.by": "Ziraat mühendisinin adı",
   "signoff.on": "İmza tarihi",
-  "signoff.saved": "İmza kaydedildi.",
   "signoff.error.by": "Ziraat mühendisinin adını yazın.",
   "signoff.error.date": "Geçersiz tarih.",
   "labeluse.status.signed": "Ziraat mühendisi imzası: {by} · {on}",
@@ -446,5 +445,8 @@
   "register.vat.saved": "Vergi numarası kaydedildi.",
   "register.holder": "İşletme: {name} · ΑΦΜ: {vat}",
   "register.holder.none": "[tanımlı değil]",
-  "lang.review": "Çeviri ana dili konuşan biri tarafından kontrol edilecek"
+  "lang.review": "Çeviri ana dili konuşan biri tarafından kontrol edilecek",
+  "labeluse.signed.note": "Etiket imzalı ve değişmez. Değişiklik, imzasız YENİ bir etiket oluşturur ve eskisini arşivler.",
+  "labeluse.reason": "Etiket neden değişiyor?",
+  "labeluse.error.reason": "Değişikliğin nedenini yazın."
 }
