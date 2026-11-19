@@ -23,3 +23,9 @@ export const SYNC_CONNECTED = LIVE || E2E;
 export const AUTH_ENABLED = LIVE || E2E;
 /** The Supabase project's PUBLIC address and publishable key (both are meant to be public; never a secret key). Empty until the live switch. */
 export const BACKEND = { url: E2E ? 'http://localhost:4174/mock' : '', apiKey: E2E ? 'e2e-publishable-key' : '' };
+
+/**
+ * The base map (owner only, opened on request). OpenFreeMap vector tiles: free, no key. ⚠ Its terms of use could NOT be read from the build environment (the site was unreachable):
+ * confirm them (key-less use, attribution text, fair-use limits) before the live switch, and replace this address if they do not fit. No satellite layer and no cadastre layer yet.
+ */
+export const MAP = { styleUrl: 'https://tiles.openfreemap.org/styles/liberty', center: [23.35, 38.0] as [number, number], zoom: 12 };

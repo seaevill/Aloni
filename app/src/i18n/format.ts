@@ -51,3 +51,12 @@ export function formatArea(v: string | number | null | undefined): string {
   const unit = lang.value === 'el' || lang.value === 'hi' ? 'στρ.' : lang.value === 'tr' ? 'dönüm' : 'str.'; // the field's unit stays the Greek one for the Hindi screens
   return `${localise(s)} ${unit}`;
 }
+
+/** A DERIVED number for the eye (the area computed from a drawing, a percentage): the decimal text is CUT after `digits` decimals (cut, not rounded), trailing zeros dropped. Never for a dose or a stored value. */
+export function formatDerived(n: number, digits: number): string {
+  const s = numberToPlain(n);
+  if (s === null) return t('value.unknown');
+  const [whole, frac = ''] = s.split('.');
+  const cut = frac.slice(0, digits).replace(/0+$/, '');
+  return localise(cut === '' ? whole : `${whole}.${cut}`);
+}

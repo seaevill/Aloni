@@ -535,5 +535,20 @@
   "today.who.none": "Nothing recorded today yet.",
   "today.who.done": "{worker}: sprayed {product}",
   "today.who.crates": "Crates cut: {n}",
-  "today.who.overdue": "Open jobs from earlier days: {n}"
+  "today.who.overdue": "Open jobs from earlier days: {n}",
+  "map.title": "Parcel boundary on the map",
+  "map.help": "Tap the corners of the field and close the shape with a double tap. You can drag the corners afterwards.",
+  "map.nowebgl": "The map cannot open on this phone or browser.",
+  "map.attribution": "Map: OpenFreeMap © OpenMapTiles, data from OpenStreetMap.",
+  "map.area.none": "No shape yet.",
+  "map.area.line": "Area from the map: {map} stremma",
+  "map.area.diff": "Area you typed: {typed} stremma · difference {pct}%",
+  "map.area.notyped": "You have not typed an area yet.",
+  "map.keep": "The area you type is never changed by the map.",
+  "map.where": "My location",
+  "map.clear": "Clear the shape",
+  "map.save": "Save the boundary",
+  "map.open": "Boundary on the map",
+  "map.has": "A boundary is set on the map.",
+  "edit.f.boundary": "map boundary"
 }

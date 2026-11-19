@@ -35,7 +35,11 @@ export default defineConfig({
           { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
-      workbox: { globPatterns: ['**/*.{js,css,html,png,svg,webmanifest,woff2}'], navigateFallback: '/index.html' },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,png,svg,webmanifest,woff2}'], navigateFallback: '/index.html',
+        // the base map: the tiles and style the owner has SEEN stay available offline (cache first, at most 400 entries, 30 days); nothing is fetched unless the map is opened
+        runtimeCaching: [{ urlPattern: ({ url }) => url.hostname === 'tiles.openfreemap.org', handler: 'CacheFirst', options: { cacheName: 'map-tiles', expiration: { maxEntries: 400, maxAgeSeconds: 30 * 86400 }, cacheableResponse: { statuses: [0, 200] } } }],
+      },
     }),
   ],
   test: { environment: 'node', include: ['tests/unit/**/*.test.ts'] },
