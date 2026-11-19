@@ -21,6 +21,8 @@ import { showUndo } from './Toast';
 export function More() {
   const [msg, setMsg] = useState('');
   const [view, setView] = useState<'main' | 'info' | 'photos' | 'workers' | 'register' | 'orders'>('main');
+  const standalone = matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true;
+  const openedFrom = [t(standalone ? 'more.openedFrom.home' : 'more.openedFrom.safari'), t('more.openedFrom.note')].join(' ');
   const pick = (id: string) => { activeFarm.value = id; dataVersion.value++; };
   if (view === 'info') return <Info onBack={() => setView('main')} />;
   if (view === 'orders') return <Orders onBack={() => setView('main')} />;
@@ -61,14 +63,20 @@ export function More() {
       )}
       <p class="muted">{t('more.demoNote')}</p>
       {msg && <p class="msg" role="status">{msg}</p>}
-      <Readiness />
-      <GoLive />
+      <Readiness part="owner" />
+      <p class="muted" data-testid="this-phone">{t('more.thisPhone')}</p>
+      <p class="muted" data-testid="opened-from">{openedFrom}</p>
       <SignIn />
       <Backup />
       <SettingsBox />
       <Notifications />
       {legacyKept.value && <p class="draft" role="note">{t('more.legacyKept')}</p>}
       <p class="muted">{t('more.version', { v: APP_VERSION })}</p>
+      <details class="card" data-testid="dev-section">
+        <summary>{t('dev.title')}</summary>
+        <Readiness part="dev" />
+        <GoLive />
+      </details>
     </section>
   );
 }

@@ -4,8 +4,9 @@ import { iphone } from './helpers/iphone';
 test('sign-in readiness: lists what is missing, never switches anything on, and says ready only when all five are done', async ({ page }) => {
   const errors = await iphone(page);
   await page.locator('nav.tabs [data-tab="more"]').click();
-  const box = page.getByTestId('readiness');
-  await expect(box).toBeVisible();
+  await page.getByTestId('dev-section').locator('summary').click();
+  const box = page.locator('[data-testid^="readiness"]');
+  await expect(box.first()).toBeVisible();
   await expect(box.locator('[data-ok="no"]')).toHaveCount(5);
   await expect(page.getByTestId('ready-summary')).toContainText('Λείπουν 5');
   await page.getByTestId('ready-farm-input').fill('Κτήμα Δοκιμής');

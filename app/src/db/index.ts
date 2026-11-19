@@ -2,7 +2,7 @@ import { signal } from '@preact/signals';
 import { AppDB, type FarmRow } from './schema';
 import { importDemo, removeDemo, type PrototypeData } from './import-demo';
 import { migrateLegacyDb } from './legacy';
-import { delLocal, guardAppendOnly, refreshPending } from '../repo';
+import { delLocal, guardAppendOnly, putLocal, refreshPending } from '../repo';
 import { APP_NAME, DEMO_FARM_ID } from '../config';
 import { t } from '../i18n';
 import { commitAllHeld } from '../worker/held';
@@ -38,6 +38,8 @@ export async function initDb() {
   await refreshPending(db);
   // Ask the browser not to evict our data (iOS evicts storage of non-installed sites).
   try { await navigator.storage?.persist?.(); } catch { /* ignore */ }
+  // Installed to the Home Screen for the first time: ask again (the answer can differ once the app is standalone).
+  try { if (matchMedia('(display-mode: standalone)').matches && (await db.settings.get('persist_standalone')) === undefined) { await navigator.storage?.persist?.(); await putLocal(db, 'persist_standalone', true); } } catch { /* ignore */ }
 }
 
 export async function loadDemo() {
