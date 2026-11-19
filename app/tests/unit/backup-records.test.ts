@@ -19,7 +19,7 @@ async function realRecords() {
   const db = await newDb();
   const w = buildWorker('Γιώργος', F, now, 'w1'); if (!w.ok) throw new Error('setup');
   const planting: Row = { id: 'pl1', farm_id: F, crop_id: 'crop', parcel_id: 'p1', area_str: '0.5' };
-  const s = buildSpray({ plantingIds: ['pl1'], productId: 'prod', applicatorId: 'w1', sprayedAt: '2026-11-20T08:00:00Z', dose: '0,025', doseUnit: 'ml/str', lotKey: undefined, qty: '', water: '', note: '' },
+  const s = buildSpray({ plantingIds: ['pl1'], productId: 'prod', applicatorId: 'w1', sprayedAt: '2026-11-20T08:00:00Z', startedAt: '2026-11-20T07:30:00Z', dose: '0,025', doseUnit: 'ml/str', lotKey: undefined, qty: '', water: '', note: '' },
     { label: undefined, plantings: [planting], lot: undefined, lotBalance: undefined, today: '2026-11-20' }, F, now, { job: 'job1', spray: 'sp1', movement: 'mv1', plantingLinks: ['jp1'] });
   if (!s.ok) throw new Error('setup');
   const h = buildHarvest({ plantingId: 'pl2', crates: '12', harvestedAt: '2026-11-20T09:00:00Z', note: '' }, [], [], F, now, 'h1'); if (!h.ok) throw new Error('setup');

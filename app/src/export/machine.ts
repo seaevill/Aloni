@@ -14,7 +14,7 @@ export const MACHINE_COLUMNS = [
   'application_start', 'application_end',
   'dose_as_entered', 'dose_unit_as_entered', 'dose_per_ha', 'dose_per_ha_unit',
   'treated_area_stremma', 'treated_area_ha',
-  'iacs_parcel_id', 'parcel_name', 'crop_slug', 'eppo_code', 'bbch_stage',
+  'iacs_parcel_id', 'parcel_name', 'crop_slug', 'eppo_code', 'bbch_stage', 'prescription_number',
   'applicator', 'quantity_used', 'water_l', 'label_state', 'phi_until', 'rei_until',
 ] as const;
 export type MachineColumn = (typeof MACHINE_COLUMNS)[number];
@@ -51,7 +51,7 @@ export function machineLines(d: RegisterData, holder: Holder): MachineLine[] {
         dose_as_entered: text(s.dose_str), dose_unit_as_entered: text(s.dose_unit), dose_per_ha: ha?.amount ?? '', dose_per_ha_unit: ha?.unit ?? '',
         treated_area_stremma: area, treated_area_ha: areaHa(area) ?? '',
         iacs_parcel_id: text(d.parcels.find((p) => p.id === pl?.parcel_id)?.opekepe_code), parcel_name: name(d.parcels.find((p) => p.id === pl?.parcel_id)),
-        crop_slug: text(crop?.slug), eppo_code: EPPO_CODES[text(crop?.slug)] ?? '', bbch_stage: text(s.bbch),
+        crop_slug: text(crop?.slug), eppo_code: EPPO_CODES[text(crop?.slug)] ?? '', bbch_stage: text(s.bbch), prescription_number: text(s.prescription_no),
         applicator: text(d.workers.find((w) => w.id === s.applicator_id)?.name), quantity_used: text(s.qty_str), water_l: text(s.water_l),
         label_state: text(s.label_state), phi_until: s.phi_until ? athensIso(text(s.phi_until)) : '', rei_until: s.rei_until ? athensIso(text(s.rei_until)) : '',
       });

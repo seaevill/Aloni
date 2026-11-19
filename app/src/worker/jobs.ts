@@ -15,7 +15,7 @@ export function completeSprayJob(job: Row, label: Row | undefined, plantings: re
   if (job.status !== 'planned' || job.worker_id !== worker.id) return { ok: false }; // only the assigned worker, only a job that is still open
   const r = buildSpray(
     { plantingIds: plantings.map((p) => p.id), productId: String(job.product_id), applicatorId: worker.id, sprayedAt, dose: String(job.dose_str), doseUnit: job.dose_unit as DoseUnit, lotKey: undefined, qty: '', water: '', note, lateReason },
-    { label, plantings, lot: undefined, lotBalance: undefined, today: sprayedAt.split('T')[0] },
+    { label, plantings, lot: undefined, lotBalance: undefined, today: sprayedAt.split('T')[0], startOptional: true },
     job.farm_id, nowIso, { job: job.id, spray: sprayId, movement: sprayId, plantingLinks: plantings.map((p) => p.id) },
   );
   if (!r.ok) return { ok: false };

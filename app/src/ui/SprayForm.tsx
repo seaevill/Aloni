@@ -38,6 +38,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const [productId, setProductId] = useState('');
   const [workerId, setWorkerId] = useState('');
   const [when, setWhen] = useState(athensLocalNow(new Date()) ?? '');
+  const [startWhen, setStartWhen] = useState(''); const [bbch, setBbch] = useState(''); const [prescription, setPrescription] = useState('');   // the start is REQUIRED and never pre-filled (a guess is not a record)
   const [dose, setDose] = useState('');
   const [unit, setUnit] = useState<(typeof DOSE_UNITS)[number] | undefined>(undefined);
   const [lotKey, setLotKey] = useState<string | undefined>(undefined);
@@ -54,7 +55,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const lot = myLots.find((l) => l.lot_key === lotKey);
   const balance = lot ? balanceOf((moves.rows ?? []).filter((m) => m.lot_key === lotKey)) : undefined;
   const sprayedAt = athensInstant(when) ?? '';
-  const input: SprayInput = { plantingIds: sel, productId, applicatorId: workerId, sprayedAt, dose, doseUnit: unit, lotKey, qty, water, note, lateReason, overReason, doseReason };
+  const input: SprayInput = { plantingIds: sel, productId, applicatorId: workerId, sprayedAt, startedAt: athensInstant(startWhen), bbch, prescription, dose, doseUnit: unit, lotKey, qty, water, note, lateReason, overReason, doseReason };
   const prior = priorApps(sprays.rows ?? [], links.rows ?? [], sel, productId);
   const typedDose = parseDecimal(dose);
   const outside = typedDose.known && unit !== undefined && doseOutsideLabel(label, typedDose.value, unit); // the reason field appears only for a dose outside the label
@@ -96,6 +97,10 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
       )}
       <h2>{t('spray.worker')}</h2>
       <div class="seg two">{live(workers).map((w) => <button key={w.id} aria-pressed={workerId === w.id} onClick={() => setWorkerId(w.id)}>{String(w.name)}</button>)}</div>
+      <label class="field">{t('spray.start')}
+        <input class="input" type="datetime-local" value={startWhen} data-testid="spray-start" onInput={(e) => setStartWhen((e.target as HTMLInputElement).value)} />
+      </label>
+      {failed && !r.ok && r.errors.start && <p class="msg error" role="alert" data-testid="spray-start-error">{t('spray.start.error')}</p>}
       <label class="field">{t('spray.time')}
         <input class="input" type="datetime-local" value={when} onInput={(e) => setWhen((e.target as HTMLInputElement).value)} />
       </label>
@@ -145,6 +150,9 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
       {failed && !r.ok && <p class="msg error" role="alert" data-testid="spray-error">{t('spray.error.fill')}</p>}
       {failed && !r.ok && r.errors.dose && dose.trim() !== '' && <p class="msg error" role="alert">{t('spray.error.dose')}</p>}
       {failed && !r.ok && r.errors.mixedCrops && <p class="msg error" role="alert" data-testid="spray-mixed-error">{t('spray.error.mixed')}</p>}
+      <label class="field">{t('spray.bbch')}<input class="input" value={bbch} inputMode="numeric" autoComplete="off" data-testid="spray-bbch" onInput={(e) => setBbch((e.target as HTMLInputElement).value)} /></label>
+      {failed && !r.ok && r.errors.bbch && <p class="msg error" role="alert">{t('spray.bbch.error')}</p>}
+      <label class="field">{t('spray.prescription')}<input class="input" value={prescription} autoComplete="off" data-testid="spray-prescription" onInput={(e) => setPrescription((e.target as HTMLInputElement).value)} /></label>
       {failed && !r.ok && r.errors.qty && <p class="msg error" role="alert">{t('spray.error.qty')}</p>}
       {failed && !r.ok && r.errors.lateReason && <p class="msg error" role="alert" data-testid="spray-late-error">{t('spray.late.error')}</p>}
       {failed && !r.ok && r.errors.overReason && <p class="msg error" role="alert" data-testid="spray-over-error">{t('spray.over.error')}</p>}

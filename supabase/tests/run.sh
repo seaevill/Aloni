@@ -34,6 +34,7 @@ psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m4_0021.sql || { echo "FAILED: s
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m5_0022.sql || { echo "FAILED: supabase/tests/m5_0022.sql"; exit 1; }; echo "SQL m5-0022 tests OK"
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m5_0023.sql || { echo "FAILED: supabase/tests/m5_0023.sql"; exit 1; }; echo "SQL m5-0023 tests OK"
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m5_0024.sql || { echo "FAILED: supabase/tests/m5_0024.sql"; exit 1; }; echo "SQL m5-0024 tests OK"
+psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m6_0025.sql || { echo "FAILED: supabase/tests/m6_0025.sql"; exit 1; }; echo "SQL m6-0025 tests OK"
 bash supabase/tests/contract.sh
 out=$(psql -X -At -v ON_ERROR_STOP=1 -f supabase/tests/verify_applied.sql) || { echo "FAILED: verify_applied.sql"; exit 1; }; echo "$out"; echo "$out" | grep -q "^OK:" || { echo "verify_applied.sql found problems"; exit 1; }
 bash supabase/tests/concurrency.sh

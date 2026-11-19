@@ -40,10 +40,10 @@ describe('phone ↔ server contract', () => {
     const adj = ok(buildAdjustment({ lotKey: id(6), productId: id(3), direction: 'out', qty: '1', reason: 'x', amendsId: undefined }, F, now, id(8)));
     const soil = ok(buildAnalysis({ parcelId: id(1), sampledOn: '2026-11-10', lab: 'l', ph: '7,4', ec: '1,2', ecUnit: 'dS/m', notes: 'n', photoId: id(21) }, F, now, id(9))).row;
     const worker = ok(buildWorker('Γιώργος', F, now, id(10))).row;
-    const spray = ok(buildSpray({ plantingIds: [id(2)], productId: id(3), applicatorId: id(10), sprayedAt: '2026-11-10T08:00:00Z', dose: '0,025', doseUnit: 'ml/str', lotKey: id(6), qty: '0,25', water: '1', note: 'n' },
+    const spray = ok(buildSpray({ plantingIds: [id(2)], productId: id(3), applicatorId: id(10), sprayedAt: '2026-11-10T08:00:00Z', startedAt: '2026-11-10T07:30:00Z', dose: '0,025', doseUnit: 'ml/str', lotKey: id(6), qty: '0,25', water: '1', note: 'n' },
       { label, plantings: [{ ...planting, crop_id: crop.id }], lot: rec.lot, lotBalance: '4.5', today: '2026-11-10' }, F, now, { job: id(11), spray: id(12), movement: id(13), plantingLinks: [id(14)] }));
     // a spray with NO usable label (waiting period unknown) and Bora's correction of it: the server accepts a correction only for such a spray
-    const bare = ok(buildSpray({ plantingIds: [id(2)], productId: id(3), applicatorId: id(10), sprayedAt: '2026-11-10T08:30:00Z', dose: '0,025', doseUnit: 'ml/str', lotKey: undefined, qty: '', water: '', note: '' },
+    const bare = ok(buildSpray({ plantingIds: [id(2)], productId: id(3), applicatorId: id(10), sprayedAt: '2026-11-10T08:30:00Z', startedAt: '2026-11-10T08:00:00Z', dose: '0,025', doseUnit: 'ml/str', lotKey: undefined, qty: '', water: '', note: '' },
       { label: undefined, plantings: [{ ...planting, crop_id: crop.id }], lot: undefined, lotBalance: undefined, today: '2026-11-10' }, F, now, { job: id(22), spray: id(23), movement: id(24), plantingLinks: [id(25)] }));
     const wait = ok(buildWaitEntry(bare.spray, '7', '24', now, id(15), 'label values entered'));
     const harvest = ok(buildHarvest({ plantingId: id(2), crates: '12', harvestedAt: '2026-11-10T09:00:00Z', note: 'n' }, [], [], F, now, id(16))).row;

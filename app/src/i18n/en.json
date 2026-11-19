@@ -514,5 +514,10 @@
   "edit.f.variety": "variety",
   "edit.f.lot": "lot",
   "history.edits": "Changes to fields and plantings",
-  "edit.f.osde": "IACS code"
+  "edit.f.osde": "IACS code",
+  "spray.start": "Start date and time of the spraying",
+  "spray.start.error": "Write when the spraying started. The start cannot be after the end.",
+  "spray.bbch": "BBCH growth stage, two digits (optional)",
+  "spray.bbch.error": "The BBCH stage has two digits, e.g. 14.",
+  "spray.prescription": "Prescription number (optional)"
 }
