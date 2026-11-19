@@ -1,11 +1,9 @@
 import { compareDecimal, parseDecimal, type Decimal } from '@aloni/rules-core';
 import type { Row } from '../db/schema';
+import { MAX_AREA } from '../parcels/parcel';
 
 export const STATUSES = ['planned', 'growing', 'harvesting', 'finished'] as const;
 export type Status = (typeof STATUSES)[number];
-/** A parcel or planting area above 10 000 στρέμματα is almost certainly a typing slip: refused with «δεν φαίνεται σωστό». */
-export const MAX_AREA = '10000' as Decimal;
-
 export interface PlantingInput {
   parcelId: string; cropId: string; variety: string; lot: string; area: string; sownOn: string; status: Status;
 }

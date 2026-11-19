@@ -15,8 +15,12 @@ describe('T17b: implausible numbers are refused with a reason', () => {
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.area).toBe('implausible');
   });
-  it('stock quantity 1,250 stays refused', () => {
-    const r = buildReceipt({ productId: 'p', qty: '1,250', expiry: '2027-06-30', batch: '' } as never, 'f', '2026-11-19T10:00:00Z', { lot: 'l', movement: 'm' });
-    expect(r.ok).toBe(false);
+  it('stock quantity 1,250 is refused as a quantity (invalid); 1,25 and 1250 are accepted', () => {
+    const ok = (qty: string) => buildReceipt({ productId: 'p', qty, expiry: '2027-06-30', batch: '' } as never, 'f', '2026-11-19T10:00:00Z', { lot: 'l', movement: 'm' });
+    const bad = ok('1,250');
+    expect(bad.ok).toBe(false);
+    if (!bad.ok) expect(bad.qty).toBe('invalid');
+    expect(ok('1,25').ok).toBe(true);
+    expect(ok('1250').ok).toBe(true);
   });
 });
