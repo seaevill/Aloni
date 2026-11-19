@@ -76,3 +76,12 @@ describe('property: a dose typed with a comma comes back out exactly, in every l
     }
   });
 });
+
+describe('a record\'s name', () => {
+  it('is empty — never «undefined» — while the record is not loaded yet (the lists load one after the other)', async () => {
+    const { nameOf } = await import('../../src/ui/screens');
+    expect(nameOf({})).toBe('');
+    expect(nameOf({ id: 'x1' })).toBe('x1');
+    expect(nameOf({ name_el: 'Σπανάκι', name_en: 'Spinach' })).toBe('Σπανάκι');
+  });
+});
