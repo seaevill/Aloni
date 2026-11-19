@@ -33,7 +33,7 @@
   "value.unknown": "— पता नहीं",
   "worker.back": "पीछे",
   "worker.choose": "कर्मचारी",
-  "worker.committed": "दर्ज हो गया। 10 सेकंड में वापस ले सकते हैं।",
+  "worker.committed": "10 सेकंड में दर्ज होगा।",
   "worker.confirm": "पक्का करें",
   "worker.demoNote": "डेमो: आप यहाँ जो भी करें, केवल डेमो डेटा बदलता है।",
   "worker.done": "हो गया",

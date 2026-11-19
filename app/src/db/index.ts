@@ -5,6 +5,7 @@ import { migrateLegacyDb } from './legacy';
 import { guardAppendOnly, refreshPending } from '../repo';
 import { APP_NAME, DEMO_FARM_ID } from '../config';
 import { t } from '../i18n';
+import { commitAllHeld } from '../worker/held';
 
 export const db = new AppDB();
 guardAppendOnly(db);
@@ -27,6 +28,7 @@ export async function initDb() {
   activeFarm.value = real.id;
   hasDemo.value = !!(await db.farms.get(DEMO_FARM_ID));
   lastBackupAt.value = (await db.settings.get('last_backup_at'))?.value as string | undefined;
+  await commitAllHeld(db).catch(() => undefined);      // a worker's action held when the phone was closed (T4)
   await refreshPending(db);
   // Ask the browser not to evict our data (iOS evicts storage of non-installed sites).
   try { await navigator.storage?.persist?.(); } catch { /* ignore */ }

@@ -3,7 +3,8 @@ import { activeFarm, dataVersion, db } from '../db';
 import { AUTH_ENABLED, DEMO_FARM_ID, SYNC_CONNECTED } from '../config';
 import { session } from '../auth/gotrue';
 import { pendingOps } from '../repo';
-import { queueCompletion, COMPLETE } from '../worker/remote';
+import { COMPLETE } from '../worker/remote';
+import { cancelHeld, commitHeld, holdAction, type Held } from '../worker/held';
 import { RPC_PREFIX } from '../repo';
 import { formatDateTime, lang, t, ts, type I18nKey } from '../i18n';
 import { UNIT_KEYS } from './LabelUseForm';
@@ -67,27 +68,31 @@ export function WorkerApp() {
   const lockText = (l: Lock): string => (l.state === 'running' ? ts('worker.lock.running', { d: formatDateTime(l.until) }) : ts('worker.lock.unknown'));
   const doseText = (j: Row) => t('labeluse.dosevalue', { v: formatDose(known(text(j.dose_str) as Decimal)), unit: t(UNIT_KEYS[j.dose_unit as keyof typeof UNIT_KEYS]) });
 
-  const hold = (job: Row, write: () => Promise<void>) => { // the job disappears at once; the record is written only after 10 s, unless taken back
+  /** The job disappears at once and the action is KEPT on the phone at once (settings «held_actions»); it is written as a record after 10 s, or at the next start; «Αναίρεση» removes the entry. */
+  const hold = async (job: Row, h: Omit<Held, 'id' | 'at'>) => {
+    const entry: Held = { id: crypto.randomUUID(), at: new Date().toISOString(), ...h };
+    await holdAction(db, entry);
     setHeld([...held, job.id]); setOpen(undefined); setNote('');
-    showHeldUndo(t('worker.committed'), () => setHeld((h) => h.filter((x) => x !== job.id)), async () => { await write(); dataVersion.value++; setHeld((h) => h.filter((x) => x !== job.id)); }, HOLD_MS);
+    showHeldUndo(t('worker.committed'), async () => { await cancelHeld(db, entry.id); setHeld((x) => x.filter((id) => id !== job.id)); }, async () => { await commitHeld(db, entry.id); dataVersion.value++; setHeld((x) => x.filter((id) => id !== job.id)); }, HOLD_MS);
   };
   const confirmDone = (job: Row) => {
     const at = athensInstant(when); const start = athensInstant(startWhen);
-    if (!at || !start || Date.parse(start) > Date.parse(at)) { setStartError(true); return; }
+    if (!at || !start || Date.parse(start) > Date.parse(at)) { setStartError(true); return undefined; }
     setStartError(false);
-    if (real) { hold(job, () => queueCompletion(db, farm, job.id, at, start, note, lateReason)); return; }
+    if (real) { return hold(job, { completion: { farm, jobId: job.id, at, start, note, lateReason } }); return; }
     const label = (labels.rows ?? []).find((l) => l.id === job.label_use_id);
     const c = at ? completeSprayJob(job, label, plantingsOf(job), me, at, note, new Date().toISOString(), crypto.randomUUID(), lateReason, start) : undefined;
-    if (c?.ok) hold(job, () => putMany(db, [{ table: 'jobs', row: c.job }, { table: 'job_spray', row: c.spray, op: 'insert' }]));
+    if (c?.ok) return hold(job, { writes: [{ table: 'jobs', row: c.job }, { table: 'job_spray', row: c.spray, op: 'insert' }] });
   };
   const confirmSkip = (job: Row, reason: SkipReason) => {
     const row = skipSprayJob(job, me, reason, new Date().toISOString());
-    if (row) hold(job, () => putMany(db, [{ table: 'jobs', row }]));
+    if (row) return hold(job, { writes: [{ table: 'jobs', row }] });
   };
   const saveObservation = () => {
     const row = buildObservation(parcel, kind, note, me, farm, new Date().toISOString(), crypto.randomUUID());
-    if (!row) return;
-    showHeldUndo(t('worker.committed'), () => undefined, async () => { await putMany(db, [{ table: 'observations', row, op: 'insert' }]); dataVersion.value++; }, HOLD_MS);
+    if (!row) return undefined;
+    const entry: Held = { id: crypto.randomUUID(), at: new Date().toISOString(), writes: [{ table: 'observations', row, op: 'insert' }] };
+    return holdAction(db, entry).then(() => showHeldUndo(t('worker.committed'), () => cancelHeld(db, entry.id), async () => { await commitHeld(db, entry.id); dataVersion.value++; }, HOLD_MS));
     setNote(''); setKind(undefined);
   };
   const TABS: Array<['jobs' | 'harvest' | 'observe', I18nKey]> = [['jobs', 'worker.tab.jobs'], ['harvest', 'worker.tab.harvest'], ['observe', 'worker.tab.observe']];

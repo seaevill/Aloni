@@ -348,7 +348,7 @@
   "worker.skip.wind": "Rüzgâr",
   "worker.skip.no_product": "İlaç yok",
   "worker.skip.other": "Diğer",
-  "worker.committed": "Kaydedildi. 10 saniye içinde geri alabilirsiniz.",
+  "worker.committed": "10 saniye içinde kaydedilecek.",
   "worker.status.done": "Yapıldı",
   "worker.queued": "Telefona kaydedildi. Hesap bağlanınca gönderilecek.",
   "harvest.counter": "kasa kesildi",

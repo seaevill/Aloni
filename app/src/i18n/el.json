@@ -348,7 +348,7 @@
   "worker.skip.wind": "Άνεμος",
   "worker.skip.no_product": "Δεν υπάρχει προϊόν",
   "worker.skip.other": "Άλλο",
-  "worker.committed": "Καταγράφηκε. Αναίρεση μέσα σε 10 δευτερόλεπτα.",
+  "worker.committed": "Θα καταγραφεί σε 10″.",
   "worker.status.done": "Έγινε",
   "worker.queued": "Αποθηκεύτηκε στο τηλέφωνο. Θα σταλεί όταν συνδεθεί λογαριασμός.",
   "harvest.counter": "κλούβες κομμένες",
