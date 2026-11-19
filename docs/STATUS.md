@@ -28,5 +28,5 @@
 7. Tarla formunda «Όρια στον χάρτη»yi aç (internet gerekir).
 
 ## (d) Senden beklenen kararlar ve onaylar
-- **Apply:** 0022–0027 **onay bekliyor**. docs/reviews/team/'de ekibin yeniden bakması gerekiyor (MUST'lar düzeltildi ama «kapandı» notu yok). Öneri: ekip kapattıktan sonra hepsini birlikte uygula.
+- **Apply:** 0022–0028 **onay bekliyor** (0028 yeni: fotoğraf deposu). docs/reviews/team/'de ekibin yeniden bakması gerekiyor (MUST'lar düzeltildi ama «kapandı» notu yok). Öneri: ekip kapattıktan sonra hepsini birlikte uygula.
 - Diğer kararlar (EPPO, OpenFreeMap, Hintçe, logo, veri sorumlusu, LIVE) E6'da yazılacak.

@@ -19,6 +19,8 @@ Bu dosya benim iş listem. Bitirdiğimi `[x]` ile işaretlerim. `docs/reviews/te
 ## E3 – Kapıları açma hazırlığı
 - [ ] 0028 fotoğraf deposu (Supabase Storage, çiftlik başına özel bucket, RLS, işçi yalnızca kendi işinin fotoğrafı, SHA-256, boyut sınırı). *Bitti:* migration + önce kırmızı test (gerçek authenticated) + açık MUST yok.
 - [x] EPPO kodları ekip listesine göre (PR #156), her kodun yanında https://gd.eppo.int/taxon/KOD, kilitleyen test. *Bitti:* `eppo.ts` + test + mapping belgesi güncel.
+- [x] 0028 fotoğraf deposu (PR; apply bekliyor) (Supabase Storage, çiftlik başına özel bucket, RLS, işçi yalnızca kendi işinin fotoğrafı, SHA-256, boyut sınırı). *Bitti:* migration + önce kırmızı test (gerçek authenticated) + açık MUST yok.
+- [ ] EPPO kodları ekip listesine göre, her kodun yanında https://gd.eppo.int/taxon/KOD, kilitleyen test. *Bitti:* `eppo.ts` + test + mapping belgesi güncel.
 - [ ] Sihirbaz LIVE öncesi son adım olarak gözden geçirildi; STATUS'ta «canlıya geçiş kontrol listesi». *Bitti:* kontrol listesi STATUS'ta; sihirbaz testleri yeşil.
 
 ## E4 – Günlük fayda

@@ -205,7 +205,7 @@ rollback;
 5. **Sihirbaz** — **Άλλα → «Άνοιγμα συγχρονισμού»**: yedek ve giriş satırları da yeşil olunca **düğme açılır** → bas.
  Doğru sonuç: «Ανεβαίνουν τα στοιχεία…» → bitince «Ο συγχρονισμός είναι ανοιχτός.» Sırayla: boş çağrı (sunucu cevap veriyor mu) → kayıtlar (ebeveyn önce) → fotoğraflar (sırayla, en çok 2 paralel, küçültülmeden) → çekme. Demo verisi hiç gitmez.
 6. **Kontrol** — Supabase → **Table Editor** → `parcels`, `job_spray`: kayıtlar görünür; sayıları telefonla karşılaştır.
- Doğru sonuç: aynı sayı. Fotoğraflar için `photos` deposu (bucket) **henüz migration'la oluşturulmadı**: fotoğraf yüklemesi hata verirse sihirbaz «açılmadı» der ve veri telefonda kalır (Claude'a söyle, 0027 yazılır).
+ Doğru sonuç: aynı sayı. Fotoğraflar için `photos` deposu (bucket) **0028 migration'ıyla** oluşur (özel, yalnızca JPEG, 5 MB sınır, çiftlik başına klasör). 0028 uygulanmadıysa fotoğraf yüklemesi hata verir; sihirbaz «açılmadı» der ve veri telefonda kalır.
 
 **Geri dönüş yolu (hata olursa):**
 - Sihirbaz hata verirse senkron **açılmaz**; telefonda hiçbir şey silinmez ya da değişmez; sunucuya giden kayıtlar sunucuda kalır, kalanlar sırada bekler. Düzeltilince aynı düğmeye tekrar basarsın: **kaldığı yerden** devam eder (gönderilenler tekrar gitmez).
