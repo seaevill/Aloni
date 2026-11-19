@@ -55,7 +55,7 @@ begin
   -- the same group sent again, now complete and valid, applies as a whole (the first answer did not burn the op ids)
   res := apply_ops(jsonb_build_array(
     jsonb_build_object('op_id', oa, 'group_id', g1, 'group_size', 2, 'farm_id', f, 'table', 'parcels', 'op', 'insert', 'row', jsonb_build_object('id', pb, 'farm_id', f, 'name', 'In group', 'area_str', 2)),
-    jsonb_build_object('op_id', ob, 'group_id', g1, 'group_size', 2, 'farm_id', f, 'table', 'parcels', 'op', 'update', 'row', jsonb_build_object('id', pb, 'farm_id', f, 'name', 'In group, renamed'))));
+    jsonb_build_object('op_id', ob, 'group_id', g1, 'group_size', 2, 'farm_id', f, 'table', 'parcels', 'op', 'update', 'row', jsonb_build_object('id', pb, 'farm_id', f, 'name', 'In group, renamed', 'edit_reason', 'renamed'))));
   if res->0->>'status' <> 'applied' or res->1->>'status' <> 'applied' then raise exception 'valid group not applied: %', res; end if;
   -- an incomplete group (3 announced, 2 sent) is rejected whole
   res := apply_ops(jsonb_build_array(

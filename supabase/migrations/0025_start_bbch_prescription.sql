@@ -5,7 +5,7 @@
 --  prescription_no  the prescription number (Greek professional use), optional, never blank when present.
 -- The check at the very top stops with a clear message if 0024 is not there; it changes nothing.
 do $$ begin
-  if to_regprocedure('check_edit_history()') is null then raise exception '0025 stopped: 0024 is not applied (nothing was changed)'; end if;
+  if to_regprocedure('write_edit_history()') is null then raise exception '0025 stopped: 0024 is not applied (nothing was changed)'; end if;
 end $$;
 
 alter table job_spray add column started_at timestamptz, add column bbch text, add column prescription_no text;

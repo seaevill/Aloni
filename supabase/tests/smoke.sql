@@ -64,7 +64,7 @@ begin
   exception when check_violation then null; end;
   begin update parcels set topo_class = 'ridge' where id = '33333333-3333-3333-3333-333333333333'; raise exception 'topo ridge accepted';
   exception when check_violation then null; end;
-  update parcels set topo_class = 'plain' where id = '33333333-3333-3333-3333-333333333333';
+  update parcels set topo_class = 'plain', edit_reason = 'test' where id = '33333333-3333-3333-3333-333333333333';
   begin update farms set lang = 'xx'; raise exception 'bad lang accepted'; exception when check_violation then null; end;
   update farms set lang = 'sq' where id = '11111111-1111-1111-1111-111111111111';
 end $$;
@@ -77,7 +77,7 @@ declare f constant uuid := '11111111-1111-1111-1111-111111111111'; p constant uu
         v numeric;
 begin
   -- the typed area is never rounded
-  update parcels set area_str = 0.625, lat = 38.0012, lng = 23.3501, pin_accuracy_m = 12.5, device_id = 'dev', actor_id = 'act' where id = p;
+  update parcels set area_str = 0.625, lat = 38.0012, lng = 23.3501, pin_accuracy_m = 12.5, device_id = 'dev', actor_id = 'act', edit_reason = 'test' where id = p;
   select area_str into v from parcels where id = p; if v <> 0.625 then raise exception 'area rounded: %', v; end if;
   begin update parcels set lat = 95; raise exception 'bad latitude accepted'; exception when check_violation then null; end;
   begin update parcels set lat = null; raise exception 'half a pin accepted'; exception when check_violation then null; end;
@@ -244,7 +244,7 @@ begin
   if res->0->>'status' <> 'rejected' or res->0->>'reason' not like '%different content%' then raise exception 'reused op_id with other content not rejected: %', res; end if;
   select count(*), min(name) into n, nm from parcels where id = pid; if n <> 1 or nm <> 'Synced' then raise exception 'repeat had an effect'; end if;
   -- an update
-  res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', op2, 'farm_id', f, 'table', 'parcels', 'op', 'update', 'row', jsonb_build_object('id', pid, 'farm_id', f, 'name', 'Renamed'))));
+  res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', op2, 'farm_id', f, 'table', 'parcels', 'op', 'update', 'row', jsonb_build_object('id', pid, 'farm_id', f, 'name', 'Renamed', 'edit_reason', 'renamed'))));
   if res->0->>'status' <> 'applied' then raise exception 'update not applied: %', res; end if;
   select name into nm from parcels where id = pid; if nm <> 'Renamed' then raise exception 'update lost'; end if;
   -- rejected, with a reason, and NOT recorded as applied (the phone keeps it): unknown table, unknown column, another farm, a farm the caller is not in, an update of nothing

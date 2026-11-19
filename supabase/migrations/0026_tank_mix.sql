@@ -25,6 +25,7 @@ begin
     return new;
   end if;
   if new.mix_id is not null then
+    perform pg_advisory_xact_lock(hashtextextended(new.mix_id::text, 0));   -- team review m5-0027 (low): two FIRST members written at the same moment are serialised, so the second sees the first
     select s.sprayed_at, s.started_at, s.applicator_id into m from job_spray s where s.mix_id = new.mix_id and s.farm_id = new.farm_id and s.amends_id is null order by s.created_at, s.id limit 1;
     if found and (m.sprayed_at is distinct from new.sprayed_at or m.started_at is distinct from new.started_at or m.applicator_id is distinct from new.applicator_id) then
       raise exception 'every product of a tank mix has the same end time, start time and applicator' using errcode = 'check_violation';
