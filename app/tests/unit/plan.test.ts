@@ -14,19 +14,25 @@ const unsignedLabel = (over: Partial<LabelUseInput> = {}): Row => { const r = bu
 const signed = (over: Partial<LabelUseInput> = {}): Row => withSignOff(unsignedLabel(over), 'Agronomist', '2026-11-17', now)!;
 
 describe('planning a spray job for a worker', () => {
+  it('REFUSES a job for a crop with no label data (none) — «Δεν μπορείτε να αναθέσετε» — and for a blocked label; an unsigned or signed one is allowed', () => {
+    expect(buildJob(ok, { label: undefined, plantings: [planting] }, F, 'n', IDS)).toMatchObject({ ok: false, errors: { label: true } });
+    const blocked = unsignedLabel({ phi: { notOnLabel: true, text: '' } });
+    expect(buildJob(ok, { label: blocked, plantings: [planting] }, F, 'n', IDS)).toMatchObject({ ok: false, errors: { label: true } });
+    expect(buildJob(ok, { label: signed(), plantings: [planting] }, F, 'n', IDS).ok).toBe(true);
+  });
+
   it('fixes product, dose (as typed), unit, worker, day and the plantings; the worker supplies none of it', () => {
-    const r = buildJob(ok, { label: undefined, plantings: [planting] }, F, '2026-11-19T08:00:00Z', IDS);
+    const r = buildJob(ok, { label: unsignedLabel(), plantings: [planting] }, F, '2026-11-19T08:00:00Z', IDS);
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     expect(r.job).toMatchObject({ kind: 'spray', status: 'planned', product_id: 'pr1', worker_id: 'w1', dose_str: '0.025', dose_unit: 'ml/str', planned_for: '2026-11-20' });
-    expect(r.job.label_use_id).toBeUndefined();          // no label use found: nothing invented
-    expect(r.flags).toEqual(['label_none']);              // and it is said out loud
+    expect(r.flags).toEqual(['label_unsigned']);          // an unsigned label is said out loud
     expect(r.jobPlantings).toEqual([{ id: 'jp1', farm_id: F, job_id: 'j1', planting_id: 'pl1', area_str_treated: '0.25', created_at: '2026-11-19T08:00:00Z' }]);
   });
 
   it('refuses what is missing, one reason per field; a dose of 0 or text is not a dose; the unit must be chosen', () => {
     const bad = buildJob({ plantingIds: [], productId: '', workerId: '', dose: '0', doseUnit: undefined, plannedFor: '' }, { label: undefined, plantings: [] }, F, 'n', IDS);
-    expect(bad).toEqual({ ok: false, errors: { plantings: true, product: true, worker: true, dose: true, doseUnit: true, plannedFor: true } });
+    expect(bad).toEqual({ ok: false, errors: { plantings: true, product: true, worker: true, dose: true, doseUnit: true, plannedFor: true, label: true } });
     expect(buildJob({ ...ok, dose: 'abc' }, { label: undefined, plantings: [planting] }, F, 'n', IDS).ok).toBe(false);
   });
 
@@ -42,6 +48,6 @@ describe('planning a spray job for a worker', () => {
   it('an unsigned label is marked unsigned; a label of another crop is not used', () => {
     expect(buildJob(ok, { label: unsignedLabel(), plantings: [planting] }, F, 'n', IDS)).toMatchObject({ ok: true, flags: ['label_unsigned'] });
     const other = buildJob(ok, { label: signed({ cropId: 'rocket' }), plantings: [planting] }, F, 'n', IDS);
-    expect(other.ok && other.job.label_use_id).toBeUndefined();
+    expect(other).toMatchObject({ ok: false, errors: { label: true } });      // a label of another crop is no label for this one
   });
 });

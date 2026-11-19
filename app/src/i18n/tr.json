@@ -648,5 +648,13 @@
   "pwa.update": "Yeni sürüm",
   "pwa.update.apply": "Güncelle",
   "pwa.offline": "Sinyal olmadan da hazır",
-  "pwa.blocked": "Uygulamanın diğer sekmelerini kapatın."
+  "pwa.blocked": "Uygulamanın diğer sekmelerini kapatın.",
+  "spray.label.dose": "Etiket: {v} {unit}",
+  "spray.label.range": "Etiket: {a} – {b} {unit}",
+  "spray.label.same": "Etiketle aynı",
+  "spray.hint.total": "Bilgi: {area} dönüm × {dose} {u} = {total} {u}",
+  "spray.qty.unknown": "Bilmiyorum (stok hareketi yazılmaz)",
+  "spray.flag.quantity_unknown": "Miktar bilinmiyor",
+  "spray.oneCrop": "Her kayıtta tek ekin.",
+  "job.error.nolabel": "Atayamazsınız: bu ekin için etiket bilgisi eksik."
 }

@@ -9,10 +9,10 @@ import { exceedsMax } from './apps';
 // marked on the record and the waiting period (PHI) of an unsigned or incomplete label is UNKNOWN until Bora enters the label's values (amending row).
 // PHI/REI come only from phiEnd/reiEnd and only from a SignedLabelUse. Typed quantities are kept as typed; nothing is converted or rounded.
 
-export type Flag = 'label_none' | 'label_blocked' | 'label_unsigned' | 'label_changed' | 'dose_outside_label' | 'dose_unit_differs' | 'lot_expired' | 'stock_negative' | 'late_entry' | 'max_apps_exceeded';
+export type Flag = 'label_none' | 'label_blocked' | 'label_unsigned' | 'label_changed' | 'dose_outside_label' | 'dose_unit_differs' | 'lot_expired' | 'stock_negative' | 'late_entry' | 'max_apps_exceeded' | 'quantity_unknown';
 export interface SprayInput {
   plantingIds: readonly string[]; productId: string; applicatorId: string; sprayedAt: string;
-  dose: string; doseUnit: DoseUnit | undefined; lotKey: string | undefined; qty: string; water: string; note: string;
+  dose: string; doseUnit: DoseUnit | undefined; lotKey: string | undefined; qty: string; /** the owner ticked «Δεν ξέρω»: the quantity taken from the lot is NOT known (flagged, no stock movement) */ qtyUnknown?: boolean; water: string; note: string;
   /** The START of the spraying (REQUIRED, Reg. 2023/564 «start time»): an instant, never later than the end. */
   startedAt?: string;
   /** BBCH growth stage, two digits 00–99, optional («where relevant»). */
@@ -58,7 +58,7 @@ export function buildSpray(input: SprayInput, ctx: SprayContext, farmId: string,
     start: ctx.startOptional === true && (input.startedAt === undefined || input.startedAt === '') ? false : !validStart(input.startedAt, input.sprayedAt), bbch: (input.bbch ?? '').trim() !== '' && !/^[0-9]{2}$/.test((input.bbch ?? '').trim()),
     plantings: input.plantingIds.length === 0, mixedCrops: new Set(ctx.plantings.map((p) => p.crop_id)).size > 1, product: !input.productId, applicator: !input.applicatorId, time: !parseInstant(input.sprayedAt).known,
     dose: !dose, doseUnit: !input.doseUnit || !DOSE_UNITS.includes(input.doseUnit),
-    qty: (input.qty.trim() !== '' && !qty) || (input.lotKey !== undefined && !qty), // a lot needs the quantity taken from it; a typed quantity must be readable
+    qty: (input.qty.trim() !== '' && !qty) || (input.lotKey !== undefined && !qty && input.qtyUnknown !== true), // a lot needs the quantity taken from it; a typed quantity must be readable
     water: water !== undefined && !water.known,
     lateReason: !ctx.historic && parseInstant(input.sprayedAt).known && isLate(input.sprayedAt, nowIso) && (input.lateReason ?? '').trim() === '',
     overReason: false, doseReason: false,
@@ -109,6 +109,7 @@ export function buildSpray(input: SprayInput, ctx: SprayContext, farmId: string,
     if (ctx.lot && flagsOf(ctx.lot, ctx.lotBalance, ctx.today, { known: false, reason: 'missing' }).expired) flags.push('lot_expired');
     if (ctx.lotBalance === undefined || sumSigned([{ qty: ctx.lotBalance.replace('-', ''), sign: ctx.lotBalance.startsWith('-') ? -1 : 1 }, { qty, sign: -1 }]).startsWith('-')) flags.push('stock_negative');
   }
+  if (input.lotKey && !qty && input.qtyUnknown === true) flags.push('quantity_unknown');   // an unknown quantity is a flagged «δεν ξέρω», never silence and never a guess
   spray.flags = flags;
   const job: Row = { id: ids.job, farm_id: farmId, kind: 'spray', status: 'done', product_id: input.productId, worker_id: input.applicatorId, done_at: input.sprayedAt, created_at: nowIso, updated_at: nowIso, deleted_at: null, ...(label ? { label_use_id: label.id } : {}) };
   const jobPlantings = input.plantingIds.map((pid, i) => ({ id: ids.plantingLinks[i], farm_id: farmId, job_id: ids.job, planting_id: pid, area_str_treated: ctx.plantings.find((p) => p.id === pid)?.area_str, created_at: nowIso }));

@@ -12,7 +12,9 @@ test('the owner assigns a spray job to a worker: label offered, saved as a plann
   await page.getByRole('button', { name: 'Σπανάκι · Κάτω Κάμπος' }).click();
   await page.getByRole('button', { name: 'Kocide 2000' }).click();
   await expect(page.getByTestId('job-label')).toContainText('Υπογραφή γεωπόνου: Test Agronomist'); // the signed label use is shown
-  await expect(page.getByTestId('job-dose')).toHaveValue('0,025');          // the label's own single dose is offered as a start
+  await expect(page.getByTestId('job-dose')).toHaveValue('');                // nothing is filled in for the owner
+  await page.getByTestId('job-dose-same').click();                           // a tap copies the label's own single dose and unit
+  await expect(page.getByTestId('job-dose')).toHaveValue('0,025');
   await page.getByRole('button', { name: 'Γιώργος' }).click();
   await page.getByTestId('job-save').click();
   await expect(page.getByTestId('job-saved')).toBeVisible();

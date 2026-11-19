@@ -648,5 +648,13 @@
   "pwa.update": "New version",
   "pwa.update.apply": "Update",
   "pwa.offline": "Ready, also without signal",
-  "pwa.blocked": "Close the other tabs of the app."
+  "pwa.blocked": "Close the other tabs of the app.",
+  "spray.label.dose": "Label: {v} {unit}",
+  "spray.label.range": "Label: {a} – {b} {unit}",
+  "spray.label.same": "Same as the label",
+  "spray.hint.total": "Hint: {area} str. × {dose} {u} = {total} {u}",
+  "spray.qty.unknown": "I do not know (no stock movement is recorded)",
+  "spray.flag.quantity_unknown": "Quantity unknown",
+  "spray.oneCrop": "One crop per entry.",
+  "job.error.nolabel": "Cannot assign: the label data for this crop is missing."
 }

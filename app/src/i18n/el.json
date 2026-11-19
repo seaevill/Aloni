@@ -648,5 +648,13 @@
   "pwa.update": "Νέα έκδοση",
   "pwa.update.apply": "Ενημέρωση",
   "pwa.offline": "Έτοιμο και χωρίς σήμα",
-  "pwa.blocked": "Κλείστε τις άλλες καρτέλες της εφαρμογής."
+  "pwa.blocked": "Κλείστε τις άλλες καρτέλες της εφαρμογής.",
+  "spray.label.dose": "Ετικέτα: {v} {unit}",
+  "spray.label.range": "Ετικέτα: {a} – {b} {unit}",
+  "spray.label.same": "Ίδια με την ετικέτα",
+  "spray.hint.total": "Ένδειξη: {area} στρ. × {dose} {u} = {total} {u}",
+  "spray.qty.unknown": "Δεν ξέρω (δεν καταγράφεται κίνηση αποθήκης)",
+  "spray.flag.quantity_unknown": "Άγνωστη ποσότητα",
+  "spray.oneCrop": "Μία καλλιέργεια ανά καταχώριση.",
+  "job.error.nolabel": "Δεν μπορείτε να αναθέσετε: λείπουν τα στοιχεία ετικέτας για αυτή την καλλιέργεια."
 }
