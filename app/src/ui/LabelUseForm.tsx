@@ -7,6 +7,7 @@ import { keepLinks, safetyChanged, supersede } from '../labels/label-use';
 import { buildLabelUse, DOSE_UNITS, KINDS, readUse, toInput, type Field, type FieldName, type LabelUseInput } from '../labels/label-use';
 import { archived } from '../parcels/parcel';
 import { putMany, put } from '../repo';
+import { useSubmit } from './useSubmit';
 import type { Row } from '../db/schema';
 import type { DoseKind, DoseUnit } from '@aloni/rules-core';
 import { showUndo } from './Toast';
@@ -33,6 +34,7 @@ function ValueField({ labelKey, f, set, error, whole }: { labelKey: I18nKey; f: 
 
 /** Add (or edit) what the label says for one product on one crop. Nothing is preselected; saving an incomplete label is fine, it is just blocked. */
 export function LabelUseForm({ productId, taken, existing, onDone }: { productId: string; taken: ReadonlySet<string>; existing?: Row; onDone: () => void }) {
+  const { busy, submit } = useSubmit();
   const [v, setV] = useState<LabelUseInput>(existing ? toInput(existing) : { productId, cropId: '', target: '', source: '', kind: undefined, unit: undefined, doseMin: BLANK, doseMax: BLANK, phi: BLANK, rei: BLANK, maxApps: BLANK });
   const [slug, setSlug] = useState('');
   const [bad, setBad] = useState<ReadonlySet<FieldName | 'range'>>(new Set());
@@ -113,7 +115,7 @@ export function LabelUseForm({ productId, taken, existing, onDone }: { productId
         <input class="input" value={v.source} autoComplete="off" onInput={(e) => patch({ source: (e.target as HTMLInputElement).value })} />
       </label>
 
-      <button class="btn" data-testid="labeluse-save" onClick={() => void save()}>{t('product.save')}</button>
+      <button class="btn" data-testid="labeluse-save" onClick={() => void submit(save)} disabled={busy}>{t('product.save')}</button>
       <button class="btn secondary" onClick={onDone}>{t('product.cancel')}</button>
     </section>
   );

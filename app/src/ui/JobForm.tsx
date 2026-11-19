@@ -7,6 +7,7 @@ import { DOSE_UNITS, readUse, statusOf } from '../labels/label-use';
 import { athensToday } from '../plantings/planting';
 import { putMany } from '../repo';
 import { buildJob } from '../spray/plan';
+import { useSubmit } from './useSubmit';
 import type { Row } from '../db/schema';
 import { FLAG_KEYS } from './SprayForm';
 import { Lines, badgeText } from './LabelUses';
@@ -16,6 +17,7 @@ import { useRows } from './useRows';
 
 /** The owner plans a spray for a worker: plantings, product (and its label use), dose, unit, worker, day. Saved as a PLANNED job the worker sees; the worker cannot change any of it. */
 export function JobForm({ onDone }: { onDone: (saved: boolean) => void }) {
+  const { busy, submit } = useSubmit();
   const plantings = useRows('plantings'); const crops = useRows('crops'); const parcels = useRows('parcels'); const products = useRows('products'); const labels = useRows('label_uses'); const workers = useRows('workers');
   const live = (q: { rows: Row[] | null }) => q.rows?.filter((r) => !r.deleted_at) ?? [];
   const [sel, setSel] = useState<string[]>([]); const [productId, setProductId] = useState(''); const [workerId, setWorkerId] = useState('');
@@ -59,7 +61,7 @@ export function JobForm({ onDone }: { onDone: (saved: boolean) => void }) {
       {r.ok && r.flags.length > 0 && <div class="card" data-testid="job-flags">{r.flags.map((f) => <span key={f} class={f === 'label_none' || f === 'label_blocked' ? 'badge blocked' : 'badge warn'}>{t(FLAG_KEYS[f])}</span>)}</div>}
       {failed && !r.ok && <p class="msg error" role="alert" data-testid="job-error">{t('job.error.fill')}</p>}
       {failed && !r.ok && r.errors.doseUnit && <p class="msg error" role="alert">{t('job.error.unit')}</p>}
-      <button class="btn" data-testid="job-save" onClick={() => void save()}>{t('job.save')}</button>
+      <button class="btn" data-testid="job-save" onClick={() => void submit(save)} disabled={busy}>{t('job.save')}</button>
       <button class="btn secondary" onClick={() => onDone(false)}>{t('product.cancel')}</button>
     </section>
   );

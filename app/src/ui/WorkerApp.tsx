@@ -14,6 +14,7 @@ import { isLate } from '../spray/spray';
 import { buildObservation, completeSprayJob, OBSERVATION_KINDS, SKIP_REASONS, skipSprayJob, type ObservationKind, type SkipReason } from '../worker/jobs';
 import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
 import { doneBlocked, reiLockJob, type Lock } from '../spray/harvest';
+import { useSubmit } from './useSubmit';
 import type { Row } from '../db/schema';
 import { DemoBanner } from './DemoBanner';
 import { HarvestForm } from './HarvestForm';
@@ -35,6 +36,7 @@ const KIND_KEYS: Record<ObservationKind, I18nKey> = { dew: 'worker.kind.dew', fr
  * the harvest counter and an observation. The worker cannot change the product or the dose: there is no input for them.
  */
 export function WorkerApp() {
+  const { busy, submit } = useSubmit();
   const workers = useRows('workers'); const jobs = useRows('jobs'); const links = useRows('job_plantings'); const plantings = useRows('plantings');
   const sprays = useRows('job_spray'); const crops = useRows('crops'); const products = useRows('products'); const labels = useRows('label_uses'); const parcels = useRows('parcels');
   const real = activeFarm.value !== DEMO_FARM_ID; // a signed-in WORKER on the real farm (Έγινε = a call to the server); otherwise the Demo farm's practice view
@@ -126,7 +128,7 @@ export function WorkerApp() {
                     <label class="field">{t('spray.late.reason')}<input class="input" value={lateReason} autoComplete="off" data-testid="worker-late-reason" onInput={(e) => setLateReason((e.target as HTMLInputElement).value)} /></label>
                   )}
                   <label class="field">{t('worker.note')}<input class="input" value={note} autoComplete="off" onInput={(e) => setNote((e.target as HTMLInputElement).value)} /></label>
-                  <button class="btn big" data-testid="job-confirm" onClick={() => confirmDone(j)}>{t('worker.confirm')}</button>
+                  <button class="btn big" data-testid="job-confirm" onClick={() => void submit(() => confirmDone(j))} disabled={busy}>{t('worker.confirm')}</button>
                   <button class="btn secondary big" data-testid="job-back" onClick={() => setOpen(undefined)}>{t('worker.back')}</button>
                 </>
               )}
@@ -161,7 +163,7 @@ export function WorkerApp() {
           <h2>{t('worker.observe.kind')}</h2>
           <div class="seg two big">{OBSERVATION_KINDS.map((k) => <button key={k} aria-pressed={kind === k} data-testid={`kind-${k}`} onClick={() => setKind(k)}>{t(KIND_KEYS[k])}</button>)}</div>
           <label class="field">{t('worker.observe.note')}<input class="input" value={note} autoComplete="off" onInput={(e) => setNote((e.target as HTMLInputElement).value)} /></label>
-          <button class="btn big" data-testid="observe-save" onClick={saveObservation}>{t('worker.observe.save')}</button>
+          <button class="btn big" data-testid="observe-save" onClick={() => void submit(() => saveObservation())} disabled={busy}>{t('worker.observe.save')}</button>
         </>
       )}
       <div class="seg big worker-tray" data-testid="worker-tray">{TABS.map(([id, k]) => <button key={id} aria-pressed={tabId === id} data-testid={`worker-tab-${id}`} onClick={() => { setHarvestSaved(false); setTabId(id); }}>{t(k)}</button>)}</div>

@@ -6,6 +6,7 @@ import { formatArea } from '../i18n/format';
 import { archived } from '../parcels/parcel';
 import { athensToday, buildPlanting, exceedsParcel, STATUSES, type PlantingErrors, type Status } from '../plantings/planting';
 import { put, putMany } from '../repo';
+import { useSubmit } from './useSubmit';
 import type { Row } from '../db/schema';
 import { showUndo } from './Toast';
 import { applyEdit, commaText } from '../records/edits';
@@ -17,6 +18,7 @@ const NO_ERRORS: PlantingErrors = { parcel: false, crop: false, area: undefined,
 
 /** Add a planting: parcel, crop chip, area, sowing date (today unless changed), status. Offline, saves at once. A too-large area only warns. */
 export function PlantingForm({ parcels, onDone, existing }: { parcels: Row[]; onDone: () => void; existing?: Row }) {
+  const { busy, submit } = useSubmit();
   const [parcelId, setParcelId] = useState(typeof existing?.parcel_id === 'string' ? existing.parcel_id : '');
   const [why, setWhy] = useState(''); const [whyMissing, setWhyMissing] = useState(false);
   const [slug, setSlug] = useState('');
@@ -96,7 +98,7 @@ export function PlantingForm({ parcels, onDone, existing }: { parcels: Row[]; on
 
       {existing && <label class="field">{t('edit.reason')}<input class="input" value={why} autoComplete="off" data-testid="edit-reason" onInput={(e) => setWhy((e.target as HTMLInputElement).value)} /></label>}
       {whyMissing && why.trim() === '' && <p class="msg error" role="alert" data-testid="edit-reason-error">{t('edit.reason.error')}</p>}
-      <button class="btn" data-testid="planting-save" onClick={() => void save()}>{t('planting.save')}</button>
+      <button class="btn" data-testid="planting-save" onClick={() => void submit(save)} disabled={busy}>{t('planting.save')}</button>
       <button class="btn secondary" onClick={onDone}>{t('planting.cancel')}</button>
     </section>
   );

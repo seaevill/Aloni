@@ -5,6 +5,7 @@ import { formatDate, formatDateTime, t, tn, ts } from '../i18n';
 import { put } from '../repo';
 import { buildHarvest, harvestGate } from '../spray/harvest';
 import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
+import { useSubmit } from './useSubmit';
 import type { Row } from '../db/schema';
 import { nameOf } from './screens';
 import { useRows } from './useRows';
@@ -19,6 +20,7 @@ const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 const MARK = { lock: '🔒' } as const;
 
 export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = false }: { onDone: (saved: boolean) => void; farmId?: string; actorId?: string; big?: boolean }) {
+  const { busy, submit } = useSubmit();
   const plantings = useRows('plantings'); const crops = useRows('crops'); const parcels = useRows('parcels'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const workers = useRows('workers');
   const roster = (workers.rows ?? []).filter((w) => !w.deleted_at);
   const [cutBy, setCutBy] = useState(actorId ?? '');       // a worker's own phone sends her roster entry; the owner picks
@@ -89,7 +91,7 @@ export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = 
       <label class="field">{t('harvest.note')}
         <input class="input" value={note} autoComplete="off" onInput={(e) => setNote((e.target as HTMLInputElement).value)} />
       </label>
-      <button class={big ? 'btn big' : 'btn'} data-testid="harvest-save" disabled={blocked !== undefined} onClick={() => void save()}>{t('harvest.save')}</button>
+      <button class={big ? 'btn big' : 'btn'} data-testid="harvest-save" disabled={busy || blocked !== undefined} onClick={() => void submit(save)}>{t('harvest.save')}</button>
       <button class="btn secondary" onClick={() => onDone(false)}>{t('product.cancel')}</button>
     </section>
   );
