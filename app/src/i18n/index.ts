@@ -74,6 +74,12 @@ export function formatDateTime(iso: string): string {
   return Number.isNaN(d.getTime()) ? t('value.unknown') : new Intl.DateTimeFormat(LOCALES[lang.value], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: TZ }).format(d); // 24-hour clock (Greek 12-hour «π.μ. μ.μ.» was hard to read)
 }
 
+/** «20 Νοε 2026, 10:00» in Europe/Athens: the year stays on a record that is kept for years (the printed register). */
+export function formatDateTimeYear(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? t('value.unknown') : new Intl.DateTimeFormat(LOCALES[lang.value], { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: TZ }).format(d);
+}
+
 /** «2026-11-20 10:00» in Europe/Athens (for records and exports: unambiguous in every language). */
 export function formatLocalIso(iso: string): string {
   const d = new Date(iso);

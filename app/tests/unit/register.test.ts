@@ -19,7 +19,7 @@ describe('the spray register', () => {
   it('one line per spray × planting with the inspection fields, values exactly as stored (0.250 keeps its zero), the applicator and the waiting end', () => {
     const lines = registerLines(base(), fmt);
     expect(lines).toHaveLength(2);
-    expect(lines[0]).toEqual({ "amends": "", "applicator": "Γιώργος", "area": "0,5", "crop": "Σπανάκι", "dose": "0,025", "flags": "lot_expired", "label": "signed", "late_reason": "", "note": 'a;b "c"', "parcel": "Κάτω Κάμπος", "phi_until": "2026-11-27T08:00:00Z", "product": "Kocide", "qty": "0,250", "record": "s1", "reg_no": "1234/56", "rei_until": "", "unit": "ml/str", "water": "", "when": "2026-11-20T08:00:00Z" });
+    expect(lines[0]).toEqual({ "start": "", "lot": "", "amends": "", "applicator": "Γιώργος", "area": "0,5", "crop": "Σπανάκι", "dose": "0,025", "flags": "lot_expired", "label": "signed", "late_reason": "", "note": 'a;b "c"', "parcel": "Κάτω Κάμπος", "phi_until": "2026-11-27T08:00:00Z", "product": "Kocide", "qty": "0,250", "record": "s1", "reg_no": "1234/56", "rei_until": "", "unit": "ml/str", "water": "", "when": "2026-11-20T08:00:00Z" });
     expect(lines[1].area).toBe('1');
   });
   it('an unknown waiting period stays EMPTY (never a made-up date); a correction replaces the row it amends and names it', () => {
@@ -29,7 +29,7 @@ describe('the spray register', () => {
     const amend: Row = { ...unknown, id: 's3', amends_id: 's2', phi_until: '2026-11-27T08:00:00Z' };
     const lines = registerLines(base({ sprays: [unknown, amend] }), fmt);
     expect(lines).toHaveLength(2); // the amended row is not listed twice
-    expect(lines[0]).toEqual({ "amends": "s2", "applicator": "Γιώργος", "area": "0,5", "crop": "Σπανάκι", "dose": "0,025", "flags": "lot_expired", "label": "unsigned", "late_reason": "", "note": 'a;b "c"', "parcel": "Κάτω Κάμπος", "phi_until": "2026-11-27T08:00:00Z", "product": "Kocide", "qty": "0,250", "record": "s3", "reg_no": "1234/56", "rei_until": "", "unit": "ml/str", "water": "", "when": "2026-11-20T08:00:00Z" });
+    expect(lines[0]).toEqual({ "start": "", "lot": "", "amends": "s2", "applicator": "Γιώργος", "area": "0,5", "crop": "Σπανάκι", "dose": "0,025", "flags": "lot_expired", "label": "unsigned", "late_reason": "", "note": 'a;b "c"', "parcel": "Κάτω Κάμπος", "phi_until": "2026-11-27T08:00:00Z", "product": "Kocide", "qty": "0,250", "record": "s3", "reg_no": "1234/56", "rei_until": "", "unit": "ml/str", "water": "", "when": "2026-11-20T08:00:00Z" });
   });
   it('a late entry is marked and its reason printed next to it', () => {
     const late: Row = { ...base().sprays[0], flags: ['late_entry'], late_reason: 'Ξέχασα' };
@@ -57,5 +57,17 @@ describe('the spray register', () => {
     const lines = registerLines({ sprays: await rows('job_spray'), links: await rows('job_plantings'), plantings: await rows('plantings'), parcels: await rows('parcels'), crops: await rows('crops'), products: await rows('products'), workers: await rows('workers') }, fmt);
     expect(lines.length).toBeGreaterThanOrEqual(7);
     for (const l of lines) { expect(l.product, l.record).not.toBe(''); expect(l.applicator).not.toBe(''); expect(l.parcel).not.toBe(''); }
+  });
+  it('T17: the start time and the lot (batch) get their own columns; the Greek header names them', async () => {
+    const withLot = base({ sprays: [{ ...base().sprays[0], started_at: '2026-11-18T07:00:00Z', lot_key: 'k1' }], lots: [{ id: 'k1', farm_id: 'f', lot_key: 'k1', batch: 'A-77' }] });
+    const [l] = registerLines(withLot, fmt);
+    expect([l.start, l.lot]).toEqual([fmt.when('2026-11-18T07:00:00Z'), 'A-77']);
+    const el = (await import('../../src/i18n/el.json')).default as Record<string, string>;
+    const head = COLUMNS.map((c) => el[`register.col.${c}`]);
+    expect(head).toEqual(expect.arrayContaining(['Έναρξη', 'Λήξη', 'Παρτίδα', 'Νερό (L)']));
+  });
+  it('T17a review: a spray without a lot never prints some other lot’s batch', () => {
+    const noLot = base({ lots: [{ id: 'k9', farm_id: 'f', batch: 'ZZ-1' }] });
+    expect(registerLines(noLot, fmt)[0].lot).toBe('');
   });
 });

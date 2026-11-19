@@ -21,7 +21,9 @@ test('the spray register (demo): marked «ΠΡΟΣΧΕΔΙΟ», every field, CSV
   const path = test.info().outputPath('r.csv'); await d.saveAs(path);
   const csv = readFileSync(path, 'utf8').split('\r\n');
   expect(csv[0]).toContain('ΠΡΟΣΧΕΔΙΟ');
-  expect(csv[1]).toContain('Ημερομηνία και ώρα');
+  expect(csv[1]).toContain('Έναρξη');
+  expect(csv[1]).toContain('Λήξη');
+  expect(csv[1]).toContain('Παρτίδα');
   expect(csv.length).toBeGreaterThan(8);
   // the machine-readable file: English field names, one header row, a decimal point, ISO 8601 with the Athens offset; warnings come as a separate file
   const dm = page.waitForEvent('download');
