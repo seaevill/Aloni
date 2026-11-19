@@ -61,7 +61,7 @@ export function Parcels() {
       <Status q={{ ...q, rows: q.rows && live.length === 0 ? [] : q.rows }} message={t('list.empty')} action={demo ? undefined : { label: t('parcel.add'), run: () => setAdding(true) }} />
       {live.map((r) => (
         <div class="card" key={r.id}>{String(r.name)}{typeof r.area_str !== 'undefined' && <small>{formatArea(r.area_str as number | string)}</small>}<UnsyncedMark id={r.id} />
-          <button class="btn secondary" data-testid="analysis-open" onClick={() => setAnalysing(r)}>{t('analysis.open')}</button>
+          <button class="row" data-testid="analysis-open" onClick={() => setAnalysing(r)}><span>{t('analysis.open')}</span><span aria-hidden="true" class="chev" /></button>
           {!demo && <button class="btn secondary" onClick={() => void archive(r)}>{t('parcel.archive')}</button>}
         </div>
       ))}
