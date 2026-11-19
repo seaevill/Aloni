@@ -479,5 +479,6 @@
   "ready.migration.confirm": "Onaylıyorum: {v} numaralıya kadar uygulandı",
   "ready.advisor.confirm": "Onaylıyorum: Advisor kontrolü yapıldı",
   "ready.all": "Her şey hazır. Bağlantı buradan açılmaz; ayrı bir adımla açılır.",
-  "ready.some": "{n} şey eksik. Bağlantı kapalı kalır."
+  "ready.some": "{n} şey eksik. Bağlantı kapalı kalır.",
+  "spray.error.mixed": "Aynı ürünün ekimlerini seçin. İki ürün için iki kayıt girin; her ürünün kendi etiketi var."
 }

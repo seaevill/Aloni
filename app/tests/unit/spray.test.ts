@@ -75,7 +75,7 @@ describe('a spray is RECORDED even with a weak label, marked, with the PHI unkno
 });
 
 describe('a LATE entry (the end of the spraying is more than 7 days before the record): allowed, but it needs a reason and is marked; the waiting periods do not change', () => {
-  const noError = { applicator: false, dose: false, doseUnit: false, plantings: false, product: false, qty: false, time: false, water: false, lateReason: false, overReason: false, doseReason: false };
+  const noError = { applicator: false, dose: false, doseUnit: false, plantings: false, mixedCrops: false, product: false, qty: false, time: false, water: false, lateReason: false, overReason: false, doseReason: false };
   it.each([['exactly 7 days before the record', '2026-11-13T10:00:00Z'], ['earlier today', '2026-11-20T01:00:00Z']])('%s: no reason needed, no mark', (_n, at) => {
     const r = build(input({ sprayedAt: at }), ctx());
     expect(r.flags).toEqual([]);
@@ -112,7 +112,7 @@ describe('what a spray record cannot be without', () => {
     ['unreadable quantity', { qty: 'abc' }, 'qty'], ['a lot without a quantity', { qty: '' }, 'qty'], ['unreadable water', { water: '1.000x' }, 'water'],
   ] as const)('%s is refused', (_n, over, key) => {
     const r = buildSpray(input(over as Partial<SprayInput>), ctx(), F, now, ids);
-    expect(r).toEqual({ ok: false, errors: { applicator: false, dose: false, doseUnit: false, plantings: false, product: false, qty: false, time: false, water: false, lateReason: false, overReason: false, doseReason: false, [key]: true } });
+    expect(r).toEqual({ ok: false, errors: { applicator: false, dose: false, doseUnit: false, plantings: false, mixedCrops: false, product: false, qty: false, time: false, water: false, lateReason: false, overReason: false, doseReason: false, [key]: true } });
   });
   it('without a lot no stock movement is made', () => expect(build(input({ lotKey: undefined, qty: '' }), ctx()).movement).toBeUndefined());
 });
@@ -279,5 +279,14 @@ describe('the signed label\'s maximum applications (the label says 3)', () => {
   it('an UNSIGNED label has no usable maximum: not judged, nothing invented', () => {
     expect(build(input(), ctx({ label: labelRow(), priorApps: 9 })).flags).not.toContain('max_apps_exceeded');
     expect(build(input(), ctx({ label: undefined, priorApps: 9 })).flags).not.toContain('max_apps_exceeded');
+  });
+});
+
+describe('one record = one crop (m5-0021 finding 2)', () => {
+  it('plantings of two crops are refused, so a record never carries an empty label use for a crop that has one', () => {
+    const c = ctx();
+    const r = buildSpray(input({ plantingIds: ['p1', 'p2'] }), { ...c, plantings: [{ id: 'p1', farm_id: F, crop_id: 'c1', area_str: '1' }, { id: 'p2', farm_id: F, crop_id: 'c2', area_str: '1' }] }, F, now, ids);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.errors.mixedCrops).toBe(true);
   });
 });
