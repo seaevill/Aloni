@@ -348,7 +348,7 @@
   "worker.skip.wind": "Wind",
   "worker.skip.no_product": "No product",
   "worker.skip.other": "Other",
-  "worker.committed": "Recorded. You can undo within 10 seconds.",
+  "worker.committed": "Will be recorded in 10 s.",
   "worker.status.done": "Done",
   "worker.queued": "Saved on the phone. It will be sent when an account is connected.",
   "harvest.counter": "crates cut",

@@ -34,7 +34,7 @@ test('worker view (demo only): assigned sprays «Έγινε / Δεν έγινε�
   await jobs.first().getByTestId('job-done').click();
   await page.getByTestId('worker-start').fill(new Date(Date.now() - 3_600_000).toISOString().slice(0, 16));
   await page.getByTestId('job-confirm').click();
-  await expect(page.getByTestId('toast')).toContainText('10 δευτερόλεπτα');
+  await expect(page.getByTestId('toast')).toContainText('10″');
   await page.clock.fastForward(10500); // the 10 seconds pass
   await expect(page.getByTestId('worker-finished')).toHaveCount(1);
   await expect(page.getByTestId('worker-status')).toContainText('Αποθηκεύτηκε στο τηλέφωνο. Θα σταλεί όταν συνδεθεί λογαριασμός.'); // under «Έγινε»
@@ -42,6 +42,7 @@ test('worker view (demo only): assigned sprays «Έγινε / Δεν έγινε�
 
   await jobs.first().getByTestId('job-skip').click();
   await page.getByTestId('skip-rain').click();
+  await expect(page.getByTestId('toast')).toBeVisible();   // the action is kept first, then the 10 seconds start
   await page.clock.fastForward(10500);
   await expect(page.getByTestId('worker-finished')).toHaveCount(2);
   await expect(page.getByTestId('worker-nojobs')).toBeVisible();
@@ -52,6 +53,7 @@ test('worker view (demo only): assigned sprays «Έγινε / Δεν έγινε�
   await page.getByTestId('kind-pest').click();
   const obs = await count(page, 'observations');
   await page.getByTestId('observe-save').click();
+  await expect(page.getByTestId('toast')).toBeVisible();
   await page.clock.fastForward(10500);
   await expect.poll(() => count(page, 'observations')).toBe(obs + 1);
 
