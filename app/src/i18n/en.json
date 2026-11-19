@@ -459,5 +459,6 @@
   "today.urgent.wait": "Waiting ends {d} · {crop} · {parcel}",
   "today.urgent.action": "See the sprayings",
   "history.title": "History",
-  "job.add.plus": "+ Assign a job"
+  "job.add.plus": "+ Assign a job",
+  "today.jobs.none": "No jobs today."
 }

@@ -117,9 +117,9 @@ export function Today() {
       {harvested && <p class="msg" role="status" data-testid="harvest-saved">{t('harvest.saved')}</p>}
       {recorded && <p class="msg" role="status" data-testid="spray-saved">{t('spray.saved')}</p>}
       {loaded && has && <h2>{t('worker.jobs')}</h2>}
-      {loaded && has && !demo && openJobs.length === 0 && <p class="muted">{t('worker.noJobs')}</p>}
-      {!demo && openJobs.map((j) => <div class="card" key={j.id} data-testid="job-planned">{t('job.planned.line', { product: nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {}), worker: text(workers.rows?.find((w) => w.id === j.worker_id)?.name), date: text(j.planned_for) })}</div>)}
-      {loaded && has && !demo && <button class="btn" data-testid="job-open" onClick={() => setPlanning(true)}>{t('job.add.plus')}</button>}
+      {loaded && has && openJobs.length === 0 && <p class="muted" data-testid="jobs-none">{t('today.jobs.none')}</p>}
+      {openJobs.map((j) => <div class="card" key={j.id} data-testid="job-planned">{t('job.planned.line', { product: nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {}), worker: text(workers.rows?.find((w) => w.id === j.worker_id)?.name), date: text(j.planned_for) })}</div>)}
+      {loaded && has && <button class="btn" data-testid="job-open" disabled={demo} onClick={() => setPlanning(true)}>{t('job.add.plus')}</button>}
       {loaded && has && !demo && <button class="btn secondary" data-testid="spray-open" onClick={() => setSpraying(true)}>{t('spray.add')}</button>}
       {loaded && has && !demo && <button class="btn secondary" data-testid="harvest-open" onClick={() => setHarvesting(true)}>{t('harvest.add')}</button>}
       {loaded && has && <button class="row" data-testid="history-open" onClick={() => setHistory(true)}><span>{t('history.title')}</span><span aria-hidden="true" class="chev" /></button>}

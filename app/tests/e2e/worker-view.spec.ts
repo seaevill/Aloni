@@ -46,7 +46,7 @@ test('worker view (demo only): assigned sprays «Έγινε / Δεν έγινε�
   expect(await count(page, 'job_spray')).toBe(sprays + 1); // «not done» writes no spray
 
   await page.getByTestId('worker-tab-observe').click();
-  await page.getByRole('button', { name: 'Κάτω Κάμπος (Lower Plain)' }).click();
+  await page.getByRole('button', { name: 'Κάτω Κάμπος' }).click();
   await page.getByTestId('kind-pest').click();
   const obs = await count(page, 'observations');
   await page.getByTestId('observe-save').click();

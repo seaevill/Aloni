@@ -459,5 +459,6 @@
   "today.urgent.wait": "Αναμονή λήγει {d} · {crop} · {parcel}",
   "today.urgent.action": "Δείτε τους ψεκασμούς",
   "history.title": "Ιστορικό",
-  "job.add.plus": "+ Ανάθεση εργασίας"
+  "job.add.plus": "+ Ανάθεση δουλειάς",
+  "today.jobs.none": "Σήμερα δεν υπάρχουν δουλειές."
 }

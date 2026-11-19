@@ -459,5 +459,6 @@
   "today.urgent.wait": "Bekleme {d} günü bitiyor · {crop} · {parcel}",
   "today.urgent.action": "İlaçlamalara bak",
   "history.title": "Geçmiş",
-  "job.add.plus": "+ İş ata"
+  "job.add.plus": "+ İş ata",
+  "today.jobs.none": "Bugün iş yok."
 }

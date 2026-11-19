@@ -31,7 +31,11 @@ export const GREEK_NAME_FIXES: ReadonlyArray<readonly [string, string]> = [
   ['Μανδιπροπαμίδιο', 'Μανδιπροπαμίδη'],
 ];
 
+/** A parcel's name in the prototype ends with its English name in brackets («Κάτω Κάμπος (Lower Plain)»): the app is Greek, so the Greek name stays (the original file is read-only, the cut is made here). */
+const LATIN_TAIL = /\s*\([A-Za-z][^)]*\)\s*$/;
+
 function fixGreekName(r: Record<string, unknown>): Record<string, unknown> {
+  if (typeof r.name === 'string' && LATIN_TAIL.test(r.name)) r = { ...r, name: r.name.replace(LATIN_TAIL, '') };
   if (typeof r.name_el !== 'string') return r;
   let name = r.name_el;
   for (const [wrong, right] of GREEK_NAME_FIXES) name = name.replaceAll(wrong, right);
