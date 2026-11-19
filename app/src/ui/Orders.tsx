@@ -13,6 +13,8 @@ import { useRows } from './useRows';
 
 const SOW_TEXT: Record<SowHint, () => string> = { ready: () => '', held: () => t('orders.sow.held'), none: () => t('orders.sow.none') };
 const DAY = 86_400_000;
+/** For the plural word only: one crate or less reads «κλούβα», anything above it «κλούβες» (1½ κλούβες, ½ κλούβα). */
+const oneOrMore = (n: number): number => (n <= 1 ? 1 : 2);
 const DAY_LABEL = new Intl.DateTimeFormat('el-GR', { weekday: 'long', day: 'numeric', month: 'numeric', timeZone: 'Europe/Athens' });
 const shiftDay = (iso: string, d: number): string => new Date(Date.parse(`${iso}T12:00:00Z`) + d * DAY).toISOString().slice(0, 10);
 const dayLabel = (iso: string): string => DAY_LABEL.format(new Date(`${iso}T12:00:00Z`));
@@ -54,7 +56,7 @@ export function Orders({ onBack }: { onBack: () => void }) {
   const slugs = CATALOG.filter((c) => now.bySlug[c.slug] !== undefined || before.bySlug[c.slug] !== undefined);
   const date = shiftDay(today, offset);
   const clients = dispatchDay(orders, map, date);
-  const dispatchTxt = dispatchText(clients, { header: t('dispatch.header', { day: dayLabel(date) }), total: (q, n) => tn('dispatch.total', n, { q }) });
+  const dispatchTxt = dispatchText(clients, { header: t('dispatch.header', { day: dayLabel(date) }), total: (q, n) => tn('dispatch.total', oneOrMore(n), { q }) });
   const copy = async () => setCopied(await copyText(dispatchTxt, { share: typeof navigator.share === 'function' ? (d) => navigator.share(d) : undefined, clipboard: navigator.clipboard }));
   const heldSlug = (slug: string | undefined): boolean => { const s = slug === undefined ? undefined : supply[slug]; return s !== undefined && s.free === 0 && s.held + s.unknown > 0; }; // nothing free but something held or unknown: shown in red, never counted as supply
   const unmapped = new Set([...now.unmapped, ...before.unmapped]).size;
@@ -82,9 +84,9 @@ export function Orders({ onBack }: { onBack: () => void }) {
             <div class="card" key={c.clientId} data-testid="dispatch-client">
               <strong>{c.name}</strong>
               {c.items.map((i) => (
-                <small key={i.productId} data-testid="dispatch-item">{t('labeluse.line', { name: i.name, value: fractionText(i.qty) })}{i.slug === undefined && <span class="badge unsigned"> {t('dispatch.unmapped')}</span>}{heldSlug(i.slug) && <span class="badge blocked" data-testid="dispatch-held"> {t('dispatch.held')}</span>}</small>
+                <small key={i.productId} data-testid="dispatch-item">{t('dispatch.line', { name: i.name, qty: fractionText(i.qty) })}{i.slug === undefined && <span class="badge unsigned">{t('dispatch.unmapped')}</span>}{heldSlug(i.slug) && <span class="badge blocked" data-testid="dispatch-held">{t('dispatch.held')}</span>}</small>
               ))}
-              <small data-testid="dispatch-client-total">{tn('dispatch.total', c.total, { q: fractionText(c.total) })}</small>
+              <small data-testid="dispatch-client-total">{tn('dispatch.total', oneOrMore(c.total), { q: fractionText(c.total) })}</small>
             </div>
           ))}
           {clients.length > 0 && <button class="btn" data-testid="dispatch-copy" onClick={() => void copy()}>{t('dispatch.copy')}</button>}

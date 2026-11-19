@@ -660,6 +660,7 @@
   "notify.rules.quiet": "Onaylı, ama şu an sessiz saat.",
   "notify.rules.off": "Onaylı, ama bildirimler kapalı.",
   "orders.open": "Siparişler ve mevcut kasalar",
+  "dispatch.line": "{name}: {qty}",
   "dispatch.title": "Müşteri bazında sevkiyat",
   "dispatch.today": "Bugün",
   "dispatch.tomorrow": "Yarın",

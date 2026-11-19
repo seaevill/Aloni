@@ -660,6 +660,7 @@
   "notify.rules.quiet": "Approved, but it is quiet hours now.",
   "notify.rules.off": "Approved, but notifications are off.",
   "orders.open": "Orders and available crates",
+  "dispatch.line": "{name}: {qty}",
   "dispatch.title": "Dispatch per client",
   "dispatch.today": "Today",
   "dispatch.tomorrow": "Tomorrow",

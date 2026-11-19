@@ -660,6 +660,7 @@
   "notify.rules.quiet": "Εγκεκριμένος, αλλά τώρα είναι ώρες ησυχίας.",
   "notify.rules.off": "Εγκεκριμένος, αλλά οι ειδοποιήσεις είναι κλειστές.",
   "orders.open": "Παραγγελίες και διαθέσιμες κλούβες",
+  "dispatch.line": "{name}: {qty}",
   "dispatch.title": "Αποστολή ανά πελάτη",
   "dispatch.today": "Σήμερα",
   "dispatch.tomorrow": "Αύριο",
