@@ -218,16 +218,20 @@ rollback;
 **Kaynak (beta):** MET Norway Locationforecast 2.0 («complete»). Ücretsiz, ticari kullanım serbest, **anahtar yok** → Supabase Secrets adımı yok, para yok. Open-Meteo (ücretli plan) **sonra**: pilottan önce yeniden değerlendirilecek; geçmek `supabase/functions/_shared/weather/config.ts` içindeki tek satırı (`WEATHER_SOURCE`) değiştirmek + anahtar eklemek demek, şimdi yapılmaz.
 **Kurallar (MET şartları, senin bildirdiğin hâliyle; belgenin kendisi bu ortamdan açılamadığı için sayfadan doğrulanmadı):** tanımlayıcı User-Agent (`Aloni/<sürüm> https://github.com/seaevill/Aloni`, e-posta yok), koordinat en fazla 4 ondalık, «Expires» dolmadan yeniden istek yok, sonra `If-Modified-Since`, yalnızca sunucu çağırır (telefon çağırmaz). Fonksiyon bunların hepsini kendisi yapar. Lütfen `api.met.no/doc/TermsOfService` sayfasını bir kez sen ya da ekip oku; fark çıkarsa söyle.
 
-**Ön koşul:** 0029 ekip incelemesinden sonra birlikte uygulandı (`farm_weather`, `weather_targets`, `weather_fetch_state` oluşur).
+**Ön koşullar (sırayla):** (a) 0029 ve 0030 ekip incelemesinden sonra, diğer migration'larla **birlikte** uygulandı (§10). 0029 `farm_weather`, `weather_targets`, `weather_fetch_state`'i, 0030 **6 saatlik takvimi** kurar. (b) Supabase → **Database → Extensions** → `pg_cron` ve `pg_net` açık (Vault zaten açık gelir). Bunlar açık değilken 0030 takvimi kurmaz (yalnızca bilgi mesajı verir): uzantıları açtıktan sonra 0030'u yeniden çalıştırmak için bana «takvimi kur» de.
 
-1. **Fonksiyonu yükle** — bilgisayarda, depo klasöründe (CLI 2.122.1 sabit): `supabase functions deploy weather-fetch --project-ref <PROJE-KODU>`.
- Doğru sonuç: «Deployed Functions …weather-fetch». Henüz hiçbir şey çekmez.
+1. **Fonksiyonu yükle (GitHub, onaylı, elle)** — GitHub → **Actions → «Weather function deploy (manual)» → Run workflow**.
+ - Önce `mode = dry-run`: yalnızca hedef projeyi (aloni, Frankfurt) doğrular ve yüklenecek dosyaları listeler; hiçbir şey yüklemez.
+ - Sonra `mode = deploy`, `confirm = DEPLOY` → **Review deployments → Approve** (aynı `supabase-production` ortamı ve aynı onay kapısı; migrate akışıyla aynı üç kontrol: yalnızca `main`, bu commit'in CI'ı yeşil, yazdığın DEPLOY).
+ - **Token:** migrate için kullandığın `SUPABASE_ACCESS_TOKEN` yeter; ek bir gizli anahtar gerekmez (fonksiyon kendi adresini ve servis anahtarını Supabase'ten alır, MET anahtar istemez). Token'ı sınırlı yetkiyle oluşturduysan **Edge Functions yazma/dağıtma** yetkisi de olmalı; çıktı 401/403 derse (yetki adı sürüme göre değişir, burada doğrulanmadı) token'ı bu yetkiyle yeniden oluşturup GitHub secret'ını güncelle.
+ Doğru sonuç: workflow yeşil, «Deployed Functions …weather-fetch». Henüz hiçbir şey çekmez.
 2. **Tek tarla için deneme (dry-run; onay senin)** — Table Editor → `parcels` → denenecek tarlanın `id`'sini kopyala (tarlanın konumu girilmiş olmalı). Supabase → **Edge Functions → weather-fetch → Test**; başlık: `Authorization: Bearer <service_role anahtarı>` (yalnızca bu test kutusuna), gövde: `{"dry_run": true, "parcel_id": "<TARLA-ID>"}`.
  Doğru sonuç: `"ok":true,"source":"metno","dryRun":true,"stored":0` ve `preview` içinde günlere göre en düşük/en yüksek sıcaklık. **Hiçbir tabloya yazılmaz.** Rakamları yr.no'daki aynı yer ile karşılaştır; mantıklıysa bana «tamam» de.
 3. **Gerçek çalıştırma (bir kez)** — aynı kutu, gövde `{}`: `"stored":N`. Sonra Table Editor → `weather_daily` ve `weather_fetch_state` dolu olmalı.
-4. **6 saatte bir** (pg_cron; `<PROJE-KODU>` ve `<SERVICE-KEY>` yerine kendi değerlerin; anahtar Vault'ta saklanır):
+4. **6 saatlik takvim için iki gizli değer (Vault; takvimin kendisini 0030 kurdu)** — SQL Editor'de, `<PROJE-KODU>` ve `<SERVICE-KEY>` yerine kendi değerlerin:
+ `select vault.create_secret('https://<PROJE-KODU>.supabase.co/functions/v1/weather-fetch', 'weather_function_url');`
  `select vault.create_secret('<SERVICE-KEY>', 'weather_service_key');`
- `select cron.schedule('weather-fetch', '7 */6 * * *', $$ select net.http_post(url := 'https://<PROJE-KODU>.supabase.co/functions/v1/weather-fetch', headers := jsonb_build_object('Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'weather_service_key'))) $$);`
+ Bu iki değer olmadan takvim hiçbir şey çağırmaz. Takvimi görmek için: `select jobname, schedule, active from cron.job;` → `weather-fetch | 7 */6 * * * | t`.
 5. **Telefonda gör** — senkron açıksa ≤10 dakika içinde **Σήμερα** hava kartı dolar; altında «Δεδομένα: MET Norway (CC BY 4.0) · <saat>». Veri 12 saatten eskiyse yanına «παλιά δεδομένα» yazılır. Veri yoksa «—».
 
 **Geri dönüş:** `select cron.unschedule('weather-fetch');`. Fonksiyonu silmek gerekmez; telefonda eski veri kalır (12 saat sonra «παλιά δεδομένα»). Hava yalnızca bilgidir: kurallar imzasız olduğu sürece hiçbir karar vermez, hiçbir bildirim göndermez.
