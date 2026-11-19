@@ -47,6 +47,7 @@ export async function spray(page: Page) {
   await page.getByRole('button', { name: 'Σπανάκι · Κάτω Κάμπος' }).click();
   await page.getByRole('button', { name: 'Kocide 2000' }).click();
   await page.getByRole('button', { name: 'Γιώργος' }).click();
+  await fillStart(page);
   await expect(page.getByTestId('spray-dose')).toHaveValue('0,025'); // the label's own single dose is offered as a start
   await page.locator('.seg button[aria-pressed="true"]', { hasText: 'ml/στρ.' }).waitFor();
   await page.locator('h2:has-text("Παρτίδα") + .seg button').first().click(); // the only lot
@@ -63,4 +64,11 @@ export async function openHistory(page: Page): Promise<void> {
 /** Back from «Ιστορικό» to Σήμερα (the cut counters live there). */
 export async function closeHistory(page: Page): Promise<void> {
   if (await page.getByTestId('history').isVisible()) await page.getByTestId('history-back').click();
+}
+
+
+/** The start of a spraying is required and never pre-filled: type «one hour ago» (Athens clock), or the given local time «YYYY-MM-DDTHH:mm». */
+export async function fillStart(page: Page, local?: string): Promise<void> {
+  const value = local ?? await page.evaluate(() => new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Athens', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(Date.now() - 3_600_000)).replace(' ', 'T'));
+  await page.getByTestId('spray-start').fill(value);
 }

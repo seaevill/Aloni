@@ -30,7 +30,7 @@ test('the spray register (demo): marked «ΠΡΟΣΧΕΔΙΟ», every field, CSV
   expect(m.suggestedFilename()).toMatch(/^aloni-demo-register-machine-\d{4}-\d{2}-\d{2}\.csv$/);
   const mpath = test.info().outputPath('machine.csv'); await m.saveAs(mpath);
   const mrows = readFileSync(mpath, 'utf8').split('\r\n');
-  expect(mrows[0]).toBe('holder_name,holder_vat_id,record_id,amends_record_id,product_trade_name,authorisation_number,application_start,application_end,dose_as_entered,dose_unit_as_entered,dose_per_ha,dose_per_ha_unit,treated_area_stremma,treated_area_ha,iacs_parcel_id,parcel_name,crop_slug,eppo_code,bbch_stage,applicator,quantity_used,water_l,label_state,phi_until,rei_until');
+  expect(mrows[0]).toBe('holder_name,holder_vat_id,record_id,amends_record_id,product_trade_name,authorisation_number,application_start,application_end,dose_as_entered,dose_unit_as_entered,dose_per_ha,dose_per_ha_unit,treated_area_stremma,treated_area_ha,iacs_parcel_id,parcel_name,crop_slug,eppo_code,bbch_stage,prescription_number,applicator,quantity_used,water_l,label_state,phi_until,rei_until');
   expect(mrows.length).toBeGreaterThan(7);
   expect(mrows[1]).toMatch(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+0[23]:00/);
   const dw = page.waitForEvent('download');

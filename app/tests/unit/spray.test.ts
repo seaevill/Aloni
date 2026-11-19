@@ -13,7 +13,8 @@ const labelRow = (over: Partial<LabelUseInput> = {}): Row => { const r = buildLa
 const signedLabel = (): Row => withSignOff(labelRow(), 'Agronomist', '2026-11-17', now)!;
 const planting = (id = 'pl1'): Row => ({ id, farm_id: F, crop_id: 'crop', parcel_id: 'p', area_str: '0.5' });
 const lot: Row = { id: 'lot', lot_key: 'lot', farm_id: F, product_id: 'prod', expiry: '2028-03-31' };
-const input = (over: Partial<SprayInput> = {}): SprayInput => ({ plantingIds: ['pl1'], productId: 'prod', applicatorId: 'w1', sprayedAt: T0, dose: '0,025', doseUnit: 'ml/str', lotKey: 'lot', qty: '0,25', water: '', note: '', ...over });
+const half = (end: string): string => (Number.isNaN(Date.parse(end)) ? end : new Date(Date.parse(end) - 1_800_000).toISOString().replace(/\.\d{3}Z$/, 'Z')); // a start 30 minutes before the end
+const input = (over: Partial<SprayInput> = {}): SprayInput => ({ plantingIds: ['pl1'], productId: 'prod', applicatorId: 'w1', sprayedAt: T0, startedAt: half(over.sprayedAt ?? T0), dose: '0,025', doseUnit: 'ml/str', lotKey: 'lot', qty: '0,25', water: '', note: '', ...over });
 const ctx = (over: Partial<SprayContext> = {}): SprayContext => ({ label: signedLabel(), plantings: [planting()], lot, lotBalance: '4.5', today: '2026-11-20', ...over });
 const ids = { job: 'job1', spray: 'sp1', movement: 'mv1', plantingLinks: ['jp1', 'jp2'] };
 const build = (i: SprayInput, c: SprayContext) => { const r = buildSpray(i, c, F, now, ids); if (!r.ok) throw new Error(`refused ${JSON.stringify(r.errors)}`); return r; };
@@ -21,7 +22,7 @@ const build = (i: SprayInput, c: SprayContext) => { const r = buildSpray(i, c, F
 describe('a spray with a SIGNED label', () => {
   it('records the applicator, the typed values exactly, the PHI/REI from the signed label, and ONE stock movement', () => {
     const r = build(input(), ctx());
-    expect(r.spray).toEqual({ id: 'sp1', farm_id: 'farm', job_id: 'job1', product_id: 'prod', label_use_id: 'lu', lot_key: 'lot', applicator_id: 'w1', sprayed_at: '2026-11-20T08:00:00Z', created_at: '2026-11-20T10:00:00.000Z', dose_str: '0.025', dose_unit: 'ml/str', qty_str: '0.25', label_state: 'signed', phi_days: '7', rei_hours: '24', phi_source: 'label', phi_until: '2026-11-27T08:00:00Z', rei_until: '2026-11-21T08:00:00Z', flags: [] });
+    expect(r.spray).toEqual({ id: 'sp1', farm_id: 'farm', job_id: 'job1', product_id: 'prod', label_use_id: 'lu', lot_key: 'lot', applicator_id: 'w1', sprayed_at: '2026-11-20T08:00:00Z', created_at: '2026-11-20T10:00:00.000Z', started_at: '2026-11-20T07:30:00Z', dose_str: '0.025', dose_unit: 'ml/str', qty_str: '0.25', label_state: 'signed', phi_days: '7', rei_hours: '24', phi_source: 'label', phi_until: '2026-11-27T08:00:00Z', rei_until: '2026-11-21T08:00:00Z', flags: [] });
     expect(r.flags).toEqual([]);
     expect(r.job).toEqual({ id: 'job1', farm_id: 'farm', kind: 'spray', status: 'done', worker_id: 'w1', product_id: 'prod', label_use_id: 'lu', done_at: '2026-11-20T08:00:00Z', created_at: '2026-11-20T10:00:00.000Z', updated_at: '2026-11-20T10:00:00.000Z', deleted_at: null });
     expect(r.jobPlantings).toEqual([{ id: 'jp1', farm_id: 'farm', planting_id: 'pl1', job_id: 'job1', area_str_treated: '0.5', created_at: '2026-11-20T10:00:00.000Z' }]);
@@ -75,7 +76,7 @@ describe('a spray is RECORDED even with a weak label, marked, with the PHI unkno
 });
 
 describe('a LATE entry (the end of the spraying is more than 7 days before the record): allowed, but it needs a reason and is marked; the waiting periods do not change', () => {
-  const noError = { applicator: false, dose: false, doseUnit: false, plantings: false, mixedCrops: false, product: false, qty: false, time: false, water: false, lateReason: false, overReason: false, doseReason: false };
+  const noError = { start: false, bbch: false, applicator: false, dose: false, doseUnit: false, plantings: false, mixedCrops: false, product: false, qty: false, time: false, water: false, lateReason: false, overReason: false, doseReason: false };
   it.each([['exactly 7 days before the record', '2026-11-13T10:00:00Z'], ['earlier today', '2026-11-20T01:00:00Z']])('%s: no reason needed, no mark', (_n, at) => {
     const r = build(input({ sprayedAt: at }), ctx());
     expect(r.flags).toEqual([]);
@@ -112,7 +113,7 @@ describe('what a spray record cannot be without', () => {
     ['unreadable quantity', { qty: 'abc' }, 'qty'], ['a lot without a quantity', { qty: '' }, 'qty'], ['unreadable water', { water: '1.000x' }, 'water'],
   ] as const)('%s is refused', (_n, over, key) => {
     const r = buildSpray(input(over as Partial<SprayInput>), ctx(), F, now, ids);
-    expect(r).toEqual({ ok: false, errors: { applicator: false, dose: false, doseUnit: false, plantings: false, mixedCrops: false, product: false, qty: false, time: false, water: false, lateReason: false, overReason: false, doseReason: false, [key]: true } });
+    expect(r).toEqual({ ok: false, errors: { start: key === 'time', bbch: false, applicator: false, dose: false, doseUnit: false, plantings: false, mixedCrops: false, product: false, qty: false, time: false, water: false, lateReason: false, overReason: false, doseReason: false, [key]: true } });
   });
   it('without a lot no stock movement is made', () => expect(build(input({ lotKey: undefined, qty: '' }), ctx()).movement).toBeUndefined());
 });
@@ -122,7 +123,7 @@ describe('the PHI entered by Bora is a separate amending row, and only while the
   it('adds a new row (the original stays), marked manual, with the exact end', () => {
     const o = unknownSpray();
     const e = buildWaitEntry(o, '7', '24', now, 'sp2', 'values from the label');
-    expect(e).toEqual({ ok: true, row: { id: 'sp2', farm_id: 'farm', amends_id: 'sp1', job_id: 'job1', product_id: 'prod', label_use_id: 'lu', lot_key: 'lot', applicator_id: 'w1', sprayed_at: '2026-11-20T08:00:00Z', created_at: '2026-11-20T10:00:00.000Z', dose_str: '0.025', dose_unit: 'ml/str', qty_str: '0.25', label_state: 'unsigned', phi_days: '7', rei_hours: '24', phi_source: 'manual', phi_until: '2026-11-27T08:00:00Z', rei_until: '2026-11-21T08:00:00Z', flags: ['label_unsigned'], amend_reason: 'values from the label' } });
+    expect(e).toEqual({ ok: true, row: { id: 'sp2', farm_id: 'farm', amends_id: 'sp1', job_id: 'job1', product_id: 'prod', label_use_id: 'lu', lot_key: 'lot', applicator_id: 'w1', sprayed_at: '2026-11-20T08:00:00Z', created_at: '2026-11-20T10:00:00.000Z', started_at: '2026-11-20T07:30:00Z', dose_str: '0.025', dose_unit: 'ml/str', qty_str: '0.25', label_state: 'unsigned', phi_days: '7', rei_hours: '24', phi_source: 'manual', phi_until: '2026-11-27T08:00:00Z', rei_until: '2026-11-21T08:00:00Z', flags: ['label_unsigned'], amend_reason: 'values from the label' } });
     expect('phi_days' in o).toBe(false); // the original is untouched
     if (!e.ok) throw new Error('setup');
     expect(effectiveSprays([o, e.row]).map((r) => r.id)).toEqual(['sp2']);
@@ -317,5 +318,17 @@ describe('correction of a recorded spray (0023)', () => {
   it('a movement already taken back is not taken back twice', () => {
     const r = buildCorrection(orig, { ...base, qty: '3' }, { movements: [move, { ...move, id: 'mi0', direction: 'in', reason: 'spray_correction', amends_id: 'm1' }, { ...move, id: 'mo0', qty_str: '4', amends_id: 'm1' }], lotBalance: '9' }, F, '2026-11-20T09:00:00Z', ids);
     if (r.ok) expect(r.movements[0]).toMatchObject({ amends_id: 'mo0', qty_str: '4' });
+  });
+});
+
+describe('start time, BBCH and prescription number (0025)', () => {
+  it('a start is REQUIRED and never later than the end; BBCH is two digits or empty; the prescription number is kept as typed', () => {
+    expect(buildSpray(input({ startedAt: undefined }), ctx(), F, now, ids)).toMatchObject({ ok: false, errors: { start: true } });
+    expect(buildSpray(input({ startedAt: '2026-11-20T08:30:00Z' }), ctx(), F, now, ids)).toMatchObject({ ok: false, errors: { start: true } });   // after the end
+    expect(buildSpray(input({ bbch: '7' }), ctx(), F, now, ids)).toMatchObject({ ok: false, errors: { bbch: true } });
+    expect(buildSpray(input({ bbch: 'abc' }), ctx(), F, now, ids)).toMatchObject({ ok: false, errors: { bbch: true } });
+    const r = build(input({ bbch: '14', prescription: ' ΣΥΝΤ-123 ' }), ctx());
+    expect(r.spray).toMatchObject({ started_at: '2026-11-20T07:30:00Z', bbch: '14', prescription_no: 'ΣΥΝΤ-123' });
+    expect('bbch' in build(input(), ctx()).spray).toBe(false);   // not relevant = not stored (never invented)
   });
 });

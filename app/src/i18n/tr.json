@@ -514,5 +514,10 @@
   "edit.f.variety": "çeşit",
   "edit.f.lot": "parti",
   "history.edits": "Tarla ve ekim değişiklikleri",
-  "edit.f.osde": "ΟΣΔΕ kodu"
+  "edit.f.osde": "ΟΣΔΕ kodu",
+  "spray.start": "İlaçlamanın başlangıç tarihi ve saati",
+  "spray.start.error": "İlaçlamanın ne zaman başladığını yazın. Başlangıç bitişten sonra olamaz.",
+  "spray.bbch": "BBCH gelişme evresi, iki hane (isteğe bağlı)",
+  "spray.bbch.error": "BBCH evresi iki hanelidir, örn. 14.",
+  "spray.prescription": "Reçete numarası (isteğe bağlı)"
 }

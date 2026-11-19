@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { setup, spray, openHistory, closeHistory } from './helpers/farm';
+import { setup, spray, openHistory, closeHistory, fillStart } from './helpers/farm';
 import { iphone } from './helpers/iphone';
 
 const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
@@ -20,6 +20,7 @@ test('a spray with a SIGNED label: recorded with «Ψέκασε», the exact wai
   await page.getByRole('button', { name: 'Kocide 2000' }).click();
   await expect(page.getByTestId('spray-label')).toContainText('Υπογραφή γεωπόνου: Test Agronomist');
   await page.getByRole('button', { name: 'Γιώργος' }).click();
+  await fillStart(page);
   await page.locator('h2:has-text("Παρτίδα") + .seg button').first().click();
   await page.getByTestId('spray-qty').fill('0,25');
   await expect(page.getByTestId('spray-flags')).toHaveCount(0); // signed, in range, in date, stock enough
@@ -118,7 +119,8 @@ test('a spraying entered 10 days late: refused without «Λόγος καθυστ
   await setup(page, true);
   await spray(page);
   const tenDaysAgo = await page.evaluate(() => new Date(Date.now() - new Date().getTimezoneOffset() * 60000 - 10 * 86400000).toISOString().replace(/:\d{2}\.\d{3}Z$/, ''));
-  await page.locator('input[type=datetime-local]').fill(tenDaysAgo);
+  await page.locator('input[type=datetime-local]').nth(1).fill(tenDaysAgo);   // the END (the first one is the start)
+  await fillStart(page, new Date(Date.parse(`${tenDaysAgo}:00Z`) - 3_600_000).toISOString().slice(0, 16));
   await expect(page.getByTestId('spray-late-reason')).toBeVisible();
   await page.getByTestId('spray-save').click();
   await expect(page.getByTestId('spray-late-error')).toBeVisible(); // nothing saved without the reason
