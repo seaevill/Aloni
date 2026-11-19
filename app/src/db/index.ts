@@ -7,7 +7,6 @@ import { APP_NAME, DEMO_FARM_ID } from '../config';
 import { t } from '../i18n';
 import { commitAllHeld } from '../worker/held';
 import { demoOrders, mapKey, migrateUnkeyedOrders, ordersKey, saveOrders } from '../orders/store';
-import { dbBlocked, needRefresh } from '../pwa/update';
 import { dbBlocked, dirty, needRefresh } from '../pwa/update';
 
 export const db = new AppDB();
