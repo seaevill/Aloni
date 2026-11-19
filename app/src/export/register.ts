@@ -24,7 +24,8 @@ export function registerLines(d: RegisterData, f: Fmt): RegisterLine[] {
       const pl = d.plantings.find((p) => p.id === l?.planting_id);
       const parcel = d.parcels.find((p) => p.id === pl?.parcel_id);
       const crop = d.crops.find((c) => c.id === pl?.crop_id);
-      const lot = (d.lots ?? []).filter((x) => x.lot_key === s.lot_key && typeof x.batch === 'string').pop();
+      const key = text(s.lot_key);
+      const lot = key === '' ? undefined : (d.lots ?? []).filter((x) => x.lot_key === key && typeof x.batch === 'string').sort((a, b) => text(a.created_at).localeCompare(text(b.created_at))).pop(); // the newest row of that lot; no lot on the spray = nothing printed
       lines.push({
         start: s.started_at ? f.when(text(s.started_at)) : '', lot: lot ? text(lot.batch) : '', when: f.when(text(s.sprayed_at)), parcel: parcel ? text(parcel.name) : '', crop: crop ? f.name(crop) : '', area: l ? f.num(text(l.area_str_treated)) : '',
         product: product ? f.name(product) : '', reg_no: text(product?.reg_no), dose: f.num(text(s.dose_str)), unit: f.unit(text(s.dose_unit)), qty: f.num(text(s.qty_str)), water: f.num(text(s.water_l)),

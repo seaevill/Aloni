@@ -66,4 +66,8 @@ describe('the spray register', () => {
     const head = COLUMNS.map((c) => el[`register.col.${c}`]);
     expect(head).toEqual(expect.arrayContaining(['Έναρξη', 'Λήξη', 'Παρτίδα', 'Νερό (L)']));
   });
+  it('T17a review: a spray without a lot never prints some other lot’s batch', () => {
+    const noLot = base({ lots: [{ id: 'k9', farm_id: 'f', batch: 'ZZ-1' }] });
+    expect(registerLines(noLot, fmt)[0].lot).toBe('');
+  });
 });

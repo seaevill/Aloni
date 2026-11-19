@@ -6,7 +6,7 @@ import { FILL_IN, MACHINE_COLUMNS, machineLines, toMachineCsv, warningLines } fr
 import { DEMO_FARM_ID } from '../config';
 import { downloadText } from '../backup/download';
 import { COLUMNS, registerLines, toCsv, type Column, type Fmt } from '../export/register';
-import { formatDateTime, formatLocalIso, t, type I18nKey } from '../i18n';
+import { formatDateTimeYear, formatLocalIso, t, type I18nKey } from '../i18n';
 import { formatQty } from '../i18n/format';
 import { FLAG_KEYS } from './SprayForm';
 import { UNIT_KEYS } from './LabelUseForm';
@@ -27,7 +27,7 @@ const FMT: Fmt = {
   when: formatLocalIso, num: (s) => (s ? formatQty(s) : ''), name: nameOf,
   flag: (f) => (f in FLAG_KEYS ? t(FLAG_KEYS[f as Flag]) : f), label: (s) => (s in LABEL_KEYS ? t(LABEL_KEYS[s]) : ''), unit: (u) => (u in UNIT_KEYS ? t(UNIT_KEYS[u as DoseUnit]) : ''),
 };
-const SCREEN: Fmt = { ...FMT, when: formatDateTime };
+const SCREEN: Fmt = { ...FMT, when: formatDateTimeYear };
 
 /** The spray register for an inspection: a DRAFT, printable and downloadable as CSV. The app prepares it; a person checks and signs it. */
 const FILL_KEYS: Record<(typeof FILL_IN)[number], I18nKey> = { missing_authorisation_number: 'register.fill.auth', missing_start_time: 'register.fill.start', missing_iacs_parcel_id: 'register.fill.iacs', missing_eppo_code: 'register.fill.eppo', missing_bbch_stage: 'register.fill.bbch', dose_not_per_area: 'register.fill.dose' };
@@ -56,7 +56,7 @@ export function Register({ onBack }: { onBack: () => void }) {
       </header>
       <p class="badge blocked" data-testid="register-draft">{t('register.draft')}</p>
       {fillIn.length > 0 && <p class="card" data-testid="register-fillin">{fillText}</p>}
-      <p class="muted">{t('register.generated', { d: formatDateTime(new Date().toISOString()) })}</p>
+      <p class="muted">{t('register.generated', { d: formatDateTimeYear(new Date().toISOString()) })}</p>
       <p class="muted" data-testid="register-holder">{holderLine}</p>
       {!demo && (
         <label class="field noprint">{t('register.vat')}
