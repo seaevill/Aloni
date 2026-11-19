@@ -53,9 +53,9 @@ function Fields({ cards, onUrgent }: { cards: FieldCard[]; onUrgent: () => void 
           <div class={c.state === 'unknown' ? 'card field blocked' : 'card field'} key={c.p.id} data-testid="cut" data-state={c.state}>
             <div class="field-head"><strong>{text(c.p.name)}</strong>{typeof c.p.area_str !== 'undefined' && <span class="muted">{formatArea(c.p.area_str as number | string)}</span>}</div>
             {c.crops && <small>{c.crops}</small>}
-            <span class={look.cls} data-testid="cut-line"><span aria-hidden="true">{look.mark}</span>{SP}{line}</span>
+            <span class={look.cls} data-testid="cut-line">{line}</span>
             {c.source && <small data-testid="cut-source">{c.source}</small>}
-            {c.late && <span class="badge warn" data-testid="cut-late"><span aria-hidden="true">{MARK.wait}</span>{SP}{t('cut.late')}</span>}
+            {c.late && <span class="badge warn" data-testid="cut-late">{t('cut.late')}</span>}
           </div>
         );
       })}

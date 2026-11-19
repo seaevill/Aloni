@@ -39,7 +39,7 @@ nav.tabs .ico { font-size:var(--fs-20); line-height:1; }
 .photo.big { height:auto; max-width:100%; border-radius:var(--r-md); margin-top:var(--sp-12); }
 .btn[aria-pressed="true"] { border:var(--bw-2) solid var(--green); font-weight:700; }
 .badge.unsigned, .badge.changed, .badge.warn { background:var(--amber-bg); color:var(--amber-fg); }
-.badge.blocked { background:var(--danger); color:var(--white); display:block; border-radius:var(--r-sm); padding:var(--sp-8) var(--sp-10); margin:var(--sp-6) 0; }
+.badge.blocked { background:var(--danger); color:var(--white); display:flex; border-radius:var(--r-sm); padding:var(--sp-8) var(--sp-10); margin:var(--sp-6) 0; }
 .card.blocked { border:var(--bw-2) solid var(--danger); }
 .chip.calm { background:var(--calm-bg); color:var(--calm-fg); }
 .btn.big, .seg.big button { min-height:var(--tap-big); font-size:var(--fs-18); }
@@ -91,4 +91,14 @@ h3 { font-size:var(--fs-18); font-weight:800; margin:var(--sp-12) 0 var(--sp-6);
 .topbar { position:sticky; top:0; z-index:2; display:flex; align-items:center; gap:var(--sp-8); background:var(--bar); backdrop-filter:blur(var(--sp-12)); padding:var(--sp-8) 0; margin:0 0 var(--sp-8); }
 .topbar h1 { margin:0; font-size:var(--fs-20); }
 .topbar .back { display:inline-flex; align-items:center; gap:var(--sp-6); min-height:var(--tap); background:none; border:0; font:inherit; font-weight:700; color:var(--green); }
-.card.field .badge { display:block; border-radius:var(--r-sm); padding:var(--sp-8) var(--sp-10); margin:var(--sp-6) 0 0; }
+.card.field .badge { display:flex; border-radius:var(--r-sm); padding:var(--sp-8) var(--sp-10); margin:var(--sp-6) 0 0; }
+
+/* One badge system: signed = green/lime, unsigned = amber, blocked = red, info = grey. Every badge has an icon AND a word (colour is never the only signal). */
+.badge { display:inline-flex; align-items:center; gap:var(--sp-6); }
+.badge::before { font-weight:700; }
+.badge.signed { background:var(--lime); color:var(--on-lime); }
+.badge.signed::before { content:"\2713"; }
+.badge.unsigned::before, .badge.changed::before, .badge.warn::before { content:"\25D4"; }
+.badge.blocked::before { content:"\2715"; }
+.badge.neutral::before, .badge.info::before { content:"\24D8"; }
+.badge.bi::before, .badge.demo-banner::before { content:none; }
