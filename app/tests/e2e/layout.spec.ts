@@ -14,7 +14,8 @@ test('no horizontal overflow at 375 px, with demo data, in el/tr/en, on every ta
       await page.locator(`nav.tabs [data-tab="${id}"]`).click();
       const { scroll, wide } = await page.evaluate(() => ({
         scroll: document.documentElement.scrollWidth,
-        wide: [...document.querySelectorAll('body *')].filter((e) => e.getBoundingClientRect().right > 376).map((e) => e.tagName + '.' + e.className),
+        // an element inside a row that scrolls sideways BY DESIGN (the stock filter) may reach past the screen; the row itself may not
+        wide: [...document.querySelectorAll('body *')].filter((e) => e.getBoundingClientRect().right > 376 && !(e.parentElement?.closest('[data-scroll-row], .filters') && ['auto', 'scroll'].includes(getComputedStyle(e.parentElement.closest('[data-scroll-row], .filters') as Element).overflowX))).map((e) => e.tagName + '.' + e.className),
       }));
       expect(scroll, `${lang}/${id} scrollWidth`).toBeLessThanOrEqual(375);
       expect(wide, `${lang}/${id} elements wider than the screen`).toEqual([]);
