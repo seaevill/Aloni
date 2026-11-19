@@ -161,3 +161,4 @@
 | 2026-11-16 | "FieldWise" name is taken; new name needed before a domain | docs/reviews/3-marketing.md |
 | 2026-11-16 | Ραδίκια and Άγρια merged into one product, Ραδίκια άγρια; 17 products | Bora: they are the same |
 | 2026-10-17 | Κλούβες order app built (Claude version + offline PWA) | docs/PROJECT-HISTORY.md |
+| 2026-11-19 | Order link step 1: the Κλούβες backup is read by hand (More → Παραγγελίες), stored on the phone only (no server table, nothing sent back). Products are matched to crops only by identical name; the owner confirms. Crates not in quarters are skipped and counted. Supply = plantings whose waiting periods are over; held/unknown never count; no yield is estimated. Sowing hint is information only (rule SOW unsigned). Temporary – Bora will confirm | docs/BACKLOG.md |
