@@ -13,6 +13,7 @@ import { LabelUseForm, UNIT_KEYS } from './LabelUseForm';
 import { nameOf } from './screens';
 import { UnsyncedMark } from './states';
 import { useRows } from './useRows';
+import { BackBar } from './BackBar';
 
 const STATUS_KEYS: Record<Status, I18nKey> = {
   blocked: 'labeluse.status.blocked', unsigned: 'labeluse.status.unsigned', changed: 'labeluse.status.changed', signed: 'labeluse.status.signed',
@@ -65,8 +66,8 @@ export function LabelUses({ product, onBack, readOnly = false }: { product: Row;
   };
   return (
     <section>
+      <BackBar onBack={onBack} />
       <h1>{nameOf(product)}</h1>
-      <button class="btn secondary" onClick={onBack}>{t('info.back')}</button>
       <h2>{t('labeluse.title')}</h2>
       {!readOnly && <button class="btn" data-testid="labeluse-add" onClick={() => setEditing('new')}>{t('labeluse.add')}</button>}
       {uses.rows && mine.length === 0 && <p class="muted" data-testid="labeluse-empty">{t('labeluse.empty')}</p>}

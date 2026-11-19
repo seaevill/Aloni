@@ -10,6 +10,7 @@ import { buildWorker } from '../workers/worker';
 import type { Row } from '../db/schema';
 import { showUndo } from './Toast';
 import { useRows } from './useRows';
+import { BackBar } from './BackBar';
 
 /** More → Εργάτες: the roster used to say who sprayed. A name only. Add, archive with 5 s undo; real farm only. */
 /** The invitation of one roster worker: only with a live sign-in AND the data controller's details entered (the same gate the server keeps). */
@@ -69,8 +70,8 @@ export function Workers({ onBack }: { onBack: () => void }) {
   };
   return (
     <section>
+      <BackBar onBack={onBack} />
       <h1>{t('workers.title')}</h1>
-      <button class="btn secondary" onClick={onBack}>{t('info.back')}</button>
       <p class="muted">{t('workers.note')}</p>
       {demo && <p class="muted" data-testid="workers-demo">{t('workers.demo')}</p>}
       {!demo && (

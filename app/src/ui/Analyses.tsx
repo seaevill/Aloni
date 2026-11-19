@@ -12,6 +12,7 @@ import { MediaThumb } from './Photos';
 import { UnsyncedMark } from './states';
 import { showUndo } from './Toast';
 import { useRows } from './useRows';
+import { BackBar } from './BackBar';
 
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 const unitText = (u: unknown): string => { const k = EC_UNITS.find((x) => x === u); return k ? t(EC_UNIT_KEYS[k]) : t('value.unknown'); }; // a unit nobody can read is never guessed
@@ -45,8 +46,8 @@ export function Analyses({ parcel, onBack, readOnly = false }: { parcel: Row; on
   });
   return (
     <section>
+      <BackBar onBack={onBack} />
       <h1>{String(parcel.name)}</h1>
-      <button class="btn secondary" onClick={onBack}>{t('info.back')}</button>
       <h2>{t('analysis.title')}</h2>
       {!readOnly && <button class="btn" data-testid="analysis-add-soil" onClick={() => setAdding('soil')}>{t('analysis.add.soil')}</button>}
       {!readOnly && <button class="btn" data-testid="analysis-add-water" onClick={() => setAdding('water')}>{t('analysis.add.water')}</button>}

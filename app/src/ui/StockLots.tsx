@@ -11,6 +11,7 @@ import { AdjustForm, ReceiveForm } from './StockForms';
 import { UnsyncedMark } from './states';
 import { useRows } from './useRows';
 import { isCalendarDate } from '@aloni/rules-core';
+import { BackBar } from './BackBar';
 
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 const qtyText = (balance: string | undefined, unit: string): string => (balance === undefined ? t('value.unknown') : `${formatQty(balance)} ${unit}`);
@@ -48,8 +49,8 @@ export function StockLots({ product, onBack, readOnly = false }: { product: Row;
   });
   return (
     <section>
+      <BackBar onBack={onBack} />
       <h1>{nameOf(product)}</h1>
-      <button class="btn secondary" onClick={onBack}>{t('info.back')}</button>
       {lots.rows && <p class="card" data-testid="stock-total">{t('stock.total', { qty: qtyText(balanceOf(mine), unit) })}</p>}
       {!readOnly && <button class="btn" data-testid="receive-open" onClick={() => setView('receive')}>{t('stock.receive')}</button>}
       {lots.rows && list.length === 0 && <p class="muted" data-testid="stock-empty">{t('stock.empty')}</p>}
