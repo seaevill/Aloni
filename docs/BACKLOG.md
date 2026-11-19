@@ -35,7 +35,7 @@ Bu dosya benim iş listem. Bitirdiğimi `[x]` ile işaretlerim. `docs/reviews/te
 - [ ] Bildirimler: imzalı kurallar için gösterim (gönderim yok, sessiz saat korunur). *Bitti:* ekran + «imzasız kural bildirim göstermez» testi.
 
 ## E5 – Kalite
-- [ ] Kalan golden vakalar (yalnızca veri); geçen/atlanan sayısı STATUS'ta. *Bitti:* sayı yazılı.
+- [x] Kalan golden vakalar (yalnızca veri); geçen/atlanan sayısı STATUS'ta. *Bitti:* sayı yazılı.
 - [ ] e2e: tank karışımı, düzeltme, harita, işçi daveti (sahip tarafı da). *Bitti:* her biri için 375 px testi yeşil.
 
 ## E6 – Bora kararları

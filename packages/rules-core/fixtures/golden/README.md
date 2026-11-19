@@ -1,6 +1,6 @@
 # Golden rule fixtures (Demo farm only)
 
-These files turn the prototype's 10 alerts and 7 recommendations (`reference/prototype/data.json`) into machine-readable test cases for the rules engine. They also cover the QA-REPORT lessons as negative cases. One JSON file holds one case. Built 2026-11-17, before M3. No engine code reads them yet; see `docs/milestones/golden-fixtures.md`.
+These files turn the prototype's 10 alerts and 7 recommendations (`reference/prototype/data.json`) into machine-readable test cases for the rules engine. They also cover the QA-REPORT lessons as negative cases. One JSON file holds one case. Built 2026-11-17, before M3. The test `app/tests/unit/golden.test.ts` checks the shape of every case and RUNS the ones the engine has code for (9 of 27 on 2026-11-19; the rest are skipped and counted in docs/STATUS.md); see `docs/milestones/golden-fixtures.md`.
 
 **All data is fictional Demo-farm data** (CLAUDE.md safety rule 4). Nothing here may be imported into Bora's real farm. Label values come from the prototype and are illustrative. The `synthetic_inputs` blocks hold TEST-ONLY values; they must never be used as label data.
 
