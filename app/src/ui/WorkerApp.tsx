@@ -3,10 +3,12 @@ import { activeFarm, dataVersion, db } from '../db';
 import { AUTH_ENABLED, DEMO_FARM_ID, SYNC_CONNECTED } from '../config';
 import { session } from '../auth/gotrue';
 import { pendingOps } from '../repo';
+import { groupJobs } from '../summary/jobs';
+import { athensToday } from '../plantings/planting';
 import { COMPLETE } from '../worker/remote';
 import { cancelHeld, commitHeld, holdAction, type Held } from '../worker/held';
 import { RPC_PREFIX } from '../repo';
-import { formatDateTime, lang, t, ts, type I18nKey } from '../i18n';
+import { formatDateTime, lang, t, ts, type I18nKey, formatDate } from '../i18n';
 import { UNIT_KEYS } from './LabelUseForm';
 import { formatDose } from '../i18n/format';
 import { known, type Decimal } from '@aloni/rules-core';
@@ -28,6 +30,7 @@ import { workerView } from './nav';
 /** Language-free symbols: they show in every language, whatever the translation says (a worker who cannot read the words still sees ✓ ✗ 🔒). */
 const MARK = { ok: '✓', no: '✗', lock: '🔒' } as const;
 const HOLD_MS = 10000; // 10 seconds to take it back
+const JOB_GROUPS = [['overdue', 'jobs.group.overdue'], ['today', 'jobs.group.today'], ['tomorrow', 'jobs.group.tomorrow'], ['later', 'jobs.group.later']] as const;
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 const SKIP_KEYS: Record<SkipReason, I18nKey> = { rain: 'worker.skip.rain', wind: 'worker.skip.wind', no_product: 'worker.skip.no_product', other: 'worker.skip.other' };
 const KIND_KEYS: Record<ObservationKind, I18nKey> = { dew: 'worker.kind.dew', frost_damage: 'worker.kind.frost_damage', disease: 'worker.kind.disease', pest: 'worker.kind.pest', other: 'worker.kind.other' };
@@ -49,7 +52,7 @@ export function WorkerApp() {
   const [harvestSaved, setHarvestSaved] = useState(false); // the «saved on the phone» line after a harvest record
   const [open, setOpen] = useState<{ job: string; mode: 'done' | 'skip' } | undefined>(undefined);
   const [held, setHeld] = useState<string[]>([]);
-  const [lockMsg, setLockMsg] = useState<string | undefined>(undefined); // what a press on a CLOSED «Έγινε» answers
+  const [lockMsg, setLockMsg] = useState<{ job: string; text: string } | undefined>(undefined); // what a press on a CLOSED «Έγινε» answers
   const [queued, setQueued] = useState<string[]>([]); // jobs whose «Έγινε» waits in the outbox for the signal
   useEffect(() => { void db.outbox.where('status').equals('pending').toArray().then((r) => setQueued(r.filter((o) => o.table === `${RPC_PREFIX}${COMPLETE}`).map((o) => o.row_id))); }, [pendingOps.value, dataVersion.value]);
   const [when, setWhen] = useState(athensLocalNow(new Date()) ?? ''); const [startWhen, setStartWhen] = useState(''); const [startError, setStartError] = useState(false);   // the start is REQUIRED (the server asks for it) and never pre-filled
@@ -59,6 +62,7 @@ export function WorkerApp() {
 
   const mine = (jobs.rows ?? []).filter((j) => j.kind === 'spray' && j.worker_id === me.id && !held.includes(j.id));
   const open_ = mine.filter((j) => j.status === 'planned' && !queued.includes(j.id));
+  const groups = groupJobs(open_, athensToday(new Date()) ?? '');
   const waiting = mine.filter((j) => j.status === 'planned' && queued.includes(j.id));
   const finished = mine.filter((j) => j.status !== 'planned');
   const plantingsOf = (job: Row) => (links.rows ?? []).filter((l) => l.job_id === job.id).map((l) => plantings.rows?.find((p) => p.id === l.planting_id)).filter((p): p is Row => !!p);
@@ -115,19 +119,21 @@ export function WorkerApp() {
         <>
           <h2>{t('worker.jobs')}</h2>
           {open_.length === 0 && <p class="muted" data-testid="worker-nojobs">{t('worker.noJobs')}</p>}
-          {open_.map((j) => (
+          {JOB_GROUPS.map(([gk, glabel]) => groups[gk].length > 0 && <h3 key={`h-${gk}`} class={gk === 'overdue' ? 'late' : undefined} data-testid={`worker-group-${gk}`}>{t(glabel)}</h3>)}
+          {[...groups.overdue, ...groups.today, ...groups.tomorrow, ...groups.later].map((j) => (
             <div class={lockOf(j).state === 'none' ? 'card job' : 'card job locked'} key={j.id} data-testid="worker-job"><strong class="job-title">{nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {})}</strong>
+              {typeof j.planned_for === 'string' && j.planned_for < athensToday(new Date())! && <small class="late" data-testid="worker-job-date">{formatDate(j.planned_for)}</small>}
               {plantingsOf(j).map((p) => <small key={p.id}>{plantingName(p)}</small>)}
               <small data-testid="worker-dose">{t('labeluse.line', { name: t('labeluse.dose'), value: doseText(j) })}</small>
               <small>{t('worker.fixed')}</small>
               {lockOf(j).state !== 'none' && <p class="badge blocked bi" role="alert" data-testid="worker-lock"><span aria-hidden="true">{MARK.lock}</span> {lockText(lockOf(j))}</p>}
               {open?.job !== j.id && (
                 <div class="seg two big">
-                  <button class="go" data-testid="job-done" aria-disabled={doneBlocked(lockOf(j)) ? 'true' : undefined} onClick={() => { if (doneBlocked(lockOf(j))) { setLockMsg(lockText(lockOf(j))); return; } setLockMsg(undefined); setOpen({ job: j.id, mode: 'done' }); }}><span aria-hidden="true">{MARK.ok}</span> {t('worker.done')}</button>
+                  <button class="go" data-testid="job-done" aria-disabled={doneBlocked(lockOf(j)) ? 'true' : undefined} onClick={() => { if (doneBlocked(lockOf(j))) { setLockMsg({ job: j.id, text: lockText(lockOf(j)) }); return; } setLockMsg(undefined); setOpen({ job: j.id, mode: 'done' }); }}><span aria-hidden="true">{MARK.ok}</span> {t('worker.done')}</button>
                   {!real && <button class="stop" data-testid="job-skip" onClick={() => setOpen({ job: j.id, mode: 'skip' })}><span aria-hidden="true">{MARK.no}</span> {t('worker.notdone')}</button>}
                 </div>
               )}
-              {lockMsg && open?.job !== j.id && doneBlocked(lockOf(j)) && <p class="badge blocked bi" role="alert" data-testid="worker-lock-why"><span aria-hidden="true">{MARK.lock}</span> {lockMsg}</p>}
+              {lockMsg?.job === j.id && open?.job !== j.id && doneBlocked(lockOf(j)) && <p class="badge blocked bi" role="alert" data-testid="worker-lock-why"><span aria-hidden="true">{MARK.lock}</span> {lockMsg.text}</p>}
               {open?.job === j.id && open.mode === 'done' && (
                 <>
                   <label class="field">{t('worker.start')}<input class="input" type="datetime-local" value={startWhen} data-testid="worker-start" onInput={(e) => setStartWhen((e.target as HTMLInputElement).value)} /></label>

@@ -41,7 +41,7 @@ export function JobForm({ onDone }: { onDone: (saved: boolean) => void }) {
     <section>
       <h1>{t('job.add')}</h1>
       {needs && <p class="msg error" role="alert" data-testid="job-needs">{t('spray.needs')}</p>}
-      <h2>{t('spray.plantings')}</h2>
+      <h2>{t('job.plantings')}</h2>
       <div class="seg two">{live(plantings).map((p) => <button key={p.id} aria-pressed={sel.includes(p.id)} onClick={() => toggle(p.id)}>{plantingName(p)}</button>)}</div>
       <h2>{t('spray.product')}</h2>
       <div class="seg two">{live(products).map((p) => <button key={p.id} aria-pressed={productId === p.id} onClick={() => { setProductId(p.id); offer(chosen.length ? live(labels).find((l) => l.product_id === p.id && l.crop_id === chosen[0]?.crop_id) : undefined); }}>{nameOf(p)}</button>)}</div>
@@ -50,12 +50,13 @@ export function JobForm({ onDone }: { onDone: (saved: boolean) => void }) {
           {label ? <><span class={`badge ${statusOf(label)}`}>{badgeText(label, statusOf(label))}</span><Lines row={label} /></> : <span class="badge blocked">{t(FLAG_KEYS.label_none)}</span>}
         </div>
       )}
-      <h2>{t('spray.worker')}</h2>
+      <h2>{t('job.worker')}</h2>
       <div class="seg two">{live(workers).map((w) => <button key={w.id} aria-pressed={workerId === w.id} onClick={() => setWorkerId(w.id)}>{String(w.name)}</button>)}</div>
       <label class="field">{t('job.date')}<input class="input" type="date" value={day} onInput={(e) => setDay((e.target as HTMLInputElement).value)} /></label>
       {labelDose && <p class="muted" data-testid="job-label-dose">{labelDose.single ? t('spray.label.dose', { v: labelDose.min, unit: t(UNIT_KEYS[labelDose.unit]) }) : t('spray.label.range', { a: labelDose.min, b: labelDose.max, unit: t(UNIT_KEYS[labelDose.unit]) })}</p>}
       {labelDose?.single && <button class="btn secondary" data-testid="job-dose-same" onClick={() => { setDose(labelDose.min); setUnit(labelDose.unit); }}>{t('spray.label.same')}</button>}
       <label class="field">{t('spray.dose')}<input class="input" value={dose} inputMode="decimal" autoComplete="off" data-testid="job-dose" onInput={(e) => setDose((e.target as HTMLInputElement).value)} /></label>
+      <label class="field">{t('job.dose')}<input class="input" value={dose} inputMode="decimal" autoComplete="off" data-testid="job-dose" onInput={(e) => setDose((e.target as HTMLInputElement).value)} /></label>
       <h2>{t('spray.unit')}</h2>
       <div class="seg two">{DOSE_UNITS.map((u) => <button key={u} aria-pressed={unit === u} onClick={() => setUnit(u)}>{t(UNIT_KEYS[u])}</button>)}</div>
       {r.ok && r.flags.length > 0 && <div class="card" data-testid="job-flags">{r.flags.map((f) => <span key={f} class={f === 'label_none' || f === 'label_blocked' ? 'badge blocked' : 'badge warn'}>{t(FLAG_KEYS[f])}</span>)}</div>}

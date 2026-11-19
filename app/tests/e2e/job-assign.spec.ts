@@ -19,7 +19,7 @@ test('the owner assigns a spray job to a worker: label offered, saved as a plann
   await page.getByTestId('job-save').click();
   await expect(page.getByTestId('job-saved')).toBeVisible();
   await expect(page.getByTestId('job-planned')).toHaveCount(1);
-  await expect(page.getByTestId('job-planned')).toContainText('Kocide 2000');
+  await expect(page.getByTestId('job-planned')).toContainText('Σπανάκι · Κάτω Κάμπος · Γιώργος');   // crop, parcel, worker and a Greek date (T9)
   await expect(page.getByTestId('job-planned')).toContainText('Γιώργος');
   await page.reload();
   await expect(page.getByTestId('job-planned')).toHaveCount(1);

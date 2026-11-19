@@ -658,5 +658,12 @@
   "job.error.nolabel": "Cannot assign: the label data for this crop is missing.",
   "job.planned.line": "{product} · {worker} · {date}",
   "today.fields": "Fields",
-  "orders.map.title": "Match products to crops"
+  "orders.map.title": "Match products to crops",
+  "jobs.group.overdue": "Overdue",
+  "jobs.group.today": "Today",
+  "jobs.group.tomorrow": "Tomorrow",
+  "jobs.group.later": "Later",
+  "job.plantings": "Plantings to spray",
+  "job.worker": "Who will spray",
+  "job.dose": "Dose to apply"
 }

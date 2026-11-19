@@ -658,5 +658,12 @@
   "job.error.nolabel": "Atayamazsınız: bu ekin için etiket bilgisi eksik.",
   "job.planned.line": "{product} · {worker} · {date}",
   "today.fields": "Tarlalar",
-  "orders.map.title": "Ürünleri ekinlerle eşle"
+  "orders.map.title": "Ürünleri ekinlerle eşle",
+  "jobs.group.overdue": "Gecikmiş",
+  "jobs.group.today": "Bugün",
+  "jobs.group.tomorrow": "Yarın",
+  "jobs.group.later": "Daha sonra",
+  "job.plantings": "Püskürtülecek ekimler",
+  "job.worker": "Kim püskürtecek",
+  "job.dose": "Uygulanacak doz"
 }
