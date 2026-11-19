@@ -490,5 +490,13 @@
   "spray.correct.qty": "Partiden alınan miktar",
   "spray.correct.open": "Düzelt",
   "spray.correct.was": "İlk kayıt: doz {dose}, {when}",
-  "spray.correct.why": "Düzeltildi: {reason}"
+  "spray.correct.why": "Düzeltildi: {reason}",
+  "parcel.osde": "Tarlanın ΟΣΔΕ kodu (isteğe bağlı)",
+  "register.fillin": "Denetim için tamamlayın: {list}.",
+  "register.fill.auth": "ürün ruhsat numarası",
+  "register.fill.start": "başlangıç saati",
+  "register.fill.iacs": "tarla ΟΣΔΕ kodu",
+  "register.fill.eppo": "ürün EPPO kodu",
+  "register.fill.bbch": "BBCH evresi",
+  "register.fill.dose": "hektar başına doz (doz dekar başına değil)"
 }

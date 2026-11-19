@@ -24,7 +24,7 @@ describe('the machine-readable register', () => {
   it('fixed English field names, a decimal POINT and the stored text exactly (0.250 stays 0.250); the holder is on every line', () => {
     const lines = machineLines(data, { name: 'Bora Farm', vatId: '123456789' });
     expect(lines).toHaveLength(2);
-    expect(lines[1]).toMatchObject({ holder_name: 'Bora Farm', holder_vat_id: '123456789', record_id: 's1', applied_end: '2026-11-20T10:00:00+02:00', parcel: 'Κάτω Κάμπος', crop: 'spinach', treated_area_str: '0.25', product: 'Kocide, 2000', registration_number: '123/45', dose: '0.025', dose_unit: 'ml/str', quantity_used: '0.250', label_state: 'signed', phi_until: '2026-11-27T10:00:00+02:00', rei_until: '2026-11-21T10:00:00+02:00' });
+    expect(lines[1]).toMatchObject({ holder_name: 'Bora Farm', holder_vat_id: '123456789', record_id: 's1', application_end: '2026-11-20T10:00:00+02:00', application_start: '', parcel_name: 'Κάτω Κάμπος', crop_slug: 'spinach', eppo_code: 'SPQOL', treated_area_stremma: '0.25', treated_area_ha: '0.025', product_trade_name: 'Kocide, 2000', authorisation_number: '123/45', dose_as_entered: '0.025', dose_unit_as_entered: 'ml/str', dose_per_ha: '0.00025', dose_per_ha_unit: 'L/ha' });
     const csv = toMachineCsv(MACHINE_COLUMNS, lines.map((l) => MACHINE_COLUMNS.map((c) => l[c])));
     const rows = csv.trimEnd().split('\r\n');
     expect(rows[0]).toBe(MACHINE_COLUMNS.join(','));
@@ -33,6 +33,10 @@ describe('the machine-readable register', () => {
   });
 
   it('warnings are a separate list of codes, one per record and flag; a spray without warnings has none', () => {
-    expect(warningLines(data)).toEqual([{ record_id: 's1', warning_code: 'late_entry' }, { record_id: 's1', warning_code: 'max_apps_exceeded' }]);
+    const w = warningLines(data).filter((x) => x.record_id === 's1').map((x) => x.warning_code);
+    expect(w.slice(0, 2)).toEqual(['late_entry', 'max_apps_exceeded']);                       // the app's own flags first
+    expect(w).toContain('missing_start_time');                                                 // «fill in»: the start time and the BBCH stage are not held yet
+    expect(w).toContain('missing_bbch_stage'); expect(w).toContain('missing_iacs_parcel_id');
+    expect(w).not.toContain('missing_eppo_code'); expect(w).not.toContain('missing_authorisation_number'); // spinach has a code, the product a number
   });
 });

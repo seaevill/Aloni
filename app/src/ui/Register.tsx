@@ -2,7 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { activeFarm, db, realFarmId } from '../db';
 import { loadController } from '../legal/controller';
 import { putSetting } from '../repo';
-import { MACHINE_COLUMNS, machineLines, toMachineCsv, warningLines } from '../export/machine';
+import { FILL_IN, MACHINE_COLUMNS, machineLines, toMachineCsv, warningLines } from '../export/machine';
 import { DEMO_FARM_ID } from '../config';
 import { downloadText } from '../backup/download';
 import { COLUMNS, registerLines, toCsv, type Column, type Fmt } from '../export/register';
@@ -28,6 +28,8 @@ const FMT: Fmt = {
 };
 
 /** The spray register for an inspection: a DRAFT, printable and downloadable as CSV. The app prepares it; a person checks and signs it. */
+const FILL_KEYS: Record<(typeof FILL_IN)[number], I18nKey> = { missing_authorisation_number: 'register.fill.auth', missing_start_time: 'register.fill.start', missing_iacs_parcel_id: 'register.fill.iacs', missing_eppo_code: 'register.fill.eppo', missing_bbch_stage: 'register.fill.bbch', dose_not_per_area: 'register.fill.dose' };
+
 export function Register({ onBack }: { onBack: () => void }) {
   const [sprays, links, plantings, parcels, crops, products, workers] = [useRows('job_spray'), useRows('job_plantings'), useRows('plantings'), useRows('parcels'), useRows('crops'), useRows('products'), useRows('workers')];
   const demo = activeFarm.value === DEMO_FARM_ID;
@@ -35,6 +37,8 @@ export function Register({ onBack }: { onBack: () => void }) {
   const [holder, setHolder] = useState(''); const [vat, setVat] = useState(''); const [vatSaved, setVatSaved] = useState(false);
   useEffect(() => { void loadController(db).then((c) => setHolder(c?.name ?? '')); void db.settings.get('business').then((r) => setVat(String((r?.value as { vat_id?: string } | undefined)?.vat_id ?? ''))); }, []);
   const data = { sprays: sprays.rows ?? [], links: links.rows ?? [], plantings: plantings.rows ?? [], parcels: parcels.rows ?? [], crops: crops.rows ?? [], products: products.rows ?? [], workers: workers.rows ?? [] };
+  const fillIn = FILL_IN.filter((c) => warningLines(data).some((w) => w.warning_code === c));
+  const fillText = t('register.fillin', { list: fillIn.map((c) => t(FILL_KEYS[c])).join(', ') });
   const stamp = formatLocalIso(new Date().toISOString());
   const day = stamp.split(' ')[0];
   const holderLine = t('register.holder', { name: holder || t('register.holder.none'), vat: vat || t('register.holder.none') });
@@ -45,6 +49,7 @@ export function Register({ onBack }: { onBack: () => void }) {
     <section class="register" data-testid="register">
       <h1>{t('register.title')}{demo && <span class="badge">{t('badge.demo')}</span>}</h1>
       <p class="badge blocked" data-testid="register-draft">{t('register.draft')}</p>
+      {fillIn.length > 0 && <p class="card" data-testid="register-fillin">{fillText}</p>}
       <p class="muted">{t('register.generated', { d: stamp })}</p>
       <p class="muted" data-testid="register-holder">{holderLine}</p>
       {!demo && (

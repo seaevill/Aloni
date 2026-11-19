@@ -4,7 +4,7 @@ import type { Row } from '../db/schema';
 export const TOPO = ['plain', 'slope', 'coast'] as const; // Πεδινό / Πλαγιά / Παραλιακό; optional, never defaulted
 export type Topo = (typeof TOPO)[number];
 export interface Pin { lat: number; lng: number; accuracy_m: number }
-export interface ParcelInput { name: string; area: string; topo: Topo | undefined; pin: Pin | undefined }
+export interface ParcelInput { name: string; area: string; topo: Topo | undefined; pin: Pin | undefined; osde?: string }
 export type ParcelResult = { ok: true; row: Row } | { ok: false; name: boolean; area: 'missing' | 'invalid' | undefined };
 
 /**
@@ -19,6 +19,7 @@ export function buildParcel(input: ParcelInput, farmId: string, nowIso: string, 
   const row: Row = {
     id, farm_id: farmId, name, area_str: area.value, created_at: nowIso, updated_at: nowIso, deleted_at: null,
     ...(input.topo ? { topo_class: input.topo } : {}),
+    ...((input.osde ?? '').trim() ? { opekepe_code: (input.osde ?? '').trim() } : {}),
     ...(input.pin ? { lat: input.pin.lat, lng: input.pin.lng, pin_accuracy_m: input.pin.accuracy_m } : {}),
   };
   return { ok: true, row };

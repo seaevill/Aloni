@@ -490,5 +490,13 @@
   "spray.correct.qty": "Quantity taken from the lot",
   "spray.correct.open": "Correct",
   "spray.correct.was": "Original: dose {dose}, {when}",
-  "spray.correct.why": "Corrected: {reason}"
+  "spray.correct.why": "Corrected: {reason}",
+  "parcel.osde": "IACS (ΟΣΔΕ) parcel code (optional)",
+  "register.fillin": "Fill in for the inspection: {list}.",
+  "register.fill.auth": "product authorisation number",
+  "register.fill.start": "start time",
+  "register.fill.iacs": "IACS parcel code",
+  "register.fill.eppo": "crop EPPO code",
+  "register.fill.bbch": "BBCH stage",
+  "register.fill.dose": "dose per hectare (the dose is not per area)"
 }
