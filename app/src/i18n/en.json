@@ -627,5 +627,7 @@
   "stock.filter": "Filter by type",
   "stock.filter.all": "All ({n})",
   "stock.phi": "Waiting period (approved label): {list}",
-  "stock.phi.item": "{crop} {n} d"
+  "stock.phi.item": "{crop} {n} d",
+  "more.menu": "Menu",
+  "more.settings": "Settings and sign-in"
 }

@@ -627,5 +627,7 @@
   "stock.filter": "Türe göre süz",
   "stock.filter.all": "Tümü ({n})",
   "stock.phi": "Bekleme (onaylı etiket): {list}",
-  "stock.phi.item": "{crop} {n} gün"
+  "stock.phi.item": "{crop} {n} gün",
+  "more.menu": "Menü",
+  "more.settings": "Ayarlar ve bağlantı"
 }

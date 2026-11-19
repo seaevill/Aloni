@@ -167,3 +167,6 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 .tags { display:flex; flex-wrap:wrap; gap:var(--sp-8); margin:var(--sp-6) 0; }
 .tag { padding:var(--sp-4) var(--sp-12); border-radius:var(--r-btn); border:var(--bw-1) solid var(--line); font-size:var(--fs-14); }
 .actions2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-8); margin-top:var(--sp-8); }
+
+/* Άλλα, prototype layout: the menu rows come first */
+.menu { display:grid; gap:var(--sp-8); margin:0 0 var(--sp-16); }
