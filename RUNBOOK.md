@@ -213,18 +213,21 @@ rollback;
 - Senkronu geri kapatmak için: uygulamadan çıkış yap (Άλλα → Αποσύνδεση) ve yedeğinden dönülecekse §3.
 - Sunucu tarafında sorun çıkarsa: Supabase **Backups**'tan geri yükleme (RUNBOOK §10.3 ve «sistem kimliği» adımı) ve ardından senkronu yeniden aç.
 
-## 14. Hava durumunu açma (saatlik; ÖNCE 0029 uygulanmış ve Open-Meteo izni çözülmüş olmalı)
+## 14. Hava durumunu açma (6 saatte bir; ÖNCE 0029 uygulanmış olmalı)
 
-**Ön koşullar (ikisi de sende):** (a) 0029 migration'ı ekip incelemesinden sonra birlikte uygulandı (`farm_weather` ve `weather_targets` oluşur); (b) Open-Meteo **ticari plan anahtarı** var. Ücretsiz sürüm ticari kullanıma kapalı: anahtar yoksa fonksiyon **hiçbir şey çekmez** (503 «no_licence_key» döner). Ücretli plan = para: **önce bana sor, birlikte karar verelim**. Anahtarı bana yazma; yalnızca aşağıdaki Supabase ekranına sen gir.
+**Kaynak (beta):** MET Norway Locationforecast 2.0 («complete»). Ücretsiz, ticari kullanım serbest, **anahtar yok** → Supabase Secrets adımı yok, para yok. Open-Meteo (ücretli plan) **sonra**: pilottan önce yeniden değerlendirilecek; geçmek `supabase/functions/_shared/weather/config.ts` içindeki tek satırı (`WEATHER_SOURCE`) değiştirmek + anahtar eklemek demek, şimdi yapılmaz.
+**Kurallar (MET şartları, senin bildirdiğin hâliyle; belgenin kendisi bu ortamdan açılamadığı için sayfadan doğrulanmadı):** tanımlayıcı User-Agent (`Aloni/<sürüm> https://github.com/seaevill/Aloni`, e-posta yok), koordinat en fazla 4 ondalık, «Expires» dolmadan yeniden istek yok, sonra `If-Modified-Since`, yalnızca sunucu çağırır (telefon çağırmaz). Fonksiyon bunların hepsini kendisi yapar. Lütfen `api.met.no/doc/TermsOfService` sayfasını bir kez sen ya da ekip oku; fark çıkarsa söyle.
+
+**Ön koşul:** 0029 ekip incelemesinden sonra birlikte uygulandı (`farm_weather`, `weather_targets`, `weather_fetch_state` oluşur).
 
 1. **Fonksiyonu yükle** — bilgisayarda, depo klasöründe (CLI 2.122.1 sabit): `supabase functions deploy weather-fetch --project-ref <PROJE-KODU>`.
- Doğru sonuç: «Deployed Functions …weather-fetch». (Bu, hava dışında hiçbir şeyi etkilemez.)
-2. **Anahtarı sakla** — Supabase → **Edge Functions → Secrets** → ad: `OPEN_METEO_API_KEY`, değer: Open-Meteo'dan aldığın anahtar → **Save**.
-3. **Bir kez elle dene** — Supabase → **Edge Functions → weather-fetch → Test**; başlık olarak proje **service_role** anahtarını `Authorization: Bearer …` biçiminde yalnızca bu test kutusuna gir.
- Doğru sonuç: `{"ok":true,"parcels":N,"stored":N,"failed":[]}` (N = konumu olan parsel sayısı). Sonra Table Editor → `weather_daily`: bugünün satırları görünür.
-4. **Saatlik çalıştır (pg_cron)** — Supabase → **SQL Editor** → aşağıdaki iki komutu çalıştır (`<PROJE-KODU>` ve `<SERVICE-KEY>` yerine kendi değerlerin; anahtar Vault'ta saklanır, takvim satırında görünmez):
+ Doğru sonuç: «Deployed Functions …weather-fetch». Henüz hiçbir şey çekmez.
+2. **Tek tarla için deneme (dry-run; onay senin)** — Table Editor → `parcels` → denenecek tarlanın `id`'sini kopyala (tarlanın konumu girilmiş olmalı). Supabase → **Edge Functions → weather-fetch → Test**; başlık: `Authorization: Bearer <service_role anahtarı>` (yalnızca bu test kutusuna), gövde: `{"dry_run": true, "parcel_id": "<TARLA-ID>"}`.
+ Doğru sonuç: `"ok":true,"source":"metno","dryRun":true,"stored":0` ve `preview` içinde günlere göre en düşük/en yüksek sıcaklık. **Hiçbir tabloya yazılmaz.** Rakamları yr.no'daki aynı yer ile karşılaştır; mantıklıysa bana «tamam» de.
+3. **Gerçek çalıştırma (bir kez)** — aynı kutu, gövde `{}`: `"stored":N`. Sonra Table Editor → `weather_daily` ve `weather_fetch_state` dolu olmalı.
+4. **6 saatte bir** (pg_cron; `<PROJE-KODU>` ve `<SERVICE-KEY>` yerine kendi değerlerin; anahtar Vault'ta saklanır):
  `select vault.create_secret('<SERVICE-KEY>', 'weather_service_key');`
- `select cron.schedule('weather-fetch', '7 * * * *', $$ select net.http_post(url := 'https://<PROJE-KODU>.supabase.co/functions/v1/weather-fetch', headers := jsonb_build_object('Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'weather_service_key'))) $$);`
-5. **Telefonda gör** — senkron açıksa ≤10 dakika içinde **Σήμερα**'daki hava kartı dolar (en düşük/en yüksek, rüzgâr, yağış). Veri yoksa kart «—» gösterir; hiçbir şey uydurulmaz.
+ `select cron.schedule('weather-fetch', '7 */6 * * *', $$ select net.http_post(url := 'https://<PROJE-KODU>.supabase.co/functions/v1/weather-fetch', headers := jsonb_build_object('Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'weather_service_key'))) $$);`
+5. **Telefonda gör** — senkron açıksa ≤10 dakika içinde **Σήμερα** hava kartı dolar; altında «Δεδομένα: MET Norway (CC BY 4.0) · <saat>». Veri 12 saatten eskiyse yanına «παλιά δεδομένα» yazılır. Veri yoksa «—».
 
-**Geri dönüş:** saatlik çalışmayı durdurmak için SQL Editor: `select cron.unschedule('weather-fetch');`. Fonksiyonu silmek gerekmez. Telefonda önceki hava verisi kalır, yeni gelmez. Hava yalnızca bilgidir; hiçbir kural bundan karar vermez ve bildirim göndermez.
+**Geri dönüş:** `select cron.unschedule('weather-fetch');`. Fonksiyonu silmek gerekmez; telefonda eski veri kalır (12 saat sonra «παλιά δεδομένα»). Hava yalnızca bilgidir: kurallar imzasız olduğu sürece hiçbir karar vermez, hiçbir bildirim göndermez.

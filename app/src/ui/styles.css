@@ -170,3 +170,5 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 
 /* Άλλα, prototype layout: the menu rows come first */
 .menu { display:grid; gap:var(--sp-8); margin:0 0 var(--sp-16); }
+.wx.dark .wx-source { color:var(--white); margin:var(--sp-8) 0 0; font-size:var(--fs-14); }
+.wx.dark .wx-source strong { text-decoration:underline; }

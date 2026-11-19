@@ -13,7 +13,7 @@ import { SprayForm } from './SprayForm';
 import { EmptyState, ErrorState } from './states';
 import { Title, nameOf, retry } from './screens';
 import { useRows, type Rows } from './useRows';
-import { dayOf, farmDay, parseDays, type Day } from '../weather/strip';
+import { dayOf, farmDay, parseDays, provenance, type Day } from '../weather/strip';
 import { todaySummary, cutCrates } from '../summary/today';
 import { useWeather } from './useWeather';
 import type { Row } from '../db/schema';
@@ -32,12 +32,16 @@ const DAY_MS = 86_400_000;
 interface FieldCard { weather: string; p: Row; state: 'free' | 'from' | 'unknown'; at: string; late: boolean; source: string; crops: string }
 
 /** «Weather now» (prototype layout): four tiles for today from the stored weather of every parcel, then the five-day strip. A tile without data shows «—»; nothing is invented. */
+const issuedText = (iso: string | undefined): string => (iso === undefined ? t('value.unknown') : formatDateTime(iso));
+const sourceLine = (p: { names: string[]; issued: string | undefined }): string => t('wx.source', { name: p.names.join(', '), when: issuedText(p.issued) });
+
 function WeatherStrip({ perParcel }: { perParcel: ReadonlyArray<readonly Day[]> }) {
   const today = athensToday(new Date()) ?? '1970-01-01';
   const base = Date.parse(`${today}T12:00:00Z`);
   const dates = [0, 1, 2, 3, 4].map((i) => new Date(base + i * DAY_MS).toISOString().slice(0, 10));
   const days = dates.map((d) => farmDay(perParcel, d));
   const now = days[0];
+  const src = provenance(perParcel, Date.now());
   const any = days.some((d) => d !== undefined);
   const val = (n: number | undefined, key: 'wx.kmh' | 'wx.pct'): string => (n === undefined ? DASH : t(key, { v: formatQty(n) }));
   return (
@@ -62,6 +66,9 @@ function WeatherStrip({ perParcel }: { perParcel: ReadonlyArray<readonly Day[]> 
         })}
       </div>
       {!any && <p class="wx-none">{t('today.weather.none')}</p>}
+      {any && src && (
+        <p class="wx-source" data-testid="wx-source">{sourceLine(src)}{src.stale && <strong data-testid="wx-stale"> {t('wx.stale')}</strong>}</p>
+      )}
     </section>
   );
 }

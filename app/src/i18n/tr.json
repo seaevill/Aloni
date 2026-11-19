@@ -629,5 +629,7 @@
   "stock.phi": "Bekleme (onaylı etiket): {list}",
   "stock.phi.item": "{crop} {n} gün",
   "more.menu": "Menü",
-  "more.settings": "Ayarlar ve bağlantı"
+  "more.settings": "Ayarlar ve bağlantı",
+  "wx.source": "Veri: {name} · {when}",
+  "wx.stale": "eski veri"
 }

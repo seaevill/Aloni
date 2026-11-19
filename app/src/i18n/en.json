@@ -629,5 +629,7 @@
   "stock.phi": "Waiting period (approved label): {list}",
   "stock.phi.item": "{crop} {n} d",
   "more.menu": "Menu",
-  "more.settings": "Settings and sign-in"
+  "more.settings": "Settings and sign-in",
+  "wx.source": "Data: {name} · {when}",
+  "wx.stale": "old data"
 }
