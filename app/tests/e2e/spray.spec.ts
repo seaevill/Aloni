@@ -126,3 +126,34 @@ test('a spraying entered 10 days late: refused without «Λόγος καθυστ
   await page.getByTestId('spray-save').click();
   await expect(page.getByText('καθυστερημένη καταχώριση')).toBeVisible();
 });
+
+test('a label an UNSIGNED spray used is not edited in place: a change makes a NEW label with a reason; editing that replacement keeps the link', async ({ page }) => {
+  await iphone(page);
+  await setup(page, false);
+  await spray(page);
+  await page.getByTestId('spray-save').click();
+  await tab(page, 'stock');
+  await page.getByTestId('labeluse-open').click();
+  const card = page.getByTestId('labeluse');
+  await card.getByRole('button', { name: 'Επεξεργασία' }).click();
+  await expect(page.getByTestId('labeluse-signed-note')).toBeVisible();   // used by a spray: the note appears although nobody signed it
+  await inputs(page).nth(2).fill('9');                                    // (the reason box is the first input; PHI is the third)
+  await page.getByTestId('labeluse-save').click();
+  await expect(page.getByTestId('labeluse-signed-note').getByRole('alert')).toBeVisible();   // no reason: refused
+  await page.getByTestId('labeluse-reason').fill('label revised');
+  await page.getByTestId('labeluse-save').click();
+  await expect(page.getByTestId('labeluse-signed-note')).toHaveCount(0);   // saved: the form is closed
+  const rows = () => page.evaluate(() => new Promise<Array<Record<string, unknown>>>((done) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const q = r.result.transaction(['label_uses']).objectStore('label_uses').getAll(); q.onsuccess = () => done(q.result as Array<Record<string, unknown>>); }; }));
+  let all = await rows();
+  expect(all).toHaveLength(2);
+  const oldRow = all.find((x) => x.deleted_at)!; const newRow = all.find((x) => !x.deleted_at)!;
+  expect(newRow).toMatchObject({ supersedes_id: oldRow.id, change_reason: 'label revised', phi_days: '9' });
+  await card.getByRole('button', { name: 'Επεξεργασία' }).click();     // the replacement is not used yet: edited in place, the link and the reason stay
+  await expect(page.getByTestId('labeluse-signed-note')).toHaveCount(0);
+  await inputs(page).nth(1).fill('10');
+  await page.getByTestId('labeluse-save').click();
+  await expect(card.getByTestId('labeluse-status')).toBeVisible();
+  all = await rows();
+  expect(all).toHaveLength(2);
+  expect(all.find((x) => !x.deleted_at)).toMatchObject({ supersedes_id: oldRow.id, change_reason: 'label revised', phi_days: '10' });
+});
