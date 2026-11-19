@@ -4,7 +4,8 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { DEMO_FARM_ID } from '../../src/config';
 import { AppDB, FARM_TABLES } from '../../src/db/schema';
 import { importDemo, type PrototypeData } from '../../src/db/import-demo';
-import { put } from '../../src/repo';
+import { put, putMany } from '../../src/repo';
+import { buildJob } from '../../src/spray/plan';
 import { newDb, putParcel, TEST_FARM_ID } from '../helpers/factories';
 
 // T14: the demo farm may be written to (practice), but it never touches the real farm, never reaches the outbox and its fictional label values never show up in the real farm.
@@ -41,5 +42,19 @@ describe('demo isolation', () => {
     await importDemo(db, data);
     expect(await db.job_spray.where('farm_id').equals(DEMO_FARM_ID).count()).toBe(before);
     expect(await db.parcels.where('farm_id').equals(TEST_FARM_ID).count()).toBe(1);
+  });
+  it('a job built with the demo farm id and saved with putMany (job + links) is all demo: no real row, nothing in the outbox', async () => {
+    await putParcel(db, { name: 'Real parcel' });
+    await importDemo(db, data);
+    const pl = (await db.plantings.where('farm_id').equals(DEMO_FARM_ID).toArray())[0];
+    const r = buildJob({ plantingIds: [String(pl.id)], productId: 'p-demo', workerId: 'w-demo', dose: '0,025', doseUnit: 'ml/str', plannedFor: '2026-11-20' }, { label: undefined, plantings: [pl] }, DEMO_FARM_ID, '2026-11-19T08:00:00Z', { job: crypto.randomUUID(), plantingLinks: [crypto.randomUUID()] });
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    await putMany(db, [{ table: 'jobs', row: r.job, op: 'insert' }, ...r.jobPlantings.map((row) => ({ table: 'job_plantings' as const, row, op: 'insert' as const }))]);
+    expect(r.job.farm_id).toBe(DEMO_FARM_ID);
+    expect(r.jobPlantings.every((x) => x.farm_id === DEMO_FARM_ID)).toBe(true);
+    expect(await db.jobs.where('farm_id').equals(TEST_FARM_ID).count()).toBe(0);
+    expect(await db.job_plantings.where('farm_id').equals(TEST_FARM_ID).count()).toBe(0);
+    expect(await db.outbox.count()).toBe(0);
   });
 });

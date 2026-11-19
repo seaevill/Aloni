@@ -2,14 +2,15 @@ import { expect, test } from '@playwright/test';
 import { iphone } from './helpers/iphone';
 
 // T14: the demo farm is writable (practice) and can be reset; nothing of it is queued for sync.
-test('demo: «Νέος ψεκασμός» opens, a job can be planned, and «Επαναφορά επίδειξης» restores the original', async ({ page }) => {
+test('demo: the spray and job forms open, and «Επαναφορά επίδειξης» restores the original', async ({ page }) => {
   const errors = await iphone(page);
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await page.getByTestId('spray-open').click();
   await expect(page.getByTestId('spray-save')).toBeVisible();
   await page.getByRole('button', { name: 'Ακύρωση' }).click();
   await page.getByTestId('job-open').click();
-  await page.getByRole('button', { name: 'Ακύρωση' }).first().click().catch(() => undefined);
+  await expect(page.getByTestId('job-save')).toBeVisible();
+  await page.getByRole('button', { name: 'Ακύρωση' }).first().click();
   await page.locator('nav.tabs [data-tab="more"]').click();
   await expect(page.getByTestId('demo-load')).toHaveText('Επαναφορά επίδειξης');
   await page.getByTestId('demo-load').click();
