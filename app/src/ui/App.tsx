@@ -14,12 +14,18 @@ import { session } from '../auth/gotrue';
 import { useRows } from './useRows';
 
 // Keys are spelled out as literals so the i18n key test can see them (no dynamic t(`tab.${id}`)).
-const TABS: Array<{ id: Tab; icon: string; label: I18nKey }> = [
-  { id: 'today', icon: '☀️', label: 'tab.today' },
-  { id: 'crops', icon: '🥬', label: 'tab.crops' },
-  { id: 'parcels', icon: '🗺️', label: 'tab.parcels' },
-  { id: 'stock', icon: '📦', label: 'tab.stock' },
-  { id: 'more', icon: '⋯', label: 'tab.more' },
+const Icon = ({ d, dots = false }: { d: string; dots?: boolean }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    {dots ? <><circle cx="5" cy="12" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="19" cy="12" r="1.5" /></> : <path d={d} />}
+  </svg>
+);
+// Line icons (no emoji: the same look on every phone). Labels are ONE short word each so they never wrap in the 75 px column.
+const TABS: Array<{ id: Tab; icon: preact.JSX.Element; label: I18nKey }> = [
+  { id: 'today', icon: <Icon d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4M12 8a4 4 0 100 8 4 4 0 000-8z" />, label: 'tab.today' },
+  { id: 'crops', icon: <Icon d="M5 19C5 10 11 5 19 5c0 8-5 14-14 14zM5 19l8-8" />, label: 'tab.crops' },
+  { id: 'parcels', icon: <Icon d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14" />, label: 'tab.parcels' },
+  { id: 'stock', icon: <Icon d="M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10" />, label: 'tab.stock' },
+  { id: 'more', icon: <Icon d="" dots />, label: 'tab.more' },
 ];
 
 export function App() {
@@ -36,7 +42,7 @@ export function App() {
         {TABS.map(({ id, icon, label }) => (
           <button key={id} data-tab={id} aria-current={tab.value === id ? 'page' : undefined} onClick={() => (tab.value = id)}>
             <span class="ico" aria-hidden="true">{icon}</span>
-            {t(label)}
+            <span class="lbl">{t(label)}</span>
           </button>
         ))}
       </nav>
