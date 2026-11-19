@@ -9,7 +9,7 @@
 | Güvenlik | 80 | 0022–0027 ekip incelemesi bekliyor; açık MUST bilinmiyor |
 | Görünüm | 66 | Bora istediği görünümü henüz görmüyor: prototip düzenine geçiş başlıyor (E2) |
 | Senkron / işçi | 70 | kod hazır, LIVE kapalı; denenmedi |
-| Hava / bildirim | 40 | hava ekranı hazır (veri yok), bildirim altyapısı hazır (gönderim yok) |
+| Hava / bildirim | 40 | hava ekranı hazır (veri yok), bildirimlerde 16 kuralın listesi var, hepsi «imzasız = bildirim yok» (gönderim yok) |
 | Sipariş | 10 | Κλούβες bağlantısı daha başlamadı (yalnızca tedarik tablosu hesabı) |
 
 ## (b) Bu turda telefonda ne değişti

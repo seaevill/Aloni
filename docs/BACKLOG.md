@@ -30,7 +30,7 @@ Bu dosya benim iş listem. Bitirdiğimi `[x]` ile işaretlerim. `docs/reviews/te
 ## E4 – Günlük fayda
 - [ ] Hava (BÜYÜK, 4 parça): (i) `weather-fetch` gövdesini yaz (parselleri oku, Open-Meteo'dan çek, `weather_daily`'ye yaz); (ii) migration 0029: sahip/işçi için `farm_weather(p_farm)` okuma fonksiyonu + test; (iii) telefonda senkron turunda `weather` tablosunu doldur; (iv) RUNBOOK'a Bora'nın tıklayacağı deploy + pg_cron adımları. Şu an yalnızca iskelet var. Hava: Edge Function deploy hazırlığı (RUNBOOK'ta Bora'nın tıklayacağı adımlar) + veri gelince şerit dolsun. *Bitti:* RUNBOOK bölümü + veri geldiğinde şeridin dolduğunu gösteren test.
 - [ ] Sipariş bağlantısı 1. adım: Κλούβες JSON yedeği içe aktarma → «Διαθέσιμες κλούβες» ve ekim önerisi ekranı; PHI'de bekleyen hasat arz sayılmaz. *Bitti:* içe aktarma + ekran + PHI testi.
-- [ ] Bildirimler: imzalı kurallar için gösterim (gönderim yok, sessiz saat korunur). *Bitti:* ekran + «imzasız kural bildirim göstermez» testi.
+- [x] Bildirimler: imzalı kurallar için gösterim (gönderim yok, sessiz saat korunur). *Bitti:* ekran + «imzasız kural bildirim göstermez» testi.
 
 ## E5 – Kalite
 - [ ] Kalan golden vakalar (yalnızca veri); geçen/atlanan sayısı STATUS'ta. *Bitti:* sayı yazılı.
