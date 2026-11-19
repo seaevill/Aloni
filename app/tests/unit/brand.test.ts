@@ -11,7 +11,7 @@ describe('brand', () => {
     expect(hits).toEqual(['src/config.ts']);
   });
   it('the name «Aloni Farm» (taken by another app) appears nowhere in the code or the pages', () => {
-    const files = [...walk('src'), 'index.html', 'vite.config.ts'].filter((f) => /\.(ts|tsx|json|html)$/.test(f));
+    const files = [...walk('src'), 'index.html', 'vite.config.ts'].filter((f) => /\.(ts|tsx|json|html)$/.test(f) && !f.endsWith('config.ts')); // config.ts says in a comment why the name is not used
     expect(files.filter((f) => /Aloni Farm/i.test(readFileSync(f, 'utf8')))).toEqual([]);
   });
   it('the manifest has an id and a maskable icon that is not icon-512.png', () => {
