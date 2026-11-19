@@ -1,6 +1,6 @@
 // Weather for the screens: what the `weather` table holds (per parcel, one entry per day), shown as it is. Nothing here decides or advises anything;
 // a day without data stays empty («—»). Values are kept exactly as stored (no rounding, no invented fill-in).
-export interface Day { date: string; tmin?: number; tmax?: number; rain?: number; gust?: number }
+export interface Day { date: string; tmin?: number; tmax?: number; rain?: number; gust?: number; wind?: number; rh?: number }
 
 const num = (v: unknown): number | undefined => (typeof v === 'number' && Number.isFinite(v) ? v : undefined);
 
@@ -11,7 +11,7 @@ export function parseDays(days: readonly unknown[] | undefined): Day[] {
     if (typeof d !== 'object' || d === null) continue;
     const r = d as Record<string, unknown>;
     if (typeof r.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(r.date)) continue;
-    out.push({ date: r.date, tmin: num(r.tmin), tmax: num(r.tmax), rain: num(r.rain_mm), gust: num(r.gust_kmh) });
+    out.push({ date: r.date, tmin: num(r.tmin), tmax: num(r.tmax), rain: num(r.rain_mm), gust: num(r.gust_kmh), wind: num(r.wind_kmh), rh: num(r.rh_pct) });
   }
   return out;
 }
@@ -25,5 +25,5 @@ const highest = (xs: Array<number | undefined>): number | undefined => { const k
 export function farmDay(perParcel: ReadonlyArray<readonly Day[]>, date: string): Day | undefined {
   const found = perParcel.map((p) => dayOf(p, date)).filter((d): d is Day => d !== undefined);
   if (found.length === 0) return undefined;
-  return { date, tmin: lowest(found.map((d) => d.tmin)), tmax: highest(found.map((d) => d.tmax)), rain: highest(found.map((d) => d.rain)), gust: highest(found.map((d) => d.gust)) };
+  return { date, tmin: lowest(found.map((d) => d.tmin)), tmax: highest(found.map((d) => d.tmax)), rain: highest(found.map((d) => d.rain)), gust: highest(found.map((d) => d.gust)), wind: highest(found.map((d) => d.wind)), rh: highest(found.map((d) => d.rh)) };
 }

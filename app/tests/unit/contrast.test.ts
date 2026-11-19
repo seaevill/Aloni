@@ -21,6 +21,7 @@ const TEXT: Array<[string, string, string]> = [
   ['muted text on page', MUTED, BG], ['muted text on card', MUTED, CARD],
   ['tab label', TAB, BG], ['active tab label', FOREST2, BG], ['active tab icon pill (lime is only a fill)', ON_LIME, LIME], ['active tab / secondary button / message', GREEN, CARD], ['message on page', GREEN, BG],
   ['primary button', '#fff', GREEN], ['danger button', WARN, CARD], ['badge', '#fff', WARN], ['draft banner and sync chip', AMBER_FG, AMBER_BG], ['toast', '#fff', FG], ['blocked badge', '#fff', DANGER], ['calm chip', CALM_FG, CALM_BG],
+  ['white on the dark band', '#fff', FOREST2], ['white on a dark weather tile', '#fff', token('card-on-dark')],
 ];
 
 describe('colour contrast', () => {

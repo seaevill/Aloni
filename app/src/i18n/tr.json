@@ -563,5 +563,15 @@
   "notify.denied": "Bildirim izni verilmedi.",
   "notify.saved": "Kaydedildi.",
   "worker.start": "İlaçlamanın başlangıç saati",
-  "worker.start.error": "İlaçlamanın ne zaman başladığını yazın. Başlangıç bitişten sonra olamaz."
+  "worker.start.error": "İlaçlamanın ne zaman başladığını yazın. Başlangıç bitişten sonra olamaz.",
+  "wx.maxmin": "Bugün en yüksek / en düşük",
+  "wx.wind": "Rüzgâr",
+  "wx.humidity": "Nem",
+  "wx.rain.today": "Bugün yağış",
+  "wx.kmh": "{v} km/sa",
+  "wx.pct": "%{v}",
+  "today.kpi.parcels": "Tarla",
+  "today.kpi.crops": "Ürün",
+  "today.kpi.harvest": "Bugün beklemesi olmayan tarla",
+  "today.kpi.held": "{n} tarlada bekleme var ya da bilinmiyor"
 }
