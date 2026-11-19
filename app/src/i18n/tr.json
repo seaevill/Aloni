@@ -463,5 +463,8 @@
   "welcome.2.body": "Bir tarla ve ekili ürünüyle başlayın.",
   "welcome.3": "ya da gösteriyi görün",
   "welcome.3.body": "Nasıl çalıştığını görmeniz için hayali veriler. Kendi verilerinizle karışmaz.",
-  "unit.str": "dekar"
+  "unit.str": "dekar",
+  "wx.temp": "{min}–{max}°",
+  "wx.rain": "{mm} mm",
+  "wx.gust": "hamle {kmh} km/sa"
 }
