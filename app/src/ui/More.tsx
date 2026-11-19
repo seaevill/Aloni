@@ -23,6 +23,7 @@ export function More() {
   const [view, setView] = useState<'main' | 'info' | 'photos' | 'workers' | 'register' | 'orders'>('main');
   const standalone = matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true;
   const openedFrom = [t(standalone ? 'more.openedFrom.home' : 'more.openedFrom.safari'), t('more.openedFrom.note')].join(' ');
+  const demoLabel = t(hasDemo.value ? 'more.resetDemo' : 'more.loadDemo');
   const pick = (id: string) => { activeFarm.value = id; dataVersion.value++; };
   if (view === 'info') return <Info onBack={() => setView('main')} />;
   if (view === 'orders') return <Orders onBack={() => setView('main')} />;
@@ -57,7 +58,7 @@ export function More() {
         ))}
       </div>
 
-      <button class="btn" onClick={async () => { await loadDemo(); setMsg(t('more.demoLoaded')); }}>{t('more.loadDemo')}</button>
+      <button class="btn" data-testid="demo-load" onClick={async () => { await loadDemo(); setMsg(t('more.demoLoaded')); }}>{demoLabel}</button>
       {hasDemo.value && (
         <button class="btn danger" onClick={async () => { await deleteDemo(); showUndo(t('more.demoRemoved'), loadDemo); }}>{t('more.removeDemo')}</button>
       )}

@@ -15,6 +15,7 @@
   "more.title": "More",
   "more.language": "Language",
   "more.activeFarm": "Active farm",
+  "more.resetDemo": "Reset the demo",
   "more.loadDemo": "Load demo farm",
   "more.removeDemo": "Remove demo farm",
   "more.demoNote": "Demo data is fictional and never mixed with your real data.",

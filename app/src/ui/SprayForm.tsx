@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'preact/hooks';
 import { dataVersion, db, realFarmId } from '../db';
 import { addDecimal, known, mulDecimal, type Decimal } from '@aloni/rules-core';
+import { useState } from 'preact/hooks';
+import { dataVersion, db, activeFarm } from '../db';
+import { known } from '@aloni/rules-core';
 import { t, type I18nKey } from '../i18n';
 import { formatDose, formatQty } from '../i18n/format';
 import { DOSE_UNITS, readUse, statusOf } from '../labels/label-use';
@@ -80,6 +83,13 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const freshLots = myLots.filter((l) => !(typeof l.expiry === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(l.expiry) && l.expiry < today0));   // not expired (an unreadable or missing expiry is not «expired»)
   useEffect(() => { if (productId && lotKey === undefined && freshLots.length === 1) setLotKey(String(freshLots[0]!.lot_key)); }, [productId, myLots.length]);   // only when there is exactly ONE lot that is not expired
   const focusFirstError = () => { requestAnimationFrame(() => { const el = document.querySelector<HTMLElement>('.msg.error[role="alert"]'); if (el) { el.scrollIntoView({ block: 'center' }); el.focus(); } }); };
+  const r = buildSpray(input, sprayCtx, activeFarm.value, new Date().toISOString(), ids);
+  const rMix = buildSpray({ ...input, mixId: mixDraft }, sprayCtx, activeFarm.value, new Date().toISOString(), ids);   // the same record as the FIRST product of a tank mix
+  const pickLabelDefaults = (l: Row | undefined) => { // the label's own unit (and a single dose) are offered as a start; nothing is chosen for him otherwise
+    if (!l) return;
+    const u = readUse(l);
+    if (u.dose.known) { setUnit(u.dose.value.unit); if (u.dose.value.kind === 'single' && dose === '') setDose(formatDose(known(u.dose.value.min))); }
+  };
   const plantingName = (p: Row) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: String(parcels.rows?.find((x) => x.id === p.parcel_id)?.name ?? '') });
   const save = async (more: boolean) => {
     const rec = more ? rMix : r;

@@ -1,6 +1,6 @@
 import { parseWhole } from '@aloni/rules-core';
 import { useEffect, useState } from 'preact/hooks';
-import { dataVersion, db, realFarmId } from '../db';
+import { dataVersion, db, activeFarm } from '../db';
 import { formatDate, formatDateTime, t, tn, ts } from '../i18n';
 import { formatArea } from '../i18n/format';
 import { put } from '../repo';
@@ -22,7 +22,7 @@ const MARK = { lock: '🔒', ok: '✓' } as const;
 const MAIN = new Set(['growing', 'harvesting']);
 const MAX_CRATES = 9999;
 
-export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = false }: { onDone: (saved: boolean) => void; farmId?: string; actorId?: string; big?: boolean }) {
+export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = false }: { onDone: (saved: boolean) => void; farmId?: string; actorId?: string; big?: boolean }) {
   const { busy, submit } = useSubmit();
   const plantings = useRows('plantings'); const crops = useRows('crops'); const parcels = useRows('parcels'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const workers = useRows('workers');
   const roster = (workers.rows ?? []).filter((w) => !w.deleted_at);
