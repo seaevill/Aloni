@@ -38,3 +38,15 @@ describe('orders belong to one farm (T5)', () => {
     expect((await loadOrders(db, 'real-farm')).orders).toBeUndefined();
   });
 });
+
+describe('delete demo', () => {
+  it('removes the demo\'s order sample with it and leaves the real farm\'s import', async () => {
+    const { ordersKey, mapKey } = await import('../../src/orders/store');
+    const db = await newDb();
+    await saveOrders(db, DEMO_FARM_ID, real, {}); await saveOrders(db, 'real-farm', real, { p1: 'spinach' });
+    const { delLocal } = await import('../../src/repo');
+    await delLocal(db, ordersKey(DEMO_FARM_ID)); await delLocal(db, mapKey(DEMO_FARM_ID));
+    expect((await loadOrders(db, DEMO_FARM_ID)).orders).toBeUndefined();
+    expect((await loadOrders(db, 'real-farm')).orders).toEqual(real);
+  });
+});

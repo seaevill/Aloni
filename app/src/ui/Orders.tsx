@@ -29,6 +29,7 @@ export function Orders({ onBack }: { onBack: () => void }) {
     if (!file) return;
     const parsed = parseBackup(await file.text());
     if (!parsed.ok) { setBad(true); return; }
+    if (activeFarm.value !== farm) return;      // the farm was switched while the file was read: nothing is shown or saved under the wrong farm
     const next = { ...suggestCropMap(parsed.orders.products), ...map };
     setBad(false); setOrders(parsed.orders); setMap(next); setNote(parsed.orders.skipped);
     await saveOrders(db, farm, parsed.orders, next); dataVersion.value++;

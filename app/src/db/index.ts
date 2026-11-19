@@ -2,11 +2,12 @@ import { signal } from '@preact/signals';
 import { AppDB, type FarmRow } from './schema';
 import { importDemo, removeDemo, type PrototypeData } from './import-demo';
 import { migrateLegacyDb } from './legacy';
-import { guardAppendOnly, refreshPending } from '../repo';
+import { delLocal, guardAppendOnly, refreshPending } from '../repo';
 import { APP_NAME, DEMO_FARM_ID } from '../config';
 import { t } from '../i18n';
 import { commitAllHeld } from '../worker/held';
 import { demoOrders, migrateUnkeyedOrders, saveOrders } from '../orders/store';
+import { demoOrders, mapKey, migrateUnkeyedOrders, ordersKey, saveOrders } from '../orders/store';
 
 export const db = new AppDB();
 guardAppendOnly(db);
@@ -47,6 +48,7 @@ export async function loadDemo() {
 
 export async function deleteDemo() {
   await removeDemo(db);
+  await delLocal(db, ordersKey(DEMO_FARM_ID)); await delLocal(db, mapKey(DEMO_FARM_ID));      // the demo's order sample goes with it
   hasDemo.value = false;
   if (activeFarm.value === DEMO_FARM_ID) activeFarm.value = realFarmId.value;
   dataVersion.value++;
