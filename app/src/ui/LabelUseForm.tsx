@@ -1,9 +1,9 @@
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { dataVersion, db, realFarmId } from '../db';
 import { CATALOG, cropRow, cropName } from '../crops/catalog';
 import { lang, t, type I18nKey } from '../i18n';
 import { fingerprint } from '@aloni/rules-core';
-import { supersede } from '../labels/label-use';
+import { keepLinks, safetyChanged, supersede } from '../labels/label-use';
 import { buildLabelUse, DOSE_UNITS, KINDS, readUse, toInput, type Field, type FieldName, type LabelUseInput } from '../labels/label-use';
 import { archived } from '../parcels/parcel';
 import { putMany, put } from '../repo';
@@ -38,19 +38,22 @@ export function LabelUseForm({ productId, taken, existing, onDone }: { productId
   const [bad, setBad] = useState<ReadonlySet<FieldName | 'range'>>(new Set());
   const [cropMissing, setCropMissing] = useState(false);
   const [reason, setReason] = useState(''); const [reasonMissing, setReasonMissing] = useState(false);
-  const wasSigned = !!existing?.sign_off; // a signed label use is never edited in place: the change becomes a NEW label use with a reason
+  const [used, setUsed] = useState(false); // a spray has used it: the server freezes its values even while it is unsigned (0020)
+  useEffect(() => { if (existing) void db.table('job_spray').filter((s) => s.label_use_id === existing.id).count().then((n) => setUsed(n > 0)); }, [existing?.id]);
+  const wasSigned = !!existing?.sign_off || used; // a signed OR used label use is never edited in place: the change becomes a NEW label use with a reason
   const patch = (p: Partial<LabelUseInput>) => setV({ ...v, ...p });
   const crop = CATALOG.find((c) => c.slug === slug);
 
   const save = async () => {
     const now = new Date().toISOString();
     const cropRowValue = crop ? await cropRow(crop, realFarmId.value, now) : undefined;
-    const wasSignedNow = !!existing?.sign_off;
+    const usedNow = existing ? (await db.table('job_spray').filter((s) => s.label_use_id === existing.id).count()) > 0 : false;
+    const wasSignedNow = !!existing?.sign_off || usedNow;
     const r = buildLabelUse({ ...v, cropId: existing ? v.cropId : cropRowValue?.id ?? '' }, realFarmId.value, now, wasSignedNow ? crypto.randomUUID() : existing?.id ?? crypto.randomUUID(), wasSignedNow ? now : existing ? String(existing.created_at) : now);
     if (!r.ok) { setBad(r.invalid); setCropMissing(r.crop); return; }
     const newCrop = cropRowValue && !(await db.crops.get(cropRowValue.id)) ? [{ table: 'crops', row: cropRowValue, op: 'insert' as const }] : [];
     if (existing && wasSignedNow) {
-      if (fingerprint(readUse(existing)) === fingerprint(readUse(r.row))) { onDone(); return; } // nothing changed: nothing to replace
+      if (fingerprint(readUse(existing)) === fingerprint(readUse(r.row)) && !safetyChanged(existing, r.row)) { onDone(); return; } // nothing changed: nothing to replace
       const sup = supersede(existing, r.row, reason, now);
       if (!sup) { setReasonMissing(true); return; }
       await putMany(db, [{ table: 'label_uses', row: sup.archivedOld, op: 'update' }, { table: 'label_uses', row: sup.replacement, op: 'insert' }]); // old archived + new, ONE transaction
@@ -59,19 +62,20 @@ export function LabelUseForm({ productId, taken, existing, onDone }: { productId
       onDone();
       return;
     }
-    await putMany(db, [...newCrop, { table: 'label_uses', row: r.row, op: existing ? 'update' : 'insert' }]); // the crop and its label details together
+    await putMany(db, [...newCrop, { table: 'label_uses', row: existing ? keepLinks(existing, r.row) : r.row, op: existing ? 'update' : 'insert' }]); // the crop and its label details together
     dataVersion.value++;
     showUndo(t('labeluse.saved'), async () => { await put(db, 'label_uses', existing ?? archived(r.row, new Date().toISOString())); dataVersion.value++; });
     onDone();
   };
 
   const titleKey: I18nKey = existing ? 'labeluse.edit' : 'labeluse.add';
+  const noteKey: I18nKey = existing?.sign_off ? 'labeluse.signed.note' : 'labeluse.used.note';
   return (
     <section>
       <h1>{t(titleKey)}</h1>
       {wasSigned && (
         <div class="card" data-testid="labeluse-signed-note">
-          <p class="badge warn">{t('labeluse.signed.note')}</p>
+          <p class="badge warn">{t(noteKey)}</p>
           <label class="field">{t('labeluse.reason')}<input class="input" value={reason} autoComplete="off" data-testid="labeluse-reason" onInput={(e) => setReason((e.target as HTMLInputElement).value)} /></label>
           {reasonMissing && reason.trim() === '' && <p class="msg error" role="alert">{t('labeluse.error.reason')}</p>}
         </div>

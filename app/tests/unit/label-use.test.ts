@@ -106,3 +106,18 @@ describe('dose 0 and the scope of the approval', () => {
     expect('sign_off' in build(input({ target: 'aphids' }))).toBe(false); // editing the target through the form drops it too
   });
 });
+
+import { keepLinks, safetyChanged } from '../../src/labels/label-use';
+describe('label use: used / replacement rows (m4-0020)', () => {
+  const base = { id: 'a', farm_id: 'f', product_id: 'p', crop_id: 'c', dose_kind: 'single', dose_unit: 'ml/str', dose_min: '0.025', phi_days: '7', rei_hours: '24', max_apps: '3' };
+  it('a changed safety value is seen, a changed target or source is not a safety change', () => {
+    expect(safetyChanged(base, { ...base, phi_days: '1' })).toBe(true);
+    expect(safetyChanged(base, { ...base, target: 'x', source: 'y' })).toBe(false);
+    expect(safetyChanged(base, { ...base })).toBe(false);
+  });
+  it('editing an unsigned replacement keeps the link and the reason', () => {
+    const kept = keepLinks({ ...base, supersedes_id: 'old', change_reason: 'label changed' }, { id: 'a', farm_id: 'f', phi_days: '8' });
+    expect(kept.supersedes_id).toBe('old'); expect(kept.change_reason).toBe('label changed');
+    expect(keepLinks(base, { id: 'a', farm_id: 'f' })).toEqual({ id: 'a', farm_id: 'f' });
+  });
+});

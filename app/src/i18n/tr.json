@@ -448,5 +448,6 @@
   "lang.review": "Çeviri ana dili konuşan biri tarafından kontrol edilecek",
   "labeluse.signed.note": "Etiket imzalı ve değişmez. Değişiklik, imzasız YENİ bir etiket oluşturur ve eskisini arşivler.",
   "labeluse.reason": "Etiket neden değişiyor?",
-  "labeluse.error.reason": "Değişikliğin nedenini yazın."
+  "labeluse.error.reason": "Değişikliğin nedenini yazın.",
+  "labeluse.used.note": "Bu etiket bir ilaçlamada kullanıldı, değerleri değişmez. Değişiklik YENİ bir etiket oluşturur ve eskisini arşivler."
 }
