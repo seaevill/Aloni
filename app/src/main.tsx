@@ -7,10 +7,10 @@ import { App } from './ui/App';
 import { initDb } from './db';
 import { lang } from './i18n';
 import { bootSync } from './sync/boot';
-import { onNeedRefresh, onOfflineReady, setApply, watchDirty } from './pwa/update';
+import { onNeedRefresh, onOfflineReady, setApply, watchDirty, watchForUpdates } from './pwa/update';
 
 document.documentElement.lang = lang.value;
-setApply(registerSW({ immediate: true, onNeedRefresh, onOfflineReady }).bind(null, true) as () => void);
+setApply(registerSW({ immediate: true, onNeedRefresh, onOfflineReady, onRegisteredSW: (_url, reg) => watchForUpdates(reg) }).bind(null, true) as () => void);
 watchDirty();
 void initDb().finally(() => { render(<App />, document.getElementById('app')!); void bootSync(); });
 

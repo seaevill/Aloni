@@ -8,11 +8,12 @@ import { t } from '../i18n';
 import { commitAllHeld } from '../worker/held';
 import { demoOrders, mapKey, migrateUnkeyedOrders, ordersKey, saveOrders } from '../orders/store';
 import { dbBlocked, needRefresh } from '../pwa/update';
+import { dbBlocked, dirty, needRefresh } from '../pwa/update';
 
 export const db = new AppDB();
 guardAppendOnly(db);
 // another tab with a NEWER version wants to upgrade the database: close ours (the update bar says so) / this tab waits for another tab to close
-db.on('versionchange', () => { db.close(); needRefresh.value = true; });
+db.on('versionchange', () => { db.close(); needRefresh.value = true; setTimeout(() => { if (!dirty.value) location.reload(); }, 0); });   // a closed database is useless: reload at once unless something was typed (then the bar's button reloads)
 db.on('blocked', () => { dbBlocked.value = 'other'; });
 
 export const realFarmId = signal('');
