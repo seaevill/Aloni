@@ -493,7 +493,7 @@
   "spray.correct.note": "The original stays as it was. The correction is a new record with its reason. The product does not change.",
   "spray.correct.reason": "Reason for the correction",
   "spray.correct.reason.error": "Write the reason for the correction: a correction always has one.",
-  "spray.correct.earlier": "The waiting period cannot end earlier than the original record.",
+  "spray.correct.earlier": "The end of the spraying cannot be moved earlier than it was recorded.",
   "spray.correct.time.error": "Invalid date or time.",
   "spray.correct.qty": "Quantity taken from the lot",
   "spray.correct.open": "Correct",
@@ -561,5 +561,7 @@
   "notify.nokey": "Notifications are not available in this version yet.",
   "notify.unsupported": "This phone or browser does not support notifications.",
   "notify.denied": "Permission for notifications was not given.",
-  "notify.saved": "Saved."
+  "notify.saved": "Saved.",
+  "worker.start": "Start time of the spraying",
+  "worker.start.error": "Write when the spraying started. The start cannot be after the end."
 }

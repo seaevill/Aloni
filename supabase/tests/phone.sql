@@ -39,7 +39,7 @@ begin
   if lab.sign_off_by <> 'Agronomist' or lab.sign_off_fingerprint is null then raise exception 'the signature was lost although the edit was refused: %', to_jsonb(lab); end if;
   -- an optional field the phone emptied is emptied here
   select o into edit from ops_t where o->>'table' = 'plantings' limit 1;
-  res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', farm, 'table', 'plantings', 'op', 'update', 'row', (edit->'row') - 'variety')));
+  res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', farm, 'table', 'plantings', 'op', 'update', 'row', ((edit->'row') - 'variety') || jsonb_build_object('edit_reason', 'variety removed'))));
   if res->0->>'status' <> 'applied' then raise exception 'planting edit rejected: %', res; end if;
   if (select variety from plantings where farm_id = farm) is not null then raise exception 'an emptied optional field kept its old value'; end if;
 end $$;

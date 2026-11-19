@@ -339,3 +339,13 @@ describe('tank mix (0026)', () => {
     expect('mix_id' in build(input(), ctx()).spray).toBe(false);
   });
 });
+
+describe('a correction never moves the end earlier (team review 0024, MUST 1)', () => {
+  it('refused when earlier, fine when equal or later', () => {
+    const o = build(input(), ctx()).spray;
+    const base = { dose: '0,03', doseUnit: 'ml/str' as const, applicatorId: 'w1', qty: '0,25', water: '', note: '', reason: 'typo' };
+    const run = (sprayedAt: string) => buildCorrection(o, { ...base, sprayedAt }, { movements: [], lotBalance: '5' }, F, now, { spray: 's2', moveIn: 'a', moveOut: 'b' });
+    const early = run('2026-11-19T08:00:00Z'); expect(early.ok).toBe(false); if (!early.ok) expect(early.errors.endEarlier).toBe(true);
+    expect(run(T0).ok).toBe(true); expect(run('2026-11-20T08:30:00Z').ok).toBe(true);
+  });
+});

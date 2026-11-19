@@ -49,22 +49,22 @@ declare r jsonb; j text; why text;
   procedure_dummy int;
 begin
   -- happy path
-  r := complete_spray_job('eeeeeeee-0000-0000-0000-000000000101', now() - interval '10 minutes', '  dose was a little higher  ');
+  r := complete_spray_job('eeeeeeee-0000-0000-0000-000000000101', now() - interval '10 minutes', '  dose was a little higher  ', p_started_at => (now() - interval '10 minutes') - interval '30 minutes');
   insert into out_ values ('happy', r);
   -- every refusal below must raise; nothing may be recorded for it
   foreach j in array array['eeeeeeee-0000-0000-0000-000000000101', 'eeeeeeee-0000-0000-0000-000000000102', 'eeeeeeee-0000-0000-0000-000000000103', 'eeeeeeee-0000-0000-0000-000000000104', 'eeeeeeee-0000-0000-0000-000000000105', 'eeeeeeee-0000-0000-0000-00000000ffff'] loop
-    begin perform complete_spray_job(j::uuid, now()); raise exception 'accepted: %', j; exception when insufficient_privilege or check_violation then null; end;
+    begin perform complete_spray_job(j::uuid, now(), p_started_at => (now()) - interval '30 minutes'); raise exception 'accepted: %', j; exception when insufficient_privilege or check_violation then null; end;
   end loop;
-  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000107', now()); raise exception 'accepted: field under REI'; exception when check_violation then if sqlerrm not like '%locked%' then raise; end if; end;
-  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000108', now()); raise exception 'accepted: unknown REI'; exception when check_violation then if sqlerrm not like '%locked%' then raise; end if; end;
-  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000111', now()); raise exception 'accepted: field of job 1 is under its REI'; exception when check_violation then if sqlerrm not like '%locked%' then raise; end if; end;
-  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000109', now() + interval '1 hour'); raise exception 'accepted: future end'; exception when check_violation then null; end;
-  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000109', now() - interval '10 days'); raise exception 'accepted: late without a reason'; exception when check_violation then null; end;
-  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000109', now() - interval '10 days', null, '   '); raise exception 'accepted: late with a blank reason'; exception when check_violation then null; end;
-  insert into out_ values ('late', complete_spray_job('eeeeeeee-0000-0000-0000-000000000109', now() - interval '10 days', null, 'forgot to tell'));
-  insert into out_ values ('unsigned', complete_spray_job('eeeeeeee-0000-0000-0000-000000000106', now() - interval '5 minutes'));
+  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000107', now(), p_started_at => (now()) - interval '30 minutes'); raise exception 'accepted: field under REI'; exception when check_violation then if sqlerrm not like '%locked%' then raise; end if; end;
+  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000108', now(), p_started_at => (now()) - interval '30 minutes'); raise exception 'accepted: unknown REI'; exception when check_violation then if sqlerrm not like '%locked%' then raise; end if; end;
+  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000111', now(), p_started_at => (now()) - interval '30 minutes'); raise exception 'accepted: field of job 1 is under its REI'; exception when check_violation then if sqlerrm not like '%locked%' then raise; end if; end;
+  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000109', now() + interval '1 hour', p_started_at => (now() + interval '1 hour') - interval '30 minutes'); raise exception 'accepted: future end'; exception when check_violation then null; end;
+  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000109', now() - interval '10 days', p_started_at => (now() - interval '10 days') - interval '30 minutes'); raise exception 'accepted: late without a reason'; exception when check_violation then null; end;
+  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000109', now() - interval '10 days', null, '   ', p_started_at => (now() - interval '10 days') - interval '30 minutes'); raise exception 'accepted: late with a blank reason'; exception when check_violation then null; end;
+  insert into out_ values ('late', complete_spray_job('eeeeeeee-0000-0000-0000-000000000109', now() - interval '10 days', null, 'forgot to tell', p_started_at => (now() - interval '10 days') - interval '30 minutes'));
+  insert into out_ values ('unsigned', complete_spray_job('eeeeeeee-0000-0000-0000-000000000106', now() - interval '5 minutes', p_started_at => (now() - interval '5 minutes') - interval '30 minutes'));
   -- the worker can neither write a spray herself nor change a job's values
-  begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state) values ('11111111-1111-1111-1111-111111111111','eeeeeeee-0000-0000-0000-000000000110','aaaaaaaa-0000-0000-0000-000000000001','bbbbbbbb-0000-0000-0000-000000000001',now(),0.025,'ml/str','unsigned'); raise exception 'worker wrote a spray'; exception when insufficient_privilege then null; end;
+  begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,started_at,dose_str,dose_unit,label_state) values ('11111111-1111-1111-1111-111111111111','eeeeeeee-0000-0000-0000-000000000110','aaaaaaaa-0000-0000-0000-000000000001','bbbbbbbb-0000-0000-0000-000000000001',now(),now() - interval '1 hour',0.025,'ml/str','unsigned'); raise exception 'worker wrote a spray'; exception when insufficient_privilege then null; end;
   begin update jobs set dose_str = 0.001 where id = 'eeeeeeee-0000-0000-0000-000000000110'; raise exception 'worker changed a dose'; exception when insufficient_privilege then null; end;
 end $$;
 
@@ -92,11 +92,11 @@ end $$;
 set role app_user;
 set test.uid = '00000000-0000-0000-0000-0000000000a1';
 do $$ begin
-  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000110', now()); raise exception 'the owner completed a worker''s job'; exception when insufficient_privilege then null; end;
+  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000110', now(), p_started_at => (now()) - interval '30 minutes'); raise exception 'the owner completed a worker''s job'; exception when insufficient_privilege then null; end;
 end $$;
 set test.uid = '00000000-0000-0000-0000-0000000000c3';
 do $$ begin
-  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000110', now()); raise exception 'another worker completed the job'; exception when insufficient_privilege then null; end;
+  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000110', now(), p_started_at => (now()) - interval '30 minutes'); raise exception 'another worker completed the job'; exception when insufficient_privilege then null; end;
   -- reads: the worker sees her own job's product, not the other worker's product, and her own roster row only
   if not exists (select 1 from products where id = 'aaaaaaaa-0000-0000-0000-000000000002') then raise exception 'worker c3 cannot read her job''s product'; end if;
   if exists (select 1 from products where id = 'aaaaaaaa-0000-0000-0000-000000000003') then raise exception 'worker c3 reads a product that is on no job of hers'; end if;
@@ -113,5 +113,5 @@ do $$ begin
 end $$;
 reset role; set test.uid = '';
 do $$ begin
-  if has_function_privilege('anon', 'complete_spray_job(uuid,timestamptz,text,text)', 'execute') or has_function_privilege('public', 'complete_spray_job(uuid,timestamptz,text,text)', 'execute') then raise exception 'anon/PUBLIC can call complete_spray_job'; end if;
+  if has_function_privilege('anon', 'complete_spray_job(uuid,timestamptz,text,text,timestamptz)', 'execute') or has_function_privilege('public', 'complete_spray_job(uuid,timestamptz,text,text,timestamptz)', 'execute') then raise exception 'anon/PUBLIC can call complete_spray_job'; end if;
 end $$;

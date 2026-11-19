@@ -49,7 +49,7 @@ export function WorkerApp() {
   const [lockMsg, setLockMsg] = useState<string | undefined>(undefined); // what a press on a CLOSED «Έγινε» answers
   const [queued, setQueued] = useState<string[]>([]); // jobs whose «Έγινε» waits in the outbox for the signal
   useEffect(() => { void db.outbox.where('status').equals('pending').toArray().then((r) => setQueued(r.filter((o) => o.table === `${RPC_PREFIX}${COMPLETE}`).map((o) => o.row_id))); }, [pendingOps.value, dataVersion.value]);
-  const [when, setWhen] = useState(athensLocalNow(new Date()) ?? '');
+  const [when, setWhen] = useState(athensLocalNow(new Date()) ?? ''); const [startWhen, setStartWhen] = useState(''); const [startError, setStartError] = useState(false);   // the start is REQUIRED (the server asks for it) and never pre-filled
   const [note, setNote] = useState('');
   const [parcel, setParcel] = useState(''); const [kind, setKind] = useState<ObservationKind | undefined>(undefined);
   if (!me || (real && !(AUTH_ENABLED && session.value))) return null;
@@ -70,10 +70,12 @@ export function WorkerApp() {
     showHeldUndo(t('worker.committed'), () => setHeld((h) => h.filter((x) => x !== job.id)), async () => { await write(); dataVersion.value++; setHeld((h) => h.filter((x) => x !== job.id)); }, HOLD_MS);
   };
   const confirmDone = (job: Row) => {
-    const at = athensInstant(when);
-    if (real) { if (at) hold(job, () => queueCompletion(db, farm, job.id, at, note, lateReason)); return; }
+    const at = athensInstant(when); const start = athensInstant(startWhen);
+    if (!at || !start || Date.parse(start) > Date.parse(at)) { setStartError(true); return; }
+    setStartError(false);
+    if (real) { hold(job, () => queueCompletion(db, farm, job.id, at, start, note, lateReason)); return; }
     const label = (labels.rows ?? []).find((l) => l.id === job.label_use_id);
-    const c = at ? completeSprayJob(job, label, plantingsOf(job), me, at, note, new Date().toISOString(), crypto.randomUUID(), lateReason) : undefined;
+    const c = at ? completeSprayJob(job, label, plantingsOf(job), me, at, note, new Date().toISOString(), crypto.randomUUID(), lateReason, start) : undefined;
     if (c?.ok) hold(job, () => putMany(db, [{ table: 'jobs', row: c.job }, { table: 'job_spray', row: c.spray, op: 'insert' }]));
   };
   const confirmSkip = (job: Row, reason: SkipReason) => {
@@ -118,6 +120,8 @@ export function WorkerApp() {
               {lockMsg && open?.job !== j.id && doneBlocked(lockOf(j)) && <p class="badge blocked bi" role="alert" data-testid="worker-lock-why"><span aria-hidden="true">{MARK.lock}</span> {lockMsg}</p>}
               {open?.job === j.id && open.mode === 'done' && (
                 <>
+                  <label class="field">{t('worker.start')}<input class="input" type="datetime-local" value={startWhen} data-testid="worker-start" onInput={(e) => setStartWhen((e.target as HTMLInputElement).value)} /></label>
+                  {startError && <p class="msg error" role="alert" data-testid="worker-start-error">{t('worker.start.error')}</p>}
                   <label class="field">{t('worker.time')}<input class="input" type="datetime-local" value={when} onInput={(e) => setWhen((e.target as HTMLInputElement).value)} /></label>
                   {isLate(athensInstant(when) ?? '', new Date().toISOString()) && athensInstant(when) !== undefined && (
                     <label class="field">{t('spray.late.reason')}<input class="input" value={lateReason} autoComplete="off" data-testid="worker-late-reason" onInput={(e) => setLateReason((e.target as HTMLInputElement).value)} /></label>

@@ -23,7 +23,8 @@ test('worker view (demo only): assigned sprays «Έγινε / Δεν έγινε�
 
   const sprays = await count(page, 'job_spray');
   await jobs.first().getByTestId('job-done').click();
-  await expect(page.locator('input[type=datetime-local]')).toBeVisible(); // time and note only
+  await expect(page.getByTestId('worker-start')).toBeVisible(); // start, end time and note only (no dose or product)
+  await page.getByTestId('worker-start').fill(new Date(Date.now() - 3_600_000).toISOString().slice(0, 16));
   await page.getByTestId('job-confirm').click();
   await expect(jobs).toHaveCount(1);
   await page.getByTestId('toast').getByRole('button', { name: 'Αναίρεση' }).click(); // taken back: nothing was written
@@ -31,6 +32,7 @@ test('worker view (demo only): assigned sprays «Έγινε / Δεν έγινε�
   expect(await count(page, 'job_spray')).toBe(sprays);
 
   await jobs.first().getByTestId('job-done').click();
+  await page.getByTestId('worker-start').fill(new Date(Date.now() - 3_600_000).toISOString().slice(0, 16));
   await page.getByTestId('job-confirm').click();
   await expect(page.getByTestId('toast')).toContainText('10 δευτερόλεπτα');
   await page.clock.fastForward(10500); // the 10 seconds pass

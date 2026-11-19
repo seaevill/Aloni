@@ -43,7 +43,7 @@ export function SprayCorrection({ spray, onDone }: { spray: Row; onDone: () => v
       {e?.doseUnit && <p class="msg error" role="alert">{t('spray.error.unit')}</p>}
       <label class="field">{t('spray.time')}<input class="input" type="datetime-local" value={when} data-testid="corr-time" onInput={(ev) => setWhen((ev.target as HTMLInputElement).value)} /></label>
       {e?.time && <p class="msg error" role="alert">{t('spray.correct.time.error')}</p>}
-      {e?.earlier && <p class="msg error" role="alert" data-testid="corr-earlier">{t('spray.correct.earlier')}</p>}
+      {(e?.earlier || e?.endEarlier) && <p class="msg error" role="alert" data-testid="corr-earlier">{t('spray.correct.earlier')}</p>}
       <div class="seg two">{(workers.rows ?? []).filter((w) => !w.deleted_at).map((w) => <button key={String(w.id)} aria-pressed={who === w.id} onClick={() => setWho(String(w.id))}>{nameOf(w)}</button>)}</div>
       {hasLot && <label class="field">{t('spray.correct.qty')}<input class="input" value={qty} inputMode="decimal" autoComplete="off" data-testid="corr-qty" onInput={(ev) => setQty((ev.target as HTMLInputElement).value)} /></label>}
       {e?.qty && <p class="msg error" role="alert">{t('spray.error.qty')}</p>}

@@ -10,11 +10,16 @@ do $$ begin
   end if;
 end $$;
 
-create function spray_floor(p_farm uuid, p_job uuid, p_product uuid, p_label uuid, out phi integer, out rei integer, out n integer)
+create function spray_floor(p_farm uuid, p_job uuid, p_product uuid, p_spray uuid, out phi integer, out rei integer, out n integer)
   language sql stable security definer set search_path = public, private, pg_temp as $$
+  -- p_spray = the record whose floor is wanted; the labels of its WHOLE correction chain count (a correction that dropped the label cannot lose the floor)
+  with recursive chain(id, amends_id, label_use_id) as (
+    select s.id, s.amends_id, s.label_use_id from job_spray s where s.id = p_spray and s.farm_id = p_farm
+    union all
+    select s.id, s.amends_id, s.label_use_id from job_spray s join chain c on s.id = c.amends_id where s.farm_id = p_farm)
   select max(l.phi_days)::integer, max(l.rei_hours)::integer, count(*)::integer from label_uses l
   where l.farm_id = p_farm and l.product_id = p_product and (
-    l.id = p_label
+    l.id in (select c.label_use_id from chain c where c.label_use_id is not null)
     or l.id = (select j.label_use_id from jobs j where j.id = p_job and j.farm_id = p_farm)
     or (l.deleted_at is null and l.crop_id in (select pl.crop_id from job_plantings jp join plantings pl on pl.id = jp.planting_id where jp.job_id = p_job and jp.farm_id = p_farm)))
 $$;
@@ -49,7 +54,7 @@ begin
     if o.phi_until is not null then raise exception 'only a spray whose waiting period is unknown can be corrected (a correction could only shorten it)' using errcode = 'check_violation'; end if;
     if new.phi_source = 'manual' then
       if new.phi_days is null or new.phi_days < 1 or new.rei_hours is null or new.rei_hours < 1 then raise exception 'a manual waiting period must be above zero' using errcode = 'check_violation'; end if;
-      select * into sl from spray_floor(new.farm_id, o.job_id, o.product_id, o.label_use_id);     -- the labels of THIS product on THIS job's crops, whether or not the spray names one (m5-0021 finding 1)
+      select * into sl from spray_floor(new.farm_id, o.job_id, o.product_id, o.id);     -- the labels of THIS product on THIS job's crops, whether or not the spray names one (m5-0021 finding 1)
       if sl.n = 0 or sl.phi is null or sl.rei is null then
         raise exception 'no label with a known waiting period and re-entry period exists for this product and crop: it cannot be typed by hand (it stays unknown = blocked)' using errcode = 'check_violation';
       end if;
@@ -76,7 +81,7 @@ begin
   foreach t in array case when is_worker then array[now(), new.harvested_at] when new.harvested_at >= now() - interval '5 minutes' then array[now()] else '{}'::timestamptz[] end loop
     select exists (
       select 1 from job_plantings jp join job_spray s on s.job_id = jp.job_id
-      left join lateral spray_floor(s.farm_id, s.job_id, s.product_id, coalesce(s.label_use_id, (select o.label_use_id from job_spray o where o.id = s.amends_id))) lf on true   -- the FLOOR: every label that applies to this product on this job's crops
+      left join lateral spray_floor(s.farm_id, s.job_id, s.product_id, s.id) lf on true   -- the FLOOR: every label that applies to this product on this job's crops
       where jp.planting_id = new.planting_id and s.sprayed_at <= t and not exists (select 1 from job_spray a where a.amends_id = s.id)
         and (s.phi_until is null or s.phi_until >= t or s.rei_until is null or s.rei_until >= t
              or (lf.phi is not null and s.sprayed_at + make_interval(hours => lf.phi * 24) >= t)

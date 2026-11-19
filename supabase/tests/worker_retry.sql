@@ -26,21 +26,21 @@ do $$
 declare t constant timestamptz := now() - interval '30 minutes'; first_ jsonb; again jsonb;
 begin
   -- 1. the same request twice
-  first_ := complete_spray_job('eeeeeeee-0000-0000-0000-000000000401', t, 'note');
-  again := complete_spray_job('eeeeeeee-0000-0000-0000-000000000401', t, 'note');
+  first_ := complete_spray_job('eeeeeeee-0000-0000-0000-000000000401', t, 'note', p_started_at => (t) - interval '30 minutes');
+  again := complete_spray_job('eeeeeeee-0000-0000-0000-000000000401', t, 'note', p_started_at => (t) - interval '30 minutes');
   if (again->>'repeat')::boolean is not true or (first_->>'repeat')::boolean is not false or again->>'spray_id' <> first_->>'spray_id' then raise exception 'a retry did not return the original answer: % / %', first_, again; end if;
   -- three more times: still the same
-  perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000401', t); perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000401', t);
+  perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000401', t, p_started_at => (t) - interval '30 minutes'); perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000401', t, p_started_at => (t) - interval '30 minutes');
   -- 2. another end time for a job that is already done: refused
-  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000401', t + interval '1 minute'); raise exception 'second completion with another time accepted'; exception when check_violation then null; end;
+  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000401', t + interval '1 minute', p_started_at => (t + interval '1 minute') - interval '30 minutes'); raise exception 'second completion with another time accepted'; exception when check_violation then null; end;
   -- 3. a spraying that ended 2 hours ago in a field whose REI was running then: the RECORD is kept and marked; the same field «just now» is refused
-  insert into res values ('past_locked', complete_spray_job('eeeeeeee-0000-0000-0000-000000000403', now() - interval '2 hours'));
-  insert into res values ('past_unknown', complete_spray_job('eeeeeeee-0000-0000-0000-000000000404', now() - interval '2 hours'));
-  insert into res values ('before_the_other_spray', complete_spray_job('eeeeeeee-0000-0000-0000-000000000402', now() - interval '4 hours'));
+  insert into res values ('past_locked', complete_spray_job('eeeeeeee-0000-0000-0000-000000000403', now() - interval '2 hours', p_started_at => (now() - interval '2 hours') - interval '30 minutes'));
+  insert into res values ('past_unknown', complete_spray_job('eeeeeeee-0000-0000-0000-000000000404', now() - interval '2 hours', p_started_at => (now() - interval '2 hours') - interval '30 minutes'));
+  insert into res values ('before_the_other_spray', complete_spray_job('eeeeeeee-0000-0000-0000-000000000402', now() - interval '4 hours', p_started_at => (now() - interval '4 hours') - interval '30 minutes'));
 end $$;
 set test.uid = '00000000-0000-0000-0000-0000000000c3';
 do $$ begin
-  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000401', now() - interval '30 minutes'); raise exception 'another account used the retry path'; exception when insufficient_privilege then null; end;
+  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000401', now() - interval '30 minutes', p_started_at => (now() - interval '30 minutes') - interval '30 minutes'); raise exception 'another account used the retry path'; exception when insufficient_privilege then null; end;
 end $$;
 reset role; set test.uid = '';
 do $$
@@ -62,5 +62,5 @@ insert into job_plantings(farm_id,job_id,planting_id) values ('11111111-1111-111
 set role app_user;
 set test.uid = '00000000-0000-0000-0000-0000000000b2';
 do $$ begin
-  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000405', now() - interval '1 minute'); raise exception 'a live spraying in a locked field was accepted'; exception when check_violation then if sqlerrm not like '%locked%' then raise; end if; end;
+  begin perform complete_spray_job('eeeeeeee-0000-0000-0000-000000000405', now() - interval '1 minute', p_started_at => (now() - interval '1 minute') - interval '30 minutes'); raise exception 'a live spraying in a locked field was accepted'; exception when check_violation then if sqlerrm not like '%locked%' then raise; end if; end;
 end $$;
