@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'preact/hooks';
-import { dataVersion, db } from '../db';
+import { activeFarm, dataVersion, db } from '../db';
+import { loadOrders, saveMap, saveOrders } from '../orders/store';
 import { CATALOG, cropName } from '../crops/catalog';
 import { lang, t } from '../i18n';
 import { formatQty } from '../i18n/format';
 import { cratesByCrop, mondayOf, parseBackup, suggestCropMap, type KlouvesOrders } from '../orders/klouves';
 import { sowHint, supplyByCrop, type SowHint } from '../orders/available';
 import { athensToday } from '../plantings/planting';
-import { putLocal } from '../repo';
 import { BackBar } from './BackBar';
 import { useRows } from './useRows';
 
-const ORDERS_KEY = 'klouves_orders';
-const MAP_KEY = 'klouves_cropmap';
 const SOW_TEXT: Record<SowHint, () => string> = { ready: () => '', held: () => t('orders.sow.held'), none: () => t('orders.sow.none') };
 const DAY = 86_400_000;
 
@@ -21,21 +19,23 @@ export function Orders({ onBack }: { onBack: () => void }) {
   const [map, setMap] = useState<Record<string, string>>({});
   const [bad, setBad] = useState(false); const [note, setNote] = useState(0);
   const crops = useRows('crops'); const plantings = useRows('plantings'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const harvests = useRows('job_harvest');
+  const farm = activeFarm.value;
   useEffect(() => {
-    void db.settings.get(ORDERS_KEY).then((r) => { if (r?.value) setOrders(r.value as KlouvesOrders); });
-    void db.settings.get(MAP_KEY).then((r) => { if (r?.value) setMap(r.value as Record<string, string>); });
-  }, []);
+    let live = true;
+    void loadOrders(db, farm).then((r) => { if (live) { setOrders(r.orders); setMap(r.map); } });      // this farm's own import only
+    return () => { live = false; };
+  }, [farm, dataVersion.value]);
   const load = async (file: File | undefined) => {
     if (!file) return;
     const parsed = parseBackup(await file.text());
     if (!parsed.ok) { setBad(true); return; }
     const next = { ...suggestCropMap(parsed.orders.products), ...map };
     setBad(false); setOrders(parsed.orders); setMap(next); setNote(parsed.orders.skipped);
-    await putLocal(db, ORDERS_KEY, parsed.orders); await putLocal(db, MAP_KEY, next); dataVersion.value++;
+    await saveOrders(db, farm, parsed.orders, next); dataVersion.value++;
   };
   const choose = async (productId: string, slug: string) => {
     const next = { ...map }; if (slug) next[productId] = slug; else delete next[productId];
-    setMap(next); await putLocal(db, MAP_KEY, next);
+    setMap(next); await saveMap(db, farm, next);
   };
   const today = athensToday(new Date()) ?? '';
   const thisWeek = mondayOf(today);

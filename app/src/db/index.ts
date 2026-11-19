@@ -6,6 +6,7 @@ import { guardAppendOnly, refreshPending } from '../repo';
 import { APP_NAME, DEMO_FARM_ID } from '../config';
 import { t } from '../i18n';
 import { commitAllHeld } from '../worker/held';
+import { demoOrders, migrateUnkeyedOrders, saveOrders } from '../orders/store';
 
 export const db = new AppDB();
 guardAppendOnly(db);
@@ -26,6 +27,7 @@ export async function initDb() {
   await db.farms.put(real);
   realFarmId.value = real.id;
   activeFarm.value = real.id;
+  await migrateUnkeyedOrders(db, real.id);
   hasDemo.value = !!(await db.farms.get(DEMO_FARM_ID));
   lastBackupAt.value = (await db.settings.get('last_backup_at'))?.value as string | undefined;
   await commitAllHeld(db).catch(() => undefined);      // a worker's action held when the phone was closed (T4)
@@ -37,6 +39,7 @@ export async function initDb() {
 export async function loadDemo() {
   const data = (await import('../../../reference/prototype/data.json')).default as unknown as PrototypeData;
   await importDemo(db, data);
+  const sample = demoOrders(Date.now()); await saveOrders(db, DEMO_FARM_ID, sample.orders, sample.map);      // a fictional order list, in the demo farm only
   hasDemo.value = true;
   activeFarm.value = DEMO_FARM_ID;
   dataVersion.value++;
