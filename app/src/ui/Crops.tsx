@@ -49,14 +49,14 @@ export function Crops() {
   if (!demo && parcels.rows && crops.rows && liveParcels.length === 0) {
     return (
       <section>
-        <Title k="crops.title" />
+        <header class="today-head band"><Title k="crops.title" /></header>
         <EmptyState message={t('planting.noParcels')} actionLabel={t('parcel.add')} onAction={() => { tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
       </section>
     );
   }
   return (
     <section>
-      <Title k="crops.title" />
+      <header class="today-head band"><Title k="crops.title" /></header>
       {demo && <p class="muted" data-testid="planting-demo-note">{t('planting.demoActive')}</p>}
       {canAdd && live.length > 0 && <button class="btn" data-testid="planting-add" onClick={() => setAdding(true)}>{t('planting.add')}</button>}
       <Status q={{ ...crops, rows: shown && shown.length === 0 ? [] : shown ?? null }} message={t('list.empty')}

@@ -63,7 +63,7 @@ export function Parcels() {
   };
   return (
     <section>
-      <Title k="parcels.title" />
+      <header class="today-head band"><Title k="parcels.title" /></header>
       {demo ? <p class="muted" data-testid="parcel-demo-note">{t('parcel.demoActive')}</p> : live.length > 0 && <button class="btn" data-testid="parcel-add" onClick={() => setAdding(true)}>{t('parcel.add')}</button>}
       <Status q={{ ...q, rows: q.rows && live.length === 0 ? [] : q.rows }} message={t('list.empty')} action={demo ? undefined : { label: t('parcel.add'), run: () => setAdding(true) }} />
       {live.map((r) => (
