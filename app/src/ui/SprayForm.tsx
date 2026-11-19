@@ -7,6 +7,7 @@ import { DOSE_UNITS, readUse, statusOf } from '../labels/label-use';
 import { putMany } from '../repo';
 import { balanceOf, effectiveLots } from '../stock/stock';
 import { athensToday } from '../plantings/planting';
+import { exceedsMax, priorApps } from '../spray/apps';
 import { buildSpray, isLate, type Flag, type SprayInput } from '../spray/spray';
 import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
 import type { Row } from '../db/schema';
@@ -17,7 +18,7 @@ import { useRows } from './useRows';
 
 export const FLAG_KEYS: Record<Flag, I18nKey> = {
   label_none: 'spray.flag.label_none', label_blocked: 'spray.flag.label_blocked', label_unsigned: 'spray.flag.label_unsigned', label_changed: 'spray.flag.label_changed',
-  dose_outside_label: 'spray.flag.dose_outside_label', dose_unit_differs: 'spray.flag.dose_unit_differs', lot_expired: 'spray.flag.lot_expired', stock_negative: 'spray.flag.stock_negative', late_entry: 'spray.flag.late_entry',
+  dose_outside_label: 'spray.flag.dose_outside_label', dose_unit_differs: 'spray.flag.dose_unit_differs', lot_expired: 'spray.flag.lot_expired', stock_negative: 'spray.flag.stock_negative', max_apps_exceeded: 'spray.flag.max_apps_exceeded', late_entry: 'spray.flag.late_entry',
 };
 const RED: readonly Flag[] = ['label_none', 'label_blocked'];
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
@@ -29,7 +30,7 @@ const text = (v: unknown): string => (typeof v === 'string' ? v : '');
  */
 export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const plantings = useRows('plantings'); const crops = useRows('crops'); const parcels = useRows('parcels'); const products = useRows('products');
-  const labels = useRows('label_uses'); const lots = useRows('stock_lots'); const moves = useRows('stock_movements'); const workers = useRows('workers');
+  const labels = useRows('label_uses'); const sprays = useRows('job_spray'); const links = useRows('job_plantings'); const lots = useRows('stock_lots'); const moves = useRows('stock_movements'); const workers = useRows('workers');
   const live = (q: { rows: Row[] | null }) => q.rows?.filter((r) => !r.deleted_at) ?? [];
   const [sel, setSel] = useState<string[]>([]);
   const [productId, setProductId] = useState('');
@@ -41,7 +42,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const [qty, setQty] = useState('');
   const [water, setWater] = useState('');
   const [note, setNote] = useState('');
-  const [lateReason, setLateReason] = useState('');
+  const [lateReason, setLateReason] = useState(''); const [overReason, setOverReason] = useState('');
   const [failed, setFailed] = useState(false);
 
   const chosen = live(plantings).filter((p) => sel.includes(p.id));
@@ -51,10 +52,12 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const lot = myLots.find((l) => l.lot_key === lotKey);
   const balance = lot ? balanceOf((moves.rows ?? []).filter((m) => m.lot_key === lotKey)) : undefined;
   const sprayedAt = athensInstant(when) ?? '';
-  const input: SprayInput = { plantingIds: sel, productId, applicatorId: workerId, sprayedAt, dose, doseUnit: unit, lotKey, qty, water, note, lateReason };
+  const input: SprayInput = { plantingIds: sel, productId, applicatorId: workerId, sprayedAt, dose, doseUnit: unit, lotKey, qty, water, note, lateReason, overReason };
+  const prior = priorApps(sprays.rows ?? [], links.rows ?? [], sel, productId);
+  const over = exceedsMax(label, prior); // the reason field appears only when this spraying passes the signed label's maximum
   const late = sprayedAt !== '' && isLate(sprayedAt, new Date().toISOString()); // the reason field appears only for a late entry
   const ids = { job: crypto.randomUUID(), spray: crypto.randomUUID(), movement: crypto.randomUUID(), plantingLinks: sel.map(() => crypto.randomUUID()) };
-  const r = buildSpray(input, { label, plantings: chosen, lot, lotBalance: balance, today: athensToday(new Date()) ?? '' }, realFarmId.value, new Date().toISOString(), ids);
+  const r = buildSpray(input, { priorApps: prior, label, plantings: chosen, lot, lotBalance: balance, today: athensToday(new Date()) ?? '' }, realFarmId.value, new Date().toISOString(), ids);
   const pickLabelDefaults = (l: Row | undefined) => { // the label's own unit (and a single dose) are offered as a start; nothing is chosen for him otherwise
     if (!l) return;
     const u = readUse(l);
@@ -97,6 +100,11 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
           <input class="input" value={lateReason} autoComplete="off" data-testid="spray-late-reason" onInput={(e) => setLateReason((e.target as HTMLInputElement).value)} />
         </label>
       )}
+      {over && (
+        <label class="field">{t('spray.over.reason')}
+          <input class="input" value={overReason} autoComplete="off" data-testid="spray-over-reason" onInput={(e) => setOverReason((e.target as HTMLInputElement).value)} />
+        </label>
+      )}
       <label class="field">{t('spray.dose')}
         <input class="input" value={dose} inputMode="decimal" autoComplete="off" data-testid="spray-dose" onInput={(e) => setDose((e.target as HTMLInputElement).value)} />
       </label>
@@ -129,6 +137,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
       {failed && !r.ok && r.errors.dose && dose.trim() !== '' && <p class="msg error" role="alert">{t('spray.error.dose')}</p>}
       {failed && !r.ok && r.errors.qty && <p class="msg error" role="alert">{t('spray.error.qty')}</p>}
       {failed && !r.ok && r.errors.lateReason && <p class="msg error" role="alert" data-testid="spray-late-error">{t('spray.late.error')}</p>}
+      {failed && !r.ok && r.errors.overReason && <p class="msg error" role="alert" data-testid="spray-over-error">{t('spray.over.error')}</p>}
       {failed && !r.ok && r.errors.water && <p class="msg error" role="alert">{t('spray.error.water')}</p>}
       <button class="btn" data-testid="spray-save" onClick={() => void save()}>{t('spray.save')}</button>
       <button class="btn secondary" onClick={() => onDone(false)}>{t('product.cancel')}</button>

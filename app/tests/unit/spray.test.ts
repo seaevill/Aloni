@@ -66,7 +66,7 @@ describe('a spray is RECORDED even with a weak label, marked, with the PHI unkno
 });
 
 describe('a LATE entry (the end of the spraying is more than 7 days before the record): allowed, but it needs a reason and is marked; the waiting periods do not change', () => {
-  const noError = { applicator: false, dose: false, doseUnit: false, plantings: false, product: false, qty: false, time: false, water: false, lateReason: false };
+  const noError = { applicator: false, dose: false, doseUnit: false, plantings: false, product: false, qty: false, time: false, water: false, lateReason: false, overReason: false };
   it.each([['exactly 7 days before the record', '2026-11-13T10:00:00Z'], ['earlier today', '2026-11-20T01:00:00Z']])('%s: no reason needed, no mark', (_n, at) => {
     const r = build(input({ sprayedAt: at }), ctx());
     expect(r.flags).toEqual([]);
@@ -103,7 +103,7 @@ describe('what a spray record cannot be without', () => {
     ['unreadable quantity', { qty: 'abc' }, 'qty'], ['a lot without a quantity', { qty: '' }, 'qty'], ['unreadable water', { water: '1.000x' }, 'water'],
   ] as const)('%s is refused', (_n, over, key) => {
     const r = buildSpray(input(over as Partial<SprayInput>), ctx(), F, now, ids);
-    expect(r).toEqual({ ok: false, errors: { applicator: false, dose: false, doseUnit: false, plantings: false, product: false, qty: false, time: false, water: false, lateReason: false, [key]: true } });
+    expect(r).toEqual({ ok: false, errors: { applicator: false, dose: false, doseUnit: false, plantings: false, product: false, qty: false, time: false, water: false, lateReason: false, overReason: false, [key]: true } });
   });
   it('without a lot no stock movement is made', () => expect(build(input({ lotKey: undefined, qty: '' }), ctx()).movement).toBeUndefined());
 });
@@ -240,5 +240,35 @@ describe('the source of a date, and the re-entry lock for workers', () => {
     expect(doneBlocked({ state: 'none' })).toBe(false);
     expect(doneBlocked({ state: 'running', until: at })).toBe(true);
     expect(doneBlocked({ state: 'unknown' })).toBe(true);
+  });
+});
+
+describe('the signed label\'s maximum applications (the label says 3)', () => {
+  const sprayRow = (id: string, job: string, over: Partial<Row> = {}): Row => ({ id, farm_id: F, job_id: job, product_id: 'prod', sprayed_at: T0, ...over });
+  const link = (job: string, planting = 'pl1'): Row => ({ id: `l-${job}-${planting}`, farm_id: F, job_id: job, planting_id: planting });
+  const three = [sprayRow('s1', 'j1'), sprayRow('s2', 'j2'), sprayRow('s3', 'j3')];
+  const links = [link('j1'), link('j2'), link('j3')];
+
+  it('counts the sprays in force of this product on the planting; a correction replaces its original, another product or planting does not count', async () => {
+    const { priorApps } = await import('../../src/spray/apps');
+    expect(priorApps(three, links, ['pl1'], 'prod')).toBe(3);
+    expect(priorApps([...three, sprayRow('s4', 'j3', { amends_id: 's3' })], links, ['pl1'], 'prod')).toBe(3);   // the amending row replaces s3
+    expect(priorApps(three, links, ['pl1'], 'other')).toBe(0);
+    expect(priorApps(three, links, ['pl2'], 'prod')).toBe(0);
+    expect(priorApps(three, [...links, link('j1', 'pl2')], ['pl1', 'pl2'], 'prod')).toBe(3);                      // the most-sprayed of the chosen plantings
+  });
+
+  it('the fourth application is MARKED and needs a reason; it is never refused (the legal record must not be lost); the reason is kept on the record', () => {
+    const noReason = buildSpray(input(), ctx({ priorApps: 3 }), F, now, ids);
+    expect(noReason).toMatchObject({ ok: false, errors: { overReason: true } });
+    const r = build(input({ overReason: 'pest outbreak, agronomist agreed' }), ctx({ priorApps: 3 }));
+    expect(r.flags).toContain('max_apps_exceeded');
+    expect(r.spray.note).toBe('[max_apps] pest outbreak, agronomist agreed');
+    expect(build(input(), ctx({ priorApps: 2 })).flags).not.toContain('max_apps_exceeded');   // the third is still inside the label
+  });
+
+  it('an UNSIGNED label has no usable maximum: not judged, nothing invented', () => {
+    expect(build(input(), ctx({ label: labelRow(), priorApps: 9 })).flags).not.toContain('max_apps_exceeded');
+    expect(build(input(), ctx({ label: undefined, priorApps: 9 })).flags).not.toContain('max_apps_exceeded');
   });
 });

@@ -431,5 +431,8 @@
   "job.error.fill": "Eksikleri doldurun: ekim, ürün, işçi, tarih, doz ve birim.",
   "job.error.unit": "Doz birimini seçin.",
   "job.planned.title": "Planlanan işler",
-  "job.planned.line": "{product} · {worker} · {date}"
+  "job.planned.line": "{product} · {worker} · {date}",
+  "spray.flag.max_apps_exceeded": "Etiketin azami uygulama sayısı aşıldı",
+  "spray.over.reason": "Uygulama sınırı aşımının nedeni",
+  "spray.over.error": "Bu uygulama etiket sınırını aşıyor: nedenini yazın."
 }

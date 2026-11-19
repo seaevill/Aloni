@@ -431,5 +431,8 @@
   "job.error.fill": "Συμπληρώστε ό,τι λείπει: φυτείες, προϊόν, εργάτη, ημερομηνία, δόση και μονάδα.",
   "job.error.unit": "Επιλέξτε μονάδα δόσης.",
   "job.planned.title": "Προγραμματισμένες εργασίες",
-  "job.planned.line": "{product} · {worker} · {date}"
+  "job.planned.line": "{product} · {worker} · {date}",
+  "spray.flag.max_apps_exceeded": "Πάνω από το όριο εφαρμογών της ετικέτας",
+  "spray.over.reason": "Λόγος υπέρβασης ορίου εφαρμογών",
+  "spray.over.error": "Αυτή η εφαρμογή ξεπερνά το όριο της ετικέτας: γράψτε τον λόγο."
 }
