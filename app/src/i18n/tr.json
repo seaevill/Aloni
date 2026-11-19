@@ -423,5 +423,13 @@
   "sync.error": "Gönderilemedi. Yeniden denenecek.",
   "signin.farmId": "Çiftlik kodu: {id}",
   "invite.openLine": "Açık davet: {email}",
-  "invite.withdraw": "Geri çek"
+  "invite.withdraw": "Geri çek",
+  "job.add": "İş ata",
+  "job.date": "Tarih",
+  "job.save": "Ata",
+  "job.saved": "İş işçiye atandı.",
+  "job.error.fill": "Eksikleri doldurun: ekim, ürün, işçi, tarih, doz ve birim.",
+  "job.error.unit": "Doz birimini seçin.",
+  "job.planned.title": "Planlanan işler",
+  "job.planned.line": "{product} · {worker} · {date}"
 }

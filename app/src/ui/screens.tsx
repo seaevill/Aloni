@@ -9,6 +9,7 @@ import { put } from '../repo';
 import { Analyses } from './Analyses';
 import { Cuts } from './Cuts';
 import { HarvestForm, Harvests } from './HarvestForm';
+import { JobForm } from './JobForm';
 import { SprayForm } from './SprayForm';
 import { Sprays } from './Sprays';
 import { ParcelForm } from './ParcelForm';
@@ -46,13 +47,18 @@ export function Today() {
   const [recorded, setRecorded] = useState(false);
   const [harvesting, setHarvesting] = useState(false);
   const [harvested, setHarvested] = useState(false);
+  const [planning, setPlanning] = useState(false);
+  const [planned, setPlanned] = useState(false);
   const rows = [useRows('parcels'), useRows('plantings'), useRows('products'), useRows('stock_lots'), useRows('crops')];
   const [parcels, plantings, products, lots, crops] = rows;
+  const jobs = useRows('jobs'); const workers = useRows('workers');
+  const openJobs = (jobs.rows ?? []).filter((j) => !j.deleted_at && j.kind === 'spray' && j.status === 'planned');
   const live = (q: Rows) => q.rows?.filter((r) => !r.deleted_at) ?? [];
   const demo = activeFarm.value !== realFarmId.value;
   const cropsInUse = demo ? live(crops).length : new Set(live(plantings).map((p) => p.crop_id)).size;
   const loaded = rows.every((q) => q.rows);
   const has = live(parcels).length + live(plantings).length + live(products).length + live(lots).length + (demo ? live(crops).length : 0) > 0;
+  if (planning) return <JobForm onDone={(saved) => { setPlanning(false); setPlanned(saved); }} />;
   if (harvesting) return <HarvestForm onDone={(saved) => { setHarvesting(false); setHarvested(saved); }} />;
   if (spraying) return <SprayForm onDone={(saved) => { setSpraying(false); setRecorded(saved); }} />;
   return (
@@ -63,7 +69,11 @@ export function Today() {
         <EmptyState message={t('today.empty')} actionLabel={t('parcel.add')} onAction={() => { tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
       )}
       {loaded && has && !demo && <button class="btn" data-testid="spray-open" onClick={() => setSpraying(true)}>{t('spray.add')}</button>}
+      {loaded && has && !demo && <button class="btn" data-testid="job-open" onClick={() => setPlanning(true)}>{t('job.add')}</button>}
       {loaded && has && !demo && <button class="btn" data-testid="harvest-open" onClick={() => setHarvesting(true)}>{t('harvest.add')}</button>}
+      {planned && <p class="msg" role="status" data-testid="job-saved">{t('job.saved')}</p>}
+      {!demo && openJobs.length > 0 && <h2>{t('job.planned.title')}</h2>}
+      {!demo && openJobs.map((j) => <div class="card" key={j.id} data-testid="job-planned">{t('job.planned.line', { product: nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {}), worker: String(workers.rows?.find((w) => w.id === j.worker_id)?.name ?? ''), date: String(j.planned_for ?? '') })}</div>)}
       {harvested && <p class="msg" role="status" data-testid="harvest-saved">{t('harvest.saved')}</p>}
       {recorded && <p class="msg" role="status" data-testid="spray-saved">{t('spray.saved')}</p>}
       {loaded && has && <Sprays readOnly={demo} />}

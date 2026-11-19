@@ -423,5 +423,13 @@
   "sync.error": "Δεν στάλθηκε. Θα ξαναδοκιμάσουμε.",
   "signin.farmId": "Κωδικός κτήματος: {id}",
   "invite.openLine": "Ανοιχτή πρόσκληση: {email}",
-  "invite.withdraw": "Ανάκληση"
+  "invite.withdraw": "Ανάκληση",
+  "job.add": "Ανάθεση εργασίας",
+  "job.date": "Ημερομηνία",
+  "job.save": "Ανάθεση",
+  "job.saved": "Η εργασία ανατέθηκε στον εργάτη.",
+  "job.error.fill": "Συμπληρώστε ό,τι λείπει: φυτείες, προϊόν, εργάτη, ημερομηνία, δόση και μονάδα.",
+  "job.error.unit": "Επιλέξτε μονάδα δόσης.",
+  "job.planned.title": "Προγραμματισμένες εργασίες",
+  "job.planned.line": "{product} · {worker} · {date}"
 }
