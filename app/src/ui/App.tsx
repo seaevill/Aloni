@@ -10,7 +10,8 @@ import { WorkerApp } from './WorkerApp';
 import { DemoBanner } from './DemoBanner';
 import { UpdateBar } from './UpdateBar';
 import { LeaveBar } from './LeaveBar';
-import { tabReset } from './backstack';
+import { guarding, leaveAsk, tabReset } from './backstack';
+import { dirty } from '../pwa/update';
 import { Toast } from './Toast';
 import { AUTH_ENABLED, DEMO_FARM_ID } from '../config';
 import { session } from '../auth/gotrue';
@@ -45,6 +46,12 @@ export function App() {
     history.replaceState(history.state, '', hashOf(farm, tab.value));
     void putLocal(db, 'ui_state', { farm, tab: tab.value });
   }, [activeFarm.value, tab.value]);
+  /** A tab tap with something typed asks first, like the Back gesture: nothing typed is lost silently. */
+  const goTab = (id: typeof tab.value) => {
+    const go = () => { leaveAsk.value = undefined; if (tab.value === id) tabReset.value++; else tab.value = id; };
+    if (dirty.value && guarding.value > 0) { leaveAsk.value = { stay: () => { leaveAsk.value = undefined; }, go }; return; }
+    go();
+  };
   const roster = useRows('workers');
   const isWorkerAccount = AUTH_ENABLED && !!session.value && !!roster.rows?.some((w) => !w.deleted_at && w.user_id === session.value?.user_id); // a roster worker's own account: no owner screens
   if (isWorkerAccount || workerView.value !== undefined) return <><UpdateBar /><WorkerApp /><Toast /></>;
@@ -54,7 +61,7 @@ export function App() {
       <Toast />
       <nav class="tabs" aria-label={t('nav.main')}>
         {TABS.map(({ id, icon, label }) => (
-          <button key={id} data-tab={id} aria-current={tab.value === id ? 'page' : undefined} onClick={() => { if (tab.value === id) tabReset.value++; else tab.value = id; }}>
+          <button key={id} data-tab={id} aria-current={tab.value === id ? 'page' : undefined} onClick={() => goTab(id)}>
             <span class="ico" aria-hidden="true">{icon}</span>
             <span class="lbl">{t(label)}</span>
           </button>

@@ -54,3 +54,18 @@ test('an empty Σήμερα opens the parcel form in ONE tap; tapping the active
   await page.locator('nav.tabs [data-tab="parcels"]').click();                        // the active tab again
   await expect(page.getByTestId('parcel-open').first()).toBeVisible();
 });
+
+test('a tab tap with something typed asks first; after «stay» the text is still there', async ({ page }) => {
+  const errors = await iphone(page);
+  await page.locator('nav.tabs [data-tab="parcels"]').click();
+  await page.getByTestId('empty-state').locator('button').click();
+  await page.locator('main input.input').first().fill('Κάτω Κάμπος');
+  await page.locator('nav.tabs [data-tab="stock"]').click();
+  await expect(page.getByTestId('leave-ask')).toBeVisible();
+  await page.getByTestId('leave-stay').click();
+  await expect(page.locator('main input.input').first()).toHaveValue('Κάτω Κάμπος');
+  await page.locator('nav.tabs [data-tab="stock"]').click();
+  await page.getByTestId('leave-go').click();
+  await expect(page.locator('nav.tabs [data-tab="stock"]')).toHaveAttribute('aria-current', 'page');
+  expect(errors).toEqual([]);
+});
