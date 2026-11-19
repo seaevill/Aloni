@@ -623,5 +623,9 @@
   "orders.line.week": "Bu hafta: {a} kasa · geçen hafta: {b}",
   "orders.line.free": "Kesime hazır: {n} ekim · 7 günde kesilen: {c} kasa",
   "today.kpi.cut7": "7 günde kasa",
-  "today.kpi.cut28": "28 günde kasa"
+  "today.kpi.cut28": "28 günde kasa",
+  "stock.filter": "Türe göre süz",
+  "stock.filter.all": "Tümü ({n})",
+  "stock.phi": "Bekleme (onaylı etiket): {list}",
+  "stock.phi.item": "{crop} {n} gün"
 }

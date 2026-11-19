@@ -12,7 +12,7 @@ Kaynak: `reference/prototype/index.html` (v2 tıklanabilir prototip, 780 px ekra
 | 4 | **Orders → sowing** – sipariş/tedarik, ekim önerisi, «Not on these parcels» | yok | **eksik** | 0 | Κλούβες bağlantısı + ekim önerisi (E4) |
 | 5 | **Why? sheet** – öneri gerekçesi | yok | **eksik** | 0 | Kural gerekçesi sayfası (imzasız kural: yalnızca veri) |
 | 6 | **Spray log / CSV** | `Μητρώο ψεκασμών` (`ui/Register.tsx`) | var | 7 | Prototipin tablo düzeni |
-| 7 | **Stock** | `Αποθήκη` (`ui/Stock.tsx`) | var | 6 | Prototipin kart düzeni |
+| 7 | **Stock** | `Αποθήκη` (`ui/Stock.tsx`) | **yeniden düzenlendi** (koyu bant, tür filtre düğmeleri, etiketli kart, kalan miktar + son kullanma + onaylı etiketten bekleme süresi) | 7 | FRAC/IRAC grup etiketi ve etken madde adı (veride yok); kartın tamamına dokununca açılma |
 | 8 | **More** | `Άλλα` (`ui/More.tsx`) | var (ek kartlar: hazırlık, sihirbaz, bildirim) | 6 | – |
 | 9 | **Today (Greek)** | `Σήμερα` el | = 1 | 7 | – |
 
@@ -25,3 +25,7 @@ Kaynak: `reference/prototype/index.html` (v2 tıklanabilir prototip, 780 px ekra
 ## İlaçlama formu ve işçi ekranı
 Prototipte bu iki ekranın karşılığı YOK (yalnızca ilaçlama kaydı/CSV listesi var). Tasarım 2 mockup'ı (`docs/design/theme-2026-11/winner-B.html`, `docs/design/applied/t2/worker-*.png`) kart dilini verir: büyük kartlar, tek karar, 72 px «Έγινε / Δεν έγινε», kilitliyken gri. Uygulama bu dili izliyor (öz puan 7/10). Mockup'ın «bulanık eylem tepsisi» (sabit alt tepsi) henüz yok → BACKLOG.
 - ✔ Hasat 7/28 gün karoları (kesilen kasa, 7 ve 28 gün); ✘ Alerts listesi; ✘ «Forecast run» notu; ✘ demo bandı başlığın içinde değil (uygulamada tüm ekranların üstünde).
+## Fark listesi – Αποθήκη (bu PR)
+- ✔ Koyu üst bant; ✔ tür filtre düğmeleri (Όλα / Λίπασμα / …); ✔ ürün adı + tür etiketi + ruhsat no etiketi; ✔ kalan miktar, son kullanma, bekleme süresi (yalnızca ONAYLI etiketten, ürün–ekin başına).
+- ✘ FRAC/IRAC grup etiketi ve etken madde (uygulamanın veri modelinde yok; uydurulmaz); ✘ son uygulanan grup uyarısı (rotasyon kuralı imzasız: karar vermez); ✘ kartın tamamı tek dokunuşla açılmıyor (iki ayrı düğme).
+- Görüntü: `docs/design/compare/stock.png` (sol prototip, sağ uygulama, 375 px). Diğer sekmeler (ekin listesi, tarla listesi, Άλλα): `crops-list.png`, `parcels-list.png`, `more.png` (şimdiki durum, değişmemiş).
