@@ -56,3 +56,8 @@ Lint is a safety net, not a proof. The real guarantee comes from types (`Known<T
 - Once per clone: `git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'`; send a new branch with `git push -u origin HEAD`.
 - The session hook may warn "unpushed commits … no remote branch" on a shallow clone: a **false alarm**. Check `git ls-remote --heads origin <branch>` once and move on.
 - Never push to `main`; merge by pull request only. The repository is `seaevill/Aloni` (renamed from SunField).
+
+## Before telling Bora to apply a migration (rule of 2026-11-19)
+- Look in `docs/reviews/team/` (the team's independent reviews) **before** writing «apply». If any review names an **open MUST** finding against that migration, or against one it depends on, do NOT ask for the apply: fix it first (in place while the migration is applied nowhere, otherwise in a new numbered file) with a red test as the **real `authenticated` owner**, and wait for the team to mark it CLOSED.
+- In the report to Bora, write one line saying that check was made: «docs/reviews/team: açık MUST yok» (or the list of open ones).
+- Every finding of a review gets a test (`supabase/tests/m7_review.sql` is the model); a SHOULD finding is fixed or answered in DECISIONS with the reason.
