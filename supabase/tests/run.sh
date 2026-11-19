@@ -27,6 +27,8 @@ psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/final.sql || { echo "FAILED: sup
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/pull_generation.sql || { echo "FAILED: supabase/tests/pull_generation.sql"; exit 1; }; echo "SQL pull-generation tests OK"
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m2_0015.sql || { echo "FAILED: supabase/tests/m2_0015.sql"; exit 1; }; echo "SQL m2-0015 tests OK"
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/invite.sql || { echo "FAILED: supabase/tests/invite.sql"; exit 1; }; echo "SQL invitation tests OK"
+psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m3_0019.sql || { echo "FAILED: supabase/tests/m3_0019.sql"; exit 1; }; echo "SQL m3-0019 tests OK"
+bash supabase/tests/m3_verify.sh || { echo "FAILED: m3_verify.sh"; exit 1; }
 bash supabase/tests/contract.sh
 out=$(psql -X -At -v ON_ERROR_STOP=1 -f supabase/tests/verify_applied.sql) || { echo "FAILED: verify_applied.sql"; exit 1; }; echo "$out"; echo "$out" | grep -q "^OK:" || { echo "verify_applied.sql found problems"; exit 1; }
 bash supabase/tests/concurrency.sh

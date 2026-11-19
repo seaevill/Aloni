@@ -58,4 +58,21 @@ export async function invite(e: Endpoint, token: string, farmId: string, email: 
   if (!res.ok) throw new Error(`invite: HTTP ${res.status}`);
 }
 
+export interface OpenInvitation { id: string; email: string; worker_id: string | null }
+/** The invitations of this farm that nobody has used yet (the owner sees them; nobody else can). A failure or an unreadable answer is an empty list. */
+export async function openInvitations(e: Endpoint, token: string, farmId: string, f: Fetch = fetch): Promise<OpenInvitation[]> {
+  try {
+    const res = await f(`${e.url}/rest/v1/invitations?farm_id=eq.${encodeURIComponent(farmId)}&accepted_at=is.null&select=id,email,worker_id`, { method: 'GET', headers: headers(e, token) });
+    if (!res.ok) return [];
+    const rows = (await res.json()) as unknown;
+    return Array.isArray(rows) ? rows.filter((r): r is OpenInvitation => typeof r?.id === 'string' && typeof r.email === 'string') : [];
+  } catch { return []; }
+}
+
+/** The owner takes an unused invitation back (an expired one is replaced by a new invitation by itself). */
+export async function withdrawInvitation(e: Endpoint, token: string, id: string, f: Fetch = fetch): Promise<void> {
+  const res = await f(`${e.url}/rest/v1/invitations?id=eq.${encodeURIComponent(id)}`, { method: 'DELETE', headers: headers(e, token) });
+  if (!res.ok) throw new Error(`withdraw: HTTP ${res.status}`);
+}
+
 export const session = signal<Session | undefined>(undefined);

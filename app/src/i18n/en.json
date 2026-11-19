@@ -421,5 +421,7 @@
   "invite.sent": "Invitation saved. The worker signs in with this email.",
   "invite.error": "The invitation was not saved. Check the email and the connection.",
   "sync.error": "Not sent. We will try again.",
-  "signin.farmId": "Farm code: {id}"
+  "signin.farmId": "Farm code: {id}",
+  "invite.openLine": "Open invitation: {email}",
+  "invite.withdraw": "Withdraw"
 }

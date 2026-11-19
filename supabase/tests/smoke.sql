@@ -215,6 +215,7 @@ end $$;
 
 do $$ begin if not exists (select 1 from pg_roles where rolname = 'app_user') then create role app_user nologin; end if; end $$;
 grant usage on schema public, auth to app_user;
+grant authenticated to app_user;     -- the policies are `to authenticated` (0019): this stand-in role is one, with extra table rights
 grant all on all tables in schema public to app_user;
 grant all on all sequences in schema public to app_user;
 grant execute on all functions in schema public to app_user;

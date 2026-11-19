@@ -31,12 +31,12 @@ begin
   if not exists (select 1 from crops where farm_id = farm) then raise exception 'crop not stored'; end if;
   if (select count(*) from verify_spray_chain(farm)) <> 0 then raise exception 'the chain of the phone''s sprays does not verify'; end if;
 
-  -- the phone sends the WHOLE row on an update: an edited label that lost its signature loses it on the server too
+  -- the phone sends the WHOLE row on an update. A SIGNED label cannot be changed any more (0019): the edit that drops the signature is REFUSED, with the reason, and the signed row stays as it was
   select o into edit from ops_t where o->>'table' = 'label_uses' and o->'row'->>'target' = 't' limit 1;
   res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', farm, 'table', 'label_uses', 'op', 'update', 'row', (edit->'row') - 'sign_off')));
-  if res->0->>'status' <> 'applied' then raise exception 'label edit rejected: %', res; end if;
+  if res->0->>'status' <> 'rejected' or res->0->>'code' <> '23514' then raise exception 'an edit of a signed label was not refused: %', res; end if;
   select * into lab from label_uses where farm_id = farm and target = 't';
-  if lab.sign_off_by is not null or lab.sign_off_on is not null or lab.sign_off_fingerprint is not null then raise exception 'the old signature survived an edit: %', to_jsonb(lab); end if;
+  if lab.sign_off_by <> 'Agronomist' or lab.sign_off_fingerprint is null then raise exception 'the signature was lost although the edit was refused: %', to_jsonb(lab); end if;
   -- an optional field the phone emptied is emptied here
   select o into edit from ops_t where o->>'table' = 'plantings' limit 1;
   res := apply_ops(jsonb_build_array(jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', farm, 'table', 'plantings', 'op', 'update', 'row', (edit->'row') - 'variety')));

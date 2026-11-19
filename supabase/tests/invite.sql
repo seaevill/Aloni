@@ -1,7 +1,8 @@
 -- Inviting a worker (migration 0018), as the REAL `authenticated` role and with no session at all. Runs AFTER m2_0015.sql on the same database.
 \set ON_ERROR_STOP on
 reset role; set test.uid = ''; set test.jwt = '';
-insert into auth.users(id) values ('00000000-0000-0000-0000-0000000000d4'), ('00000000-0000-0000-0000-0000000000e5');
+insert into auth.users(id, email, email_confirmed_at) values ('00000000-0000-0000-0000-0000000000d4', 'new.worker@example.org', now()), ('00000000-0000-0000-0000-0000000000e5', 'stranger@example.org', now());
+update auth.users set email = 'owner.again@example.org', email_confirmed_at = now() where id = '00000000-0000-0000-0000-0000000000a1';   -- the owner's own (confirmed) address
 insert into workers(id, farm_id, name) values ('bbbbbbbb-0000-0000-0000-000000000003', '11111111-1111-1111-1111-111111111111', 'Invited Worker');   -- a roster entry nobody has an account for yet
 -- the data controller details are incomplete here (phone ops stored only a name): an invitation must be refused until they are complete
 set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
@@ -66,7 +67,7 @@ begin
   perform accept_invitation();
   if (select role from farm_members where farm_id = f and user_id = '00000000-0000-0000-0000-0000000000a1') <> 'owner' then raise exception '(inv7) an owner was turned into a worker'; end if;
 end $$;
-set test.uid = '00000000-0000-0000-0000-0000000000e5'; set test.jwt = '{"email":"expired@example.org"}';
+reset role; update auth.users set email = 'expired@example.org' where id = '00000000-0000-0000-0000-0000000000e5'; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000e5'; set test.jwt = '{"email":"expired@example.org"}';
 do $$ begin begin perform accept_invitation(); raise exception '(inv7) an expired invitation was accepted'; exception when no_data_found then null; end; end $$;
 reset role; set test.uid = ''; set test.jwt = '';
 do $$ begin raise notice 'invitation tests passed'; end $$;
