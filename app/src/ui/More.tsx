@@ -64,6 +64,7 @@ export function More() {
       <p class="muted">{t('more.demoNote')}</p>
       {msg && <p class="msg" role="status">{msg}</p>}
       <Readiness part="owner" />
+      <GoLive />
       <p class="muted" data-testid="this-phone">{t('more.thisPhone')}</p>
       <p class="muted" data-testid="opened-from">{openedFrom}</p>
       <SignIn />
@@ -75,7 +76,6 @@ export function More() {
       <details class="card" data-testid="dev-section">
         <summary>{t('dev.title')}</summary>
         <Readiness part="dev" />
-        <GoLive />
       </details>
     </section>
   );
