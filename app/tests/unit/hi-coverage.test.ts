@@ -1,5 +1,5 @@
 import { readFileSync, readdirSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import hi from '../../src/i18n/hi.json';
 import el from '../../src/i18n/el.json';
 
@@ -18,6 +18,10 @@ describe('Hindi coverage of the worker screens', () => {
     const workerKeys = Object.keys(el).filter((k) => k.startsWith('worker.'));
     expect(workerKeys.filter((k) => !(k in hi))).toEqual([]);
   });
+  it('the unknown-value text and every dose unit exist in Hindi (formatDose and the unit table are built from templates)', () => {
+    const need = ['value.unknown', ...Object.keys(el).filter((k) => k.startsWith('labeluse.unit.') && k !== 'labeluse.unit.title')];
+    expect(need.filter((k) => !(k in hi))).toEqual([]);
+  });
   it('src folder sanity: the worker files exist', () => {
     expect(readdirSync('src/ui')).toContain('WorkerApp.tsx');
   });
@@ -29,6 +33,7 @@ import { formatDose } from '../../src/i18n/format';
 import { known } from '@aloni/rules-core';
 
 describe('Hindi crop names and doses', () => {
+  afterEach(() => { lang.value = 'el'; });
   it('every catalog crop has a Hindi name; the worker sees it beside the Greek one', () => {
     for (const c of CATALOG) expect(c.hi.length).toBeGreaterThan(0);
     expect(cropName(CATALOG[0], 'hi')).toBe('पालक · Σπανάκι');
@@ -37,6 +42,5 @@ describe('Hindi crop names and doses', () => {
     lang.value = 'hi';
     expect(formatDose(known('0.2' as never))).toBe('0,2');
     expect(formatDose(known('0.250' as never))).toBe('0,250');
-    lang.value = 'el';
   });
 });

@@ -9,8 +9,8 @@ test('worker view in Hindi: crop names «पालक · Σπανάκι», dose 
   await page.getByRole('button', { name: 'हिन्दी' }).first().click();
   await page.getByTestId('open-worker-view').click();
   await expect(page.getByTestId('worker-app')).toBeVisible();
-  const dose = await page.getByTestId('worker-dose').first().innerText().catch(() => '');
-  if (dose) expect(dose).toMatch(/\d+,\d+|\d+ /);
+  await expect(page.getByTestId('worker-dose').first()).toBeVisible();
+  expect(await page.getByTestId('worker-dose').first().innerText()).toMatch(/\d,\d/);
   await page.getByTestId('worker-tab-harvest').click();
   await expect(page.getByTestId('harvest-chip').first()).toContainText('·');
   const chips = await page.getByTestId('harvest-chip').allInnerTexts();

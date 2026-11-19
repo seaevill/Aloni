@@ -98,11 +98,11 @@
   "harvest.cutby.none": "पहले कर्मचारियों की सूची बनाएँ।",
   "harvest.cutby.error": "चुनें किसने काटा।",
   "harvest.cutby.line": "काटा: {name}",
-  "labeluse.unit.ml_str": "ml/स्त्रेम्मा",
-  "labeluse.unit.g_str": "g/स्त्रेम्मा",
-  "labeluse.unit.l_str": "L/स्त्रेम्मा",
-  "labeluse.unit.kg_str": "kg/स्त्रेम्मा",
-  "labeluse.unit.ml_100l": "ml/100 L पानी",
-  "labeluse.unit.g_100l": "g/100 L पानी",
-  "unit.str": "स्त्रेम्मा (1000 m²)"
+  "labeluse.unit.ml_str": "ml/στρ.",
+  "labeluse.unit.g_str": "g/στρ.",
+  "labeluse.unit.l_str": "L/στρ.",
+  "labeluse.unit.kg_str": "kg/στρ.",
+  "labeluse.unit.ml_100l": "ml/100 L (νερό · पानी)",
+  "labeluse.unit.g_100l": "g/100 L (νερό · पानी)",
+  "unit.str": "στρ. (1000 m²)"
 }
