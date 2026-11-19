@@ -438,5 +438,12 @@
   "spray.dose.reason": "Etiket dışı dozun nedeni",
   "spray.dose.error": "Doz etiketin dışında: nedenini yazın.",
   "spray.error.unit": "Doz birimini seçin.",
-  "worker.back": "Geri"
+  "worker.back": "Geri",
+  "register.csv.machine": "Makine için CSV (İngilizce alanlar)",
+  "register.csv.warnings": "Uyarılar CSV",
+  "register.vat": "İşletmenin vergi numarası (ΑΦΜ)",
+  "register.vat.save": "Vergi numarasını kaydet",
+  "register.vat.saved": "Vergi numarası kaydedildi.",
+  "register.holder": "İşletme: {name} · ΑΦΜ: {vat}",
+  "register.holder.none": "[tanımlı değil]"
 }

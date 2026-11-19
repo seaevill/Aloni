@@ -438,5 +438,12 @@
   "spray.dose.reason": "Why the dose is outside the label",
   "spray.dose.error": "The dose is outside the label: write the reason.",
   "spray.error.unit": "Choose the dose unit.",
-  "worker.back": "Back"
+  "worker.back": "Back",
+  "register.csv.machine": "Machine-readable CSV (English fields)",
+  "register.csv.warnings": "Warnings CSV",
+  "register.vat": "Holding's VAT number (ΑΦΜ)",
+  "register.vat.save": "Save VAT number",
+  "register.vat.saved": "The VAT number was saved.",
+  "register.holder": "Holding: {name} · VAT no.: {vat}",
+  "register.holder.none": "[not set]"
 }

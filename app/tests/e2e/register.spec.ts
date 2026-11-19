@@ -23,6 +23,20 @@ test('the spray register (demo): marked «ΠΡΟΣΧΕΔΙΟ», every field, CSV
   expect(csv[0]).toContain('ΠΡΟΣΧΕΔΙΟ');
   expect(csv[1]).toContain('Ημερομηνία και ώρα');
   expect(csv.length).toBeGreaterThan(8);
+  // the machine-readable file: English field names, one header row, a decimal point, ISO 8601 with the Athens offset; warnings come as a separate file
+  const dm = page.waitForEvent('download');
+  await page.getByTestId('register-csv-machine').click();
+  const m = await dm;
+  expect(m.suggestedFilename()).toMatch(/^aloni-demo-register-machine-\d{4}-\d{2}-\d{2}\.csv$/);
+  const mpath = test.info().outputPath('machine.csv'); await m.saveAs(mpath);
+  const mrows = readFileSync(mpath, 'utf8').split('\r\n');
+  expect(mrows[0]).toBe('holder_name,holder_vat_id,record_id,amends_record_id,applied_end,parcel,crop,treated_area_str,product,registration_number,dose,dose_unit,quantity_used,water_l,applicator,label_state,phi_until,rei_until');
+  expect(mrows.length).toBeGreaterThan(7);
+  expect(mrows[1]).toMatch(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+0[23]:00/);
+  const dw = page.waitForEvent('download');
+  await page.getByTestId('register-csv-warnings').click();
+  const w = await dw; const wpath = test.info().outputPath('warnings.csv'); await w.saveAs(wpath);
+  expect(readFileSync(wpath, 'utf8').split('\r\n')[0]).toBe('record_id,warning_code');
   await page.emulateMedia({ media: 'print' }); // the print view hides the buttons and the tab bar
   await expect(page.getByTestId('register-csv')).toBeHidden();
   await expect(page.locator('nav.tabs')).toBeHidden();

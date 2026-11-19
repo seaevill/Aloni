@@ -438,5 +438,12 @@
   "spray.dose.reason": "Λόγος δόσης εκτός ετικέτας",
   "spray.dose.error": "Η δόση είναι εκτός της ετικέτας: γράψτε τον λόγο.",
   "spray.error.unit": "Επιλέξτε μονάδα δόσης.",
-  "worker.back": "Πίσω"
+  "worker.back": "Πίσω",
+  "register.csv.machine": "CSV για μηχανή (αγγλικά πεδία)",
+  "register.csv.warnings": "CSV προειδοποιήσεων",
+  "register.vat": "ΑΦΜ της εκμετάλλευσης",
+  "register.vat.save": "Αποθήκευση ΑΦΜ",
+  "register.vat.saved": "Το ΑΦΜ αποθηκεύτηκε.",
+  "register.holder": "Εκμετάλλευση: {name} · ΑΦΜ: {vat}",
+  "register.holder.none": "[δεν έχει οριστεί]"
 }
