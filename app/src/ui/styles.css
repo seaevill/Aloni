@@ -63,7 +63,6 @@ nav.tabs .ico { font-size:var(--fs-20); line-height:1; }
 nav.tabs .ico svg { display:block; width:var(--icon); height:var(--icon); }
 nav.tabs .lbl { white-space:normal; overflow-wrap:normal; hyphens:manual; text-align:center; line-height:1.15; }
 .wx-row .d span { white-space:nowrap; }
-.filters { flex-wrap:nowrap; overflow-x:auto; }
 .filters .tag-btn { flex:0 0 auto; white-space:nowrap; }
 /* a closed button LOOKS closed (grey, no green fill) and still answers a press (the worker is told why) */
 .btn:disabled, .btn[aria-disabled="true"], .seg button:disabled, .seg.big button.go:disabled, .seg.big button.go[aria-disabled="true"] { background:var(--card); border-color:var(--line); color:var(--muted); font-weight:600; }
@@ -166,7 +165,7 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 
 .detail .band .latin { margin:0; font-style:italic; color:var(--white); }
 /* Αποθήκη, prototype layout: dark band, type filters, product cards with tags */
-.filters { display:flex; flex-wrap:wrap; gap:var(--sp-8); margin:0 0 var(--sp-12); }
+.filters { display:flex; flex-wrap:nowrap; overflow-x:auto; gap:var(--sp-8); margin:0 0 var(--sp-12); }
 .tag-btn { flex:0 0 auto; min-height:var(--tap); padding:0 var(--sp-14); font:inherit; border-radius:var(--r-btn); border:var(--bw-2) solid var(--line); background:var(--card); color:var(--fg); }
 .tag-btn[aria-pressed="true"] { background:var(--forest-2); border-color:var(--forest-2); color:var(--white); font-weight:700; }
 .tags { display:flex; flex-wrap:wrap; gap:var(--sp-8); margin:var(--sp-6) 0; }

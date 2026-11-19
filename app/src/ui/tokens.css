@@ -14,4 +14,4 @@
 }
 
 /* very narrow phones (≤300 px): buttons stack in one column. Lives here because tokens.css is the only file allowed to hold px values. */
-@media (max-width:300px) { .seg, .seg.two, .pair, .actions2 { grid-template-columns:1fr; } }
+@media (max-width:300px) { main .seg, main .seg.two, main .pair, main .actions2 { grid-template-columns:1fr; } } /* `main` makes it win over styles.css, which loads later */

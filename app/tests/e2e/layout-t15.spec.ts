@@ -21,3 +21,15 @@ test('number and unit stay together', async ({ page }) => {
   const t = await page.getByTestId('parcel-open').first().innerText();
   expect(t).toMatch(/\d στρ\./);
 });
+
+test('at 300 px the buttons stack in one column; the stock filter is one scrollable row', async ({ page }) => {
+  await page.setViewportSize({ width: 300, height: 700 });
+  await iphone(page);
+  await page.getByTestId('empty-state').locator('button').nth(1).click();
+  await page.locator('nav.tabs [data-tab="more"]').click();
+  const cols = await page.locator('main .seg').first().evaluate((e) => getComputedStyle(e).gridTemplateColumns.split(' ').length);
+  expect(cols).toBe(1);
+  await page.locator('nav.tabs [data-tab="stock"]').click();
+  const f = page.locator('.filters').first();
+  if ((await f.count()) > 0) expect(await f.evaluate((e) => getComputedStyle(e).flexWrap)).toBe('nowrap');
+});
