@@ -653,5 +653,8 @@
   "spray.qty.unknown": "I do not know (no stock movement is recorded)",
   "spray.flag.quantity_unknown": "Quantity unknown",
   "spray.oneCrop": "One crop per entry.",
-  "job.error.nolabel": "Cannot assign: the label data for this crop is missing."
+  "job.error.nolabel": "Cannot assign: the label data for this crop is missing.",
+  "job.planned.line": "{product} · {worker} · {date}",
+  "today.fields": "Fields",
+  "orders.map.title": "Match products to crops"
 }

@@ -653,5 +653,8 @@
   "spray.qty.unknown": "Bilmiyorum (stok hareketi yazılmaz)",
   "spray.flag.quantity_unknown": "Miktar bilinmiyor",
   "spray.oneCrop": "Her kayıtta tek ekin.",
-  "job.error.nolabel": "Atayamazsınız: bu ekin için etiket bilgisi eksik."
+  "job.error.nolabel": "Atayamazsınız: bu ekin için etiket bilgisi eksik.",
+  "job.planned.line": "{product} · {worker} · {date}",
+  "today.fields": "Tarlalar",
+  "orders.map.title": "Ürünleri ekinlerle eşle"
 }
