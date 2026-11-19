@@ -1,4 +1,5 @@
 import { useState } from 'preact/hooks';
+import { useBack } from './backstack';
 import { activeFarm, dataVersion, deleteDemo, farmLabel, hasDemo, legacyKept, loadDemo, realFarmId } from '../db';
 import { DEMO_FARM_ID } from '../config';
 import { APP_VERSION } from '../version';
@@ -24,6 +25,7 @@ export function More() {
   const standalone = matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true;
   const openedFrom = [t(standalone ? 'more.openedFrom.home' : 'more.openedFrom.safari'), t('more.openedFrom.note')].join(' ');
   const demoLabel = t(hasDemo.value ? 'more.resetDemo' : 'more.loadDemo');
+  useBack(view !== 'main', () => setView('main'));
   const pick = (id: string) => { activeFarm.value = id; dataVersion.value++; };
   if (view === 'info') return <Info onBack={() => setView('main')} />;
   if (view === 'orders') return <Orders onBack={() => setView('main')} />;

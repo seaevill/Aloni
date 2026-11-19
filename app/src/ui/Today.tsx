@@ -1,7 +1,9 @@
 import { useState } from 'preact/hooks';
+import { useBack } from './backstack';
 import { activeFarm, loadDemo, realFarmId, farmLabel } from '../db';
 import { tab } from './nav';
 import { groupJobs } from '../summary/jobs';
+import { openParcelForm, tab } from './nav';
 import { formatDate, formatDateTime, t } from '../i18n';
 import { formatArea, formatQty } from '../i18n/format';
 import { athensToday } from '../plantings/planting';
@@ -135,6 +137,7 @@ export function Today() {
   const [planning, setPlanning] = useState(false);
   const [planned, setPlanned] = useState(false);
   const [history, setHistory] = useState(false);
+  useBack(spraying || harvesting || planning || history, () => { setSpraying(false); setHarvesting(false); setPlanning(false); setHistory(false); }, spraying || harvesting || planning);
   const rows = [useRows('parcels'), useRows('plantings'), useRows('products'), useRows('stock_lots'), useRows('crops')];
   const [parcels, plantings, products, lots, crops] = rows;
   const jobs = useRows('jobs'); const workers = useRows('workers'); const links = useRows('job_plantings'); const sprays = useRows('job_spray');
@@ -175,6 +178,7 @@ export function Today() {
       {loaded && !has && <Welcome />}
       {loaded && !has && (
         <EmptyState message={t('welcome.start')} actionLabel={t('parcel.add')} onAction={() => { tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
+        <EmptyState message={t('welcome.2.body')} actionLabel={t('parcel.add')} onAction={() => { openParcelForm.value = true; tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
       )}
       {loaded && has && <CutTodaySection ct={ct} />}
       {loaded && has && <h2>{t('worker.jobs')}</h2>}

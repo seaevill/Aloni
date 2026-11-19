@@ -1,4 +1,5 @@
 import { useState } from 'preact/hooks';
+import { useBack } from './backstack';
 import { activeFarm, dataVersion, db, realFarmId } from '../db';
 import { formatDateLong, t } from '../i18n';
 import { formatQty } from '../i18n/format';
@@ -33,6 +34,7 @@ export function Stock() {
   const moves = useRows('stock_movements');
   const lotRows = useRows('stock_lots'); const labelRows = useRows('label_uses'); const cropRows = useRows('crops');
   const [filter, setFilter] = useState<string>('');
+  useBack(adding || !!lots || !!open, () => { setAdding(false); setLots(undefined); setOpen(undefined); }, adding);
   if (adding) return <ProductForm onDone={() => setAdding(false)} />;
   if (lots) return <StockLots product={lots} readOnly={demo} onBack={() => setLots(undefined)} />;
   if (open) return <LabelUses product={open} readOnly={demo} onBack={() => setOpen(undefined)} />;
