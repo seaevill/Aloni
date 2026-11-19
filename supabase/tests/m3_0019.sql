@@ -57,8 +57,8 @@ begin
     raise exception '(3) the RLS helpers are not in the private schema'; end if;
   if has_function_privilege('anon', 'private.has_role(uuid, text[])', 'execute') or has_function_privilege('public', 'private.has_role(uuid, text[])', 'execute') then raise exception '(3) anon can execute has_role'; end if;
   if not has_function_privilege('authenticated', 'private.has_role(uuid, text[])', 'execute') then raise exception '(3) authenticated cannot execute has_role: RLS would break'; end if;
-  if not has_function_privilege('authenticated', 'public.complete_spray_job(uuid, timestamptz, text, text)', 'execute') then raise exception '(3) complete_spray_job must stay callable (it is the worker''s «Έγινε», on purpose)'; end if;
-  if (select obj_description('public.complete_spray_job(uuid, timestamptz, text, text)'::regprocedure, 'pg_proc')) is null then raise exception '(3) complete_spray_job does not say why it is open'; end if;
+  if not has_function_privilege('authenticated', 'public.complete_spray_job(uuid, timestamptz, text, text, timestamptz)', 'execute') then raise exception '(3) complete_spray_job must stay callable (it is the worker''s «Έγινε», on purpose)'; end if;
+  if (select obj_description('public.complete_spray_job(uuid, timestamptz, text, text, timestamptz)'::regprocedure, 'pg_proc')) is null then raise exception '(3) complete_spray_job does not say why it is open'; end if;
 end $$;
 
 -- (4) policies: only for authenticated, auth.uid() through a sub-select, one permissive policy per table and command

@@ -11,7 +11,7 @@ for pair in "$J1 $P1" "$J2 $P2"; do set -- $pair
         insert into job_plantings(farm_id,job_id,planting_id) values ('$F','$1','$2')" >/dev/null
 done
 call() { # $1 job, $2 end-time expression, $3 sleep seconds after the call (keeps the transaction open)
-  psql -X -q -At -v ON_ERROR_STOP=0 -c "begin; set local role app_user; select set_config('test.uid','00000000-0000-0000-0000-0000000000b2',true); select coalesce((select complete_spray_job('$1', $2)->>'repeat'), 'x'); select pg_sleep($3); commit;" 2>&1 | grep -E '^(true|false|ERROR)' | head -1 | cut -d: -f1 || true
+  psql -X -q -At -v ON_ERROR_STOP=0 -c "begin; set local role app_user; select set_config('test.uid','00000000-0000-0000-0000-0000000000b2',true); select coalesce((select complete_spray_job('$1', $2, p_started_at => ($2) - interval '30 minutes')->>'repeat'), 'x'); select pg_sleep($3); commit;" 2>&1 | grep -E '^(true|false|ERROR)' | head -1 | cut -d: -f1 || true
 }
 T="now() - interval '30 minutes'"; T=$(Q -c "select (now() - interval '30 minutes')::text")
 # case 1: same end time, A holds its transaction open for 3 s, B starts 1 s later and must wait for A, then answer «repeat»

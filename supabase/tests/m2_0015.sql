@@ -60,8 +60,8 @@ set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
 do $$
 declare f constant uuid := '11111111-1111-1111-1111-111111111111'; prod constant uuid := 'aaaaaaaa-0000-0000-0000-000000000001'; w1 constant uuid := 'bbbbbbbb-0000-0000-0000-000000000001'; t timestamptz := now() - interval '20 days'; r record;
 begin
-  insert into job_spray(id,farm_id,job_id,product_id,applicator_id,sprayed_at,dose_str,dose_unit,label_state,received_at)
-    values ('55555555-0000-0000-0000-000000000902',f,'eeeeeeee-0000-0000-0000-000000000901',prod,w1,t,0.025,'ml/str','unsigned', t + interval '1 hour');
+  insert into job_spray(id,farm_id,job_id,product_id,applicator_id,sprayed_at,started_at,dose_str,dose_unit,label_state,received_at)
+    values ('55555555-0000-0000-0000-000000000902',f,'eeeeeeee-0000-0000-0000-000000000901',prod,w1,t,t - interval '1 hour',0.025,'ml/str','unsigned', t + interval '1 hour');
   select * into r from job_spray where id = '55555555-0000-0000-0000-000000000902';
   if r.received_at < now() - interval '1 minute' then raise exception '(2) received_at was taken from the writer: %', r.received_at; end if;
   if not ('late_entry' = any (r.flags)) then raise exception '(2) a 20-day-old spray was not marked late because the writer supplied received_at'; end if;
@@ -128,7 +128,7 @@ insert into jobs(id,farm_id,kind,status,worker_id,product_id,label_use_id,dose_s
 insert into job_plantings(farm_id,job_id,planting_id) values ('11111111-1111-1111-1111-111111111111','eeeeeeee-0000-0000-0000-000000000904','dddddddd-0000-0000-0000-000000000904');
 set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000b2';
 do $$ declare r jsonb; begin
-  r := complete_spray_job('eeeeeeee-0000-0000-0000-000000000904', now() - interval '5 minutes');
+  r := complete_spray_job('eeeeeeee-0000-0000-0000-000000000904', now() - interval '5 minutes', p_started_at => (now() - interval '5 minutes') - interval '30 minutes');
   if r->>'spray_id' is null then raise exception '(5) the worker''s completion as authenticated gave no record: %', r; end if;
 end $$;
 reset role; set test.uid = '';
