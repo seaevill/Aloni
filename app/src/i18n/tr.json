@@ -68,7 +68,7 @@
   "warn.persist": "Tarayıcı verilerin kalacağını garanti etmiyor. Sık sık yedek alın.",
   "parcel.add": "Parsel ekle",
   "parcel.name": "Parsel adı",
-  "parcel.area": "Alan, dönüm (στρ.)",
+  "parcel.area": "Alan",
   "parcel.pin": "GPS ile konum al",
   "parcel.pin.set": "Enlem {lat} · boylam {lng} (±{acc} m)",
   "parcel.pin.error": "Konum bulunamadı. Onsuz devam edebilirsiniz.",
@@ -88,7 +88,7 @@
   "planting.add": "Ekim ekle",
   "planting.parcel": "Parsel",
   "planting.crop": "Ürün",
-  "planting.area": "Alan, dönüm (στρ.) olarak",
+  "planting.area": "Alan",
   "planting.sown": "Ekim tarihi",
   "planting.variety": "Çeşit (isteğe bağlı)",
   "planting.lot": "Parti (isteğe bağlı)",
@@ -462,5 +462,6 @@
   "welcome.2": "Tarla ekleyin",
   "welcome.2.body": "Bir tarla ve ekili ürünüyle başlayın.",
   "welcome.3": "ya da gösteriyi görün",
-  "welcome.3.body": "Nasıl çalıştığını görmeniz için hayali veriler. Kendi verilerinizle karışmaz."
+  "welcome.3.body": "Nasıl çalıştığını görmeniz için hayali veriler. Kendi verilerinizle karışmaz.",
+  "unit.str": "dekar"
 }
