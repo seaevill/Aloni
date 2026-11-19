@@ -730,5 +730,7 @@
   "job.dose": "Δόση προς εφαρμογή",
   "nav.leave": "Να φύγω χωρίς αποθήκευση;",
   "nav.leave.stay": "Μένω",
-  "nav.leave.go": "Φεύγω"
+  "nav.leave.go": "Φεύγω",
+  "job.planned.line": "{product} · {worker} · {date}",
+  "today.fields": "Χωράφια"
 }

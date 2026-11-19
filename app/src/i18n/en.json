@@ -730,5 +730,7 @@
   "job.dose": "Dose to apply",
   "nav.leave": "Leave without saving?",
   "nav.leave.stay": "Stay",
-  "nav.leave.go": "Leave"
+  "nav.leave.go": "Leave",
+  "job.planned.line": "{product} · {worker} · {date}",
+  "today.fields": "Fields"
 }

@@ -730,5 +730,7 @@
   "job.dose": "Uygulanacak doz",
   "nav.leave": "Kaydetmeden çıkayım mı?",
   "nav.leave.stay": "Kalıyorum",
-  "nav.leave.go": "Çıkıyorum"
+  "nav.leave.go": "Çıkıyorum",
+  "job.planned.line": "{product} · {worker} · {date}",
+  "today.fields": "Tarlalar"
 }
