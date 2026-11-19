@@ -498,5 +498,20 @@
   "spray.correct.qty": "Partiden alınan miktar",
   "spray.correct.open": "Düzelt",
   "spray.correct.was": "İlk kayıt: doz {dose}, {when}",
-  "spray.correct.why": "Düzeltildi: {reason}"
+  "spray.correct.why": "Düzeltildi: {reason}",
+  "edit.title": "Düzenle",
+  "edit.note": "Değişiklik nedeniyle kaydedilir; önceki değerler değişiklik geçmişinde kalır.",
+  "edit.reason": "Değişiklik nedeni",
+  "edit.reason.error": "Değişiklik nedenini yazın: her değişikliğin bir nedeni vardır.",
+  "edit.open": "Düzenle",
+  "edit.trail": "Değişiklikler ({n})",
+  "edit.was": "{when} · {reason} · önceki: {values}",
+  "edit.f.name": "ad",
+  "edit.f.area": "alan",
+  "edit.f.topo": "arazi yapısı",
+  "edit.f.sown": "ekim",
+  "edit.f.status": "durum",
+  "edit.f.variety": "çeşit",
+  "edit.f.lot": "parti",
+  "history.edits": "Tarla ve ekim değişiklikleri"
 }

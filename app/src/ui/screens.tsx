@@ -7,6 +7,7 @@ import { formatArea, formatQty } from '../i18n/format';
 import { archived, restored } from '../parcels/parcel';
 import { put } from '../repo';
 import { Analyses } from './Analyses';
+import { EditTrail } from './EditTrail';
 import { ParcelForm } from './ParcelForm';
 import { EmptyState, ErrorState, UnsyncedMark } from './states';
 import { showUndo } from './Toast';
@@ -45,8 +46,10 @@ export function Parcels() {
   const demo = activeFarm.value !== realFarmId.value;
   const [adding, setAdding] = useState(false);
   const [analysing, setAnalysing] = useState<Row | undefined>(undefined);
+  const [editing, setEditing] = useState<Row | undefined>(undefined);
   const q = useRows('parcels');
   if (adding) return <ParcelForm onDone={() => setAdding(false)} />;
+  if (editing) return <ParcelForm existing={editing} onDone={() => setEditing(undefined)} />;
   if (analysing) return <Analyses parcel={analysing} readOnly={demo} onBack={() => setAnalysing(undefined)} />;
   const live = q.rows?.filter((r) => !r.deleted_at) ?? [];
   const archive = async (r: Row) => {
@@ -62,6 +65,8 @@ export function Parcels() {
       {live.map((r) => (
         <div class="card" key={r.id}>{String(r.name)}{typeof r.area_str !== 'undefined' && <small>{formatArea(r.area_str as number | string)}</small>}<UnsyncedMark id={r.id} />
           <button class="row" data-testid="analysis-open" onClick={() => setAnalysing(r)}><span>{t('analysis.open')}</span><span aria-hidden="true" class="chev" /></button>
+          {!demo && <button class="row" data-testid="parcel-edit" onClick={() => setEditing(r)}><span>{t('edit.open')}</span><span aria-hidden="true" class="chev" /></button>}
+          <EditTrail row={r} />
           {!demo && <button class="btn secondary" onClick={() => void archive(r)}>{t('parcel.archive')}</button>}
         </div>
       ))}

@@ -8,6 +8,7 @@ import { athensToday, buildPlanting, exceedsParcel, STATUSES, type PlantingError
 import { put, putMany } from '../repo';
 import type { Row } from '../db/schema';
 import { showUndo } from './Toast';
+import { applyEdit, commaText } from '../records/edits';
 
 export const STATUS_KEYS: Record<Status, I18nKey> = {
   planned: 'planting.status.planned', growing: 'planting.status.growing', harvesting: 'planting.status.harvesting', finished: 'planting.status.finished',
@@ -15,24 +16,35 @@ export const STATUS_KEYS: Record<Status, I18nKey> = {
 const NO_ERRORS: PlantingErrors = { parcel: false, crop: false, area: undefined, date: false };
 
 /** Add a planting: parcel, crop chip, area, sowing date (today unless changed), status. Offline, saves at once. A too-large area only warns. */
-export function PlantingForm({ parcels, onDone }: { parcels: Row[]; onDone: () => void }) {
-  const [parcelId, setParcelId] = useState('');
+export function PlantingForm({ parcels, onDone, existing }: { parcels: Row[]; onDone: () => void; existing?: Row }) {
+  const [parcelId, setParcelId] = useState(typeof existing?.parcel_id === 'string' ? existing.parcel_id : '');
+  const [why, setWhy] = useState(''); const [whyMissing, setWhyMissing] = useState(false);
   const [slug, setSlug] = useState('');
-  const [variety, setVariety] = useState('');
-  const [lot, setLot] = useState('');
-  const [area, setArea] = useState('');
-  const [sownOn, setSownOn] = useState(athensToday(new Date()) ?? '');
-  const [status, setStatus] = useState<Status>('growing');
+  const [variety, setVariety] = useState(typeof existing?.variety === 'string' ? existing.variety : '');
+  const [lot, setLot] = useState(typeof existing?.lot_label === 'string' ? existing.lot_label : '');
+  const [area, setArea] = useState(commaText(existing?.area_str));
+  const [sownOn, setSownOn] = useState(typeof existing?.sown_on === 'string' ? existing.sown_on : athensToday(new Date()) ?? '');
+  const [status, setStatus] = useState<Status>(STATUSES.find((x) => x === existing?.status) ?? 'growing');
   const [errors, setErrors] = useState<PlantingErrors>(NO_ERRORS);
 
   const parcel = parcels.find((p) => p.id === parcelId);
   const bigger = parcel !== undefined && exceedsParcel(area, parcel.area_str);
+  const titleKey: I18nKey = existing ? 'edit.title' : 'planting.add';
   const save = async () => {
     const crop = CATALOG.find((c) => c.slug === slug);
     const now = new Date().toISOString();
     const cropRowValue = crop ? await cropRow(crop, realFarmId.value, now) : undefined;
-    const r = buildPlanting({ parcelId, cropId: cropRowValue?.id ?? '', variety, lot, area, sownOn, status }, realFarmId.value, now, crypto.randomUUID());
+    const r = buildPlanting({ parcelId, cropId: existing ? String(existing.crop_id) : cropRowValue?.id ?? '', variety, lot, area, sownOn, status }, realFarmId.value, now, crypto.randomUUID());
     if (!r.ok) { setErrors({ parcel: r.parcel, crop: r.crop, area: r.area, date: r.date }); return; }
+    if (existing) { // append-only: the planting keeps the new values, `edits` the previous ones with the reason (the parcel and the crop never change: a different one is a new planting)
+      const e = applyEdit(existing, { area_str: r.row.area_str, sown_on: r.row.sown_on, status: r.row.status, variety: r.row.variety, lot_label: r.row.lot_label }, why, now);
+      if (e.kind === 'nochange') { onDone(); return; }
+      if (e.kind === 'reason') { setWhyMissing(true); return; }
+      await put(db, 'plantings', e.row, 'update');
+      dataVersion.value++;
+      onDone();
+      return;
+    }
     const newCrop = cropRowValue && !(await db.crops.get(cropRowValue.id)) ? [{ table: 'crops', row: cropRowValue, op: 'insert' as const }] : [];
     await putMany(db, [...newCrop, { table: 'plantings', row: r.row, op: 'insert' }]);
     dataVersion.value++;
@@ -42,7 +54,9 @@ export function PlantingForm({ parcels, onDone }: { parcels: Row[]; onDone: () =
 
   return (
     <section>
-      <h1>{t('planting.add')}</h1>
+      <h1>{t(titleKey)}</h1>
+      {existing && <p class="muted">{t('edit.note')}</p>}
+      {!existing && <>
       <h2>{t('planting.parcel')}</h2>
       <div class="seg two">
         {parcels.map((p) => <button key={p.id} aria-pressed={parcelId === p.id} onClick={() => setParcelId(p.id)}>{String(p.name)}</button>)}
@@ -54,6 +68,7 @@ export function PlantingForm({ parcels, onDone }: { parcels: Row[]; onDone: () =
         {CATALOG.map((c) => <button key={c.slug} aria-pressed={slug === c.slug} onClick={() => setSlug(c.slug)}>{cropName(c, lang.value)}</button>)}
       </div>
       {errors.crop && <p class="msg error" role="alert">{t('planting.error.crop')}</p>}
+      </>}
 
       <label class="field">{t('planting.area')}
         <span class="inbox"><input class="input" value={area} inputMode="decimal" autoComplete="off" onInput={(e) => setArea((e.target as HTMLInputElement).value)} /><span class="unit">{t('unit.str')}</span></span>
@@ -79,6 +94,8 @@ export function PlantingForm({ parcels, onDone }: { parcels: Row[]; onDone: () =
         <input class="input" value={lot} autoComplete="off" onInput={(e) => setLot((e.target as HTMLInputElement).value)} />
       </label>
 
+      {existing && <label class="field">{t('edit.reason')}<input class="input" value={why} autoComplete="off" data-testid="edit-reason" onInput={(e) => setWhy((e.target as HTMLInputElement).value)} /></label>}
+      {whyMissing && why.trim() === '' && <p class="msg error" role="alert" data-testid="edit-reason-error">{t('edit.reason.error')}</p>}
       <button class="btn" data-testid="planting-save" onClick={() => void save()}>{t('planting.save')}</button>
       <button class="btn secondary" onClick={onDone}>{t('planting.cancel')}</button>
     </section>

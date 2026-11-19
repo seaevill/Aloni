@@ -498,5 +498,20 @@
   "spray.correct.qty": "Quantity taken from the lot",
   "spray.correct.open": "Correct",
   "spray.correct.was": "Original: dose {dose}, {when}",
-  "spray.correct.why": "Corrected: {reason}"
+  "spray.correct.why": "Corrected: {reason}",
+  "edit.title": "Edit",
+  "edit.note": "The change is saved with its reason; the previous values stay in the change history.",
+  "edit.reason": "Reason for the change",
+  "edit.reason.error": "Write the reason for the change: every change has one.",
+  "edit.open": "Edit",
+  "edit.trail": "Changes ({n})",
+  "edit.was": "{when} · {reason} · before: {values}",
+  "edit.f.name": "name",
+  "edit.f.area": "area",
+  "edit.f.topo": "terrain",
+  "edit.f.sown": "sowing",
+  "edit.f.status": "status",
+  "edit.f.variety": "variety",
+  "edit.f.lot": "lot",
+  "history.edits": "Changes to fields and plantings"
 }

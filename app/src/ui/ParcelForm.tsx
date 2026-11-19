@@ -5,15 +5,18 @@ import { formatQty } from '../i18n/format';
 import { archived, buildParcel, TOPO, type Pin, type Topo } from '../parcels/parcel';
 import { readPin } from '../parcels/pin';
 import { put } from '../repo';
+import { applyEdit, commaText } from '../records/edits';
+import type { Row } from '../db/schema';
 import { showUndo } from './Toast';
 
-const TOPO_KEYS: Record<Topo, I18nKey> = { plain: 'parcel.topo.plain', slope: 'parcel.topo.slope', coast: 'parcel.topo.coast' };
+export const TOPO_KEYS: Record<Topo, I18nKey> = { plain: 'parcel.topo.plain', slope: 'parcel.topo.slope', coast: 'parcel.topo.coast' };
 
 /** Add a parcel: name + typed στρ. (+ optional GPS pin and terrain). No map needed, works offline, saves at once. */
-export function ParcelForm({ onDone }: { onDone: () => void }) {
-  const [name, setName] = useState('');
-  const [area, setArea] = useState('');
-  const [topo, setTopo] = useState<Topo | undefined>(undefined);
+export function ParcelForm({ onDone, existing }: { onDone: () => void; existing?: Row }) {
+  const [name, setName] = useState(typeof existing?.name === 'string' ? existing.name : '');
+  const [area, setArea] = useState(commaText(existing?.area_str));
+  const [topo, setTopo] = useState<Topo | undefined>(TOPO.find((k) => k === existing?.topo_class));
+  const [why, setWhy] = useState(''); const [whyMissing, setWhyMissing] = useState(false);
   const [pin, setPin] = useState<Pin | undefined>(undefined);
   const [pinFailed, setPinFailed] = useState(false); const [osde, setOsde] = useState('');
   const [errors, setErrors] = useState<{ name: boolean; area: 'missing' | 'invalid' | undefined }>({ name: false, area: undefined });
@@ -23,9 +26,19 @@ export function ParcelForm({ onDone }: { onDone: () => void }) {
     setPinFailed(!r.known);
     setPin(r.known ? r.value : undefined);
   };
+  const titleKey: I18nKey = existing ? 'edit.title' : 'parcel.add';
   const save = async () => {
     const r = buildParcel({ name, area, topo, pin, osde }, realFarmId.value, new Date().toISOString(), crypto.randomUUID());
     if (!r.ok) { setErrors({ name: r.name, area: r.area }); return; }
+    if (existing) { // append-only: the row gets the new values, `edits` keeps the previous ones with the reason
+      const e = applyEdit(existing, { name: r.row.name, area_str: r.row.area_str, topo_class: r.row.topo_class }, why, new Date().toISOString());
+      if (e.kind === 'nochange') { onDone(); return; }
+      if (e.kind === 'reason') { setWhyMissing(true); return; }
+      await put(db, 'parcels', e.row, 'update');
+      dataVersion.value++;
+      onDone();
+      return;
+    }
     await put(db, 'parcels', r.row, 'insert');
     dataVersion.value++;
     showUndo(t('parcel.saved'), async () => { await put(db, 'parcels', archived(r.row, new Date().toISOString())); dataVersion.value++; }); // undo = archive it again
@@ -34,7 +47,8 @@ export function ParcelForm({ onDone }: { onDone: () => void }) {
 
   return (
     <section>
-      <h1>{t('parcel.add')}</h1>
+      <h1>{t(titleKey)}</h1>
+      {existing && <p class="muted">{t('edit.note')}</p>}
       <label class="field">{t('parcel.name')}
         <input class="input" value={name} autoComplete="off" onInput={(e) => setName((e.target as HTMLInputElement).value)} />
       </label>
@@ -55,6 +69,9 @@ export function ParcelForm({ onDone }: { onDone: () => void }) {
           <button key={k} aria-pressed={topo === k} onClick={() => setTopo(topo === k ? undefined : k)}>{t(TOPO_KEYS[k])}</button>
         ))}
       </div>
+
+      {existing && <label class="field">{t('edit.reason')}<input class="input" value={why} autoComplete="off" data-testid="edit-reason" onInput={(e) => setWhy((e.target as HTMLInputElement).value)} /></label>}
+      {whyMissing && why.trim() === '' && <p class="msg error" role="alert" data-testid="edit-reason-error">{t('edit.reason.error')}</p>}
 
       <button class="btn secondary" onClick={() => void takePin()}>{t('parcel.pin')}</button>
       {pin && <p class="muted" data-testid="pin">{t('parcel.pin.set', { lat: formatQty(pin.lat), lng: formatQty(pin.lng), acc: formatQty(pin.accuracy_m) })}</p>}
