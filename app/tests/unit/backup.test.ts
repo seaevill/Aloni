@@ -22,7 +22,7 @@ describe('backup and restore', () => {
     expect(backup.settings.map((s) => s.key)).toEqual(['controller']); // no device_id / actor_id
     const b = await newDb();
     const first = await restoreBackup(b, backup, 'some-other-empty-farm');
-    expect(first).toEqual({ rows: 1, farmId: TEST_FARM_ID, skipped: [] });
+    expect(first).toEqual({ rows: 1, added: 1, updated: 0, same: 0, farmId: TEST_FARM_ID, skipped: [] });
     expect((await b.parcels.toArray())[0].area_str).toBe(0.625); // exactly as stored
     expect((await b.settings.get('controller'))?.value).toEqual({ name: 'Test Person' });
     expect(await b.outbox.count()).toBeGreaterThan(0); // restored records still have to reach the server

@@ -57,7 +57,7 @@
   "backup.export": "Export a backup",
   "backup.restore": "Restore from a backup",
   "backup.exported": "Backup saved ({n} records).",
-  "backup.restored": "Restored ({n} records).",
+  "backup.restored": "Restored: {added} new records, {updated} updated, {same} were already the same.",
   "backup.stale": "No recent backup (over 7 days, or never). Export one from More.",
   "backup.error.format": "This file is not a backup of the app.",
   "backup.error.version": "The backup is from another version and cannot be read.",
