@@ -9,6 +9,7 @@ import { put } from '../repo';
 import { Analyses } from './Analyses';
 import { EditTrail } from './EditTrail';
 import { ParcelForm } from './ParcelForm';
+import { ParcelDetail } from './ParcelDetail';
 import { EmptyState, ErrorState, UnsyncedMark } from './states';
 import { showUndo } from './Toast';
 import type { Row } from '../db/schema';
@@ -47,9 +48,12 @@ export function Parcels() {
   const [adding, setAdding] = useState(false);
   const [analysing, setAnalysing] = useState<Row | undefined>(undefined);
   const [editing, setEditing] = useState<Row | undefined>(undefined);
+  const [shownId, setShownId] = useState<string | undefined>(undefined);
   const q = useRows('parcels');
   if (adding) return <ParcelForm onDone={() => setAdding(false)} />;
   if (editing) return <ParcelForm existing={editing} onDone={() => setEditing(undefined)} />;
+  const shown = q.rows?.find((r) => r.id === shownId);   // read fresh from the rows: an edit shows at once
+  if (shown && !editing && !analysing) return <ParcelDetail parcel={shown} readOnly={demo} onBack={() => setShownId(undefined)} onEdit={() => setEditing(shown)} onAnalyses={() => setAnalysing(shown)} />;
   if (analysing) return <Analyses parcel={analysing} readOnly={demo} onBack={() => setAnalysing(undefined)} />;
   const live = q.rows?.filter((r) => !r.deleted_at) ?? [];
   const archive = async (r: Row) => {
@@ -63,10 +67,9 @@ export function Parcels() {
       {demo ? <p class="muted" data-testid="parcel-demo-note">{t('parcel.demoActive')}</p> : live.length > 0 && <button class="btn" data-testid="parcel-add" onClick={() => setAdding(true)}>{t('parcel.add')}</button>}
       <Status q={{ ...q, rows: q.rows && live.length === 0 ? [] : q.rows }} message={t('list.empty')} action={demo ? undefined : { label: t('parcel.add'), run: () => setAdding(true) }} />
       {live.map((r) => (
-        <div class="card" key={r.id}>{String(r.name)}{typeof r.area_str !== 'undefined' && <small>{formatArea(r.area_str as number | string)}</small>}<UnsyncedMark id={r.id} />
-          <button class="row" data-testid="analysis-open" onClick={() => setAnalysing(r)}><span>{t('analysis.open')}</span><span aria-hidden="true" class="chev" /></button>
-          {!demo && <button class="row" data-testid="parcel-edit" onClick={() => setEditing(r)}><span>{t('edit.open')}</span><span aria-hidden="true" class="chev" /></button>}
-          <EditTrail row={r} />
+        <div class="card" key={r.id}>
+          <button class="row" data-testid="parcel-open" onClick={() => setShownId(String(r.id))}><span>{String(r.name)}{typeof r.area_str !== 'undefined' && <small>{formatArea(r.area_str as number | string)}</small>}</span><span aria-hidden="true" class="chev" /></button>
+          <UnsyncedMark id={r.id} />
           {!demo && <button class="btn quiet" onClick={() => void archive(r)}>{t('parcel.archive')}</button>}
         </div>
       ))}

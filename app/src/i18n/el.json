@@ -573,5 +573,14 @@
   "today.kpi.parcels": "Χωράφια",
   "today.kpi.crops": "Καλλιέργειες",
   "today.kpi.harvest": "Χωράφια χωρίς αναμονή σήμερα",
-  "today.kpi.held": "{n} σε αναμονή ή άγνωστη αναμονή"
+  "today.kpi.held": "{n} σε αναμονή ή άγνωστη αναμονή",
+  "detail.sketch": "Σκαρίφημα ορίων χωραφιού",
+  "detail.nosketch": "Δεν έχουν οριστεί όρια στον χάρτη ακόμα.",
+  "detail.area": "Εμβαδόν",
+  "detail.topo": "Τοπογραφία",
+  "detail.elevation": "Υψόμετρο",
+  "detail.osde": "Κωδικός ΟΣΔΕ",
+  "detail.weather": "Καιρός σήμερα",
+  "detail.plantings": "Φυτείες",
+  "detail.sprays": "Τελευταίοι ψεκασμοί"
 }

@@ -22,6 +22,7 @@ test('analyses offline: date required, pH 0–14, EC needs its unit, values kept
   await page.evaluate(async () => !!(await navigator.serviceWorker.ready).active);
   await context.setOffline(true);
   await addParcel(page);
+  await page.getByTestId('parcel-open').first().click();
   await page.getByTestId('analysis-open').click();
   await expect(page.getByTestId('analysis-empty')).toBeVisible();
 
@@ -57,6 +58,7 @@ test('analyses offline: date required, pH 0–14, EC needs its unit, values kept
 
   await page.reload();
   await tab(page, 'parcels');
+  await page.getByTestId('parcel-open').first().click();
   await page.getByTestId('analysis-open').click();
   await expect(card).toHaveCount(2);
   await expect(card.nth(1).locator('.photo')).toHaveCount(1);
@@ -71,13 +73,14 @@ test('analyses offline: date required, pH 0–14, EC needs its unit, values kept
 test('the analysis form meets the UX bar in el/tr/en (375 px, targets, axe)', async ({ page }) => {
   const errors = await iphone(page);
   await addParcel(page);
+  await page.getByTestId('parcel-open').first().click();
   await page.getByTestId('analysis-open').click();
   for (const lang of ['EL', 'TR', 'EN']) {
     await tab(page, 'more');
     await page.getByRole('button', { name: lang, exact: true }).click();
     await tab(page, 'parcels');
     if (!(await page.getByTestId('analysis-save').isVisible())) {
-      if (!(await page.getByTestId('analysis-add-soil').isVisible())) await page.getByTestId('analysis-open').click();
+      if (!(await page.getByTestId('analysis-add-soil').isVisible())) { if (!(await page.getByTestId('analysis-open').isVisible())) await page.getByTestId('parcel-open').first().click(); await page.getByTestId('analysis-open').click(); }
       await page.getByTestId('analysis-add-soil').click();
     }
     await page.getByTestId('analysis-save').click();

@@ -12,7 +12,7 @@ Bu dosya benim iş listem. Bitirdiğimi `[x]` ile işaretlerim. `docs/reviews/te
 ## E2 – Görünüm (hedef: v2 prototip düzeni + tasarım 2 dili)
 - [x] 1. `docs/design/prototype-map.md`: prototipteki her ekran ↔ uygulamadaki karşılığı. *Bitti:* her prototip ekranı satırı var.
 - [ ] 2. `docs/design/compare/`: her ekran için 375 px prototip | uygulama yan yana görüntü + fark listesi. *Bitti:* her ekran için bir PNG ve bir fark listesi.
-- [ ] 3a. Σήμερα prototip düzenine. 3b. Tarla detayı. 3c. İlaçlama kaydı. 3d. İşçi ekranı. 3e. Diğer ekranlar. *Bitti (her biri):* ayrı PR, önce/sonra görüntü, kontrast ≥7:1, 72 px işçi düğmesi, 375 px taşma yok, Yunanca-yalnızca ve glossary testleri yeşil, prototip benzerliği öz puanı STATUS'ta.
+- [x] 3a. Σήμερα prototip düzenine (7/10). [x] 3b. Tarla detayı (7/10). 3c. İlaçlama kaydı. 3d. İşçi ekranı. 3e. Diğer ekranlar. *Bitti (her biri):* ayrı PR, önce/sonra görüntü, kontrast ≥7:1, 72 px işçi düğmesi, 375 px taşma yok, Yunanca-yalnızca ve glossary testleri yeşil, prototip benzerliği öz puanı STATUS'ta.
 - [ ] 4. Prototipte olup uygulamada olmayan her bölüm için ayrı madde (prototype-map.md'de «eksik» sütunu → buraya madde). *Bitti:* her eksik için madde açıldı; güvenlik kuralına uyanlar yapıldı.
 - [ ] 5. Her ekran için prototip benzerliği ≥ 9/10 (öz puan). *Bitti:* STATUS'ta ekran başına puan tablosu ve hepsi ≥ 9.
 
