@@ -39,12 +39,12 @@ export function Readiness() {
       {!ok('farm_name') && (
         <>
           <label class="field">{t('ready.farm_name.input')}<input class="input" value={farmName} autoComplete="off" data-testid="ready-farm-input" onInput={(e) => setFarmName((e.target as HTMLInputElement).value)} /></label>
-          <button class="btn secondary" data-testid="ready-farm-save" onClick={() => void saveFarmName()}>{t('product.save')}</button>
+          <button class="btn secondary" data-testid="ready-farm-set" onClick={() => void saveFarmName()}>{t('product.save')}</button>
         </>
       )}
       {!ok('migration') && <button class="btn secondary" data-testid="ready-migration-confirm" onClick={() => void saveConfirmed({ ...confirmed, migration: EXPECTED_MIGRATION })}>{t('ready.migration.confirm', { v: EXPECTED_MIGRATION })}</button>}
       {!ok('advisor') && <button class="btn secondary" data-testid="ready-advisor-confirm" onClick={() => void saveConfirmed({ ...confirmed, advisor: true })}>{t('ready.advisor.confirm')}</button>}
-      <p class={r.ready ? 'msg' : 'muted'} data-testid="ready-summary" role="status">{r.ready ? t('ready.all') : t('ready.some', { n: missing })}</p>
+      <p class={r.ready ? 'msg' : 'muted'}data-testid="ready-summary">{r.ready ? t('ready.all') : t('ready.some', { n: missing })}</p>
     </section>
   );
 }
