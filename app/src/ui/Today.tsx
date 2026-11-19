@@ -1,5 +1,6 @@
 import { useState } from 'preact/hooks';
 import { useBack } from './backstack';
+import { APP_NAME_EL } from '../config';
 import { activeFarm, loadDemo, realFarmId, farmLabel } from '../db';
 import { groupJobs } from '../summary/jobs';
 import { openParcelForm, tab } from './nav';
@@ -169,6 +170,7 @@ export function Today() {
   return (
     <section class="today">
       <header class="today-head band">
+        <p class="brand" data-testid="brand">{APP_NAME_EL}</p>
         <p class="date" data-testid="today-date">{today ? formatDate(today) : ''}</p>
         <Title k="today.title" />
         <p class="farm" data-testid="today-farm">{farmLabel(activeFarm.value)}</p>
