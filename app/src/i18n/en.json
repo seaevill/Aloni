@@ -423,5 +423,13 @@
   "sync.error": "Not sent. We will try again.",
   "signin.farmId": "Farm code: {id}",
   "invite.openLine": "Open invitation: {email}",
-  "invite.withdraw": "Withdraw"
+  "invite.withdraw": "Withdraw",
+  "job.add": "Assign a job",
+  "job.date": "Date",
+  "job.save": "Assign",
+  "job.saved": "The job was assigned to the worker.",
+  "job.error.fill": "Fill in what is missing: plantings, product, worker, date, dose and unit.",
+  "job.error.unit": "Choose the dose unit.",
+  "job.planned.title": "Planned jobs",
+  "job.planned.line": "{product} · {worker} · {date}"
 }
