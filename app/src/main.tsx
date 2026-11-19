@@ -7,9 +7,11 @@ import { App } from './ui/App';
 import { initDb } from './db';
 import { lang } from './i18n';
 import { bootSync } from './sync/boot';
+import { onNeedRefresh, onOfflineReady, setApply, watchDirty, watchForUpdates } from './pwa/update';
 
 document.documentElement.lang = lang.value;
-registerSW({ immediate: true });
+setApply(registerSW({ immediate: true, onNeedRefresh, onOfflineReady, onRegisteredSW: (_url, reg) => watchForUpdates(reg) }).bind(null, true) as () => void);
+watchDirty();
 void initDb().finally(() => { render(<App />, document.getElementById('app')!); void bootSync(); });
 
 // Load all three font files at start (Greek, Latin, Latin Extended for Turkish) while the phone is online, so no language ever has to fetch a font later, offline.

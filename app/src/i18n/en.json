@@ -644,5 +644,9 @@
   "harvest.cutby": "Who cut it",
   "harvest.cutby.none": "Add workers to the roster first (More → Workers).",
   "harvest.cutby.error": "Choose who cut it.",
-  "harvest.cutby.line": "Cut by: {name}"
+  "harvest.cutby.line": "Cut by: {name}",
+  "pwa.update": "New version",
+  "pwa.update.apply": "Update",
+  "pwa.offline": "Ready, also without signal",
+  "pwa.blocked": "Close the other tabs of the app."
 }

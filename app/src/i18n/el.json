@@ -644,5 +644,9 @@
   "harvest.cutby": "Ποιος έκοψε",
   "harvest.cutby.none": "Πρώτα προσθέστε εργάτες στη λίστα (Άλλα → Εργάτες).",
   "harvest.cutby.error": "Επιλέξτε ποιος έκοψε.",
-  "harvest.cutby.line": "Έκοψε: {name}"
+  "harvest.cutby.line": "Έκοψε: {name}",
+  "pwa.update": "Νέα έκδοση",
+  "pwa.update.apply": "Ενημέρωση",
+  "pwa.offline": "Έτοιμο και χωρίς σήμα",
+  "pwa.blocked": "Κλείστε τις άλλες καρτέλες της εφαρμογής."
 }
