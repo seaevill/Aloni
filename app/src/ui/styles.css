@@ -64,3 +64,6 @@ nav.tabs .lbl { white-space:nowrap; overflow-wrap:normal; line-height:1.15; }
 .btn:disabled, .btn[aria-disabled="true"], .seg button:disabled, .seg.big button.go:disabled, .seg.big button.go[aria-disabled="true"] { background:var(--card); border-color:var(--line); color:var(--muted); font-weight:600; }
 .toast .btn { min-height:var(--tap-big); }
 h3 { font-size:var(--fs-18); font-weight:800; margin:var(--sp-12) 0 var(--sp-6); }
+/* badges: signed = green, unsigned/changed = amber, blocked = red; «nothing on record» is NEUTRAL (never green: it must not read as «safe») */
+.badge.signed { background:var(--green); color:var(--white); }
+.badge.neutral { background:var(--card); color:var(--fg); border:var(--bw-1) solid var(--field); }

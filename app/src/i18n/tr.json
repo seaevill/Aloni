@@ -367,7 +367,7 @@
   "worker.kind.pest": "Zararlı",
   "worker.kind.other": "Diğer",
   "cut.title": "Parsel başına hasat",
-  "cut.free": "Hasat: bekleme yok",
+  "cut.free": "Hasat: kayıtlı bekleme yok",
   "cut.from": "Hasat başlangıcı: {d}",
   "cut.unknown": "Hasat başlangıcı: bilinmiyor. Hasat engelli.",
   "register.open": "İlaçlama kaydı (taslak)",
