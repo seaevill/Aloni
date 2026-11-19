@@ -5,9 +5,12 @@ test('shell: five tabs in Greek, 375 px, no horizontal scroll', async ({ page })
   await page.goto('/');
   const tabs = page.locator('nav.tabs button');
   await expect(tabs).toHaveCount(5);
-  // long Greek labels contain soft hyphens so they can break inside the 75 px column
+  // one short word per tab, drawn with line icons (no emoji), and every label stays on ONE line
   const labels = (await tabs.allInnerTexts()).map((s) => s.replace(/[\u00ad\s]/g, ''));
-  expect(labels).toEqual(['☀️Σήμερα', '🥬Καλλιέργειες', '🗺️Χωράφια', '📦Αποθήκη', '⋯Περισσότερα']);
+  expect(labels).toEqual(['Σήμερα', 'Καλλιέργειες', 'Χωράφια', 'Αποθήκη', 'Άλλα']);
+  // every label is ONE line except the glossary word «Καλλιέργειες» (12 letters cannot fit 75 px at the 14 px minimum; it may break once, at its soft hyphen)
+  for (const l of await page.locator('nav.tabs .lbl').all()) { const text = (await l.innerText()).replace(/\u00ad/g, ''); expect((await l.boundingBox())!.height).toBeLessThanOrEqual(text === 'Καλλιέργειες' ? 40 : 20); }
+  await expect(page.locator('nav.tabs svg')).toHaveCount(5);
   const vw = page.viewportSize()!.width;
   expect(vw).toBe(375);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
