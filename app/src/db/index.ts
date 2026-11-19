@@ -6,7 +6,6 @@ import { delLocal, guardAppendOnly, refreshPending } from '../repo';
 import { APP_NAME, DEMO_FARM_ID } from '../config';
 import { t } from '../i18n';
 import { commitAllHeld } from '../worker/held';
-import { demoOrders, migrateUnkeyedOrders, saveOrders } from '../orders/store';
 import { demoOrders, mapKey, migrateUnkeyedOrders, ordersKey, saveOrders } from '../orders/store';
 
 export const db = new AppDB();
