@@ -75,6 +75,7 @@ export async function importDemo(db: AppDB, data: PrototypeData): Promise<void> 
         const row: Row = { ...fixGreekName(r), id: ids[table].get(legacy) as string, legacy_id: legacy, farm_id: DEMO_FARM_ID };
         if (table === 'crops') row.slug = legacy;      // the prototype crop id IS the shared slug (spinach, rocket, …): the order and supply screens read it
         for (const [field, target] of Object.entries(REFS[table])) if (field in row) row[field] = ref(target, row[field]);
+        if (table === 'plantings' && typeof row.sown === 'string' && row.sown_on === undefined) row.sown_on = row.sown; // the app reads `sown_on`; the prototype calls it `sown`
         if (table === 'products' && Array.isArray(row.registered)) {
           row.registered = (row.registered as Array<Record<string, unknown>>).map((u) => ({ ...u, crop_id: ref('crops', u.crop_id) }));
         }

@@ -110,9 +110,9 @@ export function WorkerApp() {
       {!real && <h2>{t('worker.choose')}</h2>}
       {!real && <div class="seg two big">{people.map((w) => <button key={w.id} aria-pressed={w.id === me.id} onClick={() => workerView.value = w.id}>{text(w.name)}</button>)}</div>}
 
+      {tabId === 'harvest' && harvestSaved && <p class="msg" role="status" data-testid="worker-status-harvest">{t('harvest.saved')} {t(queuedKey(SYNC_CONNECTED))}</p>}
       {tabId === 'jobs' && (
         <>
-          {harvestSaved && <p class="msg" role="status" data-testid="worker-status-harvest">{t('harvest.saved')} {t(queuedKey(SYNC_CONNECTED))}</p>}
           <h2>{t('worker.jobs')}</h2>
           {open_.length === 0 && <p class="muted" data-testid="worker-nojobs">{t('worker.noJobs')}</p>}
           {open_.map((j) => (
@@ -164,7 +164,7 @@ export function WorkerApp() {
           ))}
         </>
       )}
-      {tabId === 'harvest' && <HarvestForm farmId={farm} actorId={me.id} big onDone={(saved) => { setHarvestSaved(saved); setTabId('jobs'); }} />}
+      {tabId === 'harvest' && <HarvestForm farmId={farm} actorId={me.id} big onDone={(saved) => { setHarvestSaved(saved); if (!saved) setTabId('jobs'); }} />}
       {tabId === 'observe' && (
         <>
           <h2>{t('worker.observe.parcel')}</h2>
