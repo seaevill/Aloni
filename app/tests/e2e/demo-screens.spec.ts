@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { iphone } from './helpers/iphone';
+import { openHistory, closeHistory } from './helpers/farm';
 
 const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
 
@@ -10,13 +11,19 @@ test('the demo farm fills every screen, read-only, in Greek at 375 px without ov
 
   await expect(page.getByTestId('today-counts')).toBeVisible();
   await expect(page.getByTestId('demo-banner')).toHaveText('Επίδειξη – φανταστικά στοιχεία');
+  await openHistory(page);
   await expect(page.getByTestId('spray').first()).toBeVisible();
+  await openHistory(page);
   expect(await page.getByTestId('spray').count()).toBeGreaterThan(3);
   await expect(page.getByTestId('spray-phi-unknown').first()).toBeVisible(); // some sprays have an unknown waiting period
   await expect(page.getByTestId('spray-phi').first()).toBeVisible(); // some have a known one
+  await openHistory(page);
   await expect(page.getByTestId('harvest').first()).toBeVisible();
+  await openHistory(page);
   expect(await page.getByTestId('harvest').count()).toBeGreaterThan(3);
+  await closeHistory(page);
   await expect(page.getByTestId('cut').first()).toBeVisible();
+  await closeHistory(page);
   const states = await page.getByTestId('cut').evaluateAll((els) => els.map((e) => e.getAttribute('data-state')));
   expect(states.every((x) => ['free', 'from', 'unknown'].includes(String(x)))).toBe(true);
   expect(states).toContain('unknown'); // unsigned demo labels leave some fields blocked

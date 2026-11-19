@@ -69,3 +69,26 @@ h3 { font-size:var(--fs-18); font-weight:800; margin:var(--sp-12) 0 var(--sp-6);
 .badge.neutral { background:var(--card); color:var(--fg); border:var(--bw-1) solid var(--field); }
 :lang(hi) body, :lang(hi) button, :lang(hi) input { font-family:var(--font-hi); }
 .bi { white-space:pre-line; }
+
+/* Σήμερα (Design 2) */
+.today-head { margin:0 0 var(--sp-12); }
+.today-head .date { margin:0; font-size:var(--fs-14); font-weight:700; color:var(--muted); font-variant-numeric:tabular-nums; }
+.today-head .farm { margin:0; font-size:var(--fs-14); }
+.hero { background:var(--forest-2); color:var(--white); border-radius:var(--r-card); padding:var(--sp-14); margin:0 0 var(--sp-12); box-shadow:var(--shadow-card); }
+.hero h2 { margin:var(--sp-8) 0 var(--sp-12); color:var(--white); }
+.hero .kicker { display:inline-block; background:var(--lime); color:var(--on-lime); font-size:var(--fs-14); font-weight:700; padding:var(--sp-2) var(--sp-10); border-radius:var(--r-pill); }
+.btn.lime { background:var(--lime); border-color:var(--lime); color:var(--on-lime); margin:0; }
+.wx-row { display:flex; justify-content:space-between; gap:var(--sp-4); }
+.wx-row .d { display:flex; flex-direction:column; align-items:center; font-variant-numeric:tabular-nums; font-size:var(--fs-14); }
+.wx-row .d.today { font-weight:700; }
+.wx-none { margin:var(--sp-8) 0 0; font-size:var(--fs-14); }
+.field-head { display:flex; justify-content:space-between; gap:var(--sp-8); }
+.field-head strong { font-weight:700; }
+.card.field.blocked { border:var(--bw-2) solid var(--danger); }
+.row { display:flex; align-items:center; justify-content:space-between; width:100%; min-height:var(--tap); padding:0 var(--sp-14); font:inherit; font-weight:700; background:var(--card); color:var(--fg); border:0; border-radius:var(--r-card); box-shadow:var(--shadow-card); margin:0 0 var(--sp-10); text-align:start; }
+.chev { display:inline-block; width:var(--sp-10); height:var(--sp-10); border-top:var(--bw-2) solid currentColor; border-right:var(--bw-2) solid currentColor; transform:rotate(45deg); }
+.chev.back-chev { transform:rotate(-135deg); }
+.topbar { position:sticky; top:0; z-index:2; display:flex; align-items:center; gap:var(--sp-8); background:var(--bar); backdrop-filter:blur(var(--sp-12)); padding:var(--sp-8) 0; margin:0 0 var(--sp-8); }
+.topbar h1 { margin:0; font-size:var(--fs-20); }
+.topbar .back { display:inline-flex; align-items:center; gap:var(--sp-6); min-height:var(--tap); background:none; border:0; font:inherit; font-weight:700; color:var(--green); }
+.card.field .badge { display:block; border-radius:var(--r-sm); padding:var(--sp-8) var(--sp-10); margin:var(--sp-6) 0 0; }
