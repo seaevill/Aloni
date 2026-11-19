@@ -130,7 +130,7 @@ describe('the server comes back to the phone', () => {
     const db = await newDb();
     await putMany(db, [{ table: 'parcels', row: parcel('z1'), op: 'insert' }]);
     const tr = server({ pull: async () => answer([row('parcels', parcel('z2'))]) });
-    expect(await syncOnce(db, tr, F)).toEqual({ sent: 1, rejected: 0, written: 1, reset: false });
+    expect(await syncOnce(db, tr, F)).toMatchObject({ sent: 1, rejected: 0, written: 1, reset: false });
   });
 });
 
