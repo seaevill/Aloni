@@ -60,7 +60,7 @@ export function Photos({ onBack }: { onBack: () => void }) {
     const nth = (rows ?? []).findIndex((m) => m.id === open.id) + 1;
     return (
       <section role="dialog" aria-modal="true" aria-label={t('photos.viewer', { n: nth, total: rows ? String(rows.length) : '', when: formatDateTime(open.created_at) })} data-testid="photo-viewer">
-        <button class="btn secondary" onClick={() => setOpen(undefined)}>{t('photos.close')}</button>
+        <button class="btn secondary" ref={(el) => el?.focus()} onClick={() => setOpen(undefined)}>{t('photos.close')}</button>
         <Picture m={open} big />
       </section>
     );
