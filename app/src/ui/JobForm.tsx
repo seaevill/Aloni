@@ -55,7 +55,6 @@ export function JobForm({ onDone }: { onDone: (saved: boolean) => void }) {
       <label class="field">{t('job.date')}<input class="input" type="date" value={day} onInput={(e) => setDay((e.target as HTMLInputElement).value)} /></label>
       {labelDose && <p class="muted" data-testid="job-label-dose">{labelDose.single ? t('spray.label.dose', { v: labelDose.min, unit: t(UNIT_KEYS[labelDose.unit]) }) : t('spray.label.range', { a: labelDose.min, b: labelDose.max, unit: t(UNIT_KEYS[labelDose.unit]) })}</p>}
       {labelDose?.single && <button class="btn secondary" data-testid="job-dose-same" onClick={() => { setDose(labelDose.min); setUnit(labelDose.unit); }}>{t('spray.label.same')}</button>}
-      <label class="field">{t('spray.dose')}<input class="input" value={dose} inputMode="decimal" autoComplete="off" data-testid="job-dose" onInput={(e) => setDose((e.target as HTMLInputElement).value)} /></label>
       <label class="field">{t('job.dose')}<input class="input" value={dose} inputMode="decimal" autoComplete="off" data-testid="job-dose" onInput={(e) => setDose((e.target as HTMLInputElement).value)} /></label>
       <h2>{t('spray.unit')}</h2>
       <div class="seg two">{DOSE_UNITS.map((u) => <button key={u} aria-pressed={unit === u} onClick={() => setUnit(u)}>{t(UNIT_KEYS[u])}</button>)}</div>
