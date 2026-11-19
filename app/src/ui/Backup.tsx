@@ -57,6 +57,7 @@ export function Backup() {
       <h2>{t('backup.title')}</h2>
       {warnings.map((w) => <p class="draft" role="note" key={w}>{t(w)}</p>)}
       <p class="muted" data-testid="backup-note">{t('backup.note', { when: last ? formatDate(last.slice(0, 10)) : t('backup.never') })}</p>
+      <p class="muted" data-testid="backup-sensitive">{t('backup.sensitive')}</p>
       <button class="btn" onClick={() => void exportBackup()}>{t('backup.export')}</button>
       <button class="btn secondary" onClick={() => file.current?.click()}>{t('backup.restore')}</button>
       <input ref={file} type="file" accept="application/json,.json" hidden onChange={(e) => void restore(e)} />
