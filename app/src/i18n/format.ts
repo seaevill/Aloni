@@ -49,7 +49,7 @@ export function formatArea(v: string | number | null | undefined): string {
   const s = plain(v);
   if (s === null) return t('value.unknown');
   const unit = lang.value === 'el' || lang.value === 'hi' ? 'στρ.' : lang.value === 'tr' ? 'dönüm' : 'str.'; // the field's unit stays the Greek one for the Hindi screens
-  return `${localise(s)} ${unit}`;
+  return `${localise(s)}\u00A0${unit}`; // one line: the number never separates from the unit
 }
 
 /** A DERIVED number for the eye (the area computed from a drawing, a percentage): the decimal text is CUT after `digits` decimals (cut, not rounded), trailing zeros dropped. Never for a dose or a stored value. */

@@ -31,16 +31,16 @@ describe('number formatting never rounds', () => {
     expect(formatQty('4.5')).toBe('4,5');
   });
   it('formatArea does not round 0.625 to 0.63', () => {
-    expect(formatArea(0.625)).toBe('0,625 στρ.');
-    expect(formatArea(12)).toBe('12 στρ.');
-    expect(formatArea('0.6')).toBe('0,6 στρ.');
+    expect(formatArea(0.625)).toBe('0,625\u00A0στρ.');
+    expect(formatArea(12)).toBe('12\u00A0στρ.');
+    expect(formatArea('0.6')).toBe('0,6\u00A0στρ.');
   });
   it('English uses a dot; Turkish a comma', () => {
     lang.value = 'en';
     expect(dose('0.625')).toBe('0.625');
-    expect(formatArea(0.625)).toBe('0.625 str.');
+    expect(formatArea(0.625)).toBe('0.625\u00A0str.');
     lang.value = 'tr';
-    expect(formatArea(0.625)).toBe('0,625 dönüm');
+    expect(formatArea(0.625)).toBe('0,625\u00A0dönüm');
   });
   it('no digit is lost: the text reads back as the same number', () => {
     for (const s of ['0.1', '0.05', '0.0625', '1.000001', '7', '0.999999999', '1234.5678']) {

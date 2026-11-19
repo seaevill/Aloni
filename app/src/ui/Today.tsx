@@ -28,6 +28,8 @@ const SP = ' ';
 const BADGE = { unknown: { cls: 'badge blocked', mark: MARK.blocked }, from: { cls: 'badge unsigned', mark: MARK.wait }, free: { cls: 'badge neutral', mark: MARK.info } } as const;
 const DASH = '\u2014';
 const DAY_MS = 86_400_000;
+/** «Πέμ 19»: weekday and day number only (the five days sit side by side on a phone). */
+const dayLabel = (iso: string): string => formatDate(iso).split(' ').slice(0, 2).join(' ');
 
 interface FieldCard { weather: string; p: Row; state: 'free' | 'from' | 'unknown'; at: string; late: boolean; source: string; crops: string }
 
@@ -58,7 +60,7 @@ function WeatherStrip({ perParcel }: { perParcel: ReadonlyArray<readonly Day[]> 
           const d = days[i];
           return (
             <div class={i === 0 ? 'd today' : 'd'} key={date} data-testid="wx-day">
-              <span class="dn">{formatDate(date)}</span>
+              <span class="dn">{dayLabel(date)}</span>
               <span class="t" data-testid="wx-temp">{d && d.tmin !== undefined && d.tmax !== undefined ? t('wx.temp', { min: formatQty(d.tmin), max: formatQty(d.tmax) }) : DASH}</span>
               <span class="r" data-testid="wx-rain">{d && d.rain !== undefined ? t('wx.rain', { mm: formatQty(d.rain) }) : DASH}</span>
             </div>
