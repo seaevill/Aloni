@@ -7,9 +7,13 @@ import { APP_NAME, DEMO_FARM_ID } from '../config';
 import { t } from '../i18n';
 import { commitAllHeld } from '../worker/held';
 import { demoOrders, mapKey, migrateUnkeyedOrders, ordersKey, saveOrders } from '../orders/store';
+import { dbBlocked, needRefresh } from '../pwa/update';
 
 export const db = new AppDB();
 guardAppendOnly(db);
+// another tab with a NEWER version wants to upgrade the database: close ours (the update bar says so) / this tab waits for another tab to close
+db.on('versionchange', () => { db.close(); needRefresh.value = true; });
+db.on('blocked', () => { dbBlocked.value = 'other'; });
 
 export const realFarmId = signal('');
 export const activeFarm = signal('');

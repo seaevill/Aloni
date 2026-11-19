@@ -644,5 +644,9 @@
   "harvest.cutby": "Kim kesti",
   "harvest.cutby.none": "Önce işçi listesine işçi ekleyin (Άλλα → Εργάτες).",
   "harvest.cutby.error": "Kimin kestiğini seçin.",
-  "harvest.cutby.line": "Kesen: {name}"
+  "harvest.cutby.line": "Kesen: {name}",
+  "pwa.update": "Yeni sürüm",
+  "pwa.update.apply": "Güncelle",
+  "pwa.offline": "Sinyal olmadan da hazır",
+  "pwa.blocked": "Uygulamanın diğer sekmelerini kapatın."
 }

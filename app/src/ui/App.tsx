@@ -8,6 +8,7 @@ import { RejectedList, SyncChip } from './states';
 import { tab, workerView, type Tab } from './nav';
 import { WorkerApp } from './WorkerApp';
 import { DemoBanner } from './DemoBanner';
+import { UpdateBar } from './UpdateBar';
 import { Toast } from './Toast';
 import { AUTH_ENABLED } from '../config';
 import { session } from '../auth/gotrue';
@@ -39,10 +40,10 @@ export function App() {
   useEffect(() => { void putLocal(db, 'worker_view', workerView.value === undefined ? null : { id: workerView.value, farm: activeFarm.value }); }, [workerView.value]);
   const roster = useRows('workers');
   const isWorkerAccount = AUTH_ENABLED && !!session.value && !!roster.rows?.some((w) => !w.deleted_at && w.user_id === session.value?.user_id); // a roster worker's own account: no owner screens
-  if (isWorkerAccount || workerView.value !== undefined) return <><WorkerApp /><Toast /></>;
+  if (isWorkerAccount || workerView.value !== undefined) return <><UpdateBar /><WorkerApp /><Toast /></>;
   return (
     <>
-      <main><DemoBanner /><SyncChip /><RejectedList /><BackupBanner /><Screen /></main>
+      <main><UpdateBar /><DemoBanner /><SyncChip /><RejectedList /><BackupBanner /><Screen /></main>
       <Toast />
       <nav class="tabs" aria-label={t('nav.main')}>
         {TABS.map(({ id, icon, label }) => (

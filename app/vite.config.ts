@@ -17,8 +17,7 @@ export default defineConfig({
     preact(),
     { name: 'app-name', transformIndexHtml: (html: string) => html.replaceAll('%APP_NAME%', APP_NAME) },
     VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['icon-180.png'],
+      registerType: 'prompt',          // a new version waits until the user (or a safe moment) applies it: see src/pwa/update.ts
       manifest: {
         name: APP_NAME,
         short_name: APP_NAME,
@@ -36,6 +35,7 @@ export default defineConfig({
         ],
       },
       workbox: {
+        skipWaiting: false, clientsClaim: false,
         globPatterns: ['**/*.{js,css,html,png,svg,webmanifest,woff2}'], navigateFallback: '/index.html',
         // the base map: the tiles and style the owner has SEEN stay available offline (cache first, at most 400 entries, 30 days); nothing is fetched unless the map is opened
         runtimeCaching: [{ urlPattern: ({ url }) => url.hostname === 'tiles.openfreemap.org', handler: 'CacheFirst', options: { cacheName: 'map-tiles', expiration: { maxEntries: 400, maxAgeSeconds: 30 * 86400 }, cacheableResponse: { statuses: [0, 200] } } }],

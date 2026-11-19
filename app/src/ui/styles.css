@@ -190,3 +190,5 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 /* harvest picker: the chosen crop is filled (never colour alone: it also carries a ✓), the others have a clear border */
 .seg button.pick { border-color:var(--field); }
 .seg button.pick[aria-pressed="true"] { background:var(--green); border-color:var(--green); color:var(--white); font-weight:700; }
+.update-bar { display:flex; align-items:center; justify-content:space-between; gap:var(--sp-8); }
+.update-bar .btn { min-height:var(--tap); margin:0; }
