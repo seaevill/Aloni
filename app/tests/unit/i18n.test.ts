@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dictionaries, formatDate, formatDateLong, lang } from '../../src/i18n';
+import { dictionaries, formatDate, formatDateLong, lang, ts } from '../../src/i18n';
 
 describe('i18n', () => {
   it('el/tr/en have identical key sets', () => {
@@ -10,8 +10,19 @@ describe('i18n', () => {
   it('no empty strings', () => {
     for (const d of Object.values(dictionaries)) for (const v of Object.values(d)) expect(v.trim()).not.toBe('');
   });
-  it('sq (Albanian) is a subset of el with matching placeholders', () => {
-    for (const k of Object.keys(dictionaries.sq)) expect(dictionaries.el, k).toHaveProperty([k]);
+  it('hi (Hindi, the worker screens) is a subset of el with the SAME placeholders, and covers every worker.* key', () => {
+    const holes = (s: string) => (s.match(/\{\w+\}/g) ?? []).sort().join();
+    for (const [k, v] of Object.entries(dictionaries.hi)) { expect(dictionaries.el, k).toHaveProperty([k]); expect(holes(v), k).toBe(holes(dictionaries.el[k]!)); }
+    expect(Object.keys(dictionaries.el).filter((k) => k.startsWith('worker.') && !(k in dictionaries.hi))).toEqual([]);
+  });
+  it('the Hindi safety texts are shown TOGETHER with the Greek ones, and the translation is marked «προς έλεγχο»', () => {
+    lang.value = 'hi';
+    try {
+      expect(ts('worker.lock.unknown')).toBe(`${dictionaries.hi['worker.lock.unknown']}\n${dictionaries.el['worker.lock.unknown']}`);
+      expect(ts('worker.lock.running', { d: 'Πεμ 20 Νοε' })).toContain('Μην μπείτε στο χωράφι μέχρι Πεμ 20 Νοε');
+      expect(dictionaries.hi['lang.review']).toContain('προς έλεγχο');
+    } finally { lang.value = 'el'; }
+    expect(ts('worker.lock.unknown')).toBe(dictionaries.el['worker.lock.unknown']);   // other languages: the text as it is
   });
   it('long Greek dates use the genitive month', () => {
     expect(formatDateLong('2026-11-16')).toBe('Δευτέρα 16 Νοεμβρίου 2026');

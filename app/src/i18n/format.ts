@@ -30,7 +30,7 @@ function plain(v: string | number | null | undefined): string | null {
   return s !== null && PLAIN.test(s) ? s : null;
 }
 
-const separator = () => (lang.value === 'en' ? '.' : ',');
+const separator = () => (lang.value === 'en' || lang.value === 'hi' ? '.' : ',');
 const localise = (s: string) => s.replace('.', separator()).replace(/^-/, '\u2212'); // a real minus sign, not a hyphen: «−0,75»
 
 /** A dose exactly as stored: «0.625» → «0,625», «0.250» → «0,250» (trailing zeros are kept). Only a Known<Decimal> is accepted: an unknown dose prints «— άγνωστο». */
@@ -48,6 +48,6 @@ export function formatQty(v: string | number | null | undefined): string {
 export function formatArea(v: string | number | null | undefined): string {
   const s = plain(v);
   if (s === null) return t('value.unknown');
-  const unit = lang.value === 'el' ? 'στρ.' : lang.value === 'tr' ? 'dönüm' : 'str.';
+  const unit = lang.value === 'el' || lang.value === 'hi' ? 'στρ.' : lang.value === 'tr' ? 'dönüm' : 'str.'; // the field's unit stays the Greek one for the Hindi screens
   return `${localise(s)} ${unit}`;
 }

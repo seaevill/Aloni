@@ -5,7 +5,7 @@ import { session } from '../auth/gotrue';
 import { pendingOps } from '../repo';
 import { queueCompletion, COMPLETE } from '../worker/remote';
 import { RPC_PREFIX } from '../repo';
-import { formatDateTime, t, type I18nKey } from '../i18n';
+import { formatDateTime, lang, t, ts, type I18nKey } from '../i18n';
 import { UNIT_KEYS } from './LabelUseForm';
 import { formatDose } from '../i18n/format';
 import { known, type Decimal } from '@aloni/rules-core';
@@ -23,6 +23,8 @@ import { showHeldUndo } from './Toast';
 import { useRows } from './useRows';
 import { workerView } from './nav';
 
+/** Language-free symbols: they show in every language, whatever the translation says (a worker who cannot read the words still sees ✓ ✗ 🔒). */
+const MARK = { ok: '✓', no: '✗', lock: '🔒' } as const;
 const HOLD_MS = 10000; // 10 seconds to take it back
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 const SKIP_KEYS: Record<SkipReason, I18nKey> = { rain: 'worker.skip.rain', wind: 'worker.skip.wind', no_product: 'worker.skip.no_product', other: 'worker.skip.other' };
@@ -60,7 +62,7 @@ export function WorkerApp() {
   const plantingName = (p: Row) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) });
   const lockOf = (job: Row): Lock => reiLockJob([...new Set(plantingsOf(job).map((p) => text(p.parcel_id)))], instantOf(new Date()) ?? '', plantings.rows ?? [], links.rows ?? [], sprays.rows ?? []); // ANY field of the job locks it
   const finishedLine = (j: Row): string => [j.status === 'done' ? t('worker.status.done') : t('worker.status.skipped'), j.done_at ? formatDateTime(text(j.done_at)) : ''].filter(Boolean).join(' · ');
-  const lockText = (l: Lock): string => (l.state === 'running' ? t('worker.lock.running', { d: formatDateTime(l.until) }) : t('worker.lock.unknown'));
+  const lockText = (l: Lock): string => (l.state === 'running' ? ts('worker.lock.running', { d: formatDateTime(l.until) }) : ts('worker.lock.unknown'));
   const doseText = (j: Row) => t('labeluse.dosevalue', { v: formatDose(known(text(j.dose_str) as Decimal)), unit: t(UNIT_KEYS[j.dose_unit as keyof typeof UNIT_KEYS]) });
 
   const hold = (job: Row, write: () => Promise<void>) => { // the job disappears at once; the record is written only after 10 s, unless taken back
@@ -88,6 +90,7 @@ export function WorkerApp() {
 
   return (
     <main data-testid="worker-app">
+      {lang.value === 'hi' && <p class="badge warn bi" data-testid="hi-review">{ts('lang.review')}</p>}
       <h1>{t('worker.title')}{!real && <span class="badge">{t('badge.demo')}</span>}</h1>
       {!real && <DemoBanner />}
       {!real && <p class="muted">{t('worker.demoNote')}</p>}
@@ -105,14 +108,14 @@ export function WorkerApp() {
               {plantingsOf(j).map((p) => <small key={p.id}>{plantingName(p)}</small>)}
               <small data-testid="worker-dose">{t('labeluse.line', { name: t('labeluse.dose'), value: doseText(j) })}</small>
               <small>{t('worker.fixed')}</small>
-              {lockOf(j).state !== 'none' && <p class="badge blocked" role="alert" data-testid="worker-lock">{lockText(lockOf(j))}</p>}
+              {lockOf(j).state !== 'none' && <p class="badge blocked bi" role="alert" data-testid="worker-lock"><span aria-hidden="true">{MARK.lock}</span> {lockText(lockOf(j))}</p>}
               {open?.job !== j.id && (
                 <div class="seg two big">
-                  <button class="go" data-testid="job-done" aria-disabled={doneBlocked(lockOf(j)) ? 'true' : undefined} onClick={() => { if (doneBlocked(lockOf(j))) { setLockMsg(lockText(lockOf(j))); return; } setLockMsg(undefined); setOpen({ job: j.id, mode: 'done' }); }}>{t('worker.done')}</button>
-                  {!real && <button class="stop" data-testid="job-skip" onClick={() => setOpen({ job: j.id, mode: 'skip' })}>{t('worker.notdone')}</button>}
+                  <button class="go" data-testid="job-done" aria-disabled={doneBlocked(lockOf(j)) ? 'true' : undefined} onClick={() => { if (doneBlocked(lockOf(j))) { setLockMsg(lockText(lockOf(j))); return; } setLockMsg(undefined); setOpen({ job: j.id, mode: 'done' }); }}><span aria-hidden="true">{MARK.ok}</span> {t('worker.done')}</button>
+                  {!real && <button class="stop" data-testid="job-skip" onClick={() => setOpen({ job: j.id, mode: 'skip' })}><span aria-hidden="true">{MARK.no}</span> {t('worker.notdone')}</button>}
                 </div>
               )}
-              {lockMsg && open?.job !== j.id && doneBlocked(lockOf(j)) && <p class="badge blocked" role="alert" data-testid="worker-lock-why">{lockMsg}</p>}
+              {lockMsg && open?.job !== j.id && doneBlocked(lockOf(j)) && <p class="badge blocked bi" role="alert" data-testid="worker-lock-why"><span aria-hidden="true">{MARK.lock}</span> {lockMsg}</p>}
               {open?.job === j.id && open.mode === 'done' && (
                 <>
                   <label class="field">{t('worker.time')}<input class="input" type="datetime-local" value={when} onInput={(e) => setWhen((e.target as HTMLInputElement).value)} /></label>

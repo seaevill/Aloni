@@ -445,5 +445,6 @@
   "register.vat.save": "Save VAT number",
   "register.vat.saved": "The VAT number was saved.",
   "register.holder": "Holding: {name} · VAT no.: {vat}",
-  "register.holder.none": "[not set]"
+  "register.holder.none": "[not set]",
+  "lang.review": "Translation to be checked by a native speaker"
 }

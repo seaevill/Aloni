@@ -63,3 +63,21 @@ Format: `regex | scope | reason` (the regex itself must not contain `|`; use loo
 εγκεκριμ | labeluse.status.blocked,labeluse.status.unsigned,labeluse.status.changed,labeluse.status.signed,signoff.record,signoff.note,signoff.on,signoff.saved | «Εγκεκριμένο» reads like an official licence: say that an agronomist SIGNED («υπογραφή γεωπόνου»)
 ^παραλια$ | * | the coast class is «Παραλιακό» (an adjective, like Πεδινό), not «Παραλία» (a beach)
 ```
+
+## Hindi column (hi) — worker screens, 2026-11-19, ALL «προς έλεγχο» (to be checked by a native speaker)
+Hindi replaces Albanian (Bora, 2026-11-19). Safety texts (re-entry lock, waiting periods) are shown TOGETHER with the Greek text until a native speaker approves them.
+| Greek | Hindi | Note |
+|---|---|---|
+| Έγινε | हो गया | button, with ✓ |
+| Δεν έγινε | नहीं हुआ | button, with ✗ |
+| Πίσω | पीछे | |
+| Αναίρεση | वापस लें | 72 px button |
+| Δουλειές / Σημερινές δουλειές | काम / आज के काम | |
+| Συγκομιδή | कटाई | harvest |
+| κλούβα | क्रेट | the crate keeps its everyday name |
+| Παρατήρηση | निरीक्षण | |
+| επανείσοδος (REI) | खेत में वापस जाना | «do not enter the field until …» |
+| αναμονή (PHI) | प्रतीक्षा अवधि | before harvest |
+| ψεκασμός | छिड़काव | |
+| στρέμμα | στρ. | stays the Greek unit on screen |
+

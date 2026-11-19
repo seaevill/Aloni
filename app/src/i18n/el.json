@@ -445,5 +445,6 @@
   "register.vat.save": "Αποθήκευση ΑΦΜ",
   "register.vat.saved": "Το ΑΦΜ αποθηκεύτηκε.",
   "register.holder": "Εκμετάλλευση: {name} · ΑΦΜ: {vat}",
-  "register.holder.none": "[δεν έχει οριστεί]"
+  "register.holder.none": "[δεν έχει οριστεί]",
+  "lang.review": "Μετάφραση προς έλεγχο από φυσικό ομιλητή"
 }

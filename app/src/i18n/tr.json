@@ -445,5 +445,6 @@
   "register.vat.save": "Vergi numarasını kaydet",
   "register.vat.saved": "Vergi numarası kaydedildi.",
   "register.holder": "İşletme: {name} · ΑΦΜ: {vat}",
-  "register.holder.none": "[tanımlı değil]"
+  "register.holder.none": "[tanımlı değil]",
+  "lang.review": "Çeviri ana dili konuşan biri tarafından kontrol edilecek"
 }

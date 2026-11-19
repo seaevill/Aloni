@@ -67,3 +67,5 @@ h3 { font-size:var(--fs-18); font-weight:800; margin:var(--sp-12) 0 var(--sp-6);
 /* badges: signed = green, unsigned/changed = amber, blocked = red; «nothing on record» is NEUTRAL (never green: it must not read as «safe») */
 .badge.signed { background:var(--green); color:var(--white); }
 .badge.neutral { background:var(--card); color:var(--fg); border:var(--bw-1) solid var(--field); }
+:lang(hi) body, :lang(hi) button, :lang(hi) input { font-family:var(--font-hi); }
+.bi { white-space:pre-line; }
