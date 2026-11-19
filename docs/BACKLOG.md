@@ -1,5 +1,12 @@
 # BACKLOG – iş listem (Claude)
 
+## ACİL – ekip incelemesi m7 (2026-11-19): 2 MUST + 1 SHOULD → YERİNDE DÜZELTİLDİ (ekip yeniden bakacak)
+- [x] N1 (MUST): etiket eşleşmesi iş başına değil **ekim (ürün) başına**; etiketsiz = bilinmiyor = hasat kapalı; başka ürünün etiketi, düzeltmeyle yazılan PHI ve ilaçlamadan sonra bağlanan ekim yolları kapandı (`complete_spray_job` dahil). Test: `supabase/tests/m12_m7.sql`.
+- [x] N2 (MUST): sahip için de ilaçlama bitişi şu andan ileri olamaz (işçiyle aynı); hasat kapısı «şimdi» için her kaydı sayar, bilinmeyen PHI her durumda kapalı.
+- [x] N3 (SHOULD): stok kontrolü `sync_xid = pg_current_xact_id()` ile eşleşir; telefonun `created_at`'ine güvenilmez.
+- [x] N4 (LOW): `weather_fetch_state` çiftlik+parsel bileşik anahtarla bağlandı. [x] LOW: ekim için sahte geçmiş testi eklendi.
+
+
 Bu dosya benim iş listem. Bitirdiğimi `[x]` ile işaretlerim. `docs/reviews/team/` altına yeni bir dosya gelince oradaki **MUST** bulguları en üste «ACİL» olarak eklerim. Bora yalnızca `docs/STATUS.md`'ye bakar.
 
 ## ACİL (ekip incelemesi: açık MUST)

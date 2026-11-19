@@ -15,7 +15,7 @@ create or replace function check_spray_record() returns trigger language plpgsql
 declare lu record; o job_spray%rowtype; sl record;
 begin
   new.received_at := now();      -- the SERVER's clock, whatever the writer sent (m2-0015 finding 2)
-  if new.sprayed_at > now() + interval '5 minutes' then raise exception 'the end of a spraying cannot be in the future' using errcode = 'check_violation'; end if;
+  if new.sprayed_at > now() then raise exception 'the end of a spraying cannot be in the future' using errcode = 'check_violation'; end if;
   if new.phi_days is not null and new.phi_until is distinct from new.sprayed_at + make_interval(hours => new.phi_days * 24) then
     raise exception 'phi_until must be exactly sprayed_at + % days (in hours)', new.phi_days using errcode = 'check_violation';
   end if;
@@ -24,7 +24,8 @@ begin
   end if;
   if new.phi_source = 'label' then
     select l.product_id, l.sign_off_by, l.phi_days, l.rei_hours into lu from label_uses l where l.id = new.label_use_id and l.farm_id = new.farm_id
-      and l.crop_id in (select pl.crop_id from job_plantings jp join plantings pl on pl.id = jp.planting_id where jp.job_id = new.job_id and jp.farm_id = new.farm_id);   -- m6-0029: the label of a crop of THIS job
+      and exists (select 1 from job_plantings jp where jp.job_id = new.job_id and jp.farm_id = new.farm_id)
+      and not exists (select 1 from job_plantings jp join plantings pl on pl.id = jp.planting_id where jp.job_id = new.job_id and jp.farm_id = new.farm_id and pl.crop_id <> l.crop_id);   -- m7 N1: the label is of the crop of EVERY planting of the job
     if not found or lu.sign_off_by is null or lu.product_id is distinct from new.product_id or lu.phi_days is distinct from new.phi_days or lu.rei_hours is distinct from new.rei_hours then
       raise exception 'a label waiting period must equal the signed label use it names' using errcode = 'check_violation';
     end if;
@@ -52,7 +53,7 @@ begin
     if new.phi_source = 'manual' then
       if new.phi_days is null or new.phi_days < 1 or new.rei_hours is null or new.rei_hours < 1 then raise exception 'a manual waiting period must be above zero' using errcode = 'check_violation'; end if;
       select * into sl from spray_floor(new.farm_id, o.job_id, o.product_id, o.id);     -- the labels of THIS product on THIS job's crops, whether or not the spray names one (m5-0021 finding 1)
-      if sl.n = 0 or sl.phi is null or sl.rei is null then
+      if sl.n = 0 or sl.missing > 0 or sl.phi is null or sl.rei is null then
         raise exception 'no label with a known waiting period and re-entry period exists for this product and crop: it cannot be typed by hand (it stays unknown = blocked)' using errcode = 'check_violation';
       end if;
       if new.phi_days < sl.phi or new.rei_hours < sl.rei then
@@ -78,10 +79,10 @@ begin
   if new.amends_id is null then return null; end if;
   select * into o from job_spray where id = new.amends_id and farm_id = new.farm_id;
   if not found or (new.qty_str is not distinct from o.qty_str and new.lot_key is not distinct from o.lot_key) then return null; end if;
-  -- m6-0029 SHOULD A2: the movements are recognised by WHAT they are (job, lot, quantity, reason, not older than the record they correct), not by the transaction number: inside apply_ops
-  -- (every op in a savepoint) xmin is the sub-transaction's, so the old check rejected a correct phone group at COMMIT.
-  select exists (select 1 from stock_movements m where m.farm_id = new.farm_id and m.job_id = new.job_id and m.direction = 'in' and m.reason = 'spray_correction' and m.lot_key is not distinct from o.lot_key and m.qty_str is not distinct from o.qty_str and m.created_at >= o.created_at),
-         exists (select 1 from stock_movements m where m.farm_id = new.farm_id and m.job_id = new.job_id and m.direction = 'out' and m.reason = 'spray' and m.lot_key is not distinct from new.lot_key and m.qty_str is not distinct from new.qty_str and m.created_at >= o.created_at) into back, taken;
+  -- m7 N3: the movements are recognised by WHAT they are (job, lot, quantity, reason) AND by the transaction that wrote them: `sync_xid` is set by the server to the TOP-LEVEL transaction (pg_current_xact_id()
+  -- is the same inside a savepoint, unlike xmin), and a phone cannot send it. A movement of an earlier, separate transaction (or one with a made-up created_at) never satisfies a later correction.
+  select exists (select 1 from stock_movements m where m.farm_id = new.farm_id and m.job_id = new.job_id and m.direction = 'in' and m.reason = 'spray_correction' and m.lot_key is not distinct from o.lot_key and m.qty_str is not distinct from o.qty_str and m.sync_xid = pg_current_xact_id()),
+         exists (select 1 from stock_movements m where m.farm_id = new.farm_id and m.job_id = new.job_id and m.direction = 'out' and m.reason = 'spray' and m.lot_key is not distinct from new.lot_key and m.qty_str is not distinct from new.qty_str and m.sync_xid = pg_current_xact_id()) into back, taken;
   if o.qty_str is not null and not back then raise exception 'a correction of the quantity or the lot needs the old quantity put back in the stock (a movement) in the same transaction' using errcode = 'check_violation'; end if;
   if new.qty_str is not null and not taken then raise exception 'a correction of the quantity or the lot needs the new quantity taken out of the stock (a movement) in the same transaction' using errcode = 'check_violation'; end if;
   return null;
