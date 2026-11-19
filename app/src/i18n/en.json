@@ -437,5 +437,6 @@
   "spray.over.error": "This application passes the label's maximum: write the reason.",
   "spray.dose.reason": "Why the dose is outside the label",
   "spray.dose.error": "The dose is outside the label: write the reason.",
-  "spray.error.unit": "Choose the dose unit."
+  "spray.error.unit": "Choose the dose unit.",
+  "worker.back": "Back"
 }

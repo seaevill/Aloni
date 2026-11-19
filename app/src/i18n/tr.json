@@ -437,5 +437,6 @@
   "spray.over.error": "Bu uygulama etiket sınırını aşıyor: nedenini yazın.",
   "spray.dose.reason": "Etiket dışı dozun nedeni",
   "spray.dose.error": "Doz etiketin dışında: nedenini yazın.",
-  "spray.error.unit": "Doz birimini seçin."
+  "spray.error.unit": "Doz birimini seçin.",
+  "worker.back": "Geri"
 }

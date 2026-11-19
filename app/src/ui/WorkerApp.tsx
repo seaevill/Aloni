@@ -44,6 +44,7 @@ export function WorkerApp() {
   const [harvestSaved, setHarvestSaved] = useState(false); // the «saved on the phone» line after a harvest record
   const [open, setOpen] = useState<{ job: string; mode: 'done' | 'skip' } | undefined>(undefined);
   const [held, setHeld] = useState<string[]>([]);
+  const [lockMsg, setLockMsg] = useState<string | undefined>(undefined); // what a press on a CLOSED «Έγινε» answers
   const [queued, setQueued] = useState<string[]>([]); // jobs whose «Έγινε» waits in the outbox for the signal
   useEffect(() => { void db.outbox.where('status').equals('pending').toArray().then((r) => setQueued(r.filter((o) => o.table === `${RPC_PREFIX}${COMPLETE}`).map((o) => o.row_id))); }, [pendingOps.value, dataVersion.value]);
   const [when, setWhen] = useState(athensLocalNow(new Date()) ?? '');
@@ -107,10 +108,11 @@ export function WorkerApp() {
               {lockOf(j).state !== 'none' && <p class="badge blocked" role="alert" data-testid="worker-lock">{lockText(lockOf(j))}</p>}
               {open?.job !== j.id && (
                 <div class="seg two big">
-                  <button class="go" data-testid="job-done" disabled={doneBlocked(lockOf(j))} onClick={() => setOpen({ job: j.id, mode: 'done' })}>{t('worker.done')}</button>
+                  <button class="go" data-testid="job-done" aria-disabled={doneBlocked(lockOf(j)) ? 'true' : undefined} onClick={() => { if (doneBlocked(lockOf(j))) { setLockMsg(lockText(lockOf(j))); return; } setLockMsg(undefined); setOpen({ job: j.id, mode: 'done' }); }}>{t('worker.done')}</button>
                   {!real && <button class="stop" data-testid="job-skip" onClick={() => setOpen({ job: j.id, mode: 'skip' })}>{t('worker.notdone')}</button>}
                 </div>
               )}
+              {lockMsg && open?.job !== j.id && doneBlocked(lockOf(j)) && <p class="badge blocked" role="alert" data-testid="worker-lock-why">{lockMsg}</p>}
               {open?.job === j.id && open.mode === 'done' && (
                 <>
                   <label class="field">{t('worker.time')}<input class="input" type="datetime-local" value={when} onInput={(e) => setWhen((e.target as HTMLInputElement).value)} /></label>
@@ -119,12 +121,14 @@ export function WorkerApp() {
                   )}
                   <label class="field">{t('worker.note')}<input class="input" value={note} autoComplete="off" onInput={(e) => setNote((e.target as HTMLInputElement).value)} /></label>
                   <button class="btn big" data-testid="job-confirm" onClick={() => confirmDone(j)}>{t('worker.confirm')}</button>
+                  <button class="btn secondary big" data-testid="job-back" onClick={() => setOpen(undefined)}>{t('worker.back')}</button>
                 </>
               )}
               {open?.job === j.id && open.mode === 'skip' && (
                 <>
                   <h2>{t('worker.skip.title')}</h2>
                   <div class="seg two big">{SKIP_REASONS.map((r) => <button key={r} data-testid={`skip-${r}`} onClick={() => confirmSkip(j, r)}>{t(SKIP_KEYS[r])}</button>)}</div>
+                  <button class="btn secondary big" data-testid="job-back" onClick={() => setOpen(undefined)}>{t('worker.back')}</button>
                 </>
               )}
             </div>
