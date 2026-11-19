@@ -550,5 +550,16 @@
   "map.save": "Sınırları kaydet",
   "map.open": "Haritada sınırlar",
   "map.has": "Haritada sınırlar belirlendi.",
-  "edit.f.boundary": "haritada sınırlar"
+  "edit.f.boundary": "haritada sınırlar",
+  "notify.title": "Bildirimler",
+  "notify.note": "Uygulama henüz bildirim göndermiyor. Gönderdiğinde yalnızca ziraat mühendisinin onayladığı kurallardan olacak ve sessiz saatlerde asla.",
+  "notify.on": "Bildirimleri aç",
+  "notify.off": "Bildirimleri kapat",
+  "notify.quiet.from": "Sessiz saatler: başlangıç",
+  "notify.quiet.to": "Sessiz saatler: bitiş",
+  "notify.error.time": "Saat yazın, örn. 21:00.",
+  "notify.nokey": "Bildirimler bu sürümde henüz kullanılamıyor.",
+  "notify.unsupported": "Bu telefon ya da tarayıcı bildirimleri desteklemiyor.",
+  "notify.denied": "Bildirim izni verilmedi.",
+  "notify.saved": "Kaydedildi."
 }

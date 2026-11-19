@@ -550,5 +550,16 @@
   "map.save": "Save the boundary",
   "map.open": "Boundary on the map",
   "map.has": "A boundary is set on the map.",
-  "edit.f.boundary": "map boundary"
+  "edit.f.boundary": "map boundary",
+  "notify.title": "Notifications",
+  "notify.note": "The app does not send notifications yet. When it does, only from rules the agronomist approved, and never in the quiet hours.",
+  "notify.on": "Switch notifications on",
+  "notify.off": "Switch notifications off",
+  "notify.quiet.from": "Quiet hours: from",
+  "notify.quiet.to": "Quiet hours: until",
+  "notify.error.time": "Write a time like 21:00.",
+  "notify.nokey": "Notifications are not available in this version yet.",
+  "notify.unsupported": "This phone or browser does not support notifications.",
+  "notify.denied": "Permission for notifications was not given.",
+  "notify.saved": "Saved."
 }
