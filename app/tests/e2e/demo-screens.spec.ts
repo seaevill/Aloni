@@ -74,11 +74,13 @@ test('the weather names its source and licence and the time of the data; after 1
       const r = indexedDB.open('aloni');
       r.onsuccess = () => {
         const tx = r.result.transaction('weather', 'readwrite'); const s = tx.objectStore('weather');
-        s.getAll().onsuccess = (e) => { for (const row of (e.target as IDBRequest<Array<{ days: Array<Record<string, unknown>> }>>).result) { row.days.forEach((d) => { d.model = 'metno'; d.issued_at = new Date(Date.now() - h * 3_600_000).toISOString(); }); s.put(row); } };
+        s.getAll().onsuccess = (e) => { for (const row of (e.target as IDBRequest<Array<{ days: Array<Record<string, unknown>> }>>).result) { /* days from today on: the strip has data on any date */ row.days.forEach((d, i) => { d.date = new Date(Date.now() + i * 86_400_000).toISOString().slice(0, 10); d.model = 'metno'; d.issued_at = new Date(Date.now() - h * 3_600_000).toISOString(); }); s.put(row); } };
         tx.oncomplete = () => done();
       };
     }), hoursAgo);
-    await page.reload(); await page.locator('nav.tabs [data-tab="today"]').click();
+    await page.reload();
+    await page.locator('nav.tabs [data-tab="more"]').click(); await page.getByRole('button', { name: 'Κτήμα επίδειξης' }).click();   // a reload shows the own farm again
+    await page.locator('nav.tabs [data-tab="today"]').click();
   };
   await stamp(3);
   await expect(page.getByTestId('wx-source')).toContainText('Δεδομένα: MET Norway (CC BY 4.0)');
