@@ -352,7 +352,7 @@
   "more.workerView": "Worker view (demo)",
   "worker.data.title": "Your data",
   "worker.data.who": "Who holds it: your employer, the owner of the farm.",
-  "worker.data.what": "What we keep: your name, the jobs you record and their time.",
+  "worker.data.what": "What we keep: your name, your e-mail if you have an account, a technical identifier of the phone, the jobs you record and their time.",
   "worker.data.why": "Why: to organise the work and keep the spray records.",
   "worker.data.noloc": "We do not track your location.",
   "worker.data.rights": "You can ask to see or correct your data.",

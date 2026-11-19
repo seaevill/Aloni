@@ -9,6 +9,8 @@ export const BACKUP_FORMAT = 'aloni-backup';
 export const BACKUP_VERSION = 1;
 const DEVICE_ONLY = new Set(['device_id', 'actor_id', 'last_backup_at', 'auth_session', 'worker_view', 'sync_enabled', 'push_subscription', 'persist_standalone', 'ui_state']); // never part of a backup (the sign-in session holds tokens: it must NEVER leave the phone in a file)
 export const isDeviceOnlyKey = (key: string): boolean => DEVICE_ONLY.has(key) || key.startsWith('sync_cursor:') || key.startsWith('held_action:') || key.startsWith('media_up:');
+const DEVICE_ONLY = new Set(['device_id', 'actor_id', 'last_backup_at', 'auth_session', 'worker_view', 'sync_enabled', 'push_subscription']); // never part of a backup (the sign-in session holds tokens: it must NEVER leave the phone in a file)
+export const isDeviceOnlyKey = (key: string): boolean => DEVICE_ONLY.has(key) || key.startsWith('sync_cursor:') || key.startsWith('held_action:') || key.startsWith('media_up:') || key.startsWith('notice_seen_at:');
 export type BackupErrorCode = 'format' | 'version' | 'sha256' | 'demo' | 'conflict';
 export class BackupError extends Error { constructor(readonly code: BackupErrorCode) { super(code); } }
 

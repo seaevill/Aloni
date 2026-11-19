@@ -28,9 +28,9 @@ import { showHeldUndo } from './Toast';
 import { useRows } from './useRows';
 import { workerView } from './nav';
 
-/** Language-free symbols: they show in every language, whatever the translation says (a worker who cannot read the words still sees ✓ ✗ 🔒). */
 const LANG_NAME = { el: 'lang.name.el', tr: 'lang.name.tr', en: 'lang.name.en', hi: 'lang.name.hi' } as const;
 const DATA_LINES = ['worker.data.who', 'worker.data.what', 'worker.data.why', 'worker.data.noloc', 'worker.data.rights', 'worker.data.full'] as const;
+/** Language-free symbols: they show in every language, whatever the translation says (a worker who cannot read the words still sees ✓ ✗ 🔒). */
 const MARK = { ok: '✓', no: '✗', lock: '🔒' } as const;
 const HOLD_MS = 10000; // 10 seconds to take it back
 const JOB_GROUPS = [['overdue', 'jobs.group.overdue'], ['today', 'jobs.group.today'], ['tomorrow', 'jobs.group.tomorrow'], ['later', 'jobs.group.later']] as const;
@@ -52,8 +52,8 @@ export function WorkerApp() {
   const me = people.find((w) => w.id === workerView.value) ?? people[0];
   const [noticeSeen, setNoticeSeen] = useState(true);
   useEffect(() => { const w = workerLang(); if (w) lang.value = w; return restoreOwnerLang; }, []);      // the worker's language lives only while this view is open
-  useEffect(() => { void db.settings.get('notice_seen_at').then((r) => setNoticeSeen(r !== undefined)); }, []);
-  const ackNotice = async () => { await putLocal(db, 'notice_seen_at', new Date().toISOString()); setNoticeSeen(true); };
+  useEffect(() => { void db.settings.get(`notice_seen_at:${text(me?.id)}`).then((r) => setNoticeSeen(r !== undefined)); }, [text(me?.id)]);
+  const ackNotice = async () => { await putLocal(db, `notice_seen_at:${text(me?.id)}`, new Date().toISOString()); setNoticeSeen(true); };
   const [tabId, setTabId] = useState<'jobs' | 'harvest' | 'observe'>('jobs');
   const [lateReason, setLateReason] = useState(''); // «λόγος καθυστέρησης» for a time more than 7 days back
   const [harvestSaved, setHarvestSaved] = useState(false); // the «saved on the phone» line after a harvest record
