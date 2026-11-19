@@ -10,6 +10,10 @@ describe('brand', () => {
     const hits = walk('src').filter((f) => /\.(ts|tsx)$/.test(f) && readFileSync(f, 'utf8').includes('Αλώνι')).map((f) => f.replaceAll('\\', '/'));
     expect(hits).toEqual(['src/config.ts']);
   });
+  it('the name «Aloni Farm» (taken by another app) appears nowhere in the code or the pages', () => {
+    const files = [...walk('src'), 'index.html', 'vite.config.ts'].filter((f) => /\.(ts|tsx|json|html)$/.test(f));
+    expect(files.filter((f) => /Aloni Farm/i.test(readFileSync(f, 'utf8')))).toEqual([]);
+  });
   it('the manifest has an id and a maskable icon that is not icon-512.png', () => {
     const cfg = readFileSync('vite.config.ts', 'utf8');
     expect(cfg).toMatch(/id: '\/'/);
