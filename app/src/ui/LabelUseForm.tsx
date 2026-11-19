@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks';
 import { dataVersion, db, realFarmId } from '../db';
-import { CATALOG, cropRow } from '../crops/catalog';
+import { CATALOG, cropRow, cropName } from '../crops/catalog';
 import { lang, t, type I18nKey } from '../i18n';
 import { buildLabelUse, DOSE_UNITS, KINDS, toInput, type Field, type FieldName, type LabelUseInput } from '../labels/label-use';
 import { archived } from '../parcels/parcel';
@@ -58,7 +58,7 @@ export function LabelUseForm({ productId, taken, existing, onDone }: { productId
         <>
           <h2>{t('planting.crop')}</h2>
           <div class="seg two">
-            {CATALOG.map((c) => <button key={c.slug} disabled={taken.has(c.slug)} aria-pressed={slug === c.slug} onClick={() => setSlug(c.slug)}>{c[lang.value]}</button>)}
+            {CATALOG.map((c) => <button key={c.slug} disabled={taken.has(c.slug)} aria-pressed={slug === c.slug} onClick={() => setSlug(c.slug)}>{cropName(c, lang.value)}</button>)}
           </div>
           {cropMissing && <p class="msg error" role="alert">{t('planting.error.crop')}</p>}
         </>

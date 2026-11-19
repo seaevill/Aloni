@@ -1,7 +1,7 @@
 import { parseWhole } from '@aloni/rules-core';
 import { useState } from 'preact/hooks';
 import { dataVersion, db, realFarmId } from '../db';
-import { formatDate, formatDateTime, t, tn } from '../i18n';
+import { formatDate, formatDateTime, t, tn, ts } from '../i18n';
 import { put } from '../repo';
 import { buildHarvest, harvestGate } from '../spray/harvest';
 import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
@@ -15,6 +15,9 @@ const text = (v: unknown): string => (typeof v === 'string' ? v : '');
  * The harvest counter. The planting must have NO running or unknown waiting period at the time chosen: otherwise the screen says why and saving is
  * impossible. There is no override and no «unblock» button: only a known waiting period that has run out opens the harvest.
  */
+/** Language-free symbols (see WorkerApp). */
+const MARK = { lock: '🔒' } as const;
+
 export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = false }: { onDone: (saved: boolean) => void; farmId?: string; actorId?: string; big?: boolean }) {
   const plantings = useRows('plantings'); const crops = useRows('crops'); const parcels = useRows('parcels'); const links = useRows('job_plantings'); const sprays = useRows('job_spray');
   const [planting, setPlanting] = useState('');
@@ -37,7 +40,7 @@ export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = 
     onDone(true);
   };
   const shown = parseWhole<'Crates'>(crates).known ? crates.trim() : '0'; // the counter shows 0 until a number is chosen
-  const reason = blocked ? (blocked.reason === 'unknown' ? t('harvest.blocked.unknown') : blocked.reason === 'running' ? t(blocked.by === 'rei' ? 'harvest.blocked.rei' : 'harvest.blocked.running', { d: formatDateTime(blocked.until ?? '') }) : t('harvest.blocked.time')) : '';
+  const reason = blocked ? (blocked.reason === 'unknown' ? ts('harvest.blocked.unknown') : blocked.reason === 'running' ? ts(blocked.by === 'rei' ? 'harvest.blocked.rei' : 'harvest.blocked.running', { d: formatDateTime(blocked.until ?? '') }) : ts('harvest.blocked.time')) : '';
   return (
     <section>
       <h1>{t('harvest.add')}</h1>
@@ -48,7 +51,7 @@ export function HarvestForm({ onDone, farmId = realFarmId.value, actorId, big = 
           <div class="seg two">{live.filter((p) => text(p.parcel_id) === pid).map((p) => <button key={p.id} aria-pressed={planting === p.id} onClick={() => setPlanting(p.id)}>{labelOf(p)}</button>)}</div>
         </div>
       ))}
-      {blocked && <p class="badge blocked" role="alert" data-testid="harvest-blocked">{reason}</p>}
+      {blocked && <p class="badge blocked bi" role="alert" data-testid="harvest-blocked"><span aria-hidden="true">{MARK.lock}</span> {reason}</p>}
       {big ? (
         <>
           <div class="counter">

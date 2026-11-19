@@ -2,20 +2,24 @@ import { signal } from '@preact/signals';
 import el from './el.json';
 import tr from './tr.json';
 import en from './en.json';
-import sq from './sq.json';
+import hi from './hi.json';
 import { TZ } from '../config';
 import { fill, pluralKey, type Params } from './plural';
 
-export type Lang = 'el' | 'tr' | 'en';
-export const LANGS: Lang[] = ['el', 'tr', 'en'];
-// `sq` (Albanian) is an empty file for now (workers choose el/tr/sq in M2); missing keys fall back to Greek.
-export const dictionaries: Record<Lang | 'sq', Record<string, string>> = { el, tr, en, sq };
-const LOCALES: Record<Lang, string> = { el: 'el-GR', tr: 'tr-TR', en: 'en-GB' };
+export type Lang = 'el' | 'tr' | 'en' | 'hi';
+export const LANGS: Lang[] = ['el', 'tr', 'en', 'hi'];
+/**
+ * One line per language: the locale (dates, plurals) and the label on its button (the language's OWN name for a non-Latin script). Hindi covers the WORKER screens (Bora 2026-11-19, instead of
+ * Albanian); a key it does not have falls back to Greek. Adding Punjabi (Gurmukhi) = `pa.json`, an entry here, a font block in ui/fonts.css and a `--font-pa` token.
+ */
+export const LANG_META: Record<Lang, { locale: string; label: string }> = { el: { locale: 'el-GR', label: 'EL' }, tr: { locale: 'tr-TR', label: 'TR' }, en: { locale: 'en-GB', label: 'EN' }, hi: { locale: 'hi-IN', label: 'हिन्दी' } };
+export const dictionaries: Record<Lang, Record<string, string>> = { el, tr, en, hi };
+const LOCALES: Record<Lang, string> = { el: LANG_META.el.locale, tr: LANG_META.tr.locale, en: LANG_META.en.locale, hi: LANG_META.hi.locale };
 
 function initialLang(): Lang {
   try {
     const s = localStorage.getItem('lang');
-    if (s === 'el' || s === 'tr' || s === 'en') return s;
+    if (s === 'el' || s === 'tr' || s === 'en' || s === 'hi') return s;
   } catch { /* storage may be unavailable */ }
   return 'el'; // Greek first
 }
@@ -35,6 +39,12 @@ const lookup = (key: string) => dictionaries[lang.value][key] ?? dictionaries.el
 
 export function t(key: I18nKey, params?: Params): string {
   return fill(lookup(key), params);
+}
+
+/** A SAFETY message (a lock, a waiting period): in Hindi it is shown TOGETHER with the Greek text until a native speaker has approved the translation, so a mistranslation is never the only thing a worker reads. */
+export function ts(key: I18nKey, params?: Params): string {
+  const own = t(key, params);
+  return lang.value === 'hi' ? `${own}\n${fill(dictionaries.el[key] ?? key, params)}` : own;
 }
 
 /** Keys that come in `.one` / `.other` pairs, e.g. `time.daysAgo.one` + `time.daysAgo.other` → base `time.daysAgo`. */

@@ -29,7 +29,7 @@ export function Title({ k }: { k: I18nKey }) {
 
 /** A record's name in the current language. Nothing found = an EMPTY text, never the word «undefined» (the lists load one after the other). */
 export const nameOf = (r: Record<string, unknown>): string => {
-  const found = r[`name_${lang.value}`] ?? r.name_en ?? r.name ?? r.label ?? r.id;
+  const found = r[`name_${lang.value === 'hi' ? 'el' : lang.value}`] ?? r.name_en ?? r.name ?? r.label ?? r.id;
   return typeof found === 'string' || typeof found === 'number' ? String(found) : '';
 };
 

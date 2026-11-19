@@ -18,6 +18,8 @@ export const CATALOG = [
   { slug: 'leek', el: 'Πράσο', tr: 'Pırasa', en: 'Leek', latin: 'Allium ampeloprasum var. porrum' },
 ] as const;
 export type CatalogCrop = (typeof CATALOG)[number];
+/** The crop's name in a language; a language without crop names of its own (Hindi) shows the Greek one. */
+export const cropName = (c: CatalogCrop, l: 'el' | 'tr' | 'en' | 'hi'): string => c[l === 'hi' ? 'el' : l];
 
 /** The crop row of the real farm for a slug (same id every time on this farm, so planting twice never makes two crops). */
 export async function cropRow(c: CatalogCrop, farmId: string, nowIso: string): Promise<Row> {

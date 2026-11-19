@@ -2,7 +2,7 @@ import { useState } from 'preact/hooks';
 import { activeFarm, dataVersion, deleteDemo, farmLabel, hasDemo, legacyKept, loadDemo, realFarmId } from '../db';
 import { DEMO_FARM_ID } from '../config';
 import { APP_VERSION } from '../version';
-import { LANGS, lang, setLang, t } from '../i18n';
+import { LANGS, LANG_META, lang, setLang, t } from '../i18n';
 
 import { Info } from './Info';
 import { Photos } from './Photos';
@@ -29,7 +29,7 @@ export function More() {
       <h2>{t('more.language')}</h2>
       <div class="seg">
         {LANGS.map((l) => (
-          <button key={l} aria-pressed={lang.value === l} onClick={() => setLang(l)}>{l.toUpperCase()}</button>
+          <button key={l} aria-pressed={lang.value === l} onClick={() => setLang(l)}>{LANG_META[l].label}</button>
         ))}
       </div>
 
