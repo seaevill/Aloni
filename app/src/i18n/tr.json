@@ -665,6 +665,5 @@
   "jobs.group.later": "Daha sonra",
   "job.plantings": "Püskürtülecek ekimler",
   "job.worker": "Kim püskürtecek",
-  "job.dose": "Uygulanacak doz",
-  "job.planned.line": "{product} · {worker} · {date}"
+  "job.dose": "Uygulanacak doz"
 }

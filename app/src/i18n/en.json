@@ -665,6 +665,5 @@
   "jobs.group.later": "Later",
   "job.plantings": "Plantings to spray",
   "job.worker": "Who will spray",
-  "job.dose": "Dose to apply",
-  "job.planned.line": "{product} · {worker} · {date}"
+  "job.dose": "Dose to apply"
 }
