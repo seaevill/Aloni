@@ -10,6 +10,9 @@ export interface KlouvesOrders {
   /** Monday (YYYY-MM-DD) of the week → product id → crates ordered that week (all clients, all days). */
   weeks: Record<string, Record<string, number>>;
   skipped: number;
+  /** Per day → client id → product id → crates (kept as read; quarters only). Absent in an import made before the dispatch list existed. */
+  days?: Record<string, Record<string, Record<string, number>>>;
+  clients?: Array<{ id: string; name: string }>;
 }
 export type ParseResult = { ok: true; orders: KlouvesOrders } | { ok: false };
 
@@ -34,17 +37,25 @@ export function parseBackup(text: string): ParseResult {
   if (isObj(cfg) && Array.isArray(cfg.products)) {
     for (const p of cfg.products) if (isObj(p) && typeof p.id === 'string' && typeof p.name === 'string' && p.name.trim() !== '') products.push({ id: p.id, name: p.name.trim() });
   }
+  const clients: Array<{ id: string; name: string }> = [];
+  if (isObj(cfg) && Array.isArray(cfg.clients)) {
+    for (const c of cfg.clients) if (isObj(c) && typeof c.id === 'string' && typeof c.name === 'string' && c.name.trim() !== '') clients.push({ id: c.id, name: c.name.trim() });
+  }
   const weeks: Record<string, Record<string, number>> = {};
+  const days: Record<string, Record<string, Record<string, number>>> = {};
   let skipped = 0;
   for (const [key, day] of Object.entries(file.data)) {
     const m = DAY_KEY.exec(key);
     const monday = m?.[1] === undefined ? undefined : mondayOf(m[1]);
     if (monday === undefined || !isObj(day) || !isObj(day.orders)) continue;
-    for (const client of Object.values(day.orders)) {
+    for (const [clientId, client] of Object.entries(day.orders)) {
       if (!isObj(client)) continue;
       for (const [productId, q] of Object.entries(client)) {
         if (typeof q !== 'number' || !Number.isFinite(q) || q < 0 || !Number.isInteger(q * 4)) { skipped += 1; continue; }
         if (q === 0) continue;
+        const dayKey = m?.[1] ?? '';
+        const byClient = ((days[dayKey] ??= {})[clientId] ??= {});
+        byClient[productId] = q;
         const week = (weeks[monday] ??= {});
         const before = week[productId];
         if (before === undefined) week[productId] = q;
@@ -53,7 +64,7 @@ export function parseBackup(text: string): ParseResult {
     }
   }
   if (products.length === 0 && Object.keys(weeks).length === 0) return { ok: false };
-  return { ok: true, orders: { products, weeks, skipped } };
+  return { ok: true, orders: { products, weeks, skipped, days, clients } };
 }
 
 const plain = (s: string): string => s.normalize('NFD').replace(/\p{M}/gu, '').toLocaleLowerCase('el').replace(/ς/g, 'σ').trim();

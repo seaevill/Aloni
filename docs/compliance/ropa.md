@@ -12,6 +12,7 @@ Status 2026-11-19: **draft**. Every legal basis below is a proposal "for the law
 | Worker / owner | timestamps of each action | records must show when | legal duty | with the row |
 | Owner / worker | photos (`media`) | field evidence | contract | until deleted; every photo is decoded and re-encoded as JPEG before storing, so GPS/EXIF is dropped; a file that cannot be decoded is not stored at all (`photo-exif.spec.ts`) |
 | Owner | business name, address, phone, VAT id (`settings`) | inspection register header | legal duty | until changed |
+| Owner's customers (sole traders may be natural persons) | client names from the Κλούβες backup file (kept on the phone, inside the app's backup file) | dispatch list per client | legitimate interest / contract (lawyer to confirm) | until the owner loads a new file or clears the data |
 | – | one-time-code e-mail provider | sign-in mail | **TBD: EU provider with a DPA** (open decision) | – |
 
 Not collected: location tracking, advertising ids, analytics, contacts. Recipients: hosting provider (processor, EU) once LIVE. Transfers outside the EU: **to be confirmed by the lawyer** (hosting is planned in the EU; the CDN/Pages provider and the weather provider still have to be checked; weather is fetched server-side with field coordinates only).
