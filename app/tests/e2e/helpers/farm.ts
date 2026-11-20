@@ -12,11 +12,13 @@ export async function setup(page: Page, signed: boolean) {
   await page.getByTestId('empty-state').locator('button').click();
   await inputs(page).nth(0).fill('Κάτω Κάμπος'); await inputs(page).nth(1).fill('0,5');
   await page.getByTestId('parcel-save').click();
+  await expect(page.getByTestId('parcel-save')).toBeHidden();
   await tab(page, 'crops');
   await page.getByTestId('empty-state').locator('button').click();
   await page.getByRole('button', { name: 'Κάτω Κάμπος' }).click(); await page.getByRole('button', { name: 'Σπανάκι' }).click();
   await inputs(page).nth(0).fill('0,25');
   await page.getByTestId('planting-save').click();
+  await expect(page.getByTestId('planting-save')).toBeHidden();
   await tab(page, 'stock');
   await page.getByTestId('empty-state').locator('button').click();
   await inputs(page).nth(0).fill('Kocide 2000');
@@ -38,6 +40,7 @@ export async function setup(page: Page, signed: boolean) {
   await page.getByTestId('receive-open').click();
   await page.locator('input[type=date]').fill('2028-03-31'); await inputs(page).nth(2).fill('4,5');
   await page.getByTestId('receive-save').click();
+  await expect(page.getByTestId('receive-save')).toBeHidden();
   await tab(page, 'more');
   await page.getByTestId('open-workers').click();
   await page.getByTestId('worker-name').fill('Γιώργος');
