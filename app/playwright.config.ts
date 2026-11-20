@@ -19,9 +19,9 @@ export default defineConfig({
   expect: { timeout: 10_000 },
   projects: [
     // the real build: the live features are OFF
-    { name: 'app', testIgnore: /live-.*\.spec\.ts/, use: { ...device, baseURL: 'http://localhost:4173' } },
+    { name: 'app', testIgnore: /live-.*\.spec\.ts/, use: { ...device, locale: 'el-GR', baseURL: 'http://localhost:4173' } },
     // the e2e build (--mode e2e): sign-in, invitations, the worker's real screens and the sync are ON, against a MOCK backend answered by the tests themselves
-    { name: 'live', testMatch: /live-.*\.spec\.ts/, use: { ...device, baseURL: 'http://localhost:4174', serviceWorkers: 'block' } }, // no service worker: the tests answer the mock backend themselves (WebKit does not route a request a service worker handled)
+    { name: 'live', testMatch: /live-.*\.spec\.ts/, use: { ...device, locale: 'el-GR', baseURL: 'http://localhost:4174', serviceWorkers: 'block' } }, // no service worker: the tests answer the mock backend themselves (WebKit does not route a request a service worker handled)
   ],
   webServer: [
     { command: 'npm run build && npm run preview', url: 'http://localhost:4173', reuseExistingServer: !process.env.CI, timeout: 120000 },

@@ -8,11 +8,11 @@ import { athensToday } from '../plantings/planting';
 import { COMPLETE } from '../worker/remote';
 import { cancelHeld, commitHeld, holdAction, type Held } from '../worker/held';
 import { RPC_PREFIX } from '../repo';
-import { formatDateTime, lang, t, ts, type I18nKey, formatDate } from '../i18n';
+import { formatDate, formatDateTime, lang, t, ts, type I18nKey, LANGS, LANG_META, restoreOwnerLang, setWorkerLang, workerLang } from '../i18n';
 import { UNIT_KEYS } from './LabelUseForm';
 import { formatDose } from '../i18n/format';
 import { known, type Decimal } from '@aloni/rules-core';
-import { putMany } from '../repo';
+import { putLocal, putMany } from '../repo';
 import { isLate } from '../spray/spray';
 import { buildObservation, completeSprayJob, OBSERVATION_KINDS, SKIP_REASONS, skipSprayJob, type ObservationKind, type SkipReason } from '../worker/jobs';
 import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
@@ -27,6 +27,8 @@ import { showHeldUndo } from './Toast';
 import { useRows } from './useRows';
 import { workerView } from './nav';
 
+const LANG_NAME = { el: 'lang.name.el', tr: 'lang.name.tr', en: 'lang.name.en', hi: 'lang.name.hi' } as const;
+const DATA_LINES = ['worker.data.who', 'worker.data.what', 'worker.data.why', 'worker.data.noloc', 'worker.data.rights', 'worker.data.full'] as const;
 /** Language-free symbols: they show in every language, whatever the translation says (a worker who cannot read the words still sees ✓ ✗ 🔒). */
 const MARK = { ok: '✓', no: '✗', lock: '🔒' } as const;
 const HOLD_MS = 10000; // 10 seconds to take it back
@@ -47,6 +49,10 @@ export function WorkerApp() {
   const farm = activeFarm.value;
   const people = workers.rows?.filter((w) => !w.deleted_at && (real ? w.user_id === session.value?.user_id : w.name !== 'Bora')) ?? [];
   const me = people.find((w) => w.id === workerView.value) ?? people[0];
+  const [noticeSeen, setNoticeSeen] = useState(true);
+  useEffect(() => { const w = workerLang(); if (w) lang.value = w; return restoreOwnerLang; }, []);      // the worker's language lives only while this view is open
+  useEffect(() => { void db.settings.get(`notice_seen_at:${text(me?.id)}`).then((r) => setNoticeSeen(r !== undefined)); }, [text(me?.id)]);
+  const ackNotice = async () => { await putLocal(db, `notice_seen_at:${text(me?.id)}`, new Date().toISOString()); setNoticeSeen(true); };
   const [tabId, setTabId] = useState<'jobs' | 'harvest' | 'observe'>('jobs');
   const [lateReason, setLateReason] = useState(''); // «λόγος καθυστέρησης» for a time more than 7 days back
   const [harvestSaved, setHarvestSaved] = useState(false); // the «saved on the phone» line after a harvest record
@@ -108,7 +114,13 @@ export function WorkerApp() {
   return (
     <main data-testid="worker-app">
       {lang.value === 'hi' && <p class="badge warn bi" data-testid="hi-review">{ts('lang.review')}</p>}
+      <div class="seg big" data-testid="worker-lang">{LANGS.map((l) => <button key={l} lang={l} aria-label={t(LANG_NAME[l])} aria-pressed={lang.value === l} onClick={() => setWorkerLang(l)}>{LANG_META[l].label}</button>)}</div>
       <h1>{t('worker.title')}</h1>
+      <details class="card" data-testid="worker-data" open={!noticeSeen}>
+        <summary>{t('worker.data.title')}</summary>
+        {DATA_LINES.map((k) => <p key={k}>{t(k)}</p>)}
+        {!noticeSeen && <button class="btn big" data-testid="worker-data-ack" onClick={() => void ackNotice()}>{t('worker.data.ack')}</button>}
+      </details>
       {!real && <DemoBanner />}
       {!real && <p class="muted">{t('worker.demoNote')}</p>}
       {!real && <h2>{t('worker.choose')}</h2>}
