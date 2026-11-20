@@ -39,6 +39,14 @@ describe('e-mail code sign-in', () => {
     expect(saved[0]?.access_token).toBe('a1');
     expect(await tokenFor(E, sess, sess.expires_at, save, fake({}, false).f)).toBeUndefined();
     expect(saved[1]).toBeUndefined();
+    // a flaky connection or a server hiccup must NOT sign the worker out (refresh tokens are single-use, but only a refusal from the auth server proves this one is dead)
+    const kept: Array<Session | undefined> = [];
+    const keep = async (x: Session | undefined) => { kept.push(x); };
+    const boom = (async () => { throw new TypeError('network'); }) as unknown as typeof fetch;
+    const f503 = (async () => ({ ok: false, status: 503, json: async () => ({}) })) as unknown as typeof fetch;
+    expect(await tokenFor(E, sess, sess.expires_at, keep, boom)).toBeUndefined();
+    expect(await tokenFor(E, sess, sess.expires_at, keep, f503)).toBeUndefined();
+    expect(kept).toEqual([]);                                                // nothing was stored: the session is still there for the next try
     expect(await tokenFor(E, undefined, 0, save)).toBeUndefined();
     await expect(refreshSession(E, sess, 0, fake({}, false).f)).rejects.toThrow('HTTP 401');
   });

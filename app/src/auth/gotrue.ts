@@ -32,8 +32,14 @@ export async function verifyCode(e: Endpoint, email: string, code: string, now: 
 /** A fresh token from the refresh token (they are single-use: the answer carries the next one). */
 export async function refreshSession(e: Endpoint, s: Session, now: number, f: Fetch = fetch): Promise<Session> {
   const res = await f(`${e.url}/auth/v1/token?grant_type=refresh_token`, { method: 'POST', headers: headers(e), body: JSON.stringify({ refresh_token: s.refresh_token }) });
-  if (!res.ok) throw new Error(`sign-in: HTTP ${res.status}`);
+  if (!res.ok) throw new RefreshRefused(res.status);
   return toSession((await res.json()) as Record<string, unknown>, now);
+}
+
+/** The auth server answered, and the answer was no. Only 400/401/403 prove the refresh token is dead; a 5xx, 429 or a lost connection proves nothing. */
+export class RefreshRefused extends Error {
+  constructor(readonly status: number) { super(`sign-in: HTTP ${status}`); }
+  get dead(): boolean { return this.status === 400 || this.status === 401 || this.status === 403; }
 }
 
 /** The token to use now: the stored one while it has more than a minute left, else a refreshed one (stored again). undefined = not signed in. */
@@ -41,7 +47,8 @@ export const MIN_LEFT_MS = 60_000;
 export async function tokenFor(e: Endpoint, s: Session | undefined, now: number, save: (s: Session | undefined) => Promise<void>, f: Fetch = fetch): Promise<string | undefined> {
   if (!s) return undefined;
   if (s.expires_at - now > MIN_LEFT_MS) return s.access_token;
-  try { const next = await refreshSession(e, s, now, f); await save(next); return next.access_token; } catch { await save(undefined); return undefined; }
+  try { const next = await refreshSession(e, s, now, f); await save(next); return next.access_token; }
+  catch (err) { if (err instanceof RefreshRefused && err.dead) await save(undefined); return undefined; }   // a flaky field connection must not sign the worker out: only the auth server's «no» does
 }
 
 /** After a sign-in: claims any open invitation for this address (a worker's first sign-in). «No invitation» is normal for an owner and is not an error. */

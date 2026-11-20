@@ -85,6 +85,7 @@ describe('queued server calls (the worker\'s «Έγινε»)', () => {
     expect(await mk(400, { code: '23514', message: 'locked' }).rpc('complete_spray_job', {})).toEqual({ ok: false, code: '23514', reason: 'locked' });
     await expect(mk(503, {}).rpc('complete_spray_job', {})).rejects.toThrow('HTTP 503');
     await expect(mk(429, {}).rpc('complete_spray_job', {})).rejects.toThrow('HTTP 429');
+    await expect(mk(401, { code: 'PGRST301', message: 'JWT expired' }).rpc('complete_spray_job', {})).rejects.toThrow('HTTP 401');   // an expired token is not a refusal of the record: it is kept and retried with a fresh one
   });
 });
 
