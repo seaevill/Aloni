@@ -2,6 +2,9 @@ import { expect, test } from '@playwright/test';
 import { setup, closeHistory, fillStart } from './helpers/farm';
 import { iphone } from './helpers/iphone';
 
+// a safety test is never retried: a failure that comes and goes is a real race, not noise (see playwright.config.ts)
+test.describe.configure({ retries: 0 });
+
 // T6: the app never chooses for the owner — no dose is filled in, a quantity is typed or flagged «Δεν ξέρω», a spray cannot be PLANNED for a crop without label data.
 test('the dose stays empty until the owner taps «Ίδια με την ετικέτα»; an unknown quantity is flagged; a hint shows the total as text only', async ({ page }) => {
   const errors = await iphone(page);

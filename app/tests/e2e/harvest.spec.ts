@@ -2,6 +2,9 @@ import { expect, test, type Page } from '@playwright/test';
 import { setup, spray, openHistory, closeHistory } from './helpers/farm';
 import { iphone } from './helpers/iphone';
 
+// a safety test is never retried: a failure that comes and goes is a real race, not noise (see playwright.config.ts)
+test.describe.configure({ retries: 0 });
+
 /** «YYYY-MM-DDTHH:mm» in the phone's clock, `days` from now. */
 const at = (page: Page, days: number) => page.evaluate((n) => new Date(Date.now() - new Date().getTimezoneOffset() * 60000 + n * 86400000).toISOString().replace(/:\d{2}\.\d{3}Z$/, ''), days);
 

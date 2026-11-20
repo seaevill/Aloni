@@ -1,6 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
 import { iphone } from './helpers/iphone';
 
+// a safety test is never retried: a failure that comes and goes is a real race, not noise (see playwright.config.ts)
+test.describe.configure({ retries: 0 });
+
 // «Saved» means saved (T4): the worker's action is kept at the tap and written at the next start even if the app is closed inside the 10 seconds; «Αναίρεση» leaves nothing.
 const demoWorker = async (page: Page) => {
   await iphone(page);
