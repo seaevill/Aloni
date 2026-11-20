@@ -89,6 +89,22 @@ describe('queued server calls (the worker\'s «Έγινε»)', () => {
   });
 });
 
+describe('an expired token on a queued call', () => {
+  it('leaves the worker\'s «Έγινε» pending (not rejected) and the next round with a fresh token delivers it, once', async () => {
+    const db = await newDb();
+    await putRpc(db, F, 'complete_spray_job', 'job9', { p_job: 'job9', p_ended_at: '2026-11-20T08:00:00Z' });
+    let status = 401; let hits = 0;
+    const http = httpTransport({ url: 'https://x.example', apiKey: 'pub', token: async () => 't' }, (async () => { hits++; return { ok: status < 400, status, json: async () => ({ code: 'PGRST301', message: 'JWT expired' }) }; }) as unknown as typeof fetch);
+    const tr = server({ rpc: http.rpc });
+    await expect(push(db, tr, F)).rejects.toThrow('HTTP 401');
+    expect((await db.outbox.toArray()).find((o) => o.row_id === 'job9')).toMatchObject({ status: 'pending' });
+    status = 200;                                                             // the next round has a fresh token
+    expect(await push(db, tr, F)).toEqual({ sent: 1, rejected: 0 });
+    expect((await db.outbox.toArray()).find((o) => o.row_id === 'job9')).toMatchObject({ status: 'acked' });
+    expect(hits).toBe(2);
+  });
+});
+
 describe('the server comes back to the phone', () => {
   const answer = (rows: PullAnswer['rows'], more = false, reset = false): PullAnswer => ({ rows, more, reset, cursor: { x: '9', s: rows.length, g: 'g1', v: 'owner' } });
   const row = (table: string, r: Row, seq = 1) => ({ table, x: '5', seq, row: r });
