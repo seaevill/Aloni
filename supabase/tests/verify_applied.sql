@@ -7,7 +7,7 @@
 -- Read-only check to run in the Supabase SQL Editor AFTER the migrations (and in CI after the tests). It changes nothing.
 -- Every row it returns is a PROBLEM; the last line says OK only when there is none.
 with expected_tables(t) as (values ('farms'),('profiles'),('farm_members'),('parcels'),('crops'),('plantings'),('products'),('label_uses'),('soil_tests'),('water_tests'),('stock_lots'),('stock_movements'),
-  ('jobs'),('job_plantings'),('job_spray'),('job_harvest'),('observations'),('workers'),('media'),('farm_settings'),('applied_ops'),('audit_log'),('label_approvals')),
+  ('jobs'),('job_plantings'),('job_spray'),('job_harvest'),('observations'),('workers'),('media'),('farm_settings'),('applied_ops'),('audit_log'),('label_approvals'),('farm_creations')),
 problems as (
   select 'table missing: ' || t as problem from expected_tables where not exists (select 1 from pg_tables where schemaname = 'public' and tablename = t)
   union all select 'RLS is OFF on ' || tablename from pg_tables where schemaname = 'public' and not rowsecurity and tablename <> 'spatial_ref_sys'   -- spatial_ref_sys belongs to PostGIS (on Supabase it lives in the extensions schema)
