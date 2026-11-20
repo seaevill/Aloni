@@ -682,7 +682,6 @@
   "job.plantings": "Püskürtülecek ekimler",
   "job.worker": "Kim püskürtecek",
   "job.dose": "Uygulanacak doz",
-  "job.planned.line": "{product} · {worker} · {date}",
   "nav.leave": "Kaydetmeden çıkayım mı?",
   "nav.leave.stay": "Kalıyorum",
   "nav.leave.go": "Çıkıyorum"

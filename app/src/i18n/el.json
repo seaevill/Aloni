@@ -682,7 +682,6 @@
   "job.plantings": "Φυτεύσεις για ψεκασμό",
   "job.worker": "Ποιος θα ψεκάσει",
   "job.dose": "Δόση προς εφαρμογή",
-  "job.planned.line": "{product} · {worker} · {date}",
   "nav.leave": "Να φύγω χωρίς αποθήκευση;",
   "nav.leave.stay": "Μένω",
   "nav.leave.go": "Φεύγω"
