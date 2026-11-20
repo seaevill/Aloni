@@ -12,6 +12,7 @@ create table label_approvals (
   id uuid primary key default gen_random_uuid(),
   farm_id uuid not null references farms(id) on delete cascade,
   label_use_id uuid not null references label_uses(id),
+  label_seq bigint not null,                           -- the label's server_seq the approver LOOKED AT: an approval covers exactly that version (a label edited since is refused)
   approver_name text not null check (length(btrim(approver_name, E' \t\r\n\u200b\u00a0')) > 0 and length(approver_name) <= 120),
   approved_on date not null,
   note text check (note is null or length(note) <= 2000),
@@ -46,6 +47,7 @@ begin
   select * into lu from public.label_uses where id = new.label_use_id and farm_id = new.farm_id for update;      -- the lock also serialises two approvals of one label
   if not found or lu.deleted_at is not null then raise exception 'the label use is not a live label of this farm' using errcode = 'check_violation'; end if;
   if lu.sign_off_by is not null then raise exception 'this label use is already signed: a change is a NEW label use with its own approval' using errcode = 'check_violation'; end if;
+  if new.label_seq is distinct from lu.server_seq then raise exception 'the label use changed since it was read (version % now, approval names %): read it again and approve what you see', lu.server_seq, new.label_seq using errcode = 'check_violation'; end if;
   if lu.dose_kind is null or lu.dose_unit is null or lu.dose_min is null or (lu.dose_kind = 'range' and lu.dose_max is null) or lu.phi_days is null or lu.rei_hours is null or lu.max_apps is null then
     raise exception 'an incomplete label use cannot be approved (kind, unit, dose, PHI, REI and max applications are all needed)' using errcode = 'check_violation';
   end if;
