@@ -7,11 +7,11 @@
 -- Read-only check to run in the Supabase SQL Editor AFTER the migrations (and in CI after the tests). It changes nothing.
 -- Every row it returns is a PROBLEM; the last line says OK only when there is none.
 with expected_tables(t) as (values ('farms'),('profiles'),('farm_members'),('parcels'),('crops'),('plantings'),('products'),('label_uses'),('soil_tests'),('water_tests'),('stock_lots'),('stock_movements'),
-  ('jobs'),('job_plantings'),('job_spray'),('job_harvest'),('observations'),('workers'),('media'),('farm_settings'),('applied_ops'),('audit_log')),
+  ('jobs'),('job_plantings'),('job_spray'),('job_harvest'),('observations'),('workers'),('media'),('farm_settings'),('applied_ops'),('audit_log'),('farm_creations')),
 problems as (
   select 'table missing: ' || t as problem from expected_tables where not exists (select 1 from pg_tables where schemaname = 'public' and tablename = t)
   union all select 'RLS is OFF on ' || tablename from pg_tables where schemaname = 'public' and not rowsecurity and tablename <> 'spatial_ref_sys'   -- spatial_ref_sys belongs to PostGIS (on Supabase it lives in the extensions schema)
-  union all select 'RLS on but no policy: ' || c.relname from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relkind = 'r' and c.relrowsecurity and c.relname <> 'sync_meta' and not exists (select 1 from pg_policy p where p.polrelid = c.oid)   -- sync_meta is closed on purpose: only the functions read it
+  union all select 'RLS on but no policy: ' || c.relname from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relkind = 'r' and c.relrowsecurity and c.relname not in ('sync_meta','farm_creations') and not exists (select 1 from pg_policy p where p.polrelid = c.oid)   -- sync_meta is closed on purpose: only the functions read it
   union all select 'callable by anon/PUBLIC: ' || p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
     where n.nspname in ('public', 'private') and p.proname in ('apply_ops', 'apply_one', 'pull', 'verify_spray_chain', 'complete_spray_job', 'worker_sees_spray', 'has_role', 'accept_invitation', 'controller_complete', 'server_identity', 'bump_sync_generation', 'sync_generation', 'sync_visibility')
       and (has_function_privilege('public', p.oid, 'execute') or (exists (select 1 from pg_roles where rolname = 'anon') and has_function_privilege('anon', p.oid, 'execute')))
