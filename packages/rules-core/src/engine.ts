@@ -1,5 +1,6 @@
 import { frostNights, type FrostFacts, type FrostHit } from './frost';
 import { known, type Known } from './known';
+import { salinityReading, type SalinityFacts } from './salinity';
 import { stockHits, type StockFacts } from './stock';
 import type { SignedLabelUse } from './label';
 import { paramsValid, summariseDays, type Hour, type SprayParams, type Sun } from './sprayWindow';
@@ -32,6 +33,7 @@ export interface Snapshot {
   frost?: FrostFacts;
   /** Shelf, planned uses and the STOCK thresholds. */
   stock?: StockFacts;
+  salinity?: SalinityFacts;
 }
 
 const blank = (o: Pick<Output, 'rule_id' | 'kind' | 'category'> & Partial<Output>): Output => ({ notify: false, parcel_ids: [], planting_ids: [], product_ids: [], crop_ids: [], values: {}, vetoes: [], ...o });
@@ -180,6 +182,29 @@ function frost(s: Snapshot): Output[] {
   return out;
 }
 
+function salinity(s: Snapshot): Output[] {
+  const facts = s.salinity;
+  if (!facts) return [];
+  return facts.samples.flatMap((sample) => {
+    const base = { rule_id: 'SALT', parcel_ids: [sample.parcelId] };
+    const inputs = { water_EC_dS_m: sample.waterEcDsM, sampled_on: sample.sampledOn, coastal_well: sample.coastalWell };
+    if (s.ruleStatus.SALT !== 'signed') {
+      return [blank({ ...base, kind: 'info', category: 'salinity_inputs', values: { ...inputs, badge: 'not_signed_off' } })];
+    }
+    const reading = salinityReading(sample, s.asOf, facts.retestMonths);
+    if (!reading) {
+      return [blank({ ...base, kind: 'info', category: 'salinity_unknown', values: { ...inputs, badge: 'unknown' } })];
+    }
+    const sensitive = s.plantings.filter((p) => p.parcelId === sample.parcelId && facts.sensitiveCrops.includes(p.cropId));
+    const values = { ...inputs, water_class: reading.waterClass, retest_prompt: reading.retest, sensitive_planting_ids: sensitive.map((p) => p.id) };
+    if (reading.waterClass === 'none' || sensitive.length === 0) {
+      return [blank({ ...base, kind: 'info', category: 'salinity_reading', confidence: reading.confidence, values })];
+    }
+    return [blank({ ...base, kind: 'alert', category: 'salinity', confidence: reading.confidence,
+      severity: reading.waterClass === 'severe' ? 'medium' : 'low', planting_ids: sensitive.map((p) => p.id), values })];
+  });
+}
+
 /** STOCK: low stock before the next planned spray (a block when it is not even enough), expired and soon-to-expire lots. Needs signed thresholds; never notifies yet. */
 function stock(s: Snapshot): Output[] {
   if (s.ruleStatus.STOCK !== 'signed' || !s.stock) return [];
@@ -198,5 +223,5 @@ function infoOnly(s: Snapshot): Output[] {
 export function runRules(s: Snapshot): Output[] {
   // no readable «now»: everything is blocked, said out loud; never an empty list that reads as «all clear»
   if (!parseInstant(s.asOf).known) return [blank({ rule_id: 'ENGINE', kind: 'block', category: 'now_unreadable', severity: 'high', vetoes: [{ by: 'ENGINE', vetoed: 'everything', reason: 'unreadable_now' }] })];
-  return [...phi(s), ...rei(s), ...reg(s), ...rot(s), ...sprayWindowClosed(s), ...frost(s), ...stock(s), ...infoOnly(s)];
+  return [...phi(s), ...rei(s), ...reg(s), ...rot(s), ...sprayWindowClosed(s), ...frost(s), ...salinity(s), ...stock(s), ...infoOnly(s)];
 }
