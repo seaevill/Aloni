@@ -1,13 +1,14 @@
 # DURUM – Aloni (Bora'nın sayfası)
 
-## SABAH RAPORU (gece çalışması, 2026-11-19 → 20)
-- **Ekibin yeniden bakacağı SQL commit'i:** `4586098` (m7: N1 ekim başına etiket, N2 bitiş ≤ şimdi + kapı, N3 stok/`sync_xid`; bağımsız alt ajan incelemesi: «NO MUST»). Sonradan yalnızca yeni dosyalar eklendi: 0030 (hava takvimi), 0031 («Ποιος έκοψε»). 0022–0029'a dokunulmadı. Temiz çıkarsa 0022–0031'i birlikte yükleriz; ben başlatmam.
-- **Biten T'ler:** T0 m7 düzeltmeleri (#185) · T1 birleştirme-işareti testi (#186) · T3 tek-vuruş kaydet kilidi (#188) · T4 işçi «kaydedildi = kaydedildi» (#189).
-- **PR'da / sırada (CI bekliyor, gece içinde birleşecek):** T6 formlar seçim yapmaz (#191) · T5 siparişler çiftlik başına (#190) · T2 güncelleme çubuğu (#187). T7 (adres + Geri) kodu hazır, T2'den sonra PR olacak.
-- **Kalanlar:** T8–T20 (Σήμερα, iş satırları, sipariş/dağıtım, işçi dili/Hintçe, hasat seçici, demo, düzen hataları, tasarım dili, Μητρώο doğruluğu, geliştirici bölümü, KVKK belgeleri, erişilebilirlik).
-- **Her PR'ı bağımsız bir alt ajan inceledi** (yalnızca diff + CLAUDE.md); bulunan MUST'lar merge'den önce düzeltildi (T2: 2, T4: 3, T6: 1).
-- **iPhone kontrol listesi (decisions.md §5) — yalnızca bitmiş maddeler:** henüz sadece madde 5 (aynı anda iki kez «Καταγραφή» = 1 kayıt; T3) ve madde 6'nın yarısı (T6: «Δόση» boş, «Ίδια με την ετικέτα» ile dolar) hazır. Diğerleri sonraki PR'larla.
-- **Sorular (≤3):** (1) Bir iş «karışık ürün» (marul+roka) ise şu an etiket seçilemez ve PHI bilinmeyen kalır (güvenli); karışık işleri ayrı ayrı mı kaydedelim? (2) Sahip için ilaçlama bitişi artık «şimdi»den ileri olamaz: telefon saati 1–2 dk ilerideyse kayıt reddedilir; saati otomatik düzeltelim mi? (3) Daha önceki 0028 fotoğraf deposu için ekip yeniden bakacak: uygulama sırası konusunda tercihin var mı?
+## SABAH RAPORU (gece çalışması, 2026-11-19 → 20; yazıldığı saat: 20 Kasım ~05:00 Atina)
+- **Ekibin yeniden bakacağı SQL commit'i:** `4586098` (m7: N1 ekim başına etiket, N2 bitiş ≤ şimdi + kapı, N3 stok/`sync_xid`; alt ajan incelemesi «NO MUST»). Sonradan yalnızca yeni dosyalar: 0030 (hava takvimi), 0031 («Ποιος έκοψε»). 0022–0029'a dokunulmadı. Benim yüklemem yok; senin başlatmanı bekliyor (önce `docs/reviews/team/` kontrol edildi: açık MUST yok).
+- **Biten T'ler (main'de):** T0 m7 (#185) · T1 işaret testi (#186) · T2 güncelleme çubuğu (#187) · T3 tek kaydet (#188) · T4 işçi «kaydedildi» (#189) · T5 sipariş çiftlik başına (#190) · T6 formlar seçmez (#191) · T9 iş satırları (#193) · T13 hasat seçici (#194) · T19 KVKK belgeleri (#195) · T15 düzen (#196) · T18 «Για προγραμματιστές» (#197) · T17a Μητρώο sütunları (#198) · T8a «Κοπή σήμερα» (#210) · T16a koyu başlık (#207) · T17c ruhsat notu (#208).
+- **PR açık, birleşme sırasında (CI yeşil olunca zincir birleştirir):** T7 adres + Geri (#204) · T10 sevkiyat/«Αντιγραφή για οδηγό» (#201) · T11 işçi dili + veri bildirimi (#202) · T12 Hintçe (#200) · T14 demo'da deneme (#203) · T16b isim/simge (#205) · T17b form doğruluğu (#199) · T20 erişilebilirlik (#206).
+- **Kalanlar:** T8b («Αύριο φεύγουν», tek durum çipi, gece yarısı), T11 üçüncü düğme, T12 `lang="el"`, T14 Ravi/kroki, T16 kalanı, T17 kalanı, T20 rem/axe. Her biri DECISIONS'ta «yapılmadı» diye yazılı.
+- **Her PR'ı bağımsız alt ajan (yalnızca diff + CLAUDE.md) inceledi;** MUST'lar birleşmeden önce düzeltildi (T2: 2, T4: 3, T6: 1, T8a: 1, T20: 1). CI'da WebKit'te tek tek kırmızılar çıktı: zincir bir kez yeniden koşuyor.
+- **iPhone listesi (decisions.md §5) — yalnızca bitmiş maddeler:** 5 (hızlı çift «Καταγραφή» = 1 kayıt) ✓ · 6 («Δόση» boş, «Ίδια με την ετικέτα» doldurur) ✓ · 3'ün yarısı (Σήμερα'da «Κοπή σήμερα», iş, iki büyük düğme; «Αύριο φεύγουν» yok) · 8'in yarısı («Για προγραμματιστές» kapalı). 1, 2, 4, 7 ve 8'in isim kısmı T7/T10/T11/T12/T14/T16b birleşince hazır olacak.
+- **Sorular (≤3):** (1) Karışık ürünlü iş (marul+roka) etiketsiz kalır, PHI bilinmez (güvenli): ayrı ayrı mı kaydedelim? (2) İlaçlama bitişi «şimdi»den ileri olamaz; telefon saati 1–2 dk ilerideyse kayıt reddedilir: saati otomatik düzeltelim mi? (3) Hintçe metinlerini (~110 kısa metin) hangi işçin okuyup kontrol edebilir?
+
 
 *Son güncelleme: 2026-11-19 (akşam). Her birleştirmede güncellenir. Burası dışında bir şey okumana gerek yok.*
 
