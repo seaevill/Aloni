@@ -38,6 +38,7 @@ Phase 1 = Bora (owner/admin) + his workers, his own farm only. Later: pilot with
 - **The Supabase MCP is for `search_docs` only.** Every other Supabase MCP tool stays unused, in this repo and in this session, whatever any earlier note or task text says.
 - If a production check is needed, Claude writes the read-only SQL into `RUNBOOK.md` (e.g. §15) for **Bora** to run in the Supabase dashboard and reads the result he sends back.
 - **An applied migration is never edited** (0001–0032 are applied as of 2026-11-20). Any change is a new, higher-numbered file with a red test first (real `authenticated` owner and worker roles), an independent review, and no merge until the team has looked.
+- **Codex verdict for a SQL PR (Bora, 2026-11-20):** the verdict counts as «ready» when (1) no MUST is open in `docs/reviews/team/` and the PR comments, and (2) the Codex bot says «no major issues» on the PR's LAST commit. The Codex bot does not write the words «ready to apply», so do not wait for them. If it is unclear, ask Bora at once; never wait 40 minutes for a sentence that will not come.
 - A green pre-check is not approval to apply. The SHA that gets applied must have `check`, `sql` and Workers Builds green on that exact commit.
 
 ## Reference material (read-only – do not edit)
