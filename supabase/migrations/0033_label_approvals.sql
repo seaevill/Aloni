@@ -12,22 +12,24 @@ create table label_approvals (
   id uuid primary key default gen_random_uuid(),
   farm_id uuid not null references farms(id) on delete cascade,
   label_use_id uuid not null references label_uses(id),
-  approver_name text not null check (length(btrim(approver_name)) > 0 and length(approver_name) <= 120),
+  approver_name text not null check (length(btrim(approver_name, E' \t\r\n\u200b\u00a0')) > 0 and length(approver_name) <= 120),
   approved_on date not null,
   note text check (note is null or length(note) <= 2000),
   photo_id uuid references media(id),
   fingerprint text not null check (length(btrim(fingerprint)) > 0),
+  label_snapshot jsonb not null,                       -- the label's own values AT approval, written by the server (what was approved stays readable even after a superseding label)
   created_at timestamptz not null default now(),
   created_by uuid default auth.uid(),
   server_seq bigint
 );
-create index label_approvals_label on label_approvals (farm_id, label_use_id);
+create unique index label_approvals_one_per_label on label_approvals (label_use_id);      -- a label is approved once; a change is a NEW label use (supersedes_id) with its own approval
 alter table label_approvals enable row level security;
 create policy label_approvals_select on label_approvals for select to authenticated using (private.has_role(farm_id, array['owner']));
 create policy label_approvals_insert on label_approvals for insert to authenticated with check (private.has_role(farm_id, array['owner']));
 create trigger label_approvals_seq before insert on label_approvals for each row execute function set_server_seq();
 create trigger label_approvals_audit after insert or update or delete on label_approvals for each row execute function write_audit();
 create trigger label_approvals_append_only before update or delete on label_approvals for each row execute function forbid_change();
+create trigger label_approvals_no_truncate before truncate on label_approvals for each statement execute function forbid_change();
 do $$ begin
   if exists (select 1 from pg_roles where rolname = 'authenticated') then revoke all on label_approvals from authenticated; grant select, insert on label_approvals to authenticated; end if;
   if exists (select 1 from pg_roles where rolname = 'anon') then revoke all on label_approvals from anon; end if;
@@ -37,24 +39,32 @@ end $$;
 create function check_label_approval() returns trigger language plpgsql security definer set search_path = public, private, pg_temp as $$
 declare lu record;
 begin
-  select * into lu from label_uses where id = new.label_use_id and farm_id = new.farm_id for update;
+  -- the role check comes FIRST: a BEFORE trigger runs before the row-level-security check, and a worker or a stranger must not learn anything about a label from our messages
+  if auth.uid() is not null and not private.has_role(new.farm_id, array['owner']) then raise exception 'new row violates row-level security policy for table "label_approvals"' using errcode = 'insufficient_privilege'; end if;
+  -- provenance is written by the server, never taken from the request
+  new.created_by := auth.uid(); new.created_at := now();
+  select * into lu from public.label_uses where id = new.label_use_id and farm_id = new.farm_id for update;      -- the lock also serialises two approvals of one label
   if not found or lu.deleted_at is not null then raise exception 'the label use is not a live label of this farm' using errcode = 'check_violation'; end if;
+  if lu.sign_off_by is not null then raise exception 'this label use is already signed: a change is a NEW label use with its own approval' using errcode = 'check_violation'; end if;
   if lu.dose_kind is null or lu.dose_unit is null or lu.dose_min is null or (lu.dose_kind = 'range' and lu.dose_max is null) or lu.phi_days is null or lu.rei_hours is null or lu.max_apps is null then
     raise exception 'an incomplete label use cannot be approved (kind, unit, dose, PHI, REI and max applications are all needed)' using errcode = 'check_violation';
   end if;
   if new.approved_on > (now() at time zone 'Europe/Athens')::date then raise exception 'the approval date cannot be in the future' using errcode = 'check_violation'; end if;
-  if new.photo_id is not null and not exists (select 1 from media m where m.id = new.photo_id and m.farm_id = new.farm_id) then
-    raise exception 'the photo is not a photo of this farm' using errcode = 'check_violation';
+  if new.approved_on < date '2020-01-01' then raise exception 'the approval date is implausibly old' using errcode = 'check_violation'; end if;
+  if new.photo_id is not null and not exists (select 1 from public.media m where m.id = new.photo_id and m.farm_id = new.farm_id and m.job_id is null) then
+    raise exception 'the photo is not a photo of this farm (or it belongs to a job)' using errcode = 'check_violation';
   end if;
+  new.label_snapshot := to_jsonb(lu) - array['created_at', 'updated_at', 'server_seq', 'sync_xid', 'device_id', 'actor_id'];
   return new;
 end $$;
 create trigger label_approvals_check before insert on label_approvals for each row execute function check_label_approval();
 
--- the approval signs the label in the same step (a label that is already signed keeps its signature; the ledger still gets the row)
+-- the approval signs the label in the same step (a label that is already signed is REFUSED above, so ledger and label never disagree)
 create function apply_label_approval() returns trigger language plpgsql security definer set search_path = public, private, pg_temp as $$
 begin
   update label_uses set sign_off_by = new.approver_name, sign_off_on = new.approved_on, sign_off_fingerprint = new.fingerprint
    where id = new.label_use_id and farm_id = new.farm_id and sign_off_by is null;
+  if not found then raise exception 'the label use could not be signed' using errcode = 'check_violation'; end if;
   return new;
 end $$;
 create trigger label_approvals_apply after insert on label_approvals for each row execute function apply_label_approval();
