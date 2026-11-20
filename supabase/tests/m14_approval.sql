@@ -34,11 +34,11 @@ end $$;
 do $$
 declare f constant uuid := '11111111-1111-1111-1111-111111111111'; l1 constant uuid := 'cccccccc-1111-0000-0000-0000000014a1';
 begin
-  begin insert into label_approvals(farm_id,label_use_id,label_seq,approver_name,approved_on,fingerprint) values (f,l1,(select server_seq from label_uses where id = l1),'   ',current_date,'fp'); raise exception '(A3) a blank name was accepted';
+  begin insert into label_approvals(farm_id,label_use_id,label_seq,approver_name,approved_on,fingerprint) values (f,l1,(select server_seq from label_uses where id = l1),'   ',current_date,private.label_fingerprint((select lbl from label_uses lbl where lbl.id = l1))); raise exception '(A3) a blank name was accepted';
   exception when check_violation then if sqlerrm not like '%approver_name%' then raise; end if; end;
-  begin insert into label_approvals(farm_id,label_use_id,label_seq,approver_name,approved_on,fingerprint) values (f,l1,(select server_seq from label_uses where id = l1),E'\t \n',current_date,'fp'); raise exception '(A3) a tab/newline-only name was accepted';
+  begin insert into label_approvals(farm_id,label_use_id,label_seq,approver_name,approved_on,fingerprint) values (f,l1,(select server_seq from label_uses where id = l1),E'\t \n',current_date,private.label_fingerprint((select lbl from label_uses lbl where lbl.id = l1))); raise exception '(A3) a tab/newline-only name was accepted';
   exception when check_violation then if sqlerrm not like '%approver_name%' then raise; end if; end;
-  begin insert into label_approvals(farm_id,label_use_id,label_seq,approver_name,approved_on,fingerprint) values (f,l1,(select server_seq from label_uses where id = l1),U&'\200B','2026-01-01','fp'); raise exception '(A3) a zero-width name was accepted';
+  begin insert into label_approvals(farm_id,label_use_id,label_seq,approver_name,approved_on,fingerprint) values (f,l1,(select server_seq from label_uses where id = l1),U&'\200B','2026-01-01',private.label_fingerprint((select lbl from label_uses lbl where lbl.id = l1))); raise exception '(A3) a zero-width name was accepted';
   exception when check_violation then if sqlerrm not like '%approver_name%' then raise; end if; end;
   begin insert into label_approvals(farm_id,label_use_id,label_seq,approver_name,approved_on,fingerprint) values (f,l1,(select server_seq from label_uses where id = l1),'Agronomist',current_date + 3,'fp'); raise exception '(A3) a future date was accepted';
   exception when check_violation then if sqlerrm not like '%in the future%' then raise; end if; end;
@@ -64,9 +64,9 @@ do $$
 declare f constant uuid := '11111111-1111-1111-1111-111111111111'; l record; a record;
 begin
   insert into label_approvals(farm_id,label_use_id,label_seq,approver_name,approved_on,fingerprint,note,photo_id,created_by,created_at)
-    values (f,'cccccccc-1111-0000-0000-0000000014a1',(select server_seq from label_uses where id = 'cccccccc-1111-0000-0000-0000000014a1'),'Agronomist Test',current_date,'fp-a1','seen at the shop','dddddddd-0000-0000-0000-0000000014f1','00000000-0000-0000-0000-0000000000b2','2001-01-01');
+    values (f,'cccccccc-1111-0000-0000-0000000014a1',(select server_seq from label_uses where id = 'cccccccc-1111-0000-0000-0000000014a1'),'Agronomist Test',current_date,private.label_fingerprint((select lbl from label_uses lbl where lbl.id = 'cccccccc-1111-0000-0000-0000000014a1')),'seen at the shop','dddddddd-0000-0000-0000-0000000014f1','00000000-0000-0000-0000-0000000000b2','2001-01-01');
   select sign_off_by, sign_off_on, sign_off_fingerprint into l from label_uses where id = 'cccccccc-1111-0000-0000-0000000014a1';
-  if l.sign_off_by is distinct from 'Agronomist Test' or l.sign_off_on is distinct from current_date or l.sign_off_fingerprint is distinct from 'fp-a1' then raise exception '(A4) the label did not become signed with the approval''s values: %', l; end if;
+  if l.sign_off_by is distinct from 'Agronomist Test' or l.sign_off_on is distinct from current_date or l.sign_off_fingerprint is distinct from private.label_fingerprint((select lbl from label_uses lbl where lbl.id = 'cccccccc-1111-0000-0000-0000000014a1')) then raise exception '(A4) the label did not become signed with the approval''s values: %', l; end if;
   select * into a from label_approvals where label_use_id = 'cccccccc-1111-0000-0000-0000000014a1';
   if a.note is distinct from 'seen at the shop' or a.photo_id is null then raise exception '(A4) note or photo lost'; end if;
   if a.created_by is distinct from '00000000-0000-0000-0000-0000000000a1' then raise exception '(A4) created_by was forged: %', a.created_by; end if;
@@ -86,11 +86,39 @@ begin
   exception when check_violation then if sqlerrm not like '%changed since it was read%' then raise; end if; end;
   if (select count(*) from label_approvals) <> n then raise exception '(A4b) the stale approval left a ledger row'; end if;
   if (select sign_off_by from label_uses where id = l5) is not null then raise exception '(A4b) the stale approval signed the label'; end if;
-  insert into label_approvals(farm_id,label_use_id,label_seq,approver_name,approved_on,fingerprint) values (f,l5,(select server_seq from label_uses where id = l5),'Agronomist Test',current_date,'fp-new');
+  insert into label_approvals(farm_id,label_use_id,label_seq,approver_name,approved_on,fingerprint) values (f,l5,(select server_seq from label_uses where id = l5),'Agronomist Test',current_date,private.label_fingerprint((select lbl from label_uses lbl where lbl.id = l5)));
   if (select (label_snapshot->>'phi_days') from label_approvals where label_use_id = l5) <> '9' then raise exception '(A4b) the snapshot is not the version that was approved'; end if;
-  if (select sign_off_fingerprint from label_uses where id = l5) <> 'fp-new' then raise exception '(A4b) the label carries the wrong signature'; end if;
+  if (select sign_off_fingerprint from label_uses where id = l5) is distinct from private.label_fingerprint((select lbl from label_uses lbl where lbl.id = l5)) then raise exception '(A4b) the label carries the wrong signature'; end if;
 end $$;
 reset role; set test.uid = '';
+-- A4c: the CURRENT version with a fingerprint the phone would reject is refused, and nothing changes (Codex M2: the server and the phone agree on what is signed)
+\set golden `cat supabase/tests/label-fingerprint.json`
+create temp table golden(j jsonb); insert into golden values (:'golden');
+insert into label_uses(id,farm_id,product_id,crop_id,target,dose_kind,dose_unit,dose_min,phi_days,rei_hours,max_apps) values ('cccccccc-1111-0000-0000-0000000014a6','11111111-1111-1111-1111-111111111111','aaaaaaaa-0000-0000-0000-0000000014a1','cccccccc-0000-0000-0000-0000000014a1','m14f','single','ml/str',0.025,7,24,3);
+set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; l6 constant uuid := 'cccccccc-1111-0000-0000-0000000014a6'; n int := (select count(*) from label_approvals);
+begin
+  begin insert into label_approvals(farm_id,label_use_id,label_seq,approver_name,approved_on,fingerprint) values (f,l6,(select server_seq from label_uses where id = l6),'Agronomist Test',current_date,'fp-a1'); raise exception '(A4c) an arbitrary fingerprint signed the current version';
+  exception when check_violation then if sqlerrm not like '%fingerprint does not match%' then raise; end if; end;
+  if (select count(*) from label_approvals) <> n or (select sign_off_by from label_uses where id = l6) is not null then raise exception '(A4c) the refused approval changed something'; end if;
+end $$;
+reset role; set test.uid = '';
+-- A4d: the server's fingerprint is the phone's, byte for byte, on the examples the phone's unit test is locked to (supabase/tests/label-fingerprint.json)
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; v jsonb; r jsonb; got text; n int := 0;
+begin
+  for v in select jsonb_array_elements(j) from golden loop
+    r := v->'row'; n := n + 1;
+    insert into products(id,farm_id,name,type,unit) values ((r->>'product_id')::uuid, f, 'golden p', 'fungicide', 'kg') on conflict do nothing;
+    insert into crops(id,farm_id,slug,name_el) values ((r->>'crop_id')::uuid, f, 'golden', 'γκ') on conflict do nothing;
+    insert into label_uses(farm_id,product_id,crop_id,target,dose_kind,dose_unit,dose_min,dose_max,phi_days,rei_hours,max_apps)
+      values (f,(r->>'product_id')::uuid,(r->>'crop_id')::uuid,nullif(r->>'target',''),r->>'dose_kind',r->>'dose_unit',(r->>'dose_min')::numeric,(r->>'dose_max')::numeric,(r->>'phi_days')::int,(r->>'rei_hours')::int,(r->>'max_apps')::int);
+    select private.label_fingerprint(l) into got from label_uses l where l.farm_id = f and l.product_id = (r->>'product_id')::uuid and l.crop_id = (r->>'crop_id')::uuid and coalesce(l.target,'') = r->>'target' order by l.created_at desc limit 1;
+    if got is distinct from v->>'fingerprint' then raise exception '(A4d) the server fingerprint differs from the phone''s on example %: % <> %', n, got, v->>'fingerprint'; end if;
+  end loop;
+  if n < 4 then raise exception '(A4d) too few examples'; end if;
+end $$;
 -- A5: grants: authenticated may only select and insert; anon has nothing
 reset role; set test.uid = '';
 do $$ begin
