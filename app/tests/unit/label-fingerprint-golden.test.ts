@@ -22,11 +22,13 @@ const REFUSED = [
   { why: 'REI of 5 digits', row: { ...ROWS[0]!, rei_hours: '10000' } },
   { why: 'max applications of 5 digits', row: { ...ROWS[0]!, max_apps: '12345' } },
 ];
+// one example per line: easy to read and to review
+const compact = (v: ReturnType<typeof vectors>): string => `{\n "examples": [\n${v.examples.map((x) => '  ' + JSON.stringify(x)).join(',\n')}\n ],\n "refused": [\n${v.refused.map((x) => '  ' + JSON.stringify(x)).join(',\n')}\n ]\n}\n`;
 const vectors = () => ({ examples: ROWS.map((row) => ({ row, fingerprint: fingerprint(readUse(row)) })), refused: REFUSED });
 
 describe('the label fingerprint is the same string on the phone and on the server', () => {
   it('matches the checked-in examples that the SQL test also uses', () => {
-    if (process.env.UPDATE_GOLDEN === '1' || !existsSync(FILE)) writeFileSync(FILE, JSON.stringify(vectors(), null, 1) + '\n');
+    if (process.env.UPDATE_GOLDEN === '1' || !existsSync(FILE)) writeFileSync(FILE, compact(vectors()));
     expect(JSON.parse(readFileSync(FILE, 'utf8'))).toEqual(vectors());
   });
   it('the phone reads every «refused» row as blocked (some value unknown), and every example as complete', () => {
