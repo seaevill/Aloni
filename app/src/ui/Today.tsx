@@ -1,7 +1,6 @@
 import { useState } from 'preact/hooks';
 import { useBack } from './backstack';
 import { activeFarm, loadDemo, realFarmId, farmLabel } from '../db';
-import { tab } from './nav';
 import { groupJobs } from '../summary/jobs';
 import { openParcelForm, tab } from './nav';
 import { formatDate, formatDateTime, t } from '../i18n';
