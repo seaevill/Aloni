@@ -5,6 +5,9 @@ const inputs = (page: Page) => page.locator('main input.input');
 
 /** A real farm with everything a spray needs: parcel, planting, product with a COMPLETE label (optionally signed), a lot of 4,5 kg and a worker. */
 export async function setup(page: Page, signed: boolean) {
+  const seen: string[] = [];                                                           // browser errors during setup, printed if the worker never shows
+  page.on('pageerror', (e) => seen.push(`pageerror: ${e.message}`));
+  page.on('console', (m) => { if (m.type() === 'error') seen.push(`console: ${m.text()}`); });
   await tab(page, 'parcels');
   await page.getByTestId('empty-state').locator('button').click();
   await inputs(page).nth(0).fill('Κάτω Κάμπος'); await inputs(page).nth(1).fill('0,5');
@@ -41,7 +44,7 @@ export async function setup(page: Page, signed: boolean) {
   await page.getByTestId('worker-add').click();
   // saved before we leave. If it never shows, print what the screen says (CI cannot upload the page snapshot to us) so the next red run names the cause instead of a timeout.
   try { await expect(page.getByTestId('worker').filter({ hasText: 'Γιώργος' })).toBeVisible(); }
-  catch (e) { console.log('DIAG worker-add:', JSON.stringify({ input: await page.getByTestId('worker-name').inputValue().catch(() => null), alerts: await page.getByRole('alert').allInnerTexts().catch(() => null), main: (await page.locator('main').innerText().catch(() => '')).slice(0, 400), url: page.url() })); throw e; }
+  catch (e) { console.log('DIAG worker-add:', JSON.stringify({ input: await page.getByTestId('worker-name').inputValue().catch(() => null), alerts: await page.getByRole('alert').allInnerTexts().catch(() => null), main: (await page.locator('main').innerText().catch(() => '')).slice(0, 400), url: page.url(), seen: seen.slice(0, 8) })); throw e; }
   await tab(page, 'today');
 }
 
