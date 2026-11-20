@@ -32,6 +32,29 @@ describe('the machine-readable register', () => {
     expect(csv.charCodeAt(0)).not.toBe(0xfeff);                  // no BOM
   });
 
+  it('exports the recorded start, IACS parcel, BBCH and exact treated area for each linked field', () => {
+    const complete = {
+      ...data,
+      sprays: [{ ...data.sprays[0], started_at: '2026-11-20T07:45:00Z', bbch: '09', flags: [] }],
+      links: [...data.links, { ...data.links[0], id: 'l2', planting_id: 'pl2', area_str_treated: '0.125' }],
+      plantings: [...data.plantings, { ...data.plantings[0], id: 'pl2', parcel_id: 'pa2' }],
+      parcels: [
+        { ...data.parcels[0], opekepe_code: '001' },
+        { ...data.parcels[0], id: 'pa2', name: 'Second test field', opekepe_code: '002' },
+      ],
+    };
+    const lines = machineLines(complete, { name: 'Test farm', vatId: '' });
+    expect(lines.map((line) => ({
+      product: line.product_trade_name, authorisation: line.authorisation_number,
+      start: line.application_start, dose: line.dose_per_ha, unit: line.dose_per_ha_unit,
+      parcel: line.iacs_parcel_id, area: line.treated_area_ha, eppo: line.eppo_code, bbch: line.bbch_stage,
+    }))).toEqual([
+      { product: 'Kocide, 2000', authorisation: '123/45', start: '2026-11-20T09:45:00+02:00', dose: '0.00025', unit: 'L/ha', parcel: '001', area: '0.025', eppo: 'SPQOL', bbch: '09' },
+      { product: 'Kocide, 2000', authorisation: '123/45', start: '2026-11-20T09:45:00+02:00', dose: '0.00025', unit: 'L/ha', parcel: '002', area: '0.0125', eppo: 'SPQOL', bbch: '09' },
+    ]);
+    expect(warningLines(complete)).toEqual([]);
+  });
+
   it('warnings are a separate list of codes, one per record and flag; a spray without warnings has none', () => {
     const w = warningLines(data).filter((x) => x.record_id === 's1').map((x) => x.warning_code);
     expect(w.slice(0, 2)).toEqual(['late_entry', 'max_apps_exceeded']);                       // the app's own flags first
