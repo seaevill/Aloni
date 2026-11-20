@@ -13,7 +13,8 @@ create table label_approvals (
   farm_id uuid not null references farms(id) on delete cascade,
   label_use_id uuid not null references label_uses(id),
   label_seq bigint not null,                           -- the label's server_seq the approver LOOKED AT: an approval covers exactly that version (a label edited since is refused)
-  approver_name text not null check (length(btrim(approver_name, E' \t\r\n\u200b\u00a0')) > 0 and length(approver_name) <= 120),
+  -- the name must hold a real character: all the whitespace JavaScript trim() removes on the phone, plus the zero-width space
+  approver_name text not null check (length(btrim(approver_name, E' \t\n\u000b\u000c\r\u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000\ufeff\u200b')) > 0 and length(approver_name) <= 120),
   approved_on date not null,
   note text check (note is null or length(note) <= 2000),
   photo_id uuid references media(id),

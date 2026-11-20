@@ -23,14 +23,17 @@ const REFUSED = [
   { why: 'max applications of 5 digits', row: { ...ROWS[0]!, max_apps: '12345' } },
 ];
 // one example per line: easy to read and to review
-const compact = (v: ReturnType<typeof vectors>): string => `{\n "examples": [\n${v.examples.map((x) => '  ' + JSON.stringify(x)).join(',\n')}\n ],\n "refused": [\n${v.refused.map((x) => '  ' + JSON.stringify(x)).join(',\n')}\n ]\n}\n`;
-const vectors = () => ({ examples: ROWS.map((row) => ({ row, fingerprint: fingerprint(readUse(row)) })), refused: REFUSED });
+const compact = (v: ReturnType<typeof vectors>): string => `{\n "examples": [\n${v.examples.map((x) => '  ' + JSON.stringify(x)).join(',\n')}\n ],\n "refused": [\n${v.refused.map((x) => '  ' + JSON.stringify(x)).join(',\n')}\n ],\n "blank_names": ${JSON.stringify(v.blank_names)}\n}\n`;
+// names the phone's trim() reads as EMPTY: the server must not sign with them either (Codex review P2), and the zero-width space (stricter on the server)
+const BLANK_NAMES = ['\f', '\v', '\ufeff', '\u2003', '\u00a0', '\u3000', '\u2028', '\u1680', '\u202f', '\u205f'];
+const vectors = () => ({ examples: ROWS.map((row) => ({ row, fingerprint: fingerprint(readUse(row)) })), refused: REFUSED, blank_names: BLANK_NAMES });
 
 describe('the label fingerprint is the same string on the phone and on the server', () => {
   it('matches the checked-in examples that the SQL test also uses', () => {
     if (process.env.UPDATE_GOLDEN === '1' || !existsSync(FILE)) writeFileSync(FILE, compact(vectors()));
     expect(JSON.parse(readFileSync(FILE, 'utf8'))).toEqual(vectors());
   });
+  it('the phone\'s trim() reads every blank name as empty', () => { for (const n of BLANK_NAMES) expect(n.trim(), JSON.stringify(n)).toBe(''); });
   it('the phone reads every «refused» row as blocked (some value unknown), and every example as complete', () => {
     for (const r of REFUSED) expect(statusOf(r.row), r.why).toBe('blocked');
     for (const row of ROWS) expect(statusOf(row)).not.toBe('blocked');

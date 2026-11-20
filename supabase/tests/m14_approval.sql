@@ -139,6 +139,22 @@ begin
   if n < 5 then raise exception '(A4e) too few refused examples'; end if;
   if (select count(*) from label_approvals) <> before_n then raise exception '(A4e) a refused approval left a ledger row'; end if;
 end $$;
+-- A4f: a name the phone's trim() reads as EMPTY (form feed, BOM, em space, ...) is refused on the server too: the server must never sign what the phone reads as unsigned (Codex review P2)
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; l6 constant uuid := 'cccccccc-1111-0000-0000-0000000014a6'; nm text; n int := 0; fp text; sq bigint;
+begin
+  select private.label_fingerprint(lbl), lbl.server_seq into fp, sq from label_uses lbl where lbl.id = l6;
+  for nm in select jsonb_array_elements_text(j->'blank_names') from golden loop
+    n := n + 1;
+    set local role authenticated; perform set_config('test.uid', '00000000-0000-0000-0000-0000000000a1', true);
+    begin insert into label_approvals(farm_id,label_use_id,label_seq,approver_name,approved_on,fingerprint) values (f,l6,sq,nm,current_date,fp);
+          raise exception '(A4f) a blank name was accepted: %', to_jsonb(nm);
+    exception when check_violation then if sqlerrm not like '%approver_name%' then raise; end if; end;
+    reset role; perform set_config('test.uid', '', true);
+  end loop;
+  if n < 10 then raise exception '(A4f) too few blank names'; end if;
+  if (select sign_off_by from label_uses where id = l6) is not null then raise exception '(A4f) the label was signed with a blank name'; end if;
+end $$;
 -- A5: grants: authenticated may only select and insert; anon has nothing
 reset role; set test.uid = '';
 do $$ begin

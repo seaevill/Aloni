@@ -11,5 +11,6 @@
   {"why":"PHI of 5 digits","row":{"product_id":"aaaaaaaa-0000-0000-0000-00000000f001","crop_id":"cccccccc-0000-0000-0000-00000000f001","target":"Περονόσπορος","dose_kind":"single","dose_unit":"ml/str","dose_min":"0.025","phi_days":"10000","rei_hours":"24","max_apps":"3"}},
   {"why":"REI of 5 digits","row":{"product_id":"aaaaaaaa-0000-0000-0000-00000000f001","crop_id":"cccccccc-0000-0000-0000-00000000f001","target":"Περονόσπορος","dose_kind":"single","dose_unit":"ml/str","dose_min":"0.025","phi_days":"7","rei_hours":"10000","max_apps":"3"}},
   {"why":"max applications of 5 digits","row":{"product_id":"aaaaaaaa-0000-0000-0000-00000000f001","crop_id":"cccccccc-0000-0000-0000-00000000f001","target":"Περονόσπορος","dose_kind":"single","dose_unit":"ml/str","dose_min":"0.025","phi_days":"7","rei_hours":"24","max_apps":"12345"}}
- ]
+ ],
+ "blank_names": ["\f","\u000b","﻿"," "," ","　"," "," "," "," "]
 }
