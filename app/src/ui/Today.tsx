@@ -1,10 +1,10 @@
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { useBack } from './backstack';
 import { APP_NAME_EL } from '../config';
-import { activeFarm, loadDemo, realFarmId, farmLabel } from '../db';
+import { activeFarm, dataVersion, db, loadDemo, realFarmId, farmLabel } from '../db';
 import { jobHub } from '../summary/jobs';
 import { openParcelForm, tab } from './nav';
-import { formatDate, formatDateTime, t } from '../i18n';
+import { formatDate, formatDateTime, lang, t } from '../i18n';
 import { formatArea, formatQty } from '../i18n/format';
 import { athensToday } from '../plantings/planting';
 import { cutFromParcel } from '../spray/harvest';
@@ -19,6 +19,12 @@ import { useRows, type Rows } from './useRows';
 import { dayOf, farmDay, parseDays, provenance, type Day } from '../weather/strip';
 import { todaySummary, cutCrates } from '../summary/today';
 import { cutToday, type CutLine, type CutToday } from '../summary/cutlist';
+import { loadOrders } from '../orders/store';
+import { supplyByCrop } from '../orders/available';
+import { fractionText } from '../orders/dispatch';
+import { cutTodayBySlug, nextDay, tomorrowBoard, type BoardRow } from '../orders/tomorrow';
+import { CATALOG, cropName } from '../crops/catalog';
+import type { KlouvesOrders } from '../orders/klouves';
 import { useWeather } from './useWeather';
 import type { Row } from '../db/schema';
 
@@ -141,6 +147,37 @@ function CutTodaySection({ ct }: { ct: CutToday }) {
   );
 }
 
+const cropLabel = (slug: string): string => { const c = CATALOG.find((x) => x.slug === slug); return c ? cropName(c, lang.value) : slug; };
+const CHIP = { missing: { cls: 'badge blocked', key: 'tomorrow.missing' }, covered: { cls: 'badge neutral', key: 'tomorrow.covered' }, surplus: { cls: 'badge unsigned', key: 'tomorrow.surplus' } } as const;
+
+/** «Αύριο φεύγουν»: tomorrow's orders (crop × crates, from the Κλούβες import of THIS farm) against the crates actually cut today, with ONE status chip per crop. A planting held by a waiting period never counts as supply. Information only. */
+function TomorrowSection({ rows }: { rows: { crops: readonly Row[]; plantings: readonly Row[]; links: readonly Row[]; sprays: readonly Row[]; harvests: readonly Row[]; labels: readonly Row[] } }) {
+  const [data, setData] = useState<{ orders: KlouvesOrders | undefined; map: Record<string, string> } | undefined>(undefined);
+  const [tick, setTick] = useState(Date.now());
+  const farm = activeFarm.value;
+  useEffect(() => { let live = true; void loadOrders(db, farm).then((r) => { if (live) setData(r); }); return () => { live = false; }; }, [farm, dataVersion.value]);
+  useEffect(() => { const id = setInterval(() => setTick(Date.now()), 60_000); return () => clearInterval(id); }, []);   // the Athens midnight moves «tomorrow» on by itself
+  if (!data) return null;
+  const today = athensToday(new Date(tick)) ?? '';
+  if (!data.orders?.days) return <section data-testid="tomorrow"><h2>{t('tomorrow.title')}</h2><p class="muted" data-testid="tomorrow-noimport">{t('tomorrow.noimport')}</p></section>;
+  const supply = supplyByCrop(new Date(tick).toISOString(), rows.crops, rows.plantings, rows.links, rows.sprays, rows.harvests, rows.labels);
+  const board = tomorrowBoard(data.orders, data.map, supply, cutTodayBySlug(today, rows.harvests, rows.plantings, rows.crops), nextDay(today));
+  return (
+    <section data-testid="tomorrow">
+      <h2>{t('tomorrow.title')}</h2>
+      {board.rows.length === 0 && <p class="muted" data-testid="tomorrow-none">{t('tomorrow.none')}</p>}
+      {board.rows.map((r: BoardRow) => (
+        <div class="card" key={r.slug} data-testid="tomorrow-row" data-state={r.state}>
+          <div class="field-head"><strong>{cropLabel(r.slug)}</strong><span class={CHIP[r.state].cls} data-testid="tomorrow-chip">{t(CHIP[r.state].key, { n: fractionText(Math.abs(r.gap)) })}</span></div>
+          <small data-testid="tomorrow-ordered">{t('tomorrow.line', { o: fractionText(r.ordered), c: fractionText(r.cut) })}</small>
+          <small data-testid="tomorrow-supply">{t('tomorrow.supply', { free: r.free, held: r.held, unknown: r.unknown })}</small>
+        </div>
+      ))}
+      {board.unmapped > 0 && <p class="muted" data-testid="tomorrow-unmapped">{t('tomorrow.unmapped', { n: board.unmapped })}</p>}
+    </section>
+  );
+}
+
 export function Today() {
   const [spraying, setSpraying] = useState(false);
   const [recorded, setRecorded] = useState(false);
@@ -194,6 +231,7 @@ export function Today() {
         <EmptyState message={t('welcome.start')} actionLabel={t('parcel.add')} onAction={() => { openParcelForm.value = true; tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
       )}
       {loaded && has && <CutTodaySection ct={ct} />}
+      {loaded && has && <TomorrowSection rows={{ crops: crops.rows ?? [], plantings: plantings.rows ?? [], links: links.rows ?? [], sprays: sprays.rows ?? [], harvests: harvestRows.rows ?? [], labels: labelRows.rows ?? [] }} />}
       {loaded && has && <h2>{t('tasks.title')}</h2>}
       {loaded && has && <p class="muted" data-testid="tasks-counts">{t('tasks.counts', { o: hub.counts.overdue, t: hub.counts.today, u: hub.counts.upcoming, d: hub.counts.doneToday })}</p>}
       {loaded && has && openJobs.length === 0 && <p class="muted" data-testid="jobs-none">{t('today.jobs.none')}</p>}

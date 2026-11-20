@@ -1,6 +1,7 @@
 import type { AppDB } from '../db/schema';
 import { delLocal, putLocal } from '../repo';
 import type { KlouvesOrders } from './klouves';
+import { athensDayOf, nextDay } from './tomorrow';
 
 // The Κλούβες import and the crop map belong to ONE farm (T5, 2026-11-19, safety rule 4): a real client list never shows up in the demo and a demo sample never in the real farm.
 const ORDERS = 'klouves_orders'; const MAP = 'klouves_cropmap';
@@ -37,5 +38,9 @@ export function demoOrders(todayMs: number): { orders: KlouvesOrders; map: Recor
     const w = (weeks[monday(ms)] ??= {});
     for (const [k, q] of Object.entries(d)) { const before = w[k]; if (before === undefined) w[k] = q; else w[k] = before + q; }
   }
-  return { orders: { products, weeks, skipped: 0 }, map: { 'd-sp': 'spinach', 'd-ro': 'rocket', 'd-pa': 'parsley' } };
+  // fictional per-day orders for tomorrow (the Athens day after today), so «Αύριο φεύγουν» can be tried in the demo; made-up clients and quantities
+  const today = athensDayOf(new Date(todayMs).toISOString()) ?? iso(todayMs);
+  const days = { [nextDay(today)]: { 'd-c1': { 'd-sp': 8, 'd-ro': 2.5 }, 'd-c2': { 'd-sp': 4, 'd-pa': 4 } } };
+  const clients = [{ id: 'd-c1', name: 'Πελάτης Α' }, { id: 'd-c2', name: 'Πελάτης Β' }];
+  return { orders: { products, weeks, skipped: 0, days, clients }, map: { 'd-sp': 'spinach', 'd-ro': 'rocket', 'd-pa': 'parsley' } };
 }
