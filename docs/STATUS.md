@@ -79,6 +79,6 @@
 4. ☐ Gerçek hesap denemesi yapıldı (RUNBOOK §12, 11 adım).
 5. ☐ Άλλα → «Σύνδεση λογαριασμού: τι λείπει» kartı beş satırda yeşil (veri sorumlusu, çiftlik adı, ΑΦΜ, migration 0028, Advisor).
 6. ☐ Telefonda taze **yedek** alındı.
-7. ☐ Claude'a «LIVE aç» dersin → proje adresi + genel anahtar ile ayrı PR → birleşir.
+7. ☑ «LIVE» = Cloudflare'de 3 genel derleme değişkeni (RUNBOOK §12b); Bora girdi ve yeniden dağıttı (2026-11-20). Kod PR'ı gerekmedi. Giriş ve çiftlik sihirbazı açık; senkron hâlâ kapalı (adım 8).
 8. ☐ Άλλα → «Άνοιγμα συγχρονισμού» (RUNBOOK §13) → «Ο συγχρονισμός είναι ανοιχτός».
 9. ☐ (İsteğe bağlı, sonra) Hava: RUNBOOK §14 (önce tek tarla dry-run).
