@@ -11,9 +11,10 @@ base_db=${PGDATABASE:-postgres}
 psql -X -q -d "$base_db" -c "drop database if exists $db" -c "create database $db" >/dev/null
 export PGDATABASE=$db
 if [ "$layout" = supabase ]; then
-  psql -X -q -c "create schema extensions" -c "grant usage on schema extensions to anon, authenticated" -c "create extension pgcrypto with schema extensions" -c "create extension postgis with schema extensions" -c "alter database $db set search_path = \"\$user\", public, extensions" >/dev/null
+  psql -X -q -c "create schema extensions" -c "create extension pgcrypto with schema extensions" -c "create extension postgis with schema extensions" -c "alter database $db set search_path = \"\$user\", public, extensions" >/dev/null
 fi
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/auth_stub.sql >/dev/null
+[ "$layout" = supabase ] && psql -X -q -c "grant usage on schema extensions to anon, authenticated" >/dev/null   # after the stub has created the roles (m8 L5)
 for f in supabase/migrations/*.sql; do echo "== $f"; psql -X -q -v ON_ERROR_STOP=1 -f "$f" >/dev/null; done
 psql -X -q -c "select 1" >/dev/null
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/smoke.sql || { echo "FAILED: smoke.sql"; exit 1; }
@@ -45,6 +46,7 @@ psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m9_0029.sql || { echo "FAILED: s
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m10_review.sql || { echo "FAILED: supabase/tests/m10_review.sql"; exit 1; }; echo "SQL m10-review tests OK"
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m11_cut_by.sql || { echo "FAILED: supabase/tests/m11_cut_by.sql"; exit 1; }; echo "SQL m11-cut-by tests OK"
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m12_m7.sql || { echo "FAILED: supabase/tests/m12_m7.sql"; exit 1; }; echo "SQL m12-m7 tests OK"
+psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m13_m8.sql || { echo "FAILED: supabase/tests/m13_m8.sql"; exit 1; }; echo "SQL m13-m8 tests OK"
 bash supabase/tests/contract.sh
 out=$(psql -X -At -v ON_ERROR_STOP=1 -f supabase/tests/verify_applied.sql) || { echo "FAILED: verify_applied.sql"; exit 1; }; echo "$out"; echo "$out" | grep -q "^OK:" || { echo "verify_applied.sql found problems"; exit 1; }
 bash supabase/tests/concurrency.sh

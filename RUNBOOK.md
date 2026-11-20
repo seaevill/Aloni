@@ -225,13 +225,30 @@ rollback;
  - Sonra `mode = deploy`, `confirm = DEPLOY` → **Review deployments → Approve** (aynı `supabase-production` ortamı ve aynı onay kapısı; migrate akışıyla aynı üç kontrol: yalnızca `main`, bu commit'in CI'ı yeşil, yazdığın DEPLOY).
  - **Token:** migrate için kullandığın `SUPABASE_ACCESS_TOKEN` yeter; ek bir gizli anahtar gerekmez (fonksiyon kendi adresini ve servis anahtarını Supabase'ten alır, MET anahtar istemez). Token'ı sınırlı yetkiyle oluşturduysan **Edge Functions yazma/dağıtma** yetkisi de olmalı; çıktı 401/403 derse (yetki adı sürüme göre değişir, burada doğrulanmadı) token'ı bu yetkiyle yeniden oluşturup GitHub secret'ını güncelle.
  Doğru sonuç: workflow yeşil, «Deployed Functions …weather-fetch». Henüz hiçbir şey çekmez.
-2. **Tek tarla için deneme (dry-run; onay senin)** — Table Editor → `parcels` → denenecek tarlanın `id`'sini kopyala (tarlanın konumu girilmiş olmalı). Supabase → **Edge Functions → weather-fetch → Test**; başlık: `Authorization: Bearer <service_role anahtarı>` (yalnızca bu test kutusuna), gövde: `{"dry_run": true, "parcel_id": "<TARLA-ID>"}`.
+2. **Tek tarla için deneme (dry-run; onay senin)** — Table Editor → `parcels` → denenecek tarlanın `id`'sini kopyala (tarlanın konumu girilmiş olmalı). Supabase → **Edge Functions → weather-fetch → Test**; başlık: `Authorization: Bearer <WEATHER_CRON_TOKEN değeri>` (adım 4'te oluşturacağın ayrı değer; **service_role anahtarı değil**; yalnızca bu test kutusuna), gövde: `{"dry_run": true, "parcel_id": "<TARLA-ID>"}`.
  Doğru sonuç: `"ok":true,"source":"metno","dryRun":true,"stored":0` ve `preview` içinde günlere göre en düşük/en yüksek sıcaklık. **Hiçbir tabloya yazılmaz.** Rakamları yr.no'daki aynı yer ile karşılaştır; mantıklıysa bana «tamam» de.
 3. **Gerçek çalıştırma (bir kez)** — aynı kutu, gövde `{}`: `"stored":N`. Sonra Table Editor → `weather_daily` ve `weather_fetch_state` dolu olmalı.
-4. **6 saatlik takvim için iki gizli değer (Vault; takvimin kendisini 0030 kurdu)** — SQL Editor'de, `<PROJE-KODU>` ve `<SERVICE-KEY>` yerine kendi değerlerin:
- `select vault.create_secret('https://<PROJE-KODU>.supabase.co/functions/v1/weather-fetch', 'weather_function_url');`
- `select vault.create_secret('<SERVICE-KEY>', 'weather_service_key');`
- Bu iki değer olmadan takvim hiçbir şey çağırmaz. Takvimi görmek için: `select jobname, schedule, active from cron.job;` → `weather-fetch | 7 */6 * * * | t`.
+4. **6 saatlik takvim için iki gizli değer (yalnızca Supabase panelinde; SQL Editor'e HİÇBİR anahtar yapıştırma)** — takvimin kendisini 0032 kurdu (0030'un yerine geçer). Servis anahtarı **kullanılmaz**; yalnızca bu iş için ayrı, dar bir değer var:
+ a. Bir parola yöneticisinde **32+ karakterli rastgele bir dize** üret (adı: `WEATHER_CRON_TOKEN`). Bunu bana yazma.
+ b. Supabase → **Edge Functions → Secrets → Add new secret** → ad `WEATHER_CRON_TOKEN`, değer = o dize.
+ c. Supabase → **Database → Vault → Add new secret** (iki kez): ad `weather_cron_token`, değer = aynı dize; ad `weather_function_url`, değer `https://<PROJE-KODU>.supabase.co/functions/v1/weather-fetch` (adres `https://….supabase.co/functions/v1/weather-fetch` biçiminde değilse takvim hiçbir şey çağırmaz).
+ Bu iki Vault değeri olmadan takvim hiçbir şey çağırmaz. Takvimi görmek için: `select jobname, schedule, active from cron.job;` → `weather-fetch | 7 */6 * * * | t`. İlk uygulamada ayrıca (gerçek projede) `authenticated` ve `anon` rollerinin `net._http_response` ile `net.http_request_queue` üzerinde SELECT hakkı olmadığını denetle (bunu bana söyle, ben sorguyu veririm).
 5. **Telefonda gör** — senkron açıksa ≤10 dakika içinde **Σήμερα** hava kartı dolar; altında «Δεδομένα: MET Norway (CC BY 4.0) · <saat>». Veri 12 saatten eskiyse yanına «παλιά δεδομένα» yazılır. Veri yoksa «—».
 
 **Geri dönüş:** `select cron.unschedule('weather-fetch');`. Fonksiyonu silmek gerekmez; telefonda eski veri kalır (12 saat sonra «παλιά δεδομένα»). Hava yalnızca bilgidir: kurallar imzasız olduğu sürece hiçbir karar vermez, hiçbir bildirim göndermez.
+
+
+## 15. Yüklemeden ÖNCE: üretimde salt okunur kontrol (0022–0032)
+**Ne zaman:** 0022–0032 yüklenmeden hemen önce, **sen** çalıştır. **Nerede:** Supabase → **SQL Editor** → yapıştır → Run. Bu sorgu **hiçbir şeyi değiştirmez** (yalnızca `select`).
+
+```sql
+select s.id, s.job_id
+from job_spray s
+join label_uses l on l.id = s.label_use_id
+join job_plantings jp on jp.job_id = s.job_id
+join plantings pl on pl.id = jp.planting_id
+where s.phi_source = 'label' and pl.crop_id <> l.crop_id;
+```
+**Sonuç ne demek:**
+- **Hiç satır yok** → sorun yok; yüklemeye geçilebilir.
+- **Satır var** → eski bir ilaçlama kaydı, işindeki ürünlerden **başkasının** etiketinden bekleme süresi almış (ör. marul + roka işi, rokanın etiketi). O satırlardaki bekleme süresi o ekim için **yanlış olabilir**. **Yüklemeyi başlatma:** satır sayısını ve `id` listesini bana gönder; ben o ekimlerin hasat ve giriş kilidini nasıl etkilediğine bakıp sana tek tek yazarım. 0032'den sonra bu ekimler zaten **kapalı** sayılır (kendi ürününün imzalı etiketi yoksa «bilinmiyor = kapalı»); yani risk, **fazla kapalı** olma yönündedir, erken açılma yönünde değil.

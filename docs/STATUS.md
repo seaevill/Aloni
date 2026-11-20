@@ -1,5 +1,8 @@
 # DURUM – Aloni (Bora'nın sayfası)
 
+## m8 düzeltildi, ekip yeniden bakacak (2026-11-20)
+- **0032_planting_gate.sql** (yeni dosya; 0022–0031'e dokunulmadı): tek hasat/giriş kapısı `private.planting_gate`; M1, M2 (MUST), S1–S4 ve LOW'lar düzeltildi; testler `supabase/tests/m13_m8.sql` (önce kırmızı, sonra yeşil, rastgele «değişmez» testi dahil). **Yüklemeden önce RUNBOOK §15'teki salt okunur sorguyu sen çalıştıracaksın.** `docs/reviews/team/` kontrol edildi: m8 dışında açık MUST yok.
+
 ## SABAH RAPORU (gece çalışması, 2026-11-19 → 20)
 - **Ekibin yeniden bakacağı SQL commit'i:** `4586098` (m7: N1 ekim başına etiket, N2 bitiş ≤ şimdi + kapı, N3 stok/`sync_xid`; bağımsız alt ajan incelemesi: «NO MUST»). Sonradan yalnızca yeni dosyalar eklendi: 0030 (hava takvimi), 0031 («Ποιος έκοψε»). 0022–0029'a dokunulmadı. Temiz çıkarsa 0022–0031'i birlikte yükleriz; ben başlatmam.
 - **Biten T'ler:** T0 m7 düzeltmeleri (#185) · T1 birleştirme-işareti testi (#186) · T3 tek-vuruş kaydet kilidi (#188) · T4 işçi «kaydedildi = kaydedildi» (#189).
