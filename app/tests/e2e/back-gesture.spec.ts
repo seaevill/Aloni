@@ -21,7 +21,7 @@ test('the demo farm and the tab survive a reload (with the demo banner); the own
   await page.locator('nav.tabs [data-tab="stock"]').click();
   await expect(page.getByTestId('demo-banner').first()).toBeVisible();
   await page.reload();
-  expect(page.url()).toContain('#/demo/stock');
+  await expect(page).toHaveURL(/#\/demo\/stock/);                                       // retried: the address is read after the app restored its state, not at the first instant after reload
   await expect(page.locator('nav.tabs [data-tab="stock"]')).toHaveAttribute('aria-current', 'page');
   await expect(page.getByTestId('demo-banner').first()).toBeVisible();
 });

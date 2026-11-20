@@ -39,7 +39,9 @@ export async function setup(page: Page, signed: boolean) {
   await page.getByTestId('open-workers').click();
   await page.getByTestId('worker-name').fill('Γιώργος');
   await page.getByTestId('worker-add').click();
-  await expect(page.getByTestId('worker').filter({ hasText: 'Γιώργος' })).toBeVisible();   // saved before we leave: WebKit CI wrote it after the next screen had already read the list
+  // saved before we leave. If it never shows, print what the screen says (CI cannot upload the page snapshot to us) so the next red run names the cause instead of a timeout.
+  try { await expect(page.getByTestId('worker').filter({ hasText: 'Γιώργος' })).toBeVisible(); }
+  catch (e) { console.log('DIAG worker-add:', JSON.stringify({ input: await page.getByTestId('worker-name').inputValue().catch(() => null), alerts: await page.getByRole('alert').allInnerTexts().catch(() => null), main: (await page.locator('main').innerText().catch(() => '')).slice(0, 400), url: page.url() })); throw e; }
   await tab(page, 'today');
 }
 
