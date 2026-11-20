@@ -1,7 +1,7 @@
 -- 0032_planting_gate.sql  (WRITTEN, NOT APPLIED ANYWHERE)  Team review m8 (docs/reviews/team/2026-11-20-m8-review.md): M1 + M2 (MUST), S1–S4, L1–L3. A NEW file; builds on 0031.
 -- ONE source of truth for «may this planting be harvested / entered at time t?»: private.planting_gate(planting, t). For every effective spray on a job of the planting it takes the waiting (PHI) and the re-entry
 -- (REI) period ONLY from the SIGNED label use of THAT PLANTING'S OWN CROP and the spray's own product, never from another crop's label, never from a typed waiting period. No signed label of that crop and product,
--- a label without a PHI (or REI), a spray whose OWN record says «unknown» (no stored end), or an unreadable value = UNKNOWN = closed. A stored or typed waiting period never OPENS anything: only the time from the label does. The harvest gate, the worker's re-entry lock (complete_spray_job) and the view harvest_conflicts use ONLY this function; the older
+-- a label without a PHI (or REI), a spray whose OWN record says «unknown» (no stored end), or an unreadable value = UNKNOWN = closed. A stored or typed waiting period never OPENS anything (only the time from the label does), but a stored period LONGER than the label still CLOSES: a recorded period is never shortened (m8 review of 0032, MUST). The harvest gate, the worker's re-entry lock (complete_spray_job) and the view harvest_conflicts use ONLY this function; the older
 -- calculations (spray_floor_planting, the stored phi_until/rei_until, the other-job REI query) are gone.
 do $$ begin
   if to_regprocedure('forbid_link_after_spray()') is null or to_regprocedure('check_harvest_cut_by()') is null then raise exception '0032 stopped: 0022–0031 are not all there (nothing was changed)'; end if;
@@ -11,8 +11,8 @@ create function private.planting_gate(p_planting uuid, p_at timestamptz)
   returns table(spray_id uuid, sprayed_at timestamptz, phi_problem text, rei_problem text)
   language sql stable security definer set search_path = public, private, pg_temp as $$
   select s.id, s.sprayed_at,
-         case when lf.n = 0 or lf.phi_null or s.phi_until is null then 'phi_unknown' when s.sprayed_at + make_interval(hours => lf.phi * 24) >= p_at then 'phi_running' end,
-         case when lf.n = 0 or lf.rei_null or s.rei_until is null then 'rei_unknown' when s.sprayed_at + make_interval(hours => lf.rei) >= p_at then 'rei_running' end
+         case when lf.n = 0 or lf.phi_null or s.phi_until is null then 'phi_unknown' when s.sprayed_at + make_interval(hours => lf.phi * 24) >= p_at or s.phi_until >= p_at then 'phi_running' end,
+         case when lf.n = 0 or lf.rei_null or s.rei_until is null then 'rei_unknown' when s.sprayed_at + make_interval(hours => lf.rei) >= p_at or s.rei_until >= p_at then 'rei_running' end
   from plantings pl
   join job_plantings jp on jp.planting_id = pl.id and jp.farm_id = pl.farm_id
   join job_spray s on s.job_id = jp.job_id and s.farm_id = pl.farm_id
@@ -79,7 +79,7 @@ begin
   is_live := p_ended_at >= now() - interval '5 minutes';
   -- m8 M2: the re-entry lock is the SAME single gate as the harvest: for EVERY planting of this job, the REI of that planting's own crop and product (private.planting_gate), unknown = locked
   select exists (
-    select 1 from job_plantings mine cross join lateral private.planting_gate(mine.planting_id, p_ended_at) g
+    select 1 from job_plantings mine cross join lateral (select * from private.planting_gate(mine.planting_id, p_ended_at) union all select * from private.planting_gate(mine.planting_id, now()) where is_live) g
     where mine.job_id = j.id and mine.farm_id = j.farm_id and g.rei_problem is not null
   ) into conflict;
   if conflict and is_live then raise exception 'the field is locked: a re-entry period (REI) is running or unknown' using errcode = 'check_violation'; end if;
@@ -113,10 +113,24 @@ end $$;
 
 -- the record-then-show side: a harvest that was recorded in spite of a running or unknown period is listed here, by the SAME gate, at the time it says it was cut
 drop view harvest_conflicts;
-create view harvest_conflicts with (security_invoker = true) as
-  select h.id as harvest_id, h.farm_id, h.planting_id, h.harvested_at, g.spray_id, g.sprayed_at, g.phi_problem, g.rei_problem
+-- the gate is private (it takes ANY planting id), and a view cannot lend its owner's right to call a function: a small definer function does the reading and filters by the caller's own farm roles
+create function private.harvest_conflicts_rows()
+  returns table(harvest_id uuid, farm_id uuid, planting_id uuid, harvested_at timestamptz, spray_id uuid, sprayed_at timestamptz, phi_problem text, rei_problem text)
+  language sql stable security definer set search_path = public, private, pg_temp as $$
+  select h.id, h.farm_id, h.planting_id, h.harvested_at, g.spray_id, g.sprayed_at, g.phi_problem, g.rei_problem
   from job_harvest h cross join lateral private.planting_gate(h.planting_id, h.harvested_at) g
-  where g.phi_problem is not null or g.rei_problem is not null;
+  where (private.has_role(h.farm_id, array['owner', 'worker']) or (auth.uid() is null and current_setting('role') in ('none', 'service_role')))      -- maintenance (the database owner, the service role) sees all; a signed-in person only her own farms
+    and (g.phi_problem is not null or g.rei_problem is not null)
+$$;
+revoke execute on function private.harvest_conflicts_rows() from public, anon;
+do $$ begin
+  if exists (select 1 from pg_roles where rolname = 'authenticated') then grant execute on function private.harvest_conflicts_rows() to authenticated; end if;
+end $$;
+create view harvest_conflicts as select * from private.harvest_conflicts_rows();
+do $$ begin
+  if exists (select 1 from pg_roles where rolname = 'anon') then revoke all on harvest_conflicts from anon; end if;
+  if exists (select 1 from pg_roles where rolname = 'authenticated') then grant select on harvest_conflicts to authenticated; end if;
+end $$;
 
 -- the typed correction (a person may type a waiting period only where a label of EVERY crop of the job gives both values, and never shorter than the label): m8 M1
 create or replace function spray_floor_crops(p_farm uuid, p_job uuid, p_product uuid, p_spray uuid, p_crops uuid[], out phi integer, out rei integer, out n integer, out missing integer)

@@ -38,29 +38,24 @@ begin
   begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,started_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,amends_id,amend_reason)
         values (f,'eeeeeeee-0000-0000-0000-0000000013a1',pq,w1,t,t - interval '10 minutes',0.025,'ml/str','none',3,24,'manual',t + interval '72 hours',t + interval '24 hours','55555555-0000-0000-0000-0000000013a1','typed');
         raise exception '(M1) a typed PHI was accepted although the crop-C label has no waiting period';
-  exception when check_violation then null; end;
+  exception when check_violation then if sqlerrm not like '%no label with a known waiting period%' then raise; end if; end;
 end $$;
 -- M1: the crop-C planting stays closed on day 4 for the OWNER and for the WORKER (the hole never reads as «no floor»)
 do $$ begin
   begin insert into job_harvest(cut_by,farm_id,planting_id,harvested_at,crates_str) values ('bbbbbbbb-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-0000000013c1',now(),1);
         raise exception '(M1 owner) the crop-C planting opened on day 4';
-  exception when check_violation then null; end;
+  exception when check_violation then if sqlerrm not like 'harvest blocked%' then raise; end if; end;
 end $$;
--- M2 / S2: the legacy row (B label, REI 24) ended 30 h ago; crop A's OWN signed REI is 48 h: the A planting is still locked (18 h left) and the view says so for a harvest recorded now-10 min
-do $$
-declare n int;
-begin
-  select count(*) into n from private.planting_gate('dddddddd-0000-0000-0000-0000000013a1', now()) g where g.rei_problem = 'rei_running';
-  if n <> 1 then raise exception '(M2) the gate does not see the 48 h re-entry period of crop A (rows: %)', n; end if;
-exception when insufficient_privilege then
-  -- the gate is private: the owner session must NOT reach it; the lock is tested through the worker's «Έγινε» below
-  null;
-end $$;
+-- M2: the legacy row (B label, REI 24) ended 30 h ago; crop A's OWN signed REI is 48 h (18 h left): the worker's «Έγινε» must be refused (the gate itself is private: it is tested through its users)
+-- M1 as the WORKER too: the crop-C planting stays closed on day 4
 reset role; set test.uid = ''; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000b2';
 do $$ begin
   begin perform complete_spray_job('eeeeeeee-0000-0000-0000-0000000013a3', now() - interval '1 minute', p_started_at => now() - interval '20 minutes');
         raise exception '(M2) the worker entered a field whose crop-A re-entry period (REI 48 h) still runs (the legacy row carried the crop-B REI of 24 h)';
-  exception when check_violation then null; end;
+  exception when check_violation then if sqlerrm not like '%field is locked%' then raise; end if; end;
+  begin insert into job_harvest(cut_by,farm_id,planting_id,harvested_at,crates_str) values ('bbbbbbbb-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-0000000013c1',now(),1);
+        raise exception '(M1 worker) the crop-C planting opened on day 4';
+  exception when check_violation then if sqlerrm not like 'harvest blocked%' then raise; end if; end;
 end $$;
 -- S3: the worker names only herself as the cutter
 do $$
@@ -70,14 +65,39 @@ begin
   exception when check_violation then null; end;
 end $$;
 reset role; set test.uid = '';
--- S2: a harvest RECORDED (owner, dated 10 minutes back) on the crop-A planting while its REI runs shows up in harvest_conflicts
-do $$
-declare n int;
-begin
-  insert into job_harvest(cut_by,farm_id,planting_id,harvested_at,crates_str) values ('bbbbbbbb-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-0000000013a1',now() - interval '10 minutes',1);
+-- S2: a harvest RECORDED (fixture, dated 10 minutes back) on the crop-A planting while its REI runs shows up in harvest_conflicts, READ AS THE OWNER (and not by a stranger)
+insert into job_harvest(cut_by,farm_id,planting_id,harvested_at,crates_str) values ('bbbbbbbb-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-0000000013a1',now() - interval '10 minutes',1);
+set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
+do $$ declare n int; begin
   select count(*) into n from harvest_conflicts where planting_id = 'dddddddd-0000-0000-0000-0000000013a1' and rei_problem = 'rei_running';
-  if n < 1 then raise exception '(S2) harvest_conflicts shows nothing for a harvest recorded inside the crop-A REI'; end if;
+  if n < 1 then raise exception '(S2) the owner sees nothing in harvest_conflicts for a harvest recorded inside the crop-A REI'; end if;
 end $$;
+reset role; set test.uid = ''; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000f9';     -- a signed-in stranger (no member of the farm)
+do $$ declare n int; begin
+  select count(*) into n from harvest_conflicts;
+  if n <> 0 then raise exception '(S2) a stranger reads % rows of harvest_conflicts', n; end if;
+end $$;
+reset role; set test.uid = '';
+-- MUST (review of 0032): a typed PHI LONGER than the label still closes: label PHI 14, typed 30, ended 15 days ago: the day-15 harvest is refused for the owner
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; p constant uuid := '33333333-3333-3333-3333-333333333333'; w1 constant uuid := 'bbbbbbbb-0000-0000-0000-000000000001'; pq constant uuid := 'aaaaaaaa-0000-0000-0000-0000000013a1';
+begin
+  insert into plantings(id,farm_id,parcel_id,crop_id,area_str,sown_on,status) values ('dddddddd-0000-0000-0000-0000000013a9',f,p,'cccccccc-0000-0000-0000-0000000013a1',0.25,'2026-11-01','growing');
+  insert into jobs(id,farm_id,kind,status,worker_id,product_id,done_at) values ('eeeeeeee-0000-0000-0000-0000000013a9',f,'spray','done',w1,pq,now() - interval '15 days');
+  insert into job_plantings(farm_id,job_id,planting_id) values (f,'eeeeeeee-0000-0000-0000-0000000013a9','dddddddd-0000-0000-0000-0000000013a9');
+  insert into job_spray(id,farm_id,job_id,product_id,applicator_id,sprayed_at,started_at,dose_str,dose_unit,label_state) values ('55555555-0000-0000-0000-0000000013a9',f,'eeeeeeee-0000-0000-0000-0000000013a9',pq,w1,now() - interval '15 days',now() - interval '15 days' - interval '10 minutes',0.025,'ml/str','none');
+end $$;
+set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; w1 constant uuid := 'bbbbbbbb-0000-0000-0000-000000000001'; pq constant uuid := 'aaaaaaaa-0000-0000-0000-0000000013a1'; t timestamptz := now() - interval '15 days'; late text := 'typed PHI longer than the label';
+begin
+  insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,started_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,amends_id,amend_reason,late_reason)
+    values (f,'eeeeeeee-0000-0000-0000-0000000013a9',pq,w1,t,t - interval '10 minutes',0.025,'ml/str','none',30,48,'manual',t + interval '30 days',t + interval '48 hours','55555555-0000-0000-0000-0000000013a9','the agronomist asked for 30 days',late);
+  begin insert into job_harvest(cut_by,farm_id,planting_id,harvested_at,crates_str) values (w1,f,'dddddddd-0000-0000-0000-0000000013a9',now(),1);
+        raise exception '(MUST-1) a typed PHI of 30 days opened on day 15 (the label says 14)';
+  exception when check_violation then if sqlerrm not like 'harvest blocked%' then raise; end if; end;
+end $$;
+reset role; set test.uid = '';
 
 -- THE INVARIANT: random jobs, plantings, products, labels (with holes and unsigned), legacy rows, corrections: nothing is accepted for harvest before the planting's own label says it may be
 do $$
@@ -85,6 +105,7 @@ declare f constant uuid := '11111111-1111-1111-1111-111111111111'; p constant uu
         i int; k int; crops uuid[]; prods uuid[]; c uuid; pr uuid; pls uuid[]; pl uuid; j uuid; s uuid; lab record; r double precision; ph int; re int; ended timestamptz;
         accepted int := 0; refused int := 0; oracle_open boolean; got_open boolean; sp record;
 begin
+  begin      -- everything the random fixtures write is rolled back at the end: nothing of it stays for the tests that follow (the sync cursor test needs a quiet table)
   perform setseed(0.42);
   for i in 1..120 loop
     crops := array[]::uuid[]; prods := array[]::uuid[]; pls := array[]::uuid[];
@@ -126,7 +147,7 @@ begin
         select 1 from job_plantings jp join job_spray s2 on s2.job_id = jp.job_id join plantings x on x.id = jp.planting_id
         where jp.planting_id = pl
           and not exists (select 1 from label_uses l where l.product_id = s2.product_id and l.crop_id = x.crop_id and l.sign_off_by is not null and l.phi_days is not null and l.rei_hours is not null
-                          and s2.phi_until is not null and s2.rei_until is not null and s2.sprayed_at + make_interval(hours => l.phi_days*24) < now() and s2.sprayed_at + make_interval(hours => l.rei_hours) < now()
+                          and s2.phi_until is not null and s2.rei_until is not null and s2.phi_until < now() and s2.rei_until < now() and s2.sprayed_at + make_interval(hours => l.phi_days*24) < now() and s2.sprayed_at + make_interval(hours => l.rei_hours) < now()
                           and not exists (select 1 from label_uses l2 where l2.product_id = s2.product_id and l2.crop_id = x.crop_id and l2.sign_off_by is not null and (l2.phi_days is null or l2.rei_hours is null))));
       reset role; set role authenticated;
       got_open := true;
@@ -134,12 +155,14 @@ begin
         perform set_config('test.uid', '00000000-0000-0000-0000-0000000000a1', true);
         insert into job_harvest(cut_by,farm_id,planting_id,harvested_at,crates_str) values (w1,f,pl,now(),1);
         raise exception 'ROLLBACK_PROBE';
-      exception when check_violation then got_open := false; when raise_exception then null; end;
+      exception when check_violation then if sqlerrm not like 'harvest blocked%' then raise; end if; got_open := false; when raise_exception then null; end;
       reset role;
       if got_open and not oracle_open then raise exception 'INVARIANT BROKEN: planting % opened although its own label does not allow it yet (iteration %)', pl, i; end if;
       if got_open then accepted := accepted + 1; else refused := refused + 1; end if;
     end loop;
   end loop;
+    raise exception 'M13_ROLLBACK';
+  exception when raise_exception then if sqlerrm <> 'M13_ROLLBACK' then raise; end if; reset role; end;
   if accepted = 0 or refused = 0 then raise exception 'the invariant test is vacuous (accepted %, refused %)', accepted, refused; end if;
   raise notice 'm13 invariant: % accepted (all allowed by their own label), % refused', accepted, refused;
 end $$;
