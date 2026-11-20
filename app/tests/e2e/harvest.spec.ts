@@ -56,7 +56,7 @@ test('after a SIGNED spray the harvest is blocked until the waiting period has r
   await expect(page.getByTestId('harvest')).toContainText('5 κλούβες');
 });
 
-test('after an UNSIGNED spray the PHI is unknown: blocked even far in the future, until Bora enters it from the label and it runs out', async ({ page }) => {
+test('after an UNSIGNED spray the PHI is unknown: blocked even far in the future, and his typed value does not open it while the label is unsigned', async ({ page }) => {
   await page.clock.install();
   await iphone(page);
   await setup(page, false);
@@ -76,17 +76,10 @@ test('after an UNSIGNED spray the PHI is unknown: blocked even far in the future
   await closeHistory(page);
   await page.getByTestId('harvest-open').click();
   await page.getByTestId('harvest-chip').filter({ hasText: 'Σπανάκι' }).first().click();
-  await expect(page.getByTestId('harvest-blocked')).toContainText('Σε αναμονή μέχρι'); // his value does not unblock by itself
+  // m9 S-NEW-1: his typed value never opens anything, and the label is still an UNSIGNED draft: the planting stays unknown = closed until the agronomist's signature exists
+  await expect(page.getByTestId('harvest-blocked')).toContainText('άγνωστη αναμονή');
+  await expect(page.getByTestId('harvest-save')).toBeDisabled();
   await page.getByRole('button', { name: 'Ακύρωση' }).click();
-  await page.clock.setSystemTime(Date.now() + EIGHT_DAYS);
-  await closeHistory(page);
-  await page.getByTestId('harvest-open').click();
-  await page.getByTestId('harvest-chip').filter({ hasText: 'Σπανάκι' }).first().click();
-  await page.getByTestId('harvest-crates').fill('2');
-  await page.getByTestId('harvest-cutby-option').first().click();                       // «Ποιος έκοψε» is required
-  await page.getByTestId('harvest-save').click();
-  await openHistory(page);
-  await expect(page.getByTestId('harvest')).toContainText('2 κλούβες');
 });
 
 test('«Ποιος έκοψε» is required: without a cutter nothing is saved and the screen says why; with one it is kept and shown', async ({ page }) => {

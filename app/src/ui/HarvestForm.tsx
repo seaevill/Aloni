@@ -24,7 +24,7 @@ const MAX_CRATES = 9999;
 
 export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = false }: { onDone: (saved: boolean) => void; farmId?: string; actorId?: string; big?: boolean }) {
   const { busy, submit } = useSubmit();
-  const plantings = useRows('plantings'); const crops = useRows('crops'); const parcels = useRows('parcels'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const workers = useRows('workers');
+  const labelRows = useRows('label_uses'); const plantings = useRows('plantings'); const crops = useRows('crops'); const parcels = useRows('parcels'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const workers = useRows('workers');
   const roster = (workers.rows ?? []).filter((w) => !w.deleted_at);
   const [cutBy, setCutBy] = useState(actorId ?? '');       // a worker's own phone sends her roster entry; the owner picks
   const [planting, setPlanting] = useState('');
@@ -34,7 +34,7 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
   const [failed, setFailed] = useState(0);        // how many times a save was refused: the first error is focused each time
   const [savedLine, setSavedLine] = useState('');
   const at = athensInstant(when) ?? '';
-  const gate = planting ? harvestGate(planting, instantOf(new Date()) ?? '', links.rows ?? [], sprays.rows ?? []) : undefined;
+  const gate = planting ? harvestGate(planting, instantOf(new Date()) ?? '', links.rows ?? [], sprays.rows ?? [], plantings.rows ?? [], labelRows.rows ?? []) : undefined;
   const blocked = gate && !gate.ok ? gate : undefined;
   const live = plantings.rows?.filter((p) => !p.deleted_at) ?? [];
   const name = (p: Row) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) });
@@ -51,7 +51,7 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
     return [cropOf(p), dated(p), sameDate && p.area_str !== undefined ? formatArea(p.area_str as string | number) : ''].filter(Boolean).join(' · ');
   };
   const markOf = (p: Row): string => {
-    const g = harvestGate(String(p.id), instantOf(new Date()) ?? '', links.rows ?? [], sprays.rows ?? []);
+    const g = harvestGate(String(p.id), instantOf(new Date()) ?? '', links.rows ?? [], sprays.rows ?? [], plantings.rows ?? [], labelRows.rows ?? []);
     if (g.ok) return '';
     return g.reason === 'running' && g.until ? t('harvest.chip.until', { d: formatDateTime(g.until) }) : t('harvest.chip.unknown');
   };
@@ -70,7 +70,7 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
   useEffect(() => { if (failed > 0) document.querySelector<HTMLElement>('main [data-error]')?.focus(); }, [failed]);
   const step = (d: 1 | -1) => { const n = parseWhole<'Crates'>(crates); const cur = n.known ? n.value : 0; setCrates(cur + d < 1 ? '' : `${Math.min(cur + d, MAX_CRATES)}`); }; // the counter buttons: +1 / −1, never below 1
   const save = async () => {
-    const r = buildHarvest({ plantingId: planting, crates, harvestedAt: at, note, cutBy }, links.rows ?? [], sprays.rows ?? [], farmId, new Date().toISOString(), crypto.randomUUID());
+    const r = buildHarvest({ plantingId: planting, crates, harvestedAt: at, note, cutBy }, links.rows ?? [], sprays.rows ?? [], farmId, new Date().toISOString(), crypto.randomUUID(), plantings.rows ?? [], labelRows.rows ?? []);
     if (!r.ok) { setFailed((n) => n + 1); return; }
     await put(db, 'job_harvest', actorId ? { ...r.row, actor_id: actorId } : r.row, 'insert');
     dataVersion.value++;

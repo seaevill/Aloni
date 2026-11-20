@@ -139,7 +139,7 @@ export function Today() {
   useBack(spraying || harvesting || planning || history, () => { setSpraying(false); setHarvesting(false); setPlanning(false); setHistory(false); }, spraying || harvesting || planning);
   const rows = [useRows('parcels'), useRows('plantings'), useRows('products'), useRows('stock_lots'), useRows('crops')];
   const [parcels, plantings, products, lots, crops] = rows;
-  const jobs = useRows('jobs'); const workers = useRows('workers'); const links = useRows('job_plantings'); const sprays = useRows('job_spray');
+  const labelRows = useRows('label_uses'); const jobs = useRows('jobs'); const workers = useRows('workers'); const links = useRows('job_plantings'); const sprays = useRows('job_spray');
   const weatherRows = useWeather();
   const weatherOf = new Map(weatherRows.map((w) => [w.parcel_id, parseDays(w.days)] as const));
   const harvestRows = useRows('job_harvest');
@@ -159,11 +159,11 @@ export function Today() {
 
   const now = instantOf(new Date()) ?? '';
   const cards: FieldCard[] = live(parcels).map((p) => {
-    const c = cutFromParcel(p.id, now, plantings.rows ?? [], links.rows ?? [], sprays.rows ?? []);
+    const c = cutFromParcel(p.id, now, plantings.rows ?? [], links.rows ?? [], sprays.rows ?? [], labelRows.rows ?? []);
     const crops_ = [...new Set(live(plantings).filter((x) => x.parcel_id === p.id).map((x) => nameOf(crops.rows?.find((c2) => c2.id === x.crop_id) ?? {})))].join(', ');
     return { weather: fieldWeather(weatherOf.get(p.id) ?? [], athensToday(new Date()) ?? ''), p, state: c.state, at: c.state === 'from' ? c.at : '', late: c.state === 'from' && c.late === true, source: c.state === 'from' ? t(c.source === 'manual' ? 'cut.source.manual' : 'cut.source.label') : '', crops: crops_ };
   });
-  const ct = cutToday(live(parcels), live(plantings), links.rows ?? [], sprays.rows ?? [], (id) => nameOf(crops.rows?.find((c2) => c2.id === id) ?? {}), now);
+  const ct = cutToday(live(parcels), live(plantings), links.rows ?? [], sprays.rows ?? [], (id) => nameOf(crops.rows?.find((c2) => c2.id === id) ?? {}), now, labelRows.rows ?? []);
   const urgent = cards.find((c) => c.state === 'unknown') ?? cards.filter((c) => c.state === 'from').sort((a, b) => a.at.localeCompare(b.at))[0];
   const today = athensToday(new Date()) ?? '';
   return (

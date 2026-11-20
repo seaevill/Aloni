@@ -92,7 +92,7 @@ test('worker view: a field that was just sprayed shows a red re-entry warning an
   }));
   await page.locator('nav.tabs [data-tab="more"]').click();
   await page.getByTestId('open-worker-view').click();
-  await expect(page.getByTestId('worker-lock').first()).toContainText('Μην μπείτε στο χωράφι μέχρι');
+  await expect(page.getByTestId('worker-lock').first()).toContainText(/μην μπείτε/i);      // running or unknown: both lock (the injected spray has no label of the crop: unknown = locked)
   await expect(page.getByTestId('job-done').first()).toBeDisabled();
   await expect(page.getByTestId('job-skip').first()).toBeEnabled(); // «Δεν έγινε» stays possible
 });

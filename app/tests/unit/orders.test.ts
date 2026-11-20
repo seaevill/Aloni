@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { sowHint, supplyByCrop } from '../../src/orders/available';
 import { cratesByCrop, mondayOf, parseBackup, suggestCropMap } from '../../src/orders/klouves';
+import { signedLabelFor } from '../helpers/labels';
 import type { Row } from '../../src/db/schema';
 
 const backup = (data: Record<string, unknown>, app = 'klouves'): string => JSON.stringify({ app, at: '2026-11-20T09:00:00Z', data });
@@ -36,9 +37,9 @@ describe('available crates', () => {
   const plantings = [pl('free', 'c-sp'), pl('held', 'c-sp'), pl('unk', 'c-sp'), pl('plan', 'c-sp', 'planned'), pl('r1', 'c-ro')];
   const R = (o: Record<string, unknown>): Row => ({ id: String(o.id ?? o.planting_id ?? o.job_id), farm_id: 'f', ...o });
   const links: Row[] = [R({ planting_id: 'held', job_id: 'j1' }), R({ id: 'l2', planting_id: 'unk', job_id: 'j2' })];
-  const sprays: Row[] = [R({ id: 's1', job_id: 'j1', sprayed_at: '2026-11-19T08:00:00Z', phi_days: '7', rei_hours: '24' }), R({ id: 's2', job_id: 'j2', sprayed_at: '2026-11-19T08:00:00Z', phi_days: '', rei_hours: '24' })];
+  const sprays: Row[] = [R({ id: 's1', job_id: 'j1', product_id: 'pq', sprayed_at: '2026-11-19T08:00:00Z', phi_days: '7', rei_hours: '24' }), R({ id: 's2', job_id: 'j2', product_id: 'pq', sprayed_at: '2026-11-19T08:00:00Z', phi_days: '', rei_hours: '24' })];
   const harvests: Row[] = [R({ id: 'h1', planting_id: 'free', crates_str: '12', harvested_at: '2026-11-19T07:00:00Z' }), R({ id: 'h2', planting_id: 'free', crates_str: '5', harvested_at: '2026-11-01T07:00:00Z' }), R({ id: 'h3', planting_id: 'held', crates_str: 'x', harvested_at: '2026-11-19T07:00:00Z' })];
-  const s = supplyByCrop(now, crops, plantings, links, sprays, harvests);
+  const s = supplyByCrop(now, crops, plantings, links, sprays, harvests, [signedLabelFor('pq', 'c-sp'), signedLabelFor('pq', 'c-ro')]);
   it('only a planting with every waiting period over counts as supply; running and unknown ones are held and NOT counted', () => {
     expect(s.spinach).toEqual({ slug: 'spinach', free: 1, held: 1, unknown: 1, cut7: 12 });
     expect(s.rocket?.free).toBe(1);

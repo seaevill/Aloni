@@ -32,10 +32,10 @@ function Sketch({ b }: { b: Boundary }) {
 
 /** Tapped from the parcel list (prototype «Parcel detail»): a sketch, the facts, today's weather, the plantings and the last sprayings on THIS parcel. Everything is read from the same records; nothing is decided here. */
 export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: { parcel: Row; onBack: () => void; onEdit: () => void; onAnalyses: () => void; readOnly: boolean }) {
-  const plantings = useRows('plantings'); const crops = useRows('crops'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const products = useRows('products');
+  const labelRows = useRows('label_uses'); const plantings = useRows('plantings'); const crops = useRows('crops'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const products = useRows('products');
   const weather = useWeather();
   const mine = (plantings.rows ?? []).filter((p) => p.parcel_id === parcel.id && !p.deleted_at);
-  const cut = cutFromParcel(parcel.id, instantOf(new Date()) ?? '', plantings.rows ?? [], links.rows ?? [], sprays.rows ?? []);
+  const cut = cutFromParcel(parcel.id, instantOf(new Date()) ?? '', plantings.rows ?? [], links.rows ?? [], sprays.rows ?? [], labelRows.rows ?? []);
   const jobIds = new Set((links.rows ?? []).filter((l) => mine.some((p) => p.id === l.planting_id)).map((l) => l.job_id));
   const last = effectiveSprays((sprays.rows ?? []).filter((s) => jobIds.has(s.job_id))).sort((a, b) => text(b.sprayed_at).localeCompare(text(a.sprayed_at))).slice(0, 5);
   const wx = dayOf(parseDays(weather.find((w) => w.parcel_id === parcel.id)?.days), athensToday(new Date()) ?? '');
