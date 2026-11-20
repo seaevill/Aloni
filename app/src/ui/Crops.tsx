@@ -1,4 +1,5 @@
 import { useState } from 'preact/hooks';
+import { useBack } from './backstack';
 import { activeFarm, dataVersion, db, loadDemo, realFarmId } from '../db';
 import { t } from '../i18n';
 import { formatArea } from '../i18n/format';
@@ -30,6 +31,7 @@ export function Crops() {
   const plantings = useRows('plantings');
   const parcels = useRows('parcels');
   const liveParcels = parcels.rows?.filter((p) => !p.deleted_at) ?? [];
+  useBack(adding || !!editing || !!shownId, () => { setAdding(false); setEditing(undefined); setShownId(undefined); }, adding || !!editing);
   if (adding) return <PlantingForm parcels={liveParcels} onDone={() => setAdding(false)} />;
   if (editing) return <PlantingForm parcels={liveParcels} existing={editing} onDone={() => setEditing(undefined)} />;
   const shownCrop = crops.rows?.find((c0) => c0.id === shownId);

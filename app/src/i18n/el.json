@@ -681,5 +681,8 @@
   "jobs.group.later": "Αργότερα",
   "job.plantings": "Φυτεύσεις για ψεκασμό",
   "job.worker": "Ποιος θα ψεκάσει",
-  "job.dose": "Δόση προς εφαρμογή"
+  "job.dose": "Δόση προς εφαρμογή",
+  "nav.leave": "Να φύγω χωρίς αποθήκευση;",
+  "nav.leave.stay": "Μένω",
+  "nav.leave.go": "Φεύγω"
 }

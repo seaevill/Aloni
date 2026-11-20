@@ -9,6 +9,8 @@ export const offlineReady = signal(false);
 export const dbBlocked = signal<'other' | 'closed' | undefined>(undefined);
 /** true after the user typed into a field OR tapped anything inside the screen (chips, counters, pickers) and has not saved or left the tab since: a reload would lose that state */
 export const dirty = signal(false);
+/** Something was TYPED (not only tapped) into the open screen: only this makes a tab tap ask «Να φύγω;». */
+export const typed = signal(false);
 
 export interface Situation { dirty: boolean; hidden: boolean }
 /** Apply by itself only when the app is in the background and no field has been typed into; otherwise ask. */
@@ -31,8 +33,10 @@ export function onOfflineReady(): void { offlineReady.value = true; }
 /** Starts the bookkeeping: a field typed into marks the screen as dirty (kept until the tab changes); coming back to the background applies a waiting update when nothing can be lost. */
 export function watchDirty(): void {
   const mark = (e: Event) => { const el = e.target as Element | null; if (el?.closest?.('main') && !el.closest('nav.tabs')) dirty.value = true; };
+  const typing = (e: Event) => { const el = e.target as Element | null; if (el?.closest?.('main') && !el.closest('nav.tabs')) typed.value = true; };
+  document.addEventListener('input', typing, true);
   document.addEventListener('input', mark, true); document.addEventListener('change', mark, true); document.addEventListener('click', mark, true);
-  effect(() => { void tab.value; void dataVersion.value; dirty.value = false; });          // leaving the tab or saving something clears it
+  effect(() => { void tab.value; void dataVersion.value; dirty.value = false; typed.value = false; });          // leaving the tab or saving something clears it
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') dbBlocked.value = undefined; if (needRefresh.value && mayApplyByItself({ dirty: dirty.value, hidden: document.visibilityState === 'hidden' })) applyNow(); });
   // the test hook (Playwright fires «a new version is waiting» without a real deploy)
   window.__aloniTest = { needRefresh: onNeedRefresh };

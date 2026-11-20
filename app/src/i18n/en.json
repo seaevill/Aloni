@@ -681,5 +681,8 @@
   "jobs.group.later": "Later",
   "job.plantings": "Plantings to spray",
   "job.worker": "Who will spray",
-  "job.dose": "Dose to apply"
+  "job.dose": "Dose to apply",
+  "nav.leave": "Leave without saving?",
+  "nav.leave.stay": "Stay",
+  "nav.leave.go": "Leave"
 }

@@ -1,4 +1,6 @@
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
+import { openParcelForm } from './nav';
+import { useBack } from './backstack';
 import { activeFarm, dataVersion, db, loadDemo, realFarmId } from '../db';
 import { tab } from './nav';
 import { DEMO_FARM_ID } from '../config';
@@ -52,6 +54,8 @@ export function Parcels() {
   const [editing, setEditing] = useState<Row | undefined>(undefined);
   const [shownId, setShownId] = useState<string | undefined>(undefined);
   const q = useRows('parcels');
+  useBack(adding || !!analysing || !!editing || !!shownId, () => { setAdding(false); setAnalysing(undefined); setEditing(undefined); setShownId(undefined); }, adding || !!editing);
+  useEffect(() => { if (openParcelForm.value) { openParcelForm.value = false; setAdding(true); } }, [openParcelForm.value]);
   if (adding) return <ParcelForm onDone={() => setAdding(false)} />;
   if (editing) return <ParcelForm existing={editing} onDone={() => setEditing(undefined)} />;
   const shown = q.rows?.find((r) => r.id === shownId);   // read fresh from the rows: an edit shows at once

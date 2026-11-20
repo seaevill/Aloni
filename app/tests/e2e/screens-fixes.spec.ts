@@ -7,9 +7,8 @@ test('Σήμερα: empty farm offers «add a field» first and the demo second;
   await iphone(page);
   await expect(page.getByTestId('empty-state').locator('button')).toHaveCount(2);
   await expect(page.getByTestId('empty-state').locator('button').first()).toHaveText('Προσθήκη χωραφιού');
-  await page.getByTestId('empty-state').locator('button').first().click(); // takes the farmer to the parcels tab
-  await expect(page.getByTestId('empty-state')).toContainText('Δεν υπάρχουν δεδομένα');
-  await page.getByTestId('empty-state').locator('button').click();
+  await page.getByTestId('empty-state').locator('button').first().click(); // T7: opens the parcel form in ONE tap
+  await expect(page.getByTestId('parcel-save')).toBeVisible();
   await page.locator('input.input').nth(0).fill('Κάτω Κάμπος');
   await page.locator('input.input').nth(1).fill('0,5');
   await page.getByTestId('parcel-save').click();

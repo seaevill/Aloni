@@ -681,5 +681,8 @@
   "jobs.group.later": "Daha sonra",
   "job.plantings": "Püskürtülecek ekimler",
   "job.worker": "Kim püskürtecek",
-  "job.dose": "Uygulanacak doz"
+  "job.dose": "Uygulanacak doz",
+  "nav.leave": "Kaydetmeden çıkayım mı?",
+  "nav.leave.stay": "Kalıyorum",
+  "nav.leave.go": "Çıkıyorum"
 }
