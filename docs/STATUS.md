@@ -9,10 +9,21 @@
 2. Etiketleri imzalamaya ne zaman gelebilir? (İmzasız taslak etiket artık «bilinmiyor = kapalı» sayılır.)
 3. **(m9 S-NEW-3, şimdilik DEĞİŞTİRİLMEDİ)** İşçinin «Έγινε» kilidi giriş yasağını ilaçlamanın **bitişinde** kontrol ediyor, **başlangıcında** değil: eski bir giriş yasağı sürerken işçi 20 dakika tarlada çalışmış olabilir ve kayıt «rei_conflict» işaretsiz geçiyor. Koruyucu donanımlı uygulayıcı için istisna var mı? Yoksa kapıyı başlangıç saatine de bakacak şekilde sıkılaştırırız.
 
-## ŞU AN (2026-11-20, gece)
-- **Bitti:** Production **0001–0034** (Supabase migrate run 44799478194, commit ee1dd3a: guard, apply, verify_applied yeşil; Bora bildirdi). 0033 = «Έγκριση γεωπόνου» defteri, 0034 = uygulamanın kendi «Δημιουργία κτήματος» yolu. Merge kilidi kalktı, runner açık.
-- **Sıradaki:** CI'da WebKit kurulumuna zaman aşımı + 1 yeniden deneme (#249), sonra kuyruk: T11, T10, T16b, T8b; «Έγκριση γεωπόνου» 2b (telefon defteri senkronu, SQL: ekip incelemesi).
-- **Bora'dan beklenen:** (1) Cloudflare'e 3 genel derleme değişkenini girip yeniden dağıt (RUNBOOK §12b), (2) RUNBOOK §12a'daki 10 satırı işçi telefonuyla yap, sonucu yaz. Gizli anahtar asla.
+## SABAH RAPORU (2026-11-21, gece çalışması)
+1. **Production 0001–0034**, main yeşil. Giriş ve çiftlik sihirbazı açık (Cloudflare değişkenlerin); senkron hâlâ kapalı.
+2. **Biten PR'lar:** WebKit kurulumuna zaman aşımı + 1 yeniden deneme (#249); T10 günlük sevkiyat, T11 işçi ilk gün, T16b marka/ikon; UX1 adım 1-3 (#251 ilaçlama adımları, #254 Σήμερα'da katlama, #255 tarla zaman çizgisi); Codex'in 6 PR'ı (#240–#245); #247 LESSONS.
+3. **LIVE için senden tek adım:** kod PR'ı gerekmedi. §12a'nın 1–6. adımı başarılıysa **Άλλα → Άνοιγμα συγχρονισμού** (RUNBOOK §13). Hava için RUNBOOK §14a (token ÖNCE, hepsi senin tıklaman).
+4. **Telefonda deneyeceğin 5 şey:** (a) ilaçlama formu: başlıklar 1–4 numaralı, seçince ✓ (Σήμερα → ψεκασμός); (b) Σήμερα'da (demo) kesime hazır çok satır tek «N φυτεύσεις ελεύθερες για κοπή (πατήστε)» satırında; (c) bir tarlayı aç → en altta **Χρονολόγιο** (ekim, ilaçlama, hasat); (d) Άλλα → Διαθέσιμες κλούβες: müşteri başına günlük sevkiyat + kopyalanacak metin (T10); (e) işçi telefonunda ilk açılış: dil seçimi ve «Ενημέρωση εργαζομένων» (T11).
+5. **Yapılmayan:** UX1 adım 4 («Εργασίες» merkezi), T8b («Αύριο φεύγουν»), T12/T14 kalan parçalar; sıradalar.
+6. **Bekleyen onay:** #252 (CLAUDE.md dil tablosu, «Bora onaylayacak»).
+
+## Sabah soruları
+1. #252'yi (dil tablosu) onaylıyor musun?
+2. «Dış UX araştırması»nın metni repoda yok: planı 4 başlıktan çıkardım. Metni `docs/` altına koyar mısın, planı ona göre düzelteyim.
+
+## Önceki durum (2026-11-20, gece)
+- **Bitti:** Production **0001–0034** (run 44799478194, commit ee1dd3a). 0033 = «Έγκριση γεωπόνου» defteri, 0034 = uygulamanın kendi «Δημιουργία κτήματος» yolu.
+- **Bora'dan beklenen (gece):** 3 Cloudflare değişkeni ✔ girildi; §12a denemesi senin sonucunu bekliyor.
 
 ## Yükleme tamam (2026-11-20)
 - Production artık **0001–0034** (önceki: 0001–0032). Ekip m9 incelemesi: MUST yok. Hava (0029/0030) için RUNBOOK §14 hâlâ ayrı bir adım: önce token (Vault), sonra fonksiyon, sonra tek tarla dry-run.
