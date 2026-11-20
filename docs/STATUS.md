@@ -9,13 +9,13 @@
 2. Etiketleri imzalamaya ne zaman gelebilir? (İmzasız taslak etiket artık «bilinmiyor = kapalı» sayılır.)
 3. **(m9 S-NEW-3, şimdilik DEĞİŞTİRİLMEDİ)** İşçinin «Έγινε» kilidi giriş yasağını ilaçlamanın **bitişinde** kontrol ediyor, **başlangıcında** değil: eski bir giriş yasağı sürerken işçi 20 dakika tarlada çalışmış olabilir ve kayıt «rei_conflict» işaretsiz geçiyor. Koruyucu donanımlı uygulayıcı için istisna var mı? Yoksa kapıyı başlangıç saatine de bakacak şekilde sıkılaştırırız.
 
-## ŞU AN (2026-11-20, akşam)
-- **Bitti:** Production **0001–0032** (Supabase migrate run 44758958361, commit 0e4c6b4: guard, apply, verify_applied yeşil; Claude salt okunur kontrol: migration listesi 0001–0032). §15 sorgusu 0 satır döndü.
-- **Sıradaki:** merge kilidi kalktı; kuyruk: #221 (CI hızı), #218, #226 (oturum/senkron), T7, T10, T11, T12, T14, T16b, #211, T8b. Sonra «Έγκριση γεωπόνου» ekranı (0033, önce kırmızı test).
-- **Bora'dan beklenen:** bu akşamki işçi telefonu denemesi için RUNBOOK **§12a** (10 satır) ve Claude'un hazırlayacağı «denemeyi aç» PR'ı (giriş ekranları açılır, senkron açılmaz).
+## ŞU AN (2026-11-20, gece)
+- **Bitti:** Production **0001–0034** (Supabase migrate run 44799478194, commit ee1dd3a: guard, apply, verify_applied yeşil; Bora bildirdi). 0033 = «Έγκριση γεωπόνου» defteri, 0034 = uygulamanın kendi «Δημιουργία κτήματος» yolu. Merge kilidi kalktı, runner açık.
+- **Sıradaki:** CI'da WebKit kurulumuna zaman aşımı + 1 yeniden deneme (#249), sonra kuyruk: T11, T10, T16b, T8b; «Έγκριση γεωπόνου» 2b (telefon defteri senkronu, SQL: ekip incelemesi).
+- **Bora'dan beklenen:** (1) Cloudflare'e 3 genel derleme değişkenini girip yeniden dağıt (RUNBOOK §12b), (2) RUNBOOK §12a'daki 10 satırı işçi telefonuyla yap, sonucu yaz. Gizli anahtar asla.
 
 ## Yükleme tamam (2026-11-20)
-- Production artık **0001–0032**. Ekip m9 incelemesi: MUST yok. Hava (0029/0030) için RUNBOOK §14 hâlâ ayrı bir adım: önce token (Vault), sonra fonksiyon, sonra tek tarla dry-run.
+- Production artık **0001–0034** (önceki: 0001–0032). Ekip m9 incelemesi: MUST yok. Hava (0029/0030) için RUNBOOK §14 hâlâ ayrı bir adım: önce token (Vault), sonra fonksiyon, sonra tek tarla dry-run.
 - **Açık soru (değiştirilmedi):** «Έγινε» kilidi giriş yasağını ilaçlamanın bitişinde kontrol ediyor, başlangıcında değil («γεωπόνος soruları» 3).
 
 ## SABAH RAPORU (gece çalışması, 2026-11-19 → 20)
@@ -74,7 +74,7 @@
 
 ## Canlıya geçiş kontrol listesi (LIVE'ı açmadan önce; sırayla)
 1. ☑ Ekip m9 incelemesi: MUST yok, 0022–0032 yüklemeye hazır (`docs/reviews/team/2026-11-20-m9-review.md`).
-2. ☑ 0001–0032 production'da, `verify_applied` yeşil (run 44758958361, 2026-11-20).
+2. ☑ 0001–0034 production'da, `verify_applied` yeşil (run 44799478194, commit ee1dd3a, 2026-11-20).
 3. ☐ Supabase **Advisors** (Security + Performance) temiz.
 4. ☐ Gerçek hesap denemesi yapıldı (RUNBOOK §12, 11 adım).
 5. ☐ Άλλα → «Σύνδεση λογαριασμού: τι λείπει» kartı beş satırda yeşil (veri sorumlusu, çiftlik adı, ΑΦΜ, migration 0028, Advisor).

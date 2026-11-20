@@ -137,7 +137,7 @@ Görünüm yalnızca iki dosyada: `app/src/ui/tokens.css` (renk, ölçü, gölge
 
 ## 12a. Gerçek hesap denemesi – KISA (telefonda, 10 satır; ayrıntı aşağıda §12)
 Her satır: **Nerede → Ne yap → Doğru sonuç.** Farklıysa **dur**, ekran görüntüsünü Claude'a gönder. Parola ve gizli anahtarı hiçbir yere yazma. Veritabanına **elle SQL yapıştırmak yok**; Claude da üretime dokunmaz.
-**Önkoşullar (sırayla):** (a) 0033 ve 0034 **onaylı workflow** ile yüklendi (Actions → «Supabase migrate (manual)», önce dry-run, sonra apply); (b) §12b'deki 3 Cloudflare değişkeni girildi ve yeniden dağıtıldı (giriş ekranları açılır; senkron AÇILMAZ).
+**Önkoşullar (sırayla):** (a) 0033 ve 0034 **onaylı workflow** ile yüklendi ✔ (2026-11-20, run 44799478194); (b) §12b'deki 3 Cloudflare değişkeni girildi ve yeniden dağıtıldı (giriş ekranları açılır; senkron AÇILMAZ).
 1. **Supabase → Authentication → Sign In / Providers** → yalnızca **Email** açık, **Confirm email** açık, diğerleri kapalı → doğru: başka sağlayıcı yok.
 2. **Uygulama → Άλλα → Σύνδεση** → e-postan → «Αποστολή κωδικού» → mailden kod → «Σύνδεση» → doğru: e-postan görünür, sayfayı yenileyince girişli.
 3. Aynı kartta **«Δημιουργία κτήματος»** sihirbazı çıkar → çiftlik adını yaz → düğmeye **bir kez** bas → doğru: «Το κτήμα δημιουργήθηκε». Çiftlik ve sahip üyeliği sunucuda kontrollü bir fonksiyonla oluşur; sihirbaz sonra kaybolur. (Sihirbaz çıkmazsa: 0034 yüklenmemiş demektir, dur.)
@@ -150,7 +150,7 @@ Her satır: **Nerede → Ne yap → Doğru sonuç.** Farklıysa **dur**, ekran g
 10. **Temizlik:** test işçisini Authentication → Users'tan **sen** sil (gerçek işçiyse silme).
 
 ## 12b. «Denemeyi aç» = Cloudflare'de 3 derleme değişkeni (kod PR'ı yok; geri alması da değişkenleri silmek)
-**Ön koşul:** üretim 0001–0032 (tamam). Bunlar **genel** değerlerdir (gizli değil). Gizli (service/secret) anahtarı **hiçbir yere** yazma.
+**Ön koşul:** üretim 0001–0034 (tamam, 2026-11-20). Bunlar **genel** değerlerdir (gizli değil). Gizli (service/secret) anahtarı **hiçbir yere** yazma.
 1. **Cloudflare** → Workers & Pages → **aloni** → **Settings → Build → Variables and secrets** → **Add** (tür: *Text*, secret DEĞİL):
  `VITE_LIVE` = `true`
  `VITE_SUPABASE_URL` = `https://jueedypyaxreudapabpr.supabase.co`
