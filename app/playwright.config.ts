@@ -12,6 +12,10 @@ const device = { browserName, launchOptions: launch, viewport: { width: 375, hei
 export default defineConfig({
   testDir: 'tests/e2e',
   reporter: 'list',
+  // The WebKit runner is slower than it was and a DIFFERENT single test failed on identical code in each run (2026-11-20): a failed test is retried ONCE in CI and reported as «flaky» (it is never hidden:
+  // a deterministic failure fails twice), and the default 5 s for an expectation is doubled. Nothing is skipped or loosened in the tests themselves.
+  retries: process.env.CI ? 1 : 0,
+  expect: { timeout: 10_000 },
   projects: [
     // the real build: the live features are OFF
     { name: 'app', testIgnore: /live-.*\.spec\.ts/, use: { ...device, baseURL: 'http://localhost:4173' } },
