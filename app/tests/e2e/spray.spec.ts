@@ -153,7 +153,7 @@ test('a label an UNSIGNED spray used is not edited in place: a change makes a NE
   await expect(page.getByTestId('labeluse-signed-note')).toHaveCount(0);
   await inputs(page).nth(1).fill('10');
   await page.getByTestId('labeluse-save').click();
-  await expect(card.getByTestId('labeluse-status')).toBeVisible();
+  await expect(page.getByTestId('labeluse-save')).toHaveCount(0);                    // the form closed = the save finished (the card's status was visible BEFORE the save: waiting on it read the old row on a slow runner)
   all = await rows();
   expect(all).toHaveLength(2);
   expect(all.find((x) => !x.deleted_at)).toMatchObject({ supersedes_id: oldRow.id, change_reason: 'label revised', phi_days: '10' });
