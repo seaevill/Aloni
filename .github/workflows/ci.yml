@@ -76,8 +76,14 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Install WebKit only (browser binaries are not cached, restoring takes as long as downloading)
-        run: npx playwright install --with-deps webkit
+      - name: Install WebKit only (browser binaries are not cached, restoring takes as long as downloading); 5 minutes per try, one retry
+        # this step hung for the full 20 minutes of the job three times on the same commit (2026-11-20); a hung try is stopped after 5 minutes and tried once more
+        run: |
+          for try in 1 2; do
+            if timeout 300 npx playwright install --with-deps webkit; then exit 0; fi
+            echo "WebKit install try $try did not finish in 5 minutes or failed"
+          done
+          exit 1
         working-directory: app
       - name: E2E at 375 px (WebKit), one third of the files
         run: npx playwright test --trace off --shard=${{ matrix.shard }}/3
