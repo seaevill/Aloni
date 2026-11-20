@@ -24,7 +24,7 @@ export function ParcelForm({ onDone, existing }: { onDone: () => void; existing?
   const [pin, setPin] = useState<Pin | undefined>(undefined);
   const [pinFailed, setPinFailed] = useState(false); const [boundary, setBoundary] = useState<Boundary | undefined>(validBoundary(existing?.boundary) ? existing.boundary : undefined); const [mapOpen, setMapOpen] = useState(false);
   const [osde, setOsde] = useState(typeof existing?.opekepe_code === 'string' ? existing.opekepe_code : '');
-  const [errors, setErrors] = useState<{ name: boolean; area: 'missing' | 'invalid' | undefined }>({ name: false, area: undefined });
+  const [errors, setErrors] = useState<{ name: boolean; area: 'missing' | 'invalid' | 'implausible' | undefined }>({ name: false, area: undefined });
 
   const takePin = async () => {
     const r = await readPin();
@@ -64,6 +64,7 @@ export function ParcelForm({ onDone, existing }: { onDone: () => void; existing?
       </label>
       {errors.area === 'missing' && <p class="msg error" role="alert">{t('parcel.error.area.missing')}</p>}
       {errors.area === 'invalid' && <p class="msg error" role="alert">{t('parcel.error.area.invalid')}</p>}
+      {errors.area === 'implausible' && <p class="msg error" role="alert">{t('parcel.error.area.big')}</p>}
 
       <label class="field">{t('parcel.osde')}
         <input class="input" value={osde} autoComplete="off" data-testid="parcel-osde" onInput={(e) => setOsde((e.target as HTMLInputElement).value)} />

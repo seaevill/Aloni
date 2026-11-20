@@ -1,12 +1,13 @@
 import { compareDecimal, parseDecimal, type Decimal } from '@aloni/rules-core';
 import type { Row } from '../db/schema';
+import { MAX_AREA } from '../parcels/parcel';
 
 export const STATUSES = ['planned', 'growing', 'harvesting', 'finished'] as const;
 export type Status = (typeof STATUSES)[number];
 export interface PlantingInput {
   parcelId: string; cropId: string; variety: string; lot: string; area: string; sownOn: string; status: Status;
 }
-export interface PlantingErrors { parcel: boolean; crop: boolean; area: 'missing' | 'invalid' | undefined; date: boolean }
+export interface PlantingErrors { parcel: boolean; crop: boolean; area: 'missing' | 'invalid' | 'implausible' | undefined; date: boolean }
 export type PlantingResult = { ok: true; row: Row } | ({ ok: false } & PlantingErrors);
 
 /** «2026-11-17» only when it is a real calendar date (no «2026-02-31», no «Invalid Date»). */
@@ -29,7 +30,7 @@ export function athensToday(now: Date): string | undefined {
 /** A planting needs a parcel, a crop, a typed area and a real sowing date. Variety and lot label are optional free text. */
 export function buildPlanting(input: PlantingInput, farmId: string, nowIso: string, id: string): PlantingResult {
   const area = parseDecimal(input.area);
-  const areaProblem = !area.known ? (area.reason === 'missing' ? 'missing' : 'invalid') : compareDecimal(area.value, '0' as Decimal) > 0 ? undefined : 'invalid';
+  const areaProblem = !area.known ? (area.reason === 'missing' ? 'missing' : 'invalid') : compareDecimal(area.value, '0' as Decimal) > 0 ? (compareDecimal(area.value, MAX_AREA) > 0 ? 'implausible' : undefined) : 'invalid';
   const errors: PlantingErrors = { parcel: !input.parcelId, crop: !input.cropId, area: areaProblem, date: !validDate(input.sownOn) };
   if (!area.known || errors.parcel || errors.crop || errors.area || errors.date) return { ok: false, ...errors };
   const variety = input.variety.trim();

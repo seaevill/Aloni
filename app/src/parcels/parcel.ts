@@ -4,9 +4,12 @@ import { validBoundary } from '../map/geo';
 
 export const TOPO = ['plain', 'slope', 'coast'] as const; // Πεδινό / Πλαγιά / Παραλιακό; optional, never defaulted
 export type Topo = (typeof TOPO)[number];
+/** A parcel or planting area above 10 000 στρέμματα is almost certainly a typing slip: refused with «δεν φαίνεται σωστό». */
+export const MAX_AREA = '10000' as Decimal;
+
 export interface Pin { lat: number; lng: number; accuracy_m: number }
 export interface ParcelInput { name: string; area: string; topo: Topo | undefined; pin: Pin | undefined; osde?: string; boundary?: unknown }
-export type ParcelResult = { ok: true; row: Row } | { ok: false; name: boolean; area: 'missing' | 'invalid' | undefined };
+export type ParcelResult = { ok: true; row: Row } | { ok: false; name: boolean; area: 'missing' | 'invalid' | 'implausible' | undefined };
 
 /**
  * A parcel needs a name and an area in στρέμματα (typed, never guessed: «1.000» is refused). The pin and the topography are optional
@@ -15,7 +18,7 @@ export type ParcelResult = { ok: true; row: Row } | { ok: false; name: boolean; 
 export function buildParcel(input: ParcelInput, farmId: string, nowIso: string, id: string): ParcelResult {
   const name = input.name.trim();
   const area = parseDecimal(input.area);
-  const areaProblem = !area.known ? (area.reason === 'missing' ? 'missing' : 'invalid') : compareDecimal(area.value, '0' as Decimal) > 0 ? undefined : 'invalid';
+  const areaProblem = !area.known ? (area.reason === 'missing' ? 'missing' : 'invalid') : compareDecimal(area.value, '0' as Decimal) > 0 ? (compareDecimal(area.value, MAX_AREA) > 0 ? 'implausible' : undefined) : 'invalid';
   if (!name || areaProblem || !area.known) return { ok: false, name: !name, area: areaProblem };
   const row: Row = {
     id, farm_id: farmId, name, area_str: area.value, created_at: nowIso, updated_at: nowIso, deleted_at: null,
