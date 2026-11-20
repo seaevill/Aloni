@@ -54,3 +54,5 @@ Bu dosya benim iş listem. Bitirdiğimi `[x]` ile işaretlerim. `docs/reviews/te
 
 ## E6 – Bora kararları
 - [x] STATUS.md «(d)» bölümünde sade dille, varsayılan önerimle: EPPO onayı, OpenFreeMap şartları, Hintçe kontrolü, logo, veri sorumlusu bilgileri, LIVE. *Bitti:* bölüm güncel.
+
+- 2026-11-21 (0035 leftovers): index on weather_hourly (farm_id, at) after a workload measurement; remaining 30 SECURITY DEFINER functions to pg_catalog, pg_temp one by one with grant checks; farm_id indexes for applied_ops, audit_log, job_fertilise/irrigate/sow after caller + volume check; `supabase db lint` in CI (sql job has no Supabase CLI).
