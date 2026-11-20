@@ -15,7 +15,7 @@ const isLateRow = (r: Row): boolean => Array.isArray(r.flags) && r.flags.include
  * private.planting_gate, 0032). No such label, an unsigned or changed one, or one with a missing value = undefined = UNKNOWN = closed. A stored or typed period never opens anything.
  */
 function labelEnds(sp: Row, planting: Row | undefined, labels: readonly Row[]): { phi: string; rei: string } | undefined {
-  if (!planting) return undefined;
+  if (!planting || typeof sp.product_id !== 'string' || typeof planting.crop_id !== 'string') return undefined;
   const mine = labels.filter((l) => l.product_id === sp.product_id && l.crop_id === planting.crop_id && (!l.deleted_at || l.id === sp.label_use_id));
   if (mine.length === 0) return undefined;
   let phi: string | undefined; let rei: string | undefined;
@@ -102,7 +102,7 @@ export function reiLockParcel(parcelId: string, now: string, plantings: readonly
   if (!parseInstant(now).known) return { state: 'unknown' };
   let until: string | undefined;
   let unknown = false;
-  for (const p of plantings.filter((x) => x.parcel_id === parcelId && !x.deleted_at)) {      // every planting by ITS OWN crop's signed label (m9 S-NEW-1)
+  for (const p of plantings.filter((x) => x.parcel_id === parcelId)) {      // every planting (as the server's gate: a soft-deleted one too) by ITS OWN crop's signed label (m9 S-NEW-1)
     const jobs = new Set(links.filter((l) => l.planting_id === p.id).map((l) => l.job_id));
     for (const sp of effectiveSprays(sprayRows).filter((r) => jobs.has(r.job_id))) {
       const lab = labelEnds(sp, p, labels);
