@@ -46,6 +46,8 @@
   "more.legacyKept": "Old data was found on this phone. It was not deleted; exporting it (a copy) is coming soon.",
   "sync.offline": "Offline",
   "sync.ok": "Sync is working",
+  "sync.refused.one": "{n} refused by the server",
+  "sync.refused.other": "{n} refused by the server",
   "sync.waiting": "Waiting for the first sync",
   "sync.last": "last: {t}",
   "sync.pending.one": "{n} not synced",

@@ -22,18 +22,20 @@ export interface Deps {
 }
 
 export function createRunner(d: Deps): { tick: () => Promise<'skipped' | 'ok' | 'failed'> } {
-  let busy = false; let again = false;
+  let busy = false; let again = false; let lastFarm = d.farm();
   const run = {
     async tick(): Promise<'skipped' | 'ok' | 'failed'> {
       if (busy) { again = true; return 'skipped'; } // asked during a round (a new sign-in, another farm id): one more round follows it
       if (!d.online()) return 'skipped';
       busy = true;
       try {
-        const tr = await d.transport();
-        if (!tr) return 'skipped';
-        const r = await syncOnce(d.db, tr, d.farm());
+        const farm = d.farm();
+        const tr = farm === '' ? undefined : await d.transport();
+        if (farm !== lastFarm) { lastSyncOk.value = undefined; lastFarm = farm; }      // another farm or sync switched off: the old «last good round» is not this one's
+        if (!tr) { lastSyncOk.value = undefined; return 'skipped'; }                      // signed out or switched off: nothing can be called «works» any more
+        const r = await syncOnce(d.db, tr, farm);
         syncError.value = undefined;
-        lastSyncOk.value = new Date().toISOString();
+        lastSyncOk.value = r.rejected > Number('0') ? undefined : new Date().toISOString();   // a round where the server REFUSED a record is not a good round
         if (r.written > 0 || r.sent > 0 || r.rejected > 0 || r.weather) d.changed();
         return 'ok';
       } catch (e) {

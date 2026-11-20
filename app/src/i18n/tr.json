@@ -46,6 +46,8 @@
   "more.legacyKept": "Bu telefonda eski veriler bulundu. Silinmediler; dışa aktarma (yedek) yakında gelecek.",
   "sync.offline": "Çevrimdışı",
   "sync.ok": "Senkron çalışıyor",
+  "sync.refused.one": "{n} kayıt sunucu tarafından reddedildi",
+  "sync.refused.other": "{n} kayıt sunucu tarafından reddedildi",
   "sync.waiting": "İlk senkron bekleniyor",
   "sync.last": "son: {t}",
   "sync.pending.one": "{n} eşitlenmemiş",

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'preact/hooks';
 import { SYNC_CONNECTED } from '../config';
 import { db } from '../db';
 import { pendingOps, rejectedOps, unsyncedIds } from '../repo';
@@ -16,6 +17,8 @@ const CLOCK = new Intl.DateTimeFormat('el-GR', { hour: '2-digit', minute: '2-dig
 const athensClock = (iso: string): string => CLOCK.format(new Date(iso));
 
 export function SyncChip() {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => { const id = setInterval(() => setNow(Date.now()), 30_000); return () => clearInterval(id); }, []);   // «works» ages out by itself
   const n = pendingOps.value;
   const offline = !online.value;
   let text = '';
@@ -24,8 +27,8 @@ export function SyncChip() {
   else if (offline) text = t('sync.offline');
   else if (n > 0) text = tn('sync.pending', n);
   if (SYNC_CONNECTED && syncError.value) text = [text, t('sync.error')].filter(Boolean).join(' · ');
-  const live = syncChip({ connected: SYNC_CONNECTED, enabled: syncEnabled.value, online: online.value, pending: n, failed: syncError.value !== undefined, lastOk: lastSyncOk.value }, athensClock);
-  if (live) text = live.keys.map((k) => (k.key === 'sync.pending' ? tn('sync.pending', k.n) : k.key === 'sync.last' ? t('sync.last', k.vars) : t(k.key))).join(' · ');
+  const live = syncChip({ connected: SYNC_CONNECTED, enabled: syncEnabled.value, online: online.value, pending: n, rejected: rejectedOps.value.length, failed: syncError.value !== undefined, lastOk: lastSyncOk.value, now }, athensClock);
+  if (live) text = live.keys.map((k) => (k.key === 'sync.pending' ? tn('sync.pending', k.n) : k.key === 'sync.refused' ? tn('sync.refused', k.n) : k.key === 'sync.last' ? t('sync.last', k.vars) : t(k.key))).join(' · ');
   if (!text) return null;
   return <p class={live ? `chip ${live.tone}` : SYNC_CONNECTED ? 'chip' : 'chip calm'} role="status" data-testid="sync-chip">{text}</p>;
 }
