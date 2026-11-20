@@ -85,6 +85,23 @@ describe('queued server calls (the worker\'s «Έγινε»)', () => {
     expect(await mk(400, { code: '23514', message: 'locked' }).rpc('complete_spray_job', {})).toEqual({ ok: false, code: '23514', reason: 'locked' });
     await expect(mk(503, {}).rpc('complete_spray_job', {})).rejects.toThrow('HTTP 503');
     await expect(mk(429, {}).rpc('complete_spray_job', {})).rejects.toThrow('HTTP 429');
+    await expect(mk(401, { code: 'PGRST301', message: 'JWT expired' }).rpc('complete_spray_job', {})).rejects.toThrow('HTTP 401');   // an expired token is not a refusal of the record: it is kept and retried with a fresh one
+  });
+});
+
+describe('an expired token on a queued call', () => {
+  it('leaves the worker\'s «Έγινε» pending (not rejected) and the next round with a fresh token delivers it, once', async () => {
+    const db = await newDb();
+    await putRpc(db, F, 'complete_spray_job', 'job9', { p_job: 'job9', p_ended_at: '2026-11-20T08:00:00Z' });
+    let status = 401; let hits = 0;
+    const http = httpTransport({ url: 'https://x.example', apiKey: 'pub', token: async () => 't' }, (async () => { hits++; return { ok: status < 400, status, json: async () => ({ code: 'PGRST301', message: 'JWT expired' }) }; }) as unknown as typeof fetch);
+    const tr = server({ rpc: http.rpc });
+    await expect(push(db, tr, F)).rejects.toThrow('HTTP 401');
+    expect((await db.outbox.toArray()).find((o) => o.row_id === 'job9')).toMatchObject({ status: 'pending' });
+    status = 200;                                                             // the next round has a fresh token
+    expect(await push(db, tr, F)).toEqual({ sent: 1, rejected: 0 });
+    expect((await db.outbox.toArray()).find((o) => o.row_id === 'job9')).toMatchObject({ status: 'acked' });
+    expect(hits).toBe(2);
   });
 });
 

@@ -39,6 +39,20 @@ describe('e-mail code sign-in', () => {
     expect(saved[0]?.access_token).toBe('a1');
     expect(await tokenFor(E, sess, sess.expires_at, save, fake({}, false).f)).toBeUndefined();
     expect(saved[1]).toBeUndefined();
+    // a flaky connection or a server hiccup must NOT sign the worker out (refresh tokens are single-use, but only a refusal from the auth server proves this one is dead)
+    const kept: Array<Session | undefined> = [];
+    const keep = async (x: Session | undefined) => { kept.push(x); };
+    const boom = (async () => { throw new TypeError('network'); }) as unknown as typeof fetch;
+    const f503 = (async () => ({ ok: false, status: 503, json: async () => ({}) })) as unknown as typeof fetch;
+    expect(await tokenFor(E, sess, sess.expires_at, keep, boom)).toBeUndefined();
+    expect(await tokenFor(E, sess, sess.expires_at, keep, f503)).toBeUndefined();
+    const st = (status: number) => (async () => ({ ok: false, status, json: async () => ({}) })) as unknown as typeof fetch;
+    for (const status of [403, 429, 500]) expect(await tokenFor(E, sess, sess.expires_at, keep, st(status))).toBeUndefined();
+    expect(kept).toEqual([]);                                                // nothing was stored: the session is still there for the next try
+    for (const status of [400, 401]) { const gone: Array<Session | undefined> = []; await tokenFor(E, sess, sess.expires_at, async (x) => { gone.push(x); }, st(status)); expect(gone).toEqual([undefined]); }   // only the auth server's «no» signs out
+    // two callers at once share ONE refresh (the refresh token is single-use)
+    const once = fake(grant); const [a, b] = await Promise.all([tokenFor(E, sess, sess.expires_at, save, once.f), tokenFor(E, sess, sess.expires_at, save, once.f)]);
+    expect(once.calls).toHaveLength(1); expect(a).toBe('a1'); expect(b).toBe('a1');
     expect(await tokenFor(E, undefined, 0, save)).toBeUndefined();
     await expect(refreshSession(E, sess, 0, fake({}, false).f)).rejects.toThrow('HTTP 401');
   });
