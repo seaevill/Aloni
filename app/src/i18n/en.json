@@ -720,7 +720,6 @@
   "spray.flag.quantity_unknown": "Quantity unknown",
   "spray.oneCrop": "One crop per entry.",
   "job.error.nolabel": "Cannot assign: the label data for this crop is missing.",
-  "orders.map.title": "Match products to crops",
   "jobs.group.overdue": "Overdue",
   "jobs.group.today": "Today",
   "jobs.group.tomorrow": "Tomorrow",
@@ -730,7 +729,5 @@
   "job.dose": "Dose to apply",
   "nav.leave": "Leave without saving?",
   "nav.leave.stay": "Stay",
-  "nav.leave.go": "Leave",
-  "job.planned.line": "{product} · {worker} · {date}",
-  "today.fields": "Fields"
+  "nav.leave.go": "Leave"
 }

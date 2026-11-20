@@ -720,7 +720,6 @@
   "spray.flag.quantity_unknown": "Miktar bilinmiyor",
   "spray.oneCrop": "Her kayıtta tek ekin.",
   "job.error.nolabel": "Atayamazsınız: bu ekin için etiket bilgisi eksik.",
-  "orders.map.title": "Ürünleri ekinlerle eşle",
   "jobs.group.overdue": "Gecikmiş",
   "jobs.group.today": "Bugün",
   "jobs.group.tomorrow": "Yarın",
@@ -730,7 +729,5 @@
   "job.dose": "Uygulanacak doz",
   "nav.leave": "Kaydetmeden çıkayım mı?",
   "nav.leave.stay": "Kalıyorum",
-  "nav.leave.go": "Çıkıyorum",
-  "job.planned.line": "{product} · {worker} · {date}",
-  "today.fields": "Tarlalar"
+  "nav.leave.go": "Çıkıyorum"
 }
