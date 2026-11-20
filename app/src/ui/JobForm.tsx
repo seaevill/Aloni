@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks';
 import { known } from '@aloni/rules-core';
-import { dataVersion, db, realFarmId } from '../db';
+import { dataVersion, db, activeFarm } from '../db';
 import { t } from '../i18n';
 import { formatDose } from '../i18n/format';
 import { DOSE_UNITS, readUse, statusOf } from '../labels/label-use';
@@ -25,7 +25,7 @@ export function JobForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const [day, setDay] = useState(athensToday(new Date()) ?? ''); const [failed, setFailed] = useState(false);
   const chosen = live(plantings).filter((p) => sel.includes(p.id));
   const label = productId && chosen.length ? live(labels).find((l) => l.product_id === productId && l.crop_id === chosen[0]?.crop_id) : undefined;
-  const r = buildJob({ plantingIds: sel, productId, workerId, dose, doseUnit: unit, plannedFor: day }, { label, plantings: chosen }, realFarmId.value, new Date().toISOString(), { job: crypto.randomUUID(), plantingLinks: sel.map(() => crypto.randomUUID()) });
+  const r = buildJob({ plantingIds: sel, productId, workerId, dose, doseUnit: unit, plannedFor: day }, { label, plantings: chosen }, activeFarm.value, new Date().toISOString(), { job: crypto.randomUUID(), plantingLinks: sel.map(() => crypto.randomUUID()) });
   const plantingName = (p: Row) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: String(parcels.rows?.find((x) => x.id === p.parcel_id)?.name ?? '') });
   const offer = (_l: Row | undefined) => undefined;   // nothing is filled in for the owner (T6)
   const lu = label ? readUse(label) : undefined;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
-import { dataVersion, db, realFarmId } from '../db';
+import { activeFarm, dataVersion, db } from '../db';
 import { addDecimal, known, mulDecimal, type Decimal } from '@aloni/rules-core';
 import { t, type I18nKey } from '../i18n';
 import { formatDose, formatQty } from '../i18n/format';
@@ -67,8 +67,8 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const late = sprayedAt !== '' && isLate(sprayedAt, new Date().toISOString()); // the reason field appears only for a late entry
   const ids = { job: crypto.randomUUID(), spray: crypto.randomUUID(), movement: crypto.randomUUID(), plantingLinks: sel.map(() => crypto.randomUUID()) };
   const sprayCtx = { priorApps: prior, label, plantings: chosen, lot, lotBalance: balance, today: athensToday(new Date()) ?? '' };
-  const r = buildSpray(input, sprayCtx, realFarmId.value, new Date().toISOString(), ids);
-  const rMix = buildSpray({ ...input, mixId: mixDraft }, sprayCtx, realFarmId.value, new Date().toISOString(), ids);   // the same record as the FIRST product of a tank mix
+  const r = buildSpray(input, sprayCtx, activeFarm.value, new Date().toISOString(), ids);
+  const rMix = buildSpray({ ...input, mixId: mixDraft }, sprayCtx, activeFarm.value, new Date().toISOString(), ids);   // the same record as the FIRST product of a tank mix
   const pickLabelDefaults = (_l: Row | undefined) => undefined;   // NOTHING is filled in for the owner: the label's dose is shown beside the field and a tap on «Ίδια με την ετικέτα» copies it (T6)
   const lu = label ? readUse(label) : undefined;
   const labelDose = lu && lu.dose.known ? { min: formatDose(known(lu.dose.value.min)), max: formatDose(known(lu.dose.value.max)), single: lu.dose.value.kind === 'single', unit: lu.dose.value.unit } : undefined;

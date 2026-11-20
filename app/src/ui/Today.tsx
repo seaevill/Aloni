@@ -185,8 +185,8 @@ export function Today() {
           {jobGroups[key].map((j) => <div class="card" key={j.id} data-testid="job-planned">{jobLine(j)}</div>)}
         </section>
       ))}
-      {loaded && has && <button class="btn" data-testid="job-open" disabled={demo} onClick={() => setPlanning(true)}>{t('job.add.plus')}</button>}
-      {loaded && has && !demo && (
+      {loaded && has && <button class="btn" data-testid="job-open" onClick={() => setPlanning(true)}>{t('job.add.plus')}</button>}
+      {loaded && has && (
         <div class="pair">
           <button class="btn big" data-testid="spray-open" onClick={() => setSpraying(true)}>{t('spray.add')}</button>
           <button class="btn big" data-testid="harvest-open" onClick={() => setHarvesting(true)}>{t('harvest.add')}</button>

@@ -29,7 +29,7 @@ test('the demo farm fills every screen, read-only, in Greek at 375 px without ov
   const states = await page.getByTestId('cut').evaluateAll((els) => els.map((e) => e.getAttribute('data-state')));
   expect(states.every((x) => ['free', 'from', 'unknown'].includes(String(x)))).toBe(true);
   expect(states).toContain('unknown'); // unsigned demo labels leave some fields blocked
-  await expect(page.getByTestId('spray-open')).toHaveCount(0);
+  await expect(page.getByTestId('spray-open')).toBeVisible(); // T14: the demo can be practised in (rows carry the demo farm id, never reach the outbox)
   await expect(page.getByTestId('wait-open')).toHaveCount(0);
   await noSideways('today');
 
