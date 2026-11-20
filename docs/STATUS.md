@@ -1,5 +1,9 @@
 # DURUM – Aloni (Bora'nın sayfası)
 
+## Eklentiler (2026-11-20)
+- **Superpowers ve Task Observer bu oturumda YÜKLÜ GÖRÜNMÜYOR.** Beceri listesinde ve eklenti listesinde yoklar (yalnızca pre-landing-review, karpathy-guidelines vb. var). Büyük olasılıkla eklentiler oturum açıldıktan sonra açıldı: yeni bir oturum başlatınca tekrar kontrol edeceğim. Yüklenene kadar kuralları elle uyguluyorum (önce kırmızı test, bitirmeden önce doğrulama, kök neden aramadan yama yok).
+- **Kullanım kuralları (Bora, 2026-11-20):** test-driven-development, verification-before-completion, systematic-debugging kullan. subagent-driven-development ve dispatching-parallel-agents KULLANMA (kota). brainstorming yalnızca büyük yeni özelliklerde. Task Observer'ın öğrendiği kurallar CLAUDE.md'ye doğrudan yazılmaz: ayrı PR, açıklamada «Bora onaylayacak».
+
 ## γεωπόνος soruları (agronoma sorulacaklar)
 1. İlaçlamadan sonra giriş yasağı **bütün tarlada mı** yoksa yalnızca ilaçlanan sıralarda mı?
 2. Etiketleri imzalamaya ne zaman gelebilir? (İmzasız taslak etiket artık «bilinmiyor = kapalı» sayılır.)
