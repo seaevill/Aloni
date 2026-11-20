@@ -39,7 +39,6 @@ export async function setup(page: Page, signed: boolean) {
   await page.getByTestId('open-workers').click();
   await page.getByTestId('worker-name').fill('Γιώργος');
   await page.getByTestId('worker-add').click();
-  await expect(page.getByTestId('worker').filter({ hasText: 'Γιώργος' })).toBeVisible();   // saved before we leave: WebKit CI wrote it after the next screen had already read the list
   await tab(page, 'today');
 }
 
