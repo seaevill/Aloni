@@ -14,6 +14,21 @@ test('Άλλα → Εργάτες: the heading has the focus, and Back returns i
   expect(errors).toEqual([]);
 });
 
+test('worker heading takes focus before paint so it cannot interrupt typing', async ({ page }) => {
+  await iphone(page);
+  await page.locator('nav.tabs [data-tab="more"]').click();
+  const focusedBeforePaint = await page.getByTestId('open-workers').evaluate(async (opener: HTMLButtonElement) => {
+    opener.click();
+    // Preact renders in a microtask. Check within the same frame, before passive effects run.
+    await Promise.resolve();
+    return document.activeElement === document.querySelector('main h1');
+  });
+  expect(focusedBeforePaint).toBe(true);
+  await page.getByTestId('worker-name').fill('Γιώργος');
+  await page.getByTestId('worker-add').click();
+  await expect(page.getByTestId('worker')).toContainText('Γιώργος');
+});
+
 test('the photo viewer is a labelled dialog and Escape closes it', async ({ page }) => {
   await iphone(page);
   await page.locator('nav.tabs [data-tab="more"]').click();
