@@ -61,7 +61,7 @@ describe('storage', () => {
     expect((await db.outbox.toArray()).filter((o) => o.table === 'plantings').length).toBe(1);
   });
   it('the catalog carries names only: no weights, doses or anything agronomic', () => {
-    for (const c of CATALOG) expect(Object.keys(c).sort()).toEqual(['el', 'en', 'latin', 'slug', 'tr']);
+    for (const c of CATALOG) expect(Object.keys(c).sort()).toEqual(['el', 'en', 'hi', 'latin', 'slug', 'tr']);
   });
 });
 
