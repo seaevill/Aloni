@@ -409,6 +409,8 @@
   "cut.free": "Harvest: no waiting period on record",
   "cut.from": "Harvest from {d}",
   "cut.unknown": "Harvest from: unknown. Harvest is blocked.",
+  "wait.last": "Last spraying: {d}",
+  "wait.none": "No spraying",
   "register.open": "Spray register (draft)",
   "register.title": "Spray register",
   "register.draft": "DRAFT – prepared by the app, not signed. A responsible person must check and sign it.",

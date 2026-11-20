@@ -409,6 +409,8 @@
   "cut.free": "Hasat: kayıtlı bekleme yok",
   "cut.from": "Hasat başlangıcı: {d}",
   "cut.unknown": "Hasat başlangıcı: bilinmiyor. Hasat engelli.",
+  "wait.last": "Son ilaçlama: {d}",
+  "wait.none": "İlaçlama yok",
   "register.open": "İlaçlama kaydı (taslak)",
   "register.title": "İlaçlama kaydı",
   "register.draft": "TASLAK – uygulama hazırladı, imzalı değildir. Sorumlu bir kişi kontrol edip imzalamalıdır.",
