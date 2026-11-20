@@ -66,6 +66,15 @@ begin
   if (select is_demo from farms where id = got) then raise exception '(F3) a real farm was created as a demo farm'; end if;
   insert into parcels(id, farm_id, name, area_str) values (gen_random_uuid(), got, 'First parcel', 0.5);       -- RLS lets the new owner write at once
 end $$;
+-- F3b: a retry after a LOST answer: the same person asking again for the farm they already own with THIS id gets the same success (no second farm, no error)
+do $$ begin
+  if create_first_farm('aaaa1500-0000-0000-0000-0000000000f1', 'Bora''s farm') is distinct from 'aaaa1500-0000-0000-0000-0000000000f1' then raise exception '(F3b) the retry did not return the same farm'; end if;
+end $$;
+reset role; set test.uid = '';
+do $$ begin
+  if (select count(*) from farms where id = 'aaaa1500-0000-0000-0000-0000000000f1') <> 1 or (select count(*) from farm_creations where user_id = '00000000-0000-0000-0000-0000000015a1') <> 1 then raise exception '(F3b) the retry created something'; end if;
+end $$;
+set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000015a1';
 -- F4: ONE farm per user for good: a second call fails (also after the first membership is gone)
 do $$ begin
   begin perform create_first_farm('aaaa1500-0000-0000-0000-0000000000f2', 'Second farm'); raise exception '(F4) a second farm was created';
@@ -88,6 +97,10 @@ do $$ begin
   exception when insufficient_privilege then null; end;
   begin insert into farms(id, name) values (gen_random_uuid(), 'Direct'); raise exception '(F5) a user inserted a farm directly';
   exception when insufficient_privilege then null; end;
+end $$;
+reset role; set test.uid = '';
+do $$ begin
+  if not exists (select 1 from pg_policy p where p.polrelid = 'farm_creations'::regclass and p.polname = 'farm_creations_deny') then raise exception '(F5) no explicit deny policy on farm_creations'; end if;
 end $$;
 -- F6: audited: the creation is in the audit log with the user
 reset role; set test.uid = '';
