@@ -176,8 +176,7 @@ export function Today() {
       {rows.some((q) => q.failed) && <ErrorState onRetry={retry} />}
       {loaded && !has && <Welcome />}
       {loaded && !has && (
-        <EmptyState message={t('welcome.start')} actionLabel={t('parcel.add')} onAction={() => { tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
-        <EmptyState message={t('welcome.2.body')} actionLabel={t('parcel.add')} onAction={() => { openParcelForm.value = true; tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
+        <EmptyState message={t('welcome.start')} actionLabel={t('parcel.add')} onAction={() => { openParcelForm.value = true; tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
       )}
       {loaded && has && <CutTodaySection ct={ct} />}
       {loaded && has && <h2>{t('worker.jobs')}</h2>}
