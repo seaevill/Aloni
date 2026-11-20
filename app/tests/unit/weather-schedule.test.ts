@@ -11,6 +11,16 @@ describe('the weather schedule and the deploy workflow', () => {
     expect(sql).not.toMatch(/create\s+table/i);
     expect(sql).toMatch(/pg_cron[\s\S]*return;/);                                              // missing extensions: a notice and nothing else
   });
+  it('0032 (m8 S4/L1/L2) schedules with its OWN narrow token, never the service key, with a 30 s timeout and an https Supabase-function address only', () => {
+    const g = read('supabase/migrations/0032_planting_gate.sql');
+    expect(g).toContain("name = 'weather_cron_token'");
+    expect(g).not.toContain('weather_service_key');
+    expect(g).toContain('timeout_milliseconds := 30000');
+    expect(g).toContain("^https://[a-z0-9]{20}\\.supabase\\.co/functions/v1/weather-fetch$");
+    const fn = read('supabase/functions/weather-fetch/index.ts');
+    expect(fn).toContain('WEATHER_CRON_TOKEN');
+    expect(fn).not.toMatch(/authorization'\) !== /);      // no plain «!==» comparison of the secret (constant time)
+  });
   const wf = read('.github/workflows/weather-deploy.yml');
   it('the deploy workflow has the same three controls as the migrate one and cannot run by itself', () => {
     expect(wf).toMatch(/workflow_dispatch/); expect(wf).not.toMatch(/\n\s+(push|pull_request|schedule):/);

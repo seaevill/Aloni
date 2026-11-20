@@ -103,4 +103,4 @@ jobs:
         run: |
           set -euo pipefail
           [ "$CONFIRM" = DEPLOY ] || { echo "::error::mode=deploy needs the confirm field to be exactly DEPLOY. Nothing was deployed."; exit 1; }
-          supabase functions deploy weather-fetch --project-ref "$SUPABASE_PROJECT_REF" --use-api
+          supabase functions deploy weather-fetch --project-ref "$SUPABASE_PROJECT_REF" --use-api --no-verify-jwt

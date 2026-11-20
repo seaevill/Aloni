@@ -8,7 +8,7 @@ declare f constant uuid := '11111111-1111-1111-1111-111111111111'; p constant uu
         w1 constant uuid := 'bbbbbbbb-0000-0000-0000-000000000001'; pa constant uuid := 'aaaaaaaa-0000-0000-0000-000000000941'; pb constant uuid := 'aaaaaaaa-0000-0000-0000-000000000942'; t timestamptz := now() - interval '3 days'; i int;
 begin
   insert into products(id,farm_id,name,type,unit) values (pa,f,'m5 product with a label','fungicide','kg'), (pb,f,'m5 product without any label','fungicide','kg');
-  insert into label_uses(id,farm_id,product_id,crop_id,target,dose_kind,dose_unit,dose_min,phi_days,rei_hours,max_apps) values ('cccccccc-1111-0000-0000-000000000941',f,pa,crop2,'m5','single','ml/str',0.025,7,24,3);  -- UNSIGNED
+  insert into label_uses(id,farm_id,product_id,crop_id,target,dose_kind,dose_unit,dose_min,phi_days,rei_hours,max_apps,sign_off_by,sign_off_on,sign_off_fingerprint) values ('cccccccc-1111-0000-0000-000000000941',f,pa,crop2,'m5','single','ml/str',0.025,7,24,3,'agronomist',current_date,'fp941');  -- SIGNED since m9 S-NEW-1: only a signed label can floor a typed period (an unsigned draft is unknown: see m13)
   for i in 1..3 loop
     insert into plantings(id,farm_id,parcel_id,crop_id,area_str,sown_on,status) values (('dddddddd-0000-0000-0000-00000000094' || i)::uuid,f,p,crop2,0.25,'2026-11-01','growing');
     insert into jobs(id,farm_id,kind,status,worker_id,product_id,done_at) values (('eeeeeeee-0000-0000-0000-00000000094' || i)::uuid,f,'spray','done',w1,case when i = 3 then pb else pa end,now() - interval '1 hour');

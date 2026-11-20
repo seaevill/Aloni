@@ -1,2 +1,6 @@
 # Minimal Supabase CLI project file (only what `supabase link` / `supabase db push` need). The migrations are in supabase/migrations (0001, 0002, ...).
 project_id = "aloni"
+
+# The weather function checks its OWN narrow token (WEATHER_CRON_TOKEN, constant time); a random token is no JWT, so the gateway must not demand one (m9 S-NEW-2).
+[functions.weather-fetch]
+verify_jwt = false

@@ -1,5 +1,8 @@
 # BACKLOG – iş listem (Claude)
 
+## ACİL – ekip incelemesi m8 (2026-11-20): 2 MUST + 4 SHOULD → 0032 İLE DÜZELTİLDİ (ekip yeniden bakacak)
+- [x] M1, M2 (MUST): tek kapı `private.planting_gate`; [x] S1 iş satırı kilidi; [x] S2 `harvest_conflicts` aynı kapıyla; [x] S3 işçi yalnızca kendini seçer; [x] S4 ayrı dar token (Vault); [x] LOW L1–L5; [x] RUNBOOK §15 üretim kontrolü.
+
 ## ACİL – ekip incelemesi m7 (2026-11-19): 2 MUST + 1 SHOULD → YERİNDE DÜZELTİLDİ (ekip yeniden bakacak)
 - [x] N1 (MUST): etiket eşleşmesi iş başına değil **ekim (ürün) başına**; etiketsiz = bilinmiyor = hasat kapalı; başka ürünün etiketi, düzeltmeyle yazılan PHI ve ilaçlamadan sonra bağlanan ekim yolları kapandı (`complete_spray_job` dahil). Test: `supabase/tests/m12_m7.sql`.
 - [x] N2 (MUST): sahip için de ilaçlama bitişi şu andan ileri olamaz (işçiyle aynı); hasat kapısı «şimdi» için her kaydı sayar, bilinmeyen PHI her durumda kapalı.

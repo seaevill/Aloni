@@ -38,6 +38,7 @@ problems as (
   union all select 'migration 0016 not applied (sync_generation is missing)' where not exists (select 1 from pg_proc where proname = 'sync_generation')
   union all select 'migration 0015 not applied (forbid_truncate is missing)' where not exists (select 1 from pg_proc where proname = 'forbid_truncate')
   union all select 'migration 0014 not applied (complete_spray_job does not know a retry)' where not exists (select 1 from pg_proc where proname = 'complete_spray_job' and prosrc like '%rei_conflict%')
+  union all select 'weather schedule missing: cron.job has no weather-fetch (0032 only notes it when pg_cron/pg_net/Vault were off): RUNBOOK 14' where to_regclass('cron.job') is not null and (xpath('/row/c/text()', query_to_xml('select count(*) as c from cron.job where jobname = ''weather-fetch''', false, true, '')))[1]::text = '0'
   union all select 'migration 0012 not applied (sync_table does not know crops)' where not exists (select 1 from pg_proc where proname = 'sync_table') or sync_table('crops') is null
 )
 select problem from problems
