@@ -7,9 +7,12 @@ const day = (n: number): string => ATHENS.format(new Date(Date.now() + n * 86_40
 const data = { 'klv.db.cfg': { products: [{ id: 'sp', name: 'Σπανάκι' }, { id: 'ro', name: 'Ρόκα' }], clients: [{ id: 'c1', name: 'Λαϊκή Νίκαιας' }, { id: 'c2', name: 'Μανάβικο Νίκος' }] },
   [`klv.db.day.${day(1)}`]: { orders: { c1: { sp: 6, ro: 4.5 }, c2: { sp: 3 } } } };
 
-test('dispatch tomorrow: one card per client, quarters as ½, copy puts the text on the clipboard', async ({ page, context }) => {
-  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-  await page.addInitScript(() => { Object.defineProperty(navigator, 'share', { value: undefined, configurable: true }); }); // no share sheet: the clipboard path
+test('dispatch tomorrow: one card per client, quarters as ½, copy puts the text on the clipboard', async ({ page }) => {
+  // no share sheet and a recording clipboard (WebKit has no clipboard permission to grant): the app's own «share, then clipboard» path is what is tested
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'share', { value: undefined, configurable: true });
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText: async (t: string) => { (window as unknown as { __copied: string }).__copied = t; } }, configurable: true });
+  });
   const errors = await iphone(page);
   await page.locator('nav.tabs [data-tab="more"]').click();
   await page.getByTestId('open-orders').click();
@@ -19,7 +22,7 @@ test('dispatch tomorrow: one card per client, quarters as ½, copy puts the text
   await expect(page.getByTestId('dispatch-client').first()).toContainText('Ρόκα: 4½');
   await page.getByTestId('dispatch-copy').click();
   await expect(page.getByTestId('dispatch-copied')).toBeVisible();
-  const text = await page.evaluate(() => navigator.clipboard.readText());
+  const text = await page.evaluate(() => (window as unknown as { __copied: string }).__copied);
   expect(text).toContain('– αποστολή\nΛαϊκή Νίκαιας: Σπανάκι 6 · Ρόκα 4½\nΜανάβικο Νίκος: Σπανάκι 3\n= 13½ κλούβες');
   await page.getByTestId('dispatch-today').click();
   await expect(page.getByTestId('dispatch-none')).toBeVisible();
