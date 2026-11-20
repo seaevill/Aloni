@@ -11,7 +11,7 @@ import { DemoBanner } from './DemoBanner';
 import { UpdateBar } from './UpdateBar';
 import { LeaveBar } from './LeaveBar';
 import { guarding, leaveAsk, tabReset } from './backstack';
-import { dirty } from '../pwa/update';
+import { typed } from '../pwa/update';
 import { Toast } from './Toast';
 import { AUTH_ENABLED, DEMO_FARM_ID } from '../config';
 import { session } from '../auth/gotrue';
@@ -49,7 +49,7 @@ export function App() {
   /** A tab tap with something typed asks first, like the Back gesture: nothing typed is lost silently. */
   const goTab = (id: typeof tab.value) => {
     const go = () => { leaveAsk.value = undefined; if (tab.value === id) tabReset.value++; else tab.value = id; };
-    if (dirty.value && guarding.value > 0) { leaveAsk.value = { stay: () => { leaveAsk.value = undefined; }, go }; return; }
+    if (typed.value && guarding.value > 0) { leaveAsk.value = { stay: () => { leaveAsk.value = undefined; }, go }; return; }
     go();
   };
   const roster = useRows('workers');

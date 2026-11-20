@@ -60,6 +60,7 @@ export async function spray(page: Page) {
 /** The records of the past live on «Ιστορικό»: open it unless it is already open. */
 export async function openHistory(page: Page): Promise<void> {
   if (await page.getByTestId('history').isVisible()) return;
+  if (!(await page.getByTestId('history-open').isVisible())) await tab(page, 'today');      // after a reload the app returns to the tab it was on (T7)
   await page.getByTestId('history-open').click();
 }
 
