@@ -217,7 +217,7 @@ rollback;
  Doğru sonuç: Users listesinde test işçisi yok; `select count(*) from farms where name = 'Deneme 2';` → 0.
 
 ## 13. Senkronu ilk kez açma (canlıya geçiş; her adımı sen yaparsın)
-**Önkoşul:** §12'deki deneme bitti; Supabase'e 0001–0026 uygulanmış ve «verify» yeşil; uygulamada canlı özellikler açık (`LIVE = true` ayrı bir PR'la, senin «aç» demenle). **Sihirbaz yalnızca `LIVE` açıkken görünür.** Gizli anahtarları hiçbir yere yazma.
+**Önkoşul:** §12a'daki deneme (en az 1–6. adım) bitti; Supabase'e 0001–0034 uygulandı ✔; uygulamada canlı özellikler açık (§12b'deki 3 Cloudflare değişkeni ✔; **kod PR'ı gerekmez**, geri alma değişkenleri silmektir). **Sihirbaz yalnızca `LIVE` açıkken görünür.** Gizli anahtarları hiçbir yere yazma.
 
 1. **Yedek al** — Uygulama → **Άλλα** → «Αντίγραφο» → dışa aktar.
  Doğru sonuç: «Τελευταίο αντίγραφο: bugün»; dosya telefonda/Dosyalar'da. (Sihirbaz bunu da ister: yedek yeni değilse düğme kapalı.)
@@ -237,6 +237,14 @@ rollback;
 - Bir kaydı sunucu reddederse (ör. bekleme süresi kuralı) telefonda «Δεν έγιναν δεκτές» listesinde durur; silinmez.
 - Senkronu geri kapatmak için: uygulamadan çıkış yap (Άλλα → Αποσύνδεση) ve yedeğinden dönülecekse §3.
 - Sunucu tarafında sorun çıkarsa: Supabase **Backups**'tan geri yükleme (RUNBOOK §10.3 ve «sistem kimliği» adımı) ve ardından senkronu yeniden aç.
+
+## 14a. Hava durumu – KISA yol (tek tarla dry-run, sonra çalıştırma)
+Ayrıntı aşağıdaki §14'te. Gizli anahtarı **hiçbir yere yazma**; Claude üretime dokunmaz, her tıklamayı **sen** yaparsın.
+1. **Token'ı ÖNCE oluştur** (§14 adım 1): parola yöneticisinde 32+ karakterlik rastgele dize → Supabase **Edge Functions → Secrets** (`WEATHER_CRON_TOKEN`) ve **Database → Vault** (`weather_cron_token`, `weather_function_url`). SQL Editor'e anahtar yapıştırma.
+2. **GitHub → Actions → «Weather function deploy (manual)»** → önce `dry-run` (hiçbir şey yüklemez) → sonra `deploy` + `DEPLOY` → **Review deployments → Approve**.
+3. **Tek tarla denemesi:** Supabase → **Edge Functions → weather-fetch → Test**, gövdede **yalnızca bir tarlanın** `id`'si, başlık `Authorization: Bearer <WEATHER_CRON_TOKEN>`. Doğru: `"ok":true,"dryRun":true,"stored":0` ve günlere göre sıcaklıklar; **hiçbir tabloya yazılmaz**. Rakamları yr.no ile karşılaştır.
+4. Mantıklıysa **gerçek çalıştırma** (gövde `{}`), sonra telefonda **Σήμερα** hava kartı. Takvim kendiliğinden 6 saatte bir çalışır.
+5. Geri dönüş: §14'ün sonunda.
 
 ## 14. Hava durumunu açma (6 saatte bir; ÖNCE 0029 uygulanmış olmalı)
 
