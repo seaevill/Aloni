@@ -14,6 +14,12 @@ begin
     ('cccccccc-1111-0000-0000-0000000013a1',f,pq,ca,'m13','single','ml/str',0.025,14,48,3,'agronomist',current_date,'fp1'),
     ('cccccccc-1111-0000-0000-0000000013a2',f,pq,cb,'m13','single','ml/str',0.025,3,24,3,'agronomist',current_date,'fp2');
   insert into label_uses(id,farm_id,product_id,crop_id,target,dose_kind,dose_unit,dose_min) values ('cccccccc-1111-0000-0000-0000000013a3',f,pq,cc,'m13','single','ml/str',0.025);
+  insert into crops(id,farm_id,slug,name_el) values ('cccccccc-0000-0000-0000-0000000013a4',f,'m13d','Μ13δ');
+  insert into label_uses(id,farm_id,product_id,crop_id,target,dose_kind,dose_unit,dose_min,phi_days,rei_hours,max_apps) values ('cccccccc-1111-0000-0000-0000000013a4',f,pq,'cccccccc-0000-0000-0000-0000000013a4','m13','single','ml/str',0.025,1,1,3);     -- an UNSIGNED draft WITH values
+  insert into plantings(id,farm_id,parcel_id,crop_id,area_str,sown_on,status) values ('dddddddd-0000-0000-0000-0000000013d1',f,p,'cccccccc-0000-0000-0000-0000000013a4',0.25,'2026-11-01','growing');
+  insert into jobs(id,farm_id,kind,status,worker_id,product_id,done_at) values ('eeeeeeee-0000-0000-0000-0000000013d1',f,'spray','done',w1,pq,now() - interval '4 days');
+  insert into job_plantings(farm_id,job_id,planting_id) values (f,'eeeeeeee-0000-0000-0000-0000000013d1','dddddddd-0000-0000-0000-0000000013d1');
+  insert into job_spray(id,farm_id,job_id,product_id,applicator_id,sprayed_at,started_at,dose_str,dose_unit,label_state) values ('55555555-0000-0000-0000-0000000013d1',f,'eeeeeeee-0000-0000-0000-0000000013d1',pq,w1,now() - interval '4 days',now() - interval '4 days' - interval '10 minutes',0.025,'ml/str','none');
   insert into plantings(id,farm_id,parcel_id,crop_id,area_str,sown_on,status) values
     ('dddddddd-0000-0000-0000-0000000013a1',f,p,ca,0.25,'2026-11-01','growing'), ('dddddddd-0000-0000-0000-0000000013b1',f,p,cb,0.25,'2026-11-01','growing'),
     ('dddddddd-0000-0000-0000-0000000013c1',f,p,cc,0.25,'2026-11-01','growing'), ('dddddddd-0000-0000-0000-0000000013a2',f,p,ca,0.25,'2026-11-01','growing');
@@ -46,6 +52,25 @@ do $$ begin
         raise exception '(M1 owner) the crop-C planting opened on day 4';
   exception when check_violation then if sqlerrm not like 'harvest blocked%' then raise; end if; end;
 end $$;
+-- S-NEW-1 (m9): an UNSIGNED draft label with values must not decide anything: a typed PHI 3 / REI 24 on a crop whose only label is an unsigned draft is REFUSED (owner), and the planting stays closed (owner and worker)
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; pq constant uuid := 'aaaaaaaa-0000-0000-0000-0000000013a1'; w1 constant uuid := 'bbbbbbbb-0000-0000-0000-000000000001'; t timestamptz := (select sprayed_at from job_spray where id = '55555555-0000-0000-0000-0000000013d1');
+begin
+  begin insert into job_spray(farm_id,job_id,product_id,applicator_id,sprayed_at,started_at,dose_str,dose_unit,label_state,phi_days,rei_hours,phi_source,phi_until,rei_until,amends_id,amend_reason)
+        values (f,'eeeeeeee-0000-0000-0000-0000000013d1',pq,w1,t,t - interval '10 minutes',0.025,'ml/str','none',3,24,'manual',t + interval '72 hours',t + interval '24 hours','55555555-0000-0000-0000-0000000013d1','typed');
+        raise exception '(S-NEW-1) a typed PHI was accepted although the only label of the crop is an UNSIGNED draft';
+  exception when check_violation then if sqlerrm not like '%no label with a known waiting period%' then raise; end if; end;
+  begin insert into job_harvest(cut_by,farm_id,planting_id,harvested_at,crates_str) values (w1,f,'dddddddd-0000-0000-0000-0000000013d1',now(),1);
+        raise exception '(S-NEW-1 owner) the planting with only an unsigned draft label opened';
+  exception when check_violation then if sqlerrm not like 'harvest blocked%' then raise; end if; end;
+end $$;
+reset role; set test.uid = ''; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000b2';
+do $$ begin
+  begin insert into job_harvest(cut_by,farm_id,planting_id,harvested_at,crates_str) values ('bbbbbbbb-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','dddddddd-0000-0000-0000-0000000013d1',now(),1);
+        raise exception '(S-NEW-1 worker) the planting with only an unsigned draft label opened';
+  exception when check_violation then if sqlerrm not like 'harvest blocked%' then raise; end if; end;
+end $$;
+reset role; set test.uid = ''; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
 -- M2: the legacy row (B label, REI 24) ended 30 h ago; crop A's OWN signed REI is 48 h (18 h left): the worker's «Έγινε» must be refused (the gate itself is private: it is tested through its users)
 -- M1 as the WORKER too: the crop-C planting stays closed on day 4
 reset role; set test.uid = ''; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000b2';

@@ -16,7 +16,7 @@ describe('the weather schedule and the deploy workflow', () => {
     expect(g).toContain("name = 'weather_cron_token'");
     expect(g).not.toContain('weather_service_key');
     expect(g).toContain('timeout_milliseconds := 30000');
-    expect(g).toContain("like 'https://%.supabase.co/functions/v1/weather-fetch'");
+    expect(g).toContain("^https://[a-z0-9]{20}\\.supabase\\.co/functions/v1/weather-fetch$");
     const fn = read('supabase/functions/weather-fetch/index.ts');
     expect(fn).toContain('WEATHER_CRON_TOKEN');
     expect(fn).not.toMatch(/authorization'\) !== /);      // no plain «!==» comparison of the secret (constant time)

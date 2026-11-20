@@ -130,7 +130,7 @@ end $$;
 create view harvest_conflicts as select * from private.harvest_conflicts_rows();
 do $$ begin
   if exists (select 1 from pg_roles where rolname = 'anon') then revoke all on harvest_conflicts from anon; end if;
-  if exists (select 1 from pg_roles where rolname = 'authenticated') then grant select on harvest_conflicts to authenticated; end if;
+  if exists (select 1 from pg_roles where rolname = 'authenticated') then revoke all on harvest_conflicts from authenticated; grant select on harvest_conflicts to authenticated; end if;      -- SELECT only (m9 LOW-2)
 end $$;
 
 -- the typed correction (a person may type a waiting period only where a label of EVERY crop of the job gives both values, and never shorter than the label): m8 M1
@@ -142,7 +142,7 @@ create or replace function spray_floor_crops(p_farm uuid, p_job uuid, p_product 
     select s.id, s.amends_id, s.label_use_id from job_spray s join chain c on s.id = c.amends_id where s.farm_id = p_farm),
   applies(id, crop_id, phi_days, rei_hours) as (
     select l.id, l.crop_id, l.phi_days, l.rei_hours from label_uses l
-    where l.farm_id = p_farm and l.product_id = p_product and l.crop_id = any (coalesce(p_crops, '{}'::uuid[])) and (
+    where l.farm_id = p_farm and l.product_id = p_product and l.crop_id = any (coalesce(p_crops, '{}'::uuid[])) and l.sign_off_by is not null and (     -- only a SIGNED label counts, the same rule as the gate (m9 S-NEW-1)
       l.id in (select c.label_use_id from chain c where c.label_use_id is not null)
       or l.id = (select j.label_use_id from jobs j where j.id = p_job and j.farm_id = p_farm)
       or l.deleted_at is null))
@@ -194,7 +194,7 @@ begin
       url := (select decrypted_secret from vault.decrypted_secrets where name = 'weather_function_url'),
       headers := jsonb_build_object('Content-Type', 'application/json', 'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'weather_cron_token')),
       body := '{}'::jsonb, timeout_milliseconds := 30000)
-    where exists (select 1 from vault.decrypted_secrets where name = 'weather_function_url' and decrypted_secret like 'https://%.supabase.co/functions/v1/weather-fetch')
+    where exists (select 1 from vault.decrypted_secrets where name = 'weather_function_url' and decrypted_secret ~ '^https://[a-z0-9]{20}\.supabase\.co/functions/v1/weather-fetch$')
       and exists (select 1 from vault.decrypted_secrets where name = 'weather_cron_token')
   $job$);
 end $$;

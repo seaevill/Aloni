@@ -9,8 +9,8 @@ begin
   insert into crops(id,farm_id,slug,name_el) values (cb,f,'m7crop','Μ7'), (cc,f,'m7other','Μ7β');
   insert into products(id,farm_id,name,type,unit) values (pq,f,'m7 product','fungicide','kg');
   insert into stock_lots(id,lot_key,farm_id,product_id,expiry) values ('dddddddd-0000-0000-0000-000000000099','dddddddd-0000-0000-0000-000000000099',f,pq,'2030-01-01');
-  -- unsigned label PHI 14 / REI 24 on crop B
-  insert into label_uses(id,farm_id,product_id,crop_id,target,dose_kind,dose_unit,dose_min,phi_days,rei_hours,max_apps) values ('cccccccc-1111-0000-0000-000000000991',f,pq,cb,'m7','single','ml/str',0.025,14,24,3);
+  -- SIGNED label PHI 14 / REI 24 on crop B (signed since m9 S-NEW-1: an unsigned draft no longer floors a typed period)
+  insert into label_uses(id,farm_id,product_id,crop_id,target,dose_kind,dose_unit,dose_min,phi_days,rei_hours,max_apps,sign_off_by,sign_off_on,sign_off_fingerprint) values ('cccccccc-1111-0000-0000-000000000991',f,pq,cb,'m7','single','ml/str',0.025,14,24,3,'agronomist',current_date,'fp991');
   for i in 1..4 loop
     insert into plantings(id,farm_id,parcel_id,crop_id,area_str,sown_on,status) values (('dddddddd-0000-0000-0000-00000000099' || i)::uuid,f,p,cb,0.25,'2026-11-01','growing');
     insert into jobs(id,farm_id,kind,status,worker_id,product_id,done_at) values (('eeeeeeee-0000-0000-0000-00000000099' || i)::uuid,f,'spray','done',w1,pq,now() - interval '30 minutes');
