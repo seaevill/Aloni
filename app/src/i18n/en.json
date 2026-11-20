@@ -311,6 +311,7 @@
   "cut.line.unknown": "Waiting period missing",
   "cut.none": "No planting",
   "cut.headline": "{n} of {total} blocked",
+  "cut.free.n": "{n} plantings free to cut (tap)",
   "welcome.start": "Start here:",
   "cut.late": "late entry",
   "spray.wait.reason.error": "Write the reason for the entry: a correction always has a reason.",

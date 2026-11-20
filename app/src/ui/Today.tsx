@@ -108,20 +108,32 @@ const sourceText = (src: CutLine['source']): string => t(src === 'manual' ? 'cut
 const lineText = (l: CutLine): string => (l.state === 'from' ? t(LINE.from.key, { d: formatDateTime(l.at) }) : t(LINE[l.state].key));
 
 /** «Κοπή σήμερα»: one line per growing planting (green free, red waiting until a date, amber waiting period missing); a parcel with nothing growing says so. */
+const FOLD_FREE_FROM = 4;   // from this many «free to cut» rows on, they fold into one line (fewer stay as they are)
+
+function CutRow({ l }: { l: CutToday['lines'][number] }) {
+  return (
+    <div class="card cutline" data-testid="cut" data-state={l.state}>
+      <div class="field-head"><strong>{l.crop}</strong><span class="muted">{l.parcel}</span></div>
+      <span class={LINE[l.state].cls} data-testid="cut-line">{lineText(l)}</span>
+      {l.state === 'from' && <small data-testid="cut-source">{sourceText(l.source)}</small>}
+      {l.late && <span class="badge warn" data-testid="cut-late">{t('cut.late')}</span>}
+    </div>
+  );
+}
+
+/** Σήμερα → «Κοπή»: the rows that need attention (waiting period running, unknown) come FIRST and are never folded; many «free to cut» rows fold into one line that opens on a tap. Presentation only: same rows, same states. */
 function CutTodaySection({ ct }: { ct: CutToday }) {
   const blocked = ct.lines.filter((l) => l.state !== 'free').length;
+  const attention = ct.lines.filter((l) => l.state !== 'free');
+  const free = ct.lines.filter((l) => l.state === 'free');
+  const fold = free.length >= FOLD_FREE_FROM;
   return (
     <section data-testid="cut-today" aria-label={t('cut.today')}>
       <h2>{t('cut.today')}</h2>
       {ct.lines.length > 0 && <p class="muted" data-testid="cut-headline">{t('cut.headline', { n: blocked, total: ct.lines.length })}</p>}
-      {ct.lines.map((l) => (
-        <div class="card cutline" key={l.id} data-testid="cut" data-state={l.state}>
-          <div class="field-head"><strong>{l.crop}</strong><span class="muted">{l.parcel}</span></div>
-          <span class={LINE[l.state].cls} data-testid="cut-line">{lineText(l)}</span>
-          {l.state === 'from' && <small data-testid="cut-source">{sourceText(l.source)}</small>}
-          {l.late && <span class="badge warn" data-testid="cut-late">{t('cut.late')}</span>}
-        </div>
-      ))}
+      {attention.map((l) => <CutRow key={l.id} l={l} />)}
+      {fold && <details class="fold" data-testid="cut-free-group"><summary>{t('cut.free.n', { n: free.length })}</summary>{free.map((l) => <CutRow key={l.id} l={l} />)}</details>}
+      {!fold && free.map((l) => <CutRow key={l.id} l={l} />)}
       {ct.noPlanting.map((p) => (
         <div class="card cutline" key={String(p.id)} data-testid="cut-empty"><div class="field-head"><strong>{text(p.name)}</strong><span class="muted">{t('cut.none')}</span></div></div>
       ))}

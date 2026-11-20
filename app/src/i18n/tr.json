@@ -311,6 +311,7 @@
   "cut.line.unknown": "Bekleme süresi eksik",
   "cut.none": "Ekim yok",
   "cut.headline": "{total} içinden {n} engelli",
+  "cut.free.n": "{n} ekim kesime serbest (dokun)",
   "welcome.start": "Buradan başlayın:",
   "cut.late": "geç kayıt",
   "spray.wait.reason.error": "Girişin nedenini yazın: her düzeltmenin bir nedeni olur.",
