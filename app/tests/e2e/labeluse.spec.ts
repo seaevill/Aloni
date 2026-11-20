@@ -2,6 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { iphone } from './helpers/iphone';
 
+const PIXEL = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
 const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
 
 async function addProduct(page: Page) {
@@ -144,14 +145,20 @@ test('approval: only a complete label can be signed (name + real date); editing 
   await page.getByTestId('signoff-save').click(); // no date
   await expect(page.locator('main .msg.error')).toContainText('Μη έγκυρη ημερομηνία');
   await page.locator('input[type=date]').fill('2026-11-17');
+  await page.getByTestId('signoff-note').fill('seen at the shop');                                   // the note and a photo are kept WITH the approval
+  await page.locator('input[type=file]').setInputFiles({ name: 'sign.png', mimeType: 'image/png', buffer: PIXEL });
+  await expect(page.getByTestId('signoff-form').locator('.photos')).toBeVisible();
   await page.getByTestId('signoff-save').click();
   await expect(card.getByTestId('labeluse-status')).toContainText('Υπογραφή γεωπόνου: Test Agronomist');
+  await expect(card.getByTestId('signoff-shown-note')).toHaveText('seen at the shop');
+  await expect(card.locator('.photos')).toBeVisible();
   await expect(page.getByTestId('signoff-open')).toHaveCount(0);
 
   await page.reload();
   await page.locator('nav.tabs [data-tab="stock"]').click();
   await page.getByTestId('labeluse-open').click();
   await expect(card.getByTestId('labeluse-status')).toContainText('Υπογραφή γεωπόνου: Test Agronomist'); // survives reload
+  await expect(card.getByTestId('signoff-shown-note')).toHaveText('seen at the shop');                 // the note survives it too
 
   await card.getByRole('button', { name: 'Επεξεργασία' }).click(); // change the PHI 7 → 3: a SIGNED label is never edited in place (0019)
   await expect(page.getByTestId('labeluse-signed-note')).toBeVisible();

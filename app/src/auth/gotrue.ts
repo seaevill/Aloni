@@ -32,16 +32,30 @@ export async function verifyCode(e: Endpoint, email: string, code: string, now: 
 /** A fresh token from the refresh token (they are single-use: the answer carries the next one). */
 export async function refreshSession(e: Endpoint, s: Session, now: number, f: Fetch = fetch): Promise<Session> {
   const res = await f(`${e.url}/auth/v1/token?grant_type=refresh_token`, { method: 'POST', headers: headers(e), body: JSON.stringify({ refresh_token: s.refresh_token }) });
-  if (!res.ok) throw new Error(`sign-in: HTTP ${res.status}`);
+  if (!res.ok) throw new RefreshRefused(res.status);
   return toSession((await res.json()) as Record<string, unknown>, now);
+}
+
+/** The auth server answered, and the answer was no. Only 400/401 prove the refresh token is dead (403 is also what a proxy or captive portal answers, so it proves nothing); a 5xx, 429 or a lost connection proves nothing either. */
+export class RefreshRefused extends Error {
+  constructor(readonly status: number) { super(`sign-in: HTTP ${status}`); }
+  get dead(): boolean { return this.status === 400 || this.status === 401; }
 }
 
 /** The token to use now: the stored one while it has more than a minute left, else a refreshed one (stored again). undefined = not signed in. */
 export const MIN_LEFT_MS = 60_000;
+const inFlight = new Map<string, Promise<string | undefined>>();   // one refresh per single-use refresh token: concurrent callers share it (the loser would get «already used» and sign the worker out)
 export async function tokenFor(e: Endpoint, s: Session | undefined, now: number, save: (s: Session | undefined) => Promise<void>, f: Fetch = fetch): Promise<string | undefined> {
   if (!s) return undefined;
   if (s.expires_at - now > MIN_LEFT_MS) return s.access_token;
-  try { const next = await refreshSession(e, s, now, f); await save(next); return next.access_token; } catch { await save(undefined); return undefined; }
+  const running = inFlight.get(s.refresh_token);
+  if (running) return running;
+  const job = (async () => {
+    try { const next = await refreshSession(e, s, now, f); await save(next); return next.access_token; }
+    catch (err) { if (err instanceof RefreshRefused && err.dead) await save(undefined); return undefined; }   // a flaky field connection must not sign the worker out: only the auth server's «no» does
+  })();
+  inFlight.set(s.refresh_token, job);
+  try { return await job; } finally { inFlight.delete(s.refresh_token); }
 }
 
 /** After a sign-in: claims any open invitation for this address (a worker's first sign-in). «No invitation» is normal for an owner and is not an error. */
@@ -56,6 +70,30 @@ export async function claimInvitations(e: Endpoint, token: string, f: Fetch = fe
 export async function invite(e: Endpoint, token: string, farmId: string, email: string, workerId: string | undefined, f: Fetch = fetch): Promise<void> {
   const res = await f(`${e.url}/rest/v1/invitations`, { method: 'POST', headers: { ...headers(e, token), prefer: 'return=minimal' }, body: JSON.stringify({ farm_id: farmId, email: email.trim().toLowerCase(), ...(workerId ? { worker_id: workerId } : {}) }) });
   if (!res.ok) throw new Error(`invite: HTTP ${res.status}`);
+}
+
+/** The farms the signed-in person belongs to (row-level security shows only their own memberships). A failed or unreadable answer is an ERROR: «unknown» must never read as «no farm yet». */
+export async function myFarmIds(e: Endpoint, token: string, f: Fetch = fetch): Promise<string[]> {
+  const res = await f(`${e.url}/rest/v1/farm_members?select=farm_id&limit=1`, { headers: headers(e, token) });
+  if (!res.ok) throw new Error(`farms: HTTP ${res.status}`);
+  const r = (await res.json()) as unknown;
+  if (!Array.isArray(r)) throw new Error('farms: unreadable answer');
+  return r.map((x) => (x as { farm_id?: unknown }).farm_id).filter((x): x is string => typeof x === 'string');
+}
+
+export type FarmRefusal = 'one_farm' | 'member' | 'invited' | 'limit' | 'confirm' | 'other';
+/** The server said NO to setting up a farm, and why (migration 0034 words). */
+export class FarmRefused extends Error {
+  constructor(readonly reason: FarmRefusal, message: string) { super(message); }
+}
+const refusalOf = (m: string): FarmRefusal => (m.includes('one farm per person') ? 'one_farm' : m.includes('already belong') ? 'member' : m.includes('open invitation') ? 'invited' : m.includes('too many new farms') ? 'limit' : m.includes('confirm your e-mail') ? 'confirm' : 'other');
+
+/** Sets up the person's FIRST farm with the farm id this phone already uses (migration 0034: one checked function; nothing by hand in the database). */
+export async function createFirstFarm(e: Endpoint, token: string, farmId: string, name: string, f: Fetch = fetch): Promise<void> {
+  const res = await f(`${e.url}/rest/v1/rpc/create_first_farm`, { method: 'POST', headers: headers(e, token), body: JSON.stringify({ p_farm: farmId, p_name: name.trim() }) });
+  if (res.ok) return;
+  if (res.status >= 400 && res.status < 500) { const b = (await res.json().catch(() => ({}))) as { message?: string }; throw new FarmRefused(refusalOf(b.message ?? ''), b.message ?? `HTTP ${res.status}`); }
+  throw new Error(`create farm: HTTP ${res.status}`);
 }
 
 export interface OpenInvitation { id: string; email: string; worker_id: string | null }

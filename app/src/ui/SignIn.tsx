@@ -6,6 +6,7 @@ import { t } from '../i18n';
 import { claimInvitations, requestCode, session, tokenFor, verifyCode, type Session } from '../auth/gotrue';
 import { loadSession, saveSession } from '../auth/store';
 import { setSyncFlag } from '../sync/golive';
+import { CreateFarm } from './CreateFarm';
 
 const save = saveSession;
 
@@ -16,8 +17,8 @@ export function SignIn() {
     if (!AUTH_ENABLED) return;
     void loadSession().then(async (s) => {
       if (!s) return;
-      const token = await tokenFor(BACKEND, s, Date.now(), save); // a refreshed session is stored by tokenFor itself
-      if (token && !session.value) session.value = s;               // still valid: no refresh was needed
+      if (!session.value) session.value = s;                        // kept even when offline; a dead session is cleared by tokenFor below
+      await tokenFor(BACKEND, s, Date.now(), save);                 // a refreshed session is stored by tokenFor itself
     });
   }, []);
   if (!AUTH_ENABLED) return null;
@@ -31,6 +32,7 @@ export function SignIn() {
   if (session.value) return (
     <section class="card" data-testid="signed-in">{t('signin.as', { email: session.value.email })}
       <small data-testid="farm-id">{t('signin.farmId', { id: realFarmId.value })}</small>
+      <CreateFarm />
       <button class="btn secondary" onClick={() => void save(undefined)}>{t('signin.out')}</button>
     </section>
   );

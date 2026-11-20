@@ -7,7 +7,8 @@ import { SignOff } from './SignOff';
 import { formatDate, t, tn, type I18nKey } from '../i18n';
 import { formatDose, formatQty } from '../i18n/format';
 import { isCalendarDate, known, type Known } from '@aloni/rules-core';
-import { readUse, statusOf, type Status } from '../labels/label-use';
+import { readNote, readUse, statusOf, type Status } from '../labels/label-use';
+import { MediaThumb } from './Photos';
 import type { Row } from '../db/schema';
 import { LabelUseForm, UNIT_KEYS } from './LabelUseForm';
 import { nameOf } from './screens';
@@ -78,6 +79,8 @@ export function LabelUses({ product, onBack, readOnly = false }: { product: Row;
           <div class={st === 'blocked' ? 'card blocked' : 'card'} key={r.id} data-testid="labeluse">{crop ? nameOf(crop) : t('value.unknown')}
             <span class={`badge ${st}`} data-testid="labeluse-status">{badgeText(r, st)}</span>
             <Lines row={r} />
+            {st === 'signed' && readNote(r).note && <small data-testid="signoff-shown-note">{readNote(r).note}</small>}
+            {st === 'signed' && readNote(r).photoId && <div class="photos"><MediaThumb id={String(readNote(r).photoId)} /></div>}
             <UnsyncedMark id={r.id} />
             {!readOnly && (st === 'unsigned' || st === 'changed') && signing !== r.id && <button class="btn secondary" data-testid="signoff-open" onClick={() => setSigning(r.id)}>{t('signoff.record')}</button>}
             {!readOnly && signing === r.id && <SignOff row={r} onDone={() => setSigning('')} />}

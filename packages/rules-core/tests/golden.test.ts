@@ -8,7 +8,7 @@ import { fingerprint, known, makeDose, parseDecimal, parseMaxApps, parsePhiDays,
 type J = Record<string, any>;
 const DIR = new URL('../fixtures/golden/', import.meta.url);
 const cases: J[] = readdirSync(DIR).filter((f) => f.endsWith('.json')).sort().map((f) => JSON.parse(readFileSync(new URL(f, DIR), 'utf8')) as J);
-export const LANDED = ['A06-stock-low-mandipropamid', 'A07-stock-expired-acetamiprid', 'A08-stock-expiring-spinosad', 'A01-frost-low-plain', 'A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-end-time-blocks', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'R05-frost-cover-herbs', 'REI-after-r01-spray'];
+export const LANDED = ['A06-stock-low-mandipropamid', 'A07-stock-expired-acetamiprid', 'A08-stock-expiring-spinosad', 'A01-frost-low-plain', 'A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-end-time-blocks', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'R05-frost-cover-herbs', 'REI-after-r01-spray', 'A10-salt-pachi-well'];
 
 const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[+-]\d{2}:\d{2}|Z)$/;
 const ms = (v: unknown): unknown => (typeof v === 'string' && ISO.test(v) ? Date.parse(v) : v); // times compare as instants, whatever their offset
@@ -61,6 +61,18 @@ function stockOf(c: J): Pick<Snapshot, 'stock'> {
     labelDose, lowFactor: parseDecimal(c.rule_state.params.low_factor.value as string), expiringDays: c.rule_state.params.expiring_days.value as number } };
 }
 
+function salinityOf(c: J): Pick<Snapshot, 'salinity'> {
+  if (c.rule_id !== 'SALT') return {};
+  return { salinity: {
+    samples: (c.inputs.water_tests as J[]).map((sample) => ({
+      parcelId: sample.parcel_id, sampledOn: sample.sampled_on, waterEcDsM: sample.EC_dS_m,
+      coastalWell: sample.source === 'Coastal well',
+    })),
+    retestMonths: c.rule_state.params.retest_months.value,
+    sensitiveCrops: c.rule_state.params.sensitive_crops.value,
+  } };
+}
+
 function snapshot(c: J): Snapshot {
   const syn: J = c.synthetic_inputs ?? {};
   const uses: UseFact[] = ((c.inputs.label_uses ?? []) as J[]).map((l) => {
@@ -75,7 +87,7 @@ function snapshot(c: J): Snapshot {
     tasks: ((syn.worker_tasks ?? []) as J[]).map((t) => ({ id: t.id, plantingIds: t.planting_ids, at: utc(t.at) })),
     draftJobs: ([...(syn.draft_job ? [syn.draft_job] : []), ...(syn.draft_jobs ?? [])] as J[]).map((j) => ({ id: j.id, kind: j.kind, plantingIds: j.planting_ids, productId: j.product_id })),
     products: ((c.inputs.products ?? []) as J[]).map((p) => ({ id: p.id, groupCode: p.group_code ?? undefined })),
-    ...weatherOf(c), ...frostOf(c), ...stockOf(c),
+    ...weatherOf(c), ...frostOf(c), ...stockOf(c), ...salinityOf(c),
     ruleStatus: { [c.rule_id]: c.rule_state.status === 'unsigned' ? 'unsigned' : 'signed' },
   };
 }
@@ -136,6 +148,34 @@ describe('golden cases', () => {
     const landed = LANDED.includes(c.id as string);
     (landed ? it : it.skip)(`${c.id}${landed ? '' : ' (pending: its rule is not built yet)'}`, () => check(c, runRules(snapshot(c))));
   }
+  it('SALT shows the sample without a verdict or notification until signed', () => {
+    const c = cases.find((x) => x.id === 'A10-salt-pachi-well')!;
+    const s = snapshot(c);
+    const statuses: Snapshot['ruleStatus'][] = [{ SALT: 'unsigned' }, {}];
+    for (const ruleStatus of statuses) {
+      expect(runRules({ ...s, ruleStatus }).filter((o) => o.rule_id === 'SALT')).toEqual([{
+        rule_id: 'SALT', kind: 'info', category: 'salinity_inputs', notify: false, parcel_ids: ['P3'],
+        planting_ids: [], product_ids: [], crop_ids: [], vetoes: [],
+        values: { water_EC_dS_m: 2.6, sampled_on: '2026-08', coastal_well: true, badge: 'not_signed_off' },
+      }]);
+    }
+  });
+  it('SALT never gives a verdict for missing EC or a missing retest threshold', () => {
+    const s = snapshot(cases.find((x) => x.id === 'A10-salt-pachi-well')!);
+    const facts = s.salinity!;
+    const sample = facts.samples[0];
+    for (const salinity of [
+      { ...facts, samples: [{ ...sample, waterEcDsM: undefined }] },
+      { ...facts, retestMonths: undefined },
+    ]) {
+      const [output] = runRules({ ...s, salinity }).filter((o) => o.rule_id === 'SALT');
+      expect(output).toEqual({
+        rule_id: 'SALT', kind: 'info', category: 'salinity_unknown', notify: false, parcel_ids: ['P3'],
+        planting_ids: [], product_ids: [], crop_ids: [], vetoes: [],
+        values: { water_EC_dS_m: salinity.samples[0].waterEcDsM, sampled_on: '2026-08', coastal_well: true, badge: 'unknown' },
+      });
+    }
+  });
   it('the matcher itself goes red: an output that breaks a must_not is caught, a time in another offset still matches', () => {
     expect(matches({ rule_id: 'FROST', kind: 'alert' }, { rule_id: 'FROST', kind: { $in: ['alert', 'block'] } })).toBe(true);
     expect(matches({ values: { reentry_at: '2026-11-19T11:00:00Z' } }, { values: { reentry_at: '2026-11-19T13:00:00+02:00' } })).toBe(true);
