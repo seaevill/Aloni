@@ -46,8 +46,11 @@ describe('demo isolation', () => {
   it('a job built with the demo farm id and saved with putMany (job + links) is all demo: no real row, nothing in the outbox', async () => {
     await putParcel(db, { name: 'Real parcel' });
     await importDemo(db, data);
-    const pl = (await db.plantings.where('farm_id').equals(DEMO_FARM_ID).toArray())[0];
-    const r = buildJob({ plantingIds: [String(pl.id)], productId: 'p-demo', workerId: 'w-demo', dose: '0,025', doseUnit: 'ml/str', plannedFor: '2026-11-20' }, { label: undefined, plantings: [pl] }, DEMO_FARM_ID, '2026-11-19T08:00:00Z', { job: crypto.randomUUID(), plantingLinks: [crypto.randomUUID()] });
+    const labels = await db.label_uses.where('farm_id').equals(DEMO_FARM_ID).toArray();
+    const plantings = await db.plantings.where('farm_id').equals(DEMO_FARM_ID).toArray();
+    const label = labels.find((l) => plantings.some((p) => p.crop_id === l.crop_id))!;
+    const pl = plantings.find((p) => p.crop_id === label.crop_id)!;
+    const r = buildJob({ plantingIds: [String(pl.id)], productId: String(label.product_id), workerId: 'w-demo', dose: '0,025', doseUnit: 'ml/str', plannedFor: '2026-11-20' }, { label, plantings: [pl] }, DEMO_FARM_ID, '2026-11-19T08:00:00Z', { job: crypto.randomUUID(), plantingLinks: [crypto.randomUUID()] });
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     await putMany(db, [{ table: 'jobs', row: r.job, op: 'insert' }, ...r.jobPlantings.map((row) => ({ table: 'job_plantings' as const, row, op: 'insert' as const }))]);
