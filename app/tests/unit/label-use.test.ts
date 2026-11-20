@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto';
 import { describe, expect, it } from 'vitest';
 import { formatDose } from '../../src/i18n/format';
-import { buildLabelUse, DOSE_UNITS, NOT_ON_LABEL, readUse, statusOf, withSignOff, type Field, type LabelUseInput } from '../../src/labels/label-use';
+import { buildLabelUse, DOSE_UNITS, NOT_ON_LABEL, readNote, readUse, statusOf, withSignOff, type Field, type LabelUseInput } from '../../src/labels/label-use';
 import { put } from '../../src/repo';
 import { TEST_FARM_ID, newDb } from '../helpers/factories';
 
@@ -76,6 +76,16 @@ describe('sign-off: exactly these values, a real date, a name; any edit drops it
   it('records the sign-off and shows «signed»', () => {
     expect(statusOf(signed())).toBe('signed');
     expect(signed().sign_off).toEqual({ by: 'Test Agronomist', on: '2026-11-17', fingerprint: expect.stringContaining('prod-1') }); // the fingerprint covers product, crop, target and the values
+  });
+  it('keeps the agronomist\'s note and an optional photo WITH the approval; neither changes what the approval covers', () => {
+    const plain = signed().sign_off as { fingerprint: string };
+    const withExtras = withSignOff(build(input()), 'Test Agronomist', '2026-11-17', now, { note: '  seen at the shop  ', photoId: 'photo-1' });
+    expect(withExtras?.sign_off).toEqual({ by: 'Test Agronomist', on: '2026-11-17', fingerprint: plain.fingerprint, note: 'seen at the shop', photo_id: 'photo-1' });
+    expect(statusOf(withExtras!)).toBe('signed');                                                  // the note and the photo never decide anything
+    expect(readNote(withExtras!)).toEqual({ note: 'seen at the shop', photoId: 'photo-1' });
+    expect(readNote(signed())).toEqual({});                                                        // an approval without them shows nothing extra
+    expect((withSignOff(build(input()), 'A', '2026-11-17', now, { note: '   ' })!.sign_off as Record<string, unknown>).note).toBeUndefined();   // an empty note is not stored
+    expect(withSignOff(build(input()), 'A', '2026-11-17', now, { note: 'x'.repeat(2001) })).toBeUndefined();                                      // as long as the server ledger allows (2000)
   });
   it('no name or no real date → no sign-off', () => {
     for (const [by, on] of [['', '2026-11-17'], ['  ', '2026-11-17'], ['A', 'Invalid Date'], ['A', ''], ['A', '2026-02-31']]) expect(withSignOff(build(input()), by, on, now), `${by}|${on}`).toBeUndefined();

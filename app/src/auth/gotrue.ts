@@ -72,6 +72,30 @@ export async function invite(e: Endpoint, token: string, farmId: string, email: 
   if (!res.ok) throw new Error(`invite: HTTP ${res.status}`);
 }
 
+/** The farms the signed-in person belongs to (row-level security shows only their own memberships). A failed or unreadable answer is an ERROR: «unknown» must never read as «no farm yet». */
+export async function myFarmIds(e: Endpoint, token: string, f: Fetch = fetch): Promise<string[]> {
+  const res = await f(`${e.url}/rest/v1/farm_members?select=farm_id&limit=1`, { headers: headers(e, token) });
+  if (!res.ok) throw new Error(`farms: HTTP ${res.status}`);
+  const r = (await res.json()) as unknown;
+  if (!Array.isArray(r)) throw new Error('farms: unreadable answer');
+  return r.map((x) => (x as { farm_id?: unknown }).farm_id).filter((x): x is string => typeof x === 'string');
+}
+
+export type FarmRefusal = 'one_farm' | 'member' | 'invited' | 'limit' | 'confirm' | 'other';
+/** The server said NO to setting up a farm, and why (migration 0034 words). */
+export class FarmRefused extends Error {
+  constructor(readonly reason: FarmRefusal, message: string) { super(message); }
+}
+const refusalOf = (m: string): FarmRefusal => (m.includes('one farm per person') ? 'one_farm' : m.includes('already belong') ? 'member' : m.includes('open invitation') ? 'invited' : m.includes('too many new farms') ? 'limit' : m.includes('confirm your e-mail') ? 'confirm' : 'other');
+
+/** Sets up the person's FIRST farm with the farm id this phone already uses (migration 0034: one checked function; nothing by hand in the database). */
+export async function createFirstFarm(e: Endpoint, token: string, farmId: string, name: string, f: Fetch = fetch): Promise<void> {
+  const res = await f(`${e.url}/rest/v1/rpc/create_first_farm`, { method: 'POST', headers: headers(e, token), body: JSON.stringify({ p_farm: farmId, p_name: name.trim() }) });
+  if (res.ok) return;
+  if (res.status >= 400 && res.status < 500) { const b = (await res.json().catch(() => ({}))) as { message?: string }; throw new FarmRefused(refusalOf(b.message ?? ''), b.message ?? `HTTP ${res.status}`); }
+  throw new Error(`create farm: HTTP ${res.status}`);
+}
+
 export interface OpenInvitation { id: string; email: string; worker_id: string | null }
 /** The invitations of this farm that nobody has used yet (the owner sees them; nobody else can). A failure or an unreadable answer is an empty list. */
 export async function openInvitations(e: Endpoint, token: string, farmId: string, f: Fetch = fetch): Promise<OpenInvitation[]> {

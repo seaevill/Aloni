@@ -108,9 +108,19 @@ export function statusOf(row: Row): Status {
 export const signedUseOf = (row: Row): Known<SignedLabelUse> => requireSignOff(readUse(row), signOffOf(row));
 
 /** Records the agronomist's sign-off for exactly the values in the row. Only a complete, unsigned label with a name and a real date can be signed. */
-export function withSignOff(row: Row, by: string, on: string, nowIso: string): Row | undefined {
+export const NOTE_MAX = 2000;   // the server ledger's limit (migration 0033)
+export function withSignOff(row: Row, by: string, on: string, nowIso: string, extra: { note?: string; photoId?: string } = {}): Row | undefined {
   if (statusOf(row) === 'blocked' || !by.trim() || !isCalendarDate(on)) return undefined;
-  return { ...row, sign_off: { by: by.trim(), on, fingerprint: fingerprint(readUse(row)) }, updated_at: nowIso };
+  const note = (extra.note ?? '').trim();
+  if (note.length > NOTE_MAX) return undefined;
+  // the note and the photo are the record of WHAT the agronomist said and showed; they never enter the fingerprint and never decide anything
+  return { ...row, sign_off: { by: by.trim(), on, fingerprint: fingerprint(readUse(row)), ...(note === '' ? {} : { note }), ...(extra.photoId ? { photo_id: extra.photoId } : {}) }, updated_at: nowIso };
+}
+
+/** The note and photo kept with an approval (for display only). */
+export function readNote(row: Row): { note?: string; photoId?: string } {
+  const s = row.sign_off as { note?: unknown; photo_id?: unknown } | undefined;
+  return { ...(typeof s?.note === 'string' && s.note !== '' ? { note: s.note } : {}), ...(typeof s?.photo_id === 'string' && s.photo_id !== '' ? { photoId: s.photo_id } : {}) };
 }
 
 
