@@ -4,7 +4,7 @@
   --white:#fff; --muted:#2d4033; --tab:#2d4033; --amber-bg:#ffedc2; --amber-fg:#432c00; --danger:#6e1708; --calm-bg:#eaf8c4; --calm-fg:#0e2a16;
   --forest-2:#0b3520; --card-on-dark:#164a2e; --lime:#c6f062; --on-lime:#0e2a16; --bar:rgba(237,242,232,.74);    /* theme 2026-11 (docs/design/theme-2026-11): lime only as a FILL behind dark text, never as text */
   --font:"Commissioner",system-ui,-apple-system,"Segoe UI",sans-serif; --lh:1.4;
-  --fs-14:14px; --fs-16:16px; --fs-18:18px; --fs-20:20px; --fs-22:22px; --fs-30:30px; --icon:24px; --ls-title:-.025em; --ls-h2:-.015em; --fs-count:40px;
+  --fs-14:.875rem; --fs-16:1rem; --fs-18:1.125rem; --fs-20:1.25rem; --fs-22:1.375rem; --fs-30:1.875rem; --icon:24px; --ls-title:-.025em; --ls-h2:-.015em; --fs-count:2.5rem;
   --font-hi:"Commissioner","Noto Sans Devanagari",system-ui,-apple-system,"Segoe UI",sans-serif;
   /* design sprint 2026-11-21 (D1): type scale, status tones, motion. The 14 px floor holds everywhere (docs/design/design-sprint-2026-11-21.md §1). */
   --fs-hero:44px; --fs-title:30px; --fs-h2:22px; --fs-row:18px; --fs-body:16px; --fs-meta:14px;
@@ -12,6 +12,7 @@
   --lime-soft:#eaf8c4; --lime-soft-fg:#134a2b; --unknown-border:#c9d5c3; --unknown-fg:#2d4033;
   --chip-h:32px; --tag-h:28px; --icon-sm:16px; --icon-md:24px; --tile:56px; --empty-art:160px; --bar-h:56px;
   --dur-1:120ms; --dur-2:200ms; --dur-3:280ms; --ease:cubic-bezier(.2,.8,.2,1);
+  --fs-14:.875rem; --fs-16:1rem; --fs-18:1.125rem; --fs-20:1.25rem; --fs-22:1.375rem; --fs-30:1.875rem; --ls-title:-.025em; --ls-h2:-.015em; --fs-count:2.5rem;
   --sp-2:2px; --sp-4:4px; --sp-6:6px; --sp-8:8px; --sp-10:10px; --sp-12:12px; --sp-14:14px; --sp-16:16px; --sp-24:24px; --sp-48:48px;
   --r-sm:8px; --r-md:12px; --r-btn:14px; --r-card:22px; --r-pill:99px; --bw-1:1px; --bw-2:2px;
   --tap:56px; --sketch-h:220px; --map-h:56vh; --tap-step:36px; --tap-big:72px; --thumb:96px; --dot:10px; --btn-min-w:96px; --max-w:640px; --nav-h:72px; --main-pad-bottom:88px;
