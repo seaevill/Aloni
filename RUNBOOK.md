@@ -147,6 +147,16 @@ Her satır: **Nerede → Ne yap → Doğru sonuç.** Farklıysa **dur**, ekran g
 8. **İşçiyi uçak moduna al**, «Έγινε»'ye bas, sonra bağlantıyı aç → doğru: önce «περιμένει», sonra gönderildi (kaybolmaz).
 9. **Claude'a «kontrol et» yaz** → Claude salt okunur bakar: zincir doğrulama (`verify_spray_chain`), Advisors → doğru: 0 satır, «RLS Disabled» uyarısı yok.
 10. **Temizlik:** test işçisini silmek istersen Claude'a yaz → doğru: Users listesinde yok. (Gerçek işçiyse silme.)
+## 12b. «Denemeyi aç» = Cloudflare'de 3 derleme değişkeni (kod PR'ı yok; geri alması da değişkenleri silmek)
+**Ön koşul:** üretim 0001–0032 (tamam). Bunlar **genel** değerlerdir (gizli değil). Gizli (service/secret) anahtarı **hiçbir yere** yazma.
+1. **Cloudflare** → Workers & Pages → **aloni** → **Settings → Build → Variables and secrets** → **Add** (tür: *Text*, secret DEĞİL):
+ `VITE_LIVE` = `true`
+ `VITE_SUPABASE_URL` = `https://jueedypyaxreudapabpr.supabase.co`
+ `VITE_SUPABASE_PUBLISHABLE_KEY` = `sb_publishable_11leTWGybU2-Ae4d3u--aw_WKp4WnID`
+2. **Deployments** → son derlemede **Retry deployment** (ya da main'e yeni bir merge bekle).
+ Doğru sonuç: uygulamada **Άλλα** altında «Σύνδεση» ve «Εργάτες → Πρόσκληση» görünür; **senkron açılmaz** (sihirbaza basana kadar hiçbir şey gönderilmez).
+3. **Geri alma:** üç değişkeni sil → Retry deployment → giriş ekranları yine kapalı.
+Sonra §12a'daki 10 satıra geç.
 
 ## 12. Gerçek hesap denemesi (tek tıklama listesi; her adımı sen yaparsın)
 Her adımda: **Nerede** (ekran adı) → **Ne yap** → **Doğru sonuç**. Sonuç farklıysa **dur**, ekran görüntüsünü Claude'a gönder; sonraki adıma geçme. Gizli (secret/service) anahtarı ve parolaları hiçbir yere yazma.

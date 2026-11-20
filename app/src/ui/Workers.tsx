@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
 import { AUTH_ENABLED, BACKEND } from '../config';
 import { invite, openInvitations, session, tokenFor, withdrawInvitation, type OpenInvitation } from '../auth/gotrue';
+import { saveSession } from '../auth/store';
 import { canInviteWorkers, loadController, type Controller } from '../legal/controller';
 import { activeFarm, dataVersion, db, realFarmId } from '../db';
 import { t } from '../i18n';
@@ -21,13 +22,13 @@ function Invite({ worker, controller }: { worker: Row; controller: Controller | 
   const allowed = AUTH_ENABLED && !!session.value && canInviteWorkers(controller).allowed;
   useEffect(() => {
     if (!allowed) return;
-    void tokenFor(BACKEND, session.value, Date.now(), async (s) => { session.value = s; }).then(async (token) => { if (token) setOpen((await openInvitations(BACKEND, token, realFarmId.value)).filter((i) => i.worker_id === worker.id)); });
+    void tokenFor(BACKEND, session.value, Date.now(), saveSession).then(async (token) => { if (token) setOpen((await openInvitations(BACKEND, token, realFarmId.value)).filter((i) => i.worker_id === worker.id)); });
   }, [allowed, round]);
   if (!AUTH_ENABLED || !session.value) return null;
   if (!canInviteWorkers(controller).allowed) return <p class="muted" data-testid="invite-closed">{t('invite.closed')}</p>;
   const send = async () => {
     try {
-      const token = await tokenFor(BACKEND, session.value, Date.now(), async (s) => { session.value = s; });
+      const token = await tokenFor(BACKEND, session.value, Date.now(), saveSession);
       if (!token) throw new Error('not signed in');
       await invite(BACKEND, token, realFarmId.value, email, worker.id); setState('sent'); setEmail(''); setRound((n) => n + 1);
     } catch { setState('failed'); }
@@ -37,7 +38,7 @@ function Invite({ worker, controller }: { worker: Row; controller: Controller | 
       <strong>{t('invite.title')}</strong>
       {open.map((i) => (
         <p class="muted" key={i.id} data-testid="invite-open">{t('invite.openLine', { email: i.email })}
-          <button class="btn secondary" data-testid="invite-withdraw" onClick={() => void tokenFor(BACKEND, session.value, Date.now(), async (s) => { session.value = s; }).then(async (token) => { if (token) { await withdrawInvitation(BACKEND, token, i.id); setRound((n) => n + 1); } })}>{t('invite.withdraw')}</button>
+          <button class="btn secondary" data-testid="invite-withdraw" onClick={() => void tokenFor(BACKEND, session.value, Date.now(), saveSession).then(async (token) => { if (token) { await withdrawInvitation(BACKEND, token, i.id); setRound((n) => n + 1); } })}>{t('invite.withdraw')}</button>
         </p>
       ))}
       <label class="field">{t('invite.email')}<input class="input" type="email" value={email} autoComplete="off" onInput={(e) => setEmail((e.target as HTMLInputElement).value)} /></label>

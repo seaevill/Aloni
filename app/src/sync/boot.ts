@@ -25,7 +25,7 @@ export async function bootSync(): Promise<void> {
   if (!SYNC_CONNECTED || !AUTH_ENABLED) return;
   await loadSyncFlag(db);   // the owner's switch (the go-live wizard); a worker's phone is switched on by the sign-in that claims the invitation
   const stored = await loadSession();
-  if (stored && !session.value) { const token = await tokenFor(BACKEND, stored, Date.now(), saveSession); if (token && !session.value) session.value = stored; }
+  if (stored && !session.value) { session.value = stored; await tokenFor(BACKEND, stored, Date.now(), saveSession); }   // offline at start-up keeps the session (the token is refreshed lazily); a dead one is cleared by tokenFor itself
   const token = async (): Promise<string> => {
     const t = await tokenFor(BACKEND, session.value, Date.now(), saveSession);
     if (!t) throw new Error('signed out');

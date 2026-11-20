@@ -1,0 +1,59 @@
+[
+ {
+  "row": {
+   "product_id": "aaaaaaaa-0000-0000-0000-00000000f001",
+   "crop_id": "cccccccc-0000-0000-0000-00000000f001",
+   "target": "Περονόσπορος",
+   "dose_kind": "single",
+   "dose_unit": "ml/str",
+   "dose_min": "0.025",
+   "phi_days": "7",
+   "rei_hours": "24",
+   "max_apps": "3"
+  },
+  "fingerprint": "[\"[\\\"aaaaaaaa-0000-0000-0000-00000000f001\\\",\\\"cccccccc-0000-0000-0000-00000000f001\\\",\\\"Περονόσπορος\\\"]\",{\"known\":true,\"value\":{\"kind\":\"single\",\"unit\":\"ml/str\",\"min\":\"0.025\",\"max\":\"0.025\"}},{\"known\":true,\"value\":7},{\"known\":true,\"value\":24},{\"known\":true,\"value\":3}]"
+ },
+ {
+  "row": {
+   "product_id": "aaaaaaaa-0000-0000-0000-00000000f001",
+   "crop_id": "cccccccc-0000-0000-0000-00000000f001",
+   "target": "Αφίδες",
+   "dose_kind": "range",
+   "dose_unit": "g/100l",
+   "dose_min": "150",
+   "dose_max": "200",
+   "phi_days": "14",
+   "rei_hours": "48",
+   "max_apps": "2"
+  },
+  "fingerprint": "[\"[\\\"aaaaaaaa-0000-0000-0000-00000000f001\\\",\\\"cccccccc-0000-0000-0000-00000000f001\\\",\\\"Αφίδες\\\"]\",{\"known\":true,\"value\":{\"kind\":\"range\",\"unit\":\"g/100l\",\"min\":\"150\",\"max\":\"200\"}},{\"known\":true,\"value\":14},{\"known\":true,\"value\":48},{\"known\":true,\"value\":2}]"
+ },
+ {
+  "row": {
+   "product_id": "aaaaaaaa-0000-0000-0000-00000000f001",
+   "crop_id": "cccccccc-0000-0000-0000-00000000f001",
+   "target": "",
+   "dose_kind": "single",
+   "dose_unit": "kg/str",
+   "dose_min": "1.50",
+   "phi_days": "0",
+   "rei_hours": "12",
+   "max_apps": "1"
+  },
+  "fingerprint": "[\"[\\\"aaaaaaaa-0000-0000-0000-00000000f001\\\",\\\"cccccccc-0000-0000-0000-00000000f001\\\",\\\"\\\"]\",{\"known\":true,\"value\":{\"kind\":\"single\",\"unit\":\"kg/str\",\"min\":\"1.50\",\"max\":\"1.50\"}},{\"known\":true,\"value\":0},{\"known\":true,\"value\":12},{\"known\":true,\"value\":1}]"
+ },
+ {
+  "row": {
+   "product_id": "aaaaaaaa-0000-0000-0000-00000000f001",
+   "crop_id": "cccccccc-0000-0000-0000-00000000f001",
+   "target": "a \"quoted\" \\ back\\slash",
+   "dose_kind": "single",
+   "dose_unit": "l/str",
+   "dose_min": "0.5",
+   "phi_days": "21",
+   "rei_hours": "72",
+   "max_apps": "4"
+  },
+  "fingerprint": "[\"[\\\"aaaaaaaa-0000-0000-0000-00000000f001\\\",\\\"cccccccc-0000-0000-0000-00000000f001\\\",\\\"a \\\\\\\"quoted\\\\\\\" \\\\\\\\ back\\\\\\\\slash\\\"]\",{\"known\":true,\"value\":{\"kind\":\"single\",\"unit\":\"l/str\",\"min\":\"0.5\",\"max\":\"0.5\"}},{\"known\":true,\"value\":21},{\"known\":true,\"value\":72},{\"known\":true,\"value\":4}]"
+ }
+]

@@ -1,13 +1,48 @@
 name: CI
+# One run per PR: a newer push cancels the older run (never on main). Documentation-only changes skip the heavy jobs but STILL report «check» and «sql» as green: the jobs themselves always run
+# (a workflow-level paths filter would leave a required check «Pending» for ever). On main every job runs in full.
 on:
   pull_request:
   push:
     branches: [main]
 
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
 jobs:
-  check:
+  changes:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 5
+    outputs:
+      code: ${{ steps.f.outputs.code }}
+      sql: ${{ steps.f.outputs.sql }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: f
+        name: What changed (anything but documentation = code; supabase, workflows and scripts = sql)
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ "$EVENT" != pull_request ]; then echo "code=true" >> "$GITHUB_OUTPUT"; echo "sql=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          files=$(git diff --name-only "$BASE"...HEAD)
+          echo "$files"
+          code=false; sql=false
+          if [ -n "$files" ] && echo "$files" | grep -qvE '^(docs/|RUNBOOK\.md$|.*\.md$)'; then code=true; fi
+          if echo "$files" | grep -qE '^(supabase/|\.github/|scripts/)'; then sql=true; fi
+          echo "code=$code" >> "$GITHUB_OUTPUT"; echo "sql=$sql" >> "$GITHUB_OUTPUT"
+
+  static:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -23,21 +58,39 @@ jobs:
         run: npm run lint
       - name: Unit tests (Vitest)
         run: npm test
-      - name: Install WebKit
+
+  e2e:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    name: e2e (shard ${{ matrix.shard }}/3)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install WebKit only (browser binaries are not cached, restoring takes as long as downloading)
         run: npx playwright install --with-deps webkit
         working-directory: app
-      - name: E2E at 375 px (WebKit)
-        run: npx playwright test --trace off
+      - name: E2E at 375 px (WebKit), one third of the files
+        run: npx playwright test --trace off --shard=${{ matrix.shard }}/3
         working-directory: app
       - name: Performance report (size and first load; only WARNS, never fails)
-        if: always()
+        if: always() && matrix.shard == 1
         continue-on-error: true
         run: node scripts/perf-report.mjs
       - name: Upload screenshots of every screen (always)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: screens-${{ github.event.pull_request.number || github.run_id }}
+          name: screens-${{ github.event.pull_request.number || github.run_id }}-${{ matrix.shard }}
           path: app/screenshots
           if-no-files-found: ignore
           retention-days: 14
@@ -45,11 +98,28 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-results
+          name: playwright-results-${{ matrix.shard }}
           path: app/test-results
           retention-days: 7
 
+  # The ONE required check: green when every part ran green OR was skipped because only documentation changed. It always runs, so it is never «Pending».
+  check:
+    if: always()
+    needs: [changes, static, e2e]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Every part green or skipped
+        env:
+          RESULTS: ${{ needs.changes.result }} ${{ needs.static.result }} ${{ needs.e2e.result }}
+        run: |
+          for r in $RESULTS; do
+            if [ "$r" != success ] && [ "$r" != skipped ]; then echo "a part ended with: $r"; exit 1; fi
+          done
+          echo "all parts: $RESULTS"
+
   sql:
+    needs: changes
     runs-on: ubuntu-latest
     timeout-minutes: 10
     services:
@@ -66,15 +136,23 @@ jobs:
       PGDATABASE: postgres
     steps:
       - uses: actions/checkout@v4
+      - name: Nothing in supabase, scripts or workflows changed
+        if: needs.changes.outputs.sql != 'true'
+        run: echo "documentation or app-only change - the database tests are skipped here (they run in full on main)"
       - name: Upgrade test (a database with data under 0001-0009 gets 0010+ on top)
+        if: needs.changes.outputs.sql == 'true'
         run: bash supabase/tests/upgrade.sh
       - name: The exact `supabase db push` of the workflow, with the pinned CLI, against a throwaway database
+        if: needs.changes.outputs.sql == 'true'
         run: bash supabase/tests/cli_push.sh
       - name: The workflow's gate (exact commit, finished, green) and result parser
+        if: needs.changes.outputs.sql == 'true'
         run: bash scripts/ci-gate.test.sh
       - name: SQL tests on a bare PostGIS (all migrations, then every SQL test)
+        if: needs.changes.outputs.sql == 'true'
         run: bash supabase/tests/run.sh plain
       - name: SQL tests with the Supabase layout (extensions schema, search_path) - the auth schema is a STUB, not Supabase Auth
+        if: needs.changes.outputs.sql == 'true'
         run: bash supabase/tests/run.sh supabase
 
   pr-size:
