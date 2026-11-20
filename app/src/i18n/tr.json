@@ -189,6 +189,7 @@
   "labeluse.hours.other": "{n} saat",
   "labeluse.status.blocked": "ENGELLİ: etiket bilgisi eksik, kullanılamaz",
   "labeluse.status.unsigned": "Ziraat mühendisi imzası yok",
+  "labeluse.why.closed": "İmza olmadan bekleme süresi bilinmiyor: hasat kapalı kalır.",
   "labeluse.status.changed": "İmzadan sonra değişti: ziraat mühendisi imzası yok",
   "signoff.record": "Ziraat mühendisi imzasını kaydet",
   "signoff.note": "Yalnızca ziraat mühendisinden gerçekten aldığınız imzayı kaydedin. Uygulama bunu kontrol etmez; bir değeri değiştirirseniz imza silinir.",
