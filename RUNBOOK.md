@@ -136,17 +136,19 @@ Actions çalışmazsa: sırayla `0001_core` → … → `0012_phone_contract` (v
 Görünüm yalnızca iki dosyada: `app/src/ui/tokens.css` (renk, ölçü, gölge) ve `app/src/ui/styles.css`. Mantık, veri ve metin değişmedi. Beğenmezsen: GitHub → **Pull requests → Closed** → «Görünüm: …» (theme) başlıklı PR'ı aç → **Revert** → açılan PR'ı birleştir (CI yeşil olunca). Her görünüm PR'ı tek commit olarak birleşir; en yenisinden başlayıp eskiye doğru hepsini geri alırsan uygulama tamamen eski renklere döner. Geri alma, verini ya da kayıtlarını etkilemez. Kararın kaydı: `docs/design/theme-2026-11/README.md`.
 
 ## 12a. Gerçek hesap denemesi – KISA (telefonda, 10 satır; ayrıntı aşağıda §12)
-Her satır: **Nerede → Ne yap → Doğru sonuç.** Farklıysa **dur**, ekran görüntüsünü Claude'a gönder. Parola ve gizli anahtarı hiçbir yere yazma. **Önkoşul:** Claude «denemeyi aç» PR'ını birleştirdi (giriş ekranları açılır; senkron AÇILMAZ).
+Her satır: **Nerede → Ne yap → Doğru sonuç.** Farklıysa **dur**, ekran görüntüsünü Claude'a gönder. Parola ve gizli anahtarı hiçbir yere yazma. Veritabanına **elle SQL yapıştırmak yok**; Claude da üretime dokunmaz.
+**Önkoşullar (sırayla):** (a) 0033 ve 0034 **onaylı workflow** ile yüklendi (Actions → «Supabase migrate (manual)», önce dry-run, sonra apply); (b) §12b'deki 3 Cloudflare değişkeni girildi ve yeniden dağıtıldı (giriş ekranları açılır; senkron AÇILMAZ).
 1. **Supabase → Authentication → Sign In / Providers** → yalnızca **Email** açık, **Confirm email** açık, diğerleri kapalı → doğru: başka sağlayıcı yok.
 2. **Uygulama → Άλλα → Σύνδεση** → e-postan → «Αποστολή κωδικού» → mailden kod → «Σύνδεση» → doğru: e-postan görünür, sayfayı yenileyince girişli.
-3. Kartta **«Κωδικός κτήματος»** çıkar → Claude'a yaz (kodu + e-postanı). **Claude çiftliği ve sahip kaydını ekler** (SQL yapıştırmana gerek yok) → doğru: Claude «eklendi» der.
+3. Aynı kartta **«Δημιουργία κτήματος»** sihirbazı çıkar → çiftlik adını yaz → düğmeye **bir kez** bas → doğru: «Το κτήμα δημιουργήθηκε». Çiftlik ve sahip üyeliği sunucuda kontrollü bir fonksiyonla oluşur; sihirbaz sonra kaybolur. (Sihirbaz çıkmazsa: 0034 yüklenmemiş demektir, dur.)
 4. **Άλλα → Πληροφορίες** → ad, adres, telefon → kaydet → doğru: «Αποθηκεύτηκε» (bunsuz davet düğmesi kapalı).
 5. **Άλλα → Εργάτες** → işçiyi ekle → **Πρόσκληση** → işçinin e-postası → doğru: «Η πρόσκληση αποθηκεύτηκε».
-6. **İşçi telefonu:** uygulama → **Άλλα → Σύνδεση** → kendi e-postası → kod → doğru: yalnızca «Δουλειές / Συγκομιδή / Σημείωση» (Αποθήκη, fiyat, sipariş yok).
+6. **İşçi telefonu:** uygulama → **Άλλα → Σύνδεση** → kendi e-postası → kod → doğru: sihirbaz **çıkmaz** (davet otomatik kabul edilir); yalnızca «Δουλειές / Συγκομιδή / Σημείωση» ekranları görünür (Αποθήκη, fiyat, sipariş yok).
 7. **Sende:** bir iş ata (ilaçlama, ekim seç) → **işçide** «Έγινε» → doğru: işçide «Αποθηκεύτηκε», işi bitirme saati ileri değil.
-8. **İşçiyi uçak moduna al**, «Έγινε»'ye bas, sonra bağlantıyı aç → doğru: önce «περιμένει», sonra gönderildi (kaybolmaz).
-9. **Claude'a «kontrol et» yaz** → Claude salt okunur bakar: zincir doğrulama (`verify_spray_chain`), Advisors → doğru: 0 satır, «RLS Disabled» uyarısı yok.
-10. **Temizlik:** test işçisini silmek istersen Claude'a yaz → doğru: Users listesinde yok. (Gerçek işçiyse silme.)
+8. **İşçiyi uçak moduna al**, «Έγινε»'ye bas, sonra bağlantıyı aç → doğru: önce «περιμένει», sonra gönderildi (kaybolmaz). (Senkron sihirbazı §13'te; bu satır yalnızca sihirbaz açıldıktan sonra yapılır.)
+9. **Kontrol senin elinde:** Supabase → **Advisors → Security / Performance → Refresh** → doğru: «RLS Disabled in Public» uyarısı yok. Zincir kontrolü için RUNBOOK §15'teki salt okunur SQL'i **sen** dashboard'da çalıştır; sonucu yaz.
+10. **Temizlik:** test işçisini Authentication → Users'tan **sen** sil (gerçek işçiyse silme).
+
 ## 12b. «Denemeyi aç» = Cloudflare'de 3 derleme değişkeni (kod PR'ı yok; geri alması da değişkenleri silmek)
 **Ön koşul:** üretim 0001–0032 (tamam). Bunlar **genel** değerlerdir (gizli değil). Gizli (service/secret) anahtarı **hiçbir yere** yazma.
 1. **Cloudflare** → Workers & Pages → **aloni** → **Settings → Build → Variables and secrets** → **Add** (tür: *Text*, secret DEĞİL):
