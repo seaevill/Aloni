@@ -133,6 +133,7 @@
   "product.unit.l": "Litres (L)",
   "product.unit.kg": "Kilograms (kg)",
   "product.photo": "Label photo (optional)",
+  "product.noreg": "The product’s authorisation number is missing (needed for an inspection)",
   "product.save": "Save",
   "product.cancel": "Cancel",
   "product.archive": "Archive",

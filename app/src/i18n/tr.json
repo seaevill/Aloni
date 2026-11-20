@@ -133,6 +133,7 @@
   "product.unit.l": "Litre (L)",
   "product.unit.kg": "Kilo (kg)",
   "product.photo": "Etiket fotoğrafı (isteğe bağlı)",
+  "product.noreg": "Ürünün ruhsat numarası eksik (denetim için gerekli)",
   "product.save": "Kaydet",
   "product.cancel": "Vazgeç",
   "product.archive": "Arşivle",
