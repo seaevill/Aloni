@@ -669,7 +669,6 @@
   "spray.flag.quantity_unknown": "Miktar bilinmiyor",
   "spray.oneCrop": "Her kayıtta tek ekin.",
   "job.error.nolabel": "Atayamazsınız: bu ekin için etiket bilgisi eksik.",
-  "today.fields": "Tarlalar",
   "orders.map.title": "Ürünleri ekinlerle eşle",
   "jobs.group.overdue": "Gecikmiş",
   "jobs.group.today": "Bugün",

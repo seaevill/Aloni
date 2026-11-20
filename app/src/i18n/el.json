@@ -669,7 +669,6 @@
   "spray.flag.quantity_unknown": "Άγνωστη ποσότητα",
   "spray.oneCrop": "Μία καλλιέργεια ανά καταχώριση.",
   "job.error.nolabel": "Δεν μπορείτε να αναθέσετε: λείπουν τα στοιχεία ετικέτας για αυτή την καλλιέργεια.",
-  "today.fields": "Χωράφια",
   "orders.map.title": "Αντιστοίχιση ειδών με καλλιέργειες",
   "jobs.group.overdue": "Καθυστερημένες",
   "jobs.group.today": "Σήμερα",
