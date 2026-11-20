@@ -40,20 +40,11 @@ export async function setup(page: Page, signed: boolean) {
   await page.getByTestId('receive-save').click();
   await tab(page, 'more');
   await page.getByTestId('open-workers').click();
-  // CI evidence (2026-11-20, run 44744199160): on the slow WebKit runner the name box was EMPTY when «Προσθήκη» was pressed (the screen said «Γράψτε ένα όνομα»), nothing was saved, no browser error.
-  // The cause is not found yet (it cannot be reproduced in Chromium even at 12x CPU throttle), so the step is repeated until the worker shows; a retry is logged so the cause can still be chased.
-  const name = page.getByTestId('worker-name'); const mine = page.getByTestId('worker').filter({ hasText: 'Γιώργος' });
-  let tries = 0;
-  try {
-    await expect(async () => {
-      if (await mine.count()) return;                                  // never add twice
-      tries += 1;
-      await name.fill('Γιώργος'); await expect(name).toHaveValue('Γιώργος');
-      await page.getByTestId('worker-add').click();
-      await expect(mine).toBeVisible({ timeout: 4000 });
-    }).toPass({ timeout: 25_000 });
-  } catch (e) { console.log('DIAG worker-add:', JSON.stringify({ tries, input: await name.inputValue().catch(() => null), alerts: await page.getByRole('alert').allInnerTexts().catch(() => null), main: (await page.locator('main').innerText().catch(() => '')).slice(0, 400), url: page.url(), seen: seen.slice(0, 8) })); throw e; }
-  if (tries > 1) console.log(`DIAG worker-add needed ${tries} tries`);
+  await page.getByTestId('worker-name').fill('Γιώργος');
+  await page.getByTestId('worker-add').click();
+  // saved before we leave. If it never shows, print what the screen says (CI cannot upload the page snapshot to us) so the next red run names the cause instead of a timeout.
+  try { await expect(page.getByTestId('worker').filter({ hasText: 'Γιώργος' })).toBeVisible(); }
+  catch (e) { console.log('DIAG worker-add:', JSON.stringify({ input: await page.getByTestId('worker-name').inputValue().catch(() => null), alerts: await page.getByRole('alert').allInnerTexts().catch(() => null), main: (await page.locator('main').innerText().catch(() => '')).slice(0, 400), url: page.url(), seen: seen.slice(0, 8) })); throw e; }
   await tab(page, 'today');
 }
 
