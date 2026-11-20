@@ -29,9 +29,9 @@ export function Toast() {
   const undo = () => { if (!s) return; clearTimeout(timer); toast.value = null; void s.onUndo(); };
   return (
     <>
-      <div class="sr-only" role="status" aria-live="polite" data-testid="toast-live">{s?.text}</div>
+      <div class="sr-only" aria-live="polite" aria-atomic="true" data-testid="toast-live">{s?.text}</div>
       {s && (
-        <div class="toast" data-testid="toast" onFocusIn={pause} onMouseEnter={pause} onFocusOut={resume} onMouseLeave={resume}>
+        <div class="toast" data-testid="toast" onFocusIn={pause} onFocusOut={resume}>
           <span>{s.text}</span>
           <button class="btn" onClick={undo}>{t('toast.undo')}</button>
         </div>

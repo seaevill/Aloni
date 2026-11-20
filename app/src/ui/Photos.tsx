@@ -50,16 +50,10 @@ export function Photos({ onBack }: { onBack: () => void }) {
     dataVersion.value++;
   };
 
-  useEffect(() => {      // Escape closes the full-size photo
-    if (!open) return undefined;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(undefined); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open]);
   if (open) {
     const nth = (rows ?? []).findIndex((m) => m.id === open.id) + 1;
     return (
-      <section role="dialog" aria-modal="true" aria-label={t('photos.viewer', { n: nth, total: rows ? String(rows.length) : '', when: formatDateTime(open.created_at) })} data-testid="photo-viewer">
+      <section role="dialog" aria-modal="true" onKeyDown={(e) => { if (e.key === 'Escape') setOpen(undefined); }} aria-label={t('photos.viewer', { n: nth, total: rows ? String(rows.length) : '', when: formatDateTime(open.created_at) })} data-testid="photo-viewer">
         <button class="btn secondary" ref={(el) => el?.focus()} onClick={() => setOpen(undefined)}>{t('photos.close')}</button>
         <Picture m={open} big />
       </section>
