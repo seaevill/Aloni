@@ -1,3 +1,5 @@
+import { isCalendarDate, parseInstant } from './waits';
+
 // FROST (RULES.md): which forecast nights are «frost conditions» on which parcel. PURE. Every input must be positively known: a missing or unreadable
 // value (cloud, topo class, temperature, wind, elevation) means the night CANNOT be judged and is reported as missing, never as «no frost». It never
 // claims damage: damage temperatures per crop and stage are [SET] and not modelled here.
@@ -9,7 +11,16 @@ export interface FrostParcel { elevationM: number; topo: Topo | undefined; night
 /** All thresholds are [SET] (agronomist). `offsetC` is added to the cell minimum on a night that already counts as radiative (R = 1, the strongest case). */
 export interface FrostParams { tminMaxC: number; windMaxKmh: number; cloudMaxOktas: number; elevationMaxM: number; offsetC: Readonly<Record<Topo, number>>; leafBelowAirC: readonly [number, number]; coverGainC: readonly [number, number] }
 export interface FrostHit { night: FrostNight; parcelTminC: number; leafRangeC: readonly [number, number] }
-export interface FrostFacts { params: FrostParams; parcels: Readonly<Record<string, FrostParcel>>; tenderCrops: readonly string[]; guardCrops: readonly string[]; coversOnHand: boolean }
+export interface FrostFacts { params: FrostParams; parcels: Readonly<Record<string, FrostParcel>>; tenderCrops: readonly string[]; guardCrops: readonly string[]; coversOnHand: boolean; thaw?: ThawFacts }
+
+/** Hourly temperature already resolved for the parcel. Local fields correspond to the same UTC instant. */
+interface ThawHour { at: string; localDay: string; localHour: number; tempC: number }
+interface ThawFacts {
+  firstLocalHour: number;
+  minLeafTempC: number;
+  hoursByParcel: Readonly<Record<string, readonly ThawHour[]>>;
+  harvestFromByPlanting: Readonly<Record<string, string>>;
+}
 
 const ok = (n: number | undefined): n is number => n !== undefined && Number.isFinite(n);
 
@@ -32,4 +43,23 @@ export function frostNights(parcel: FrostParcel, p: FrostParams): { hits: FrostH
     }
   }
   return { hits, missing: [...missing] };
+}
+
+
+/** Estimate the first qualifying hour on each frost morning. No date is returned when any required morning is unknown. */
+export function thawMornings(facts: ThawFacts, parcelId: string, days: readonly string[], leafBelowAirC: number) {
+  if (!Number.isInteger(facts.firstLocalHour) || facts.firstLocalHour < 0 || facts.firstLocalHour > 23
+    || !ok(facts.minLeafTempC) || !ok(leafBelowAirC) || leafBelowAirC < 0) return undefined;
+  const hours = facts.hoursByParcel[parcelId];
+  if (!hours) return undefined;
+  const thawAt: Record<string, string> = {};
+  for (const day of days) {
+    if (!isCalendarDate(day)) return undefined;
+    const time = hours.filter((h) => h.localDay === day && Number.isInteger(h.localHour) && h.localHour >= facts.firstLocalHour
+      && h.localHour <= 23 && ok(h.tempC) && h.tempC - leafBelowAirC >= facts.minLeafTempC && parseInstant(h.at).known)
+      .map((h) => h.at).sort()[0];
+    if (!time) return undefined;
+    thawAt[day] = time;
+  }
+  return thawAt;
 }

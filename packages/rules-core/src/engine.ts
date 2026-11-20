@@ -1,10 +1,10 @@
-import { frostNights, type FrostFacts, type FrostHit } from './frost';
+import { frostNights, thawMornings, type FrostFacts, type FrostHit } from './frost';
 import { known, type Known } from './known';
 import { salinityReading, type SalinityFacts } from './salinity';
 import { stockHits, type StockFacts } from './stock';
 import type { SignedLabelUse } from './label';
 import { paramsValid, summariseDays, type Hour, type SprayParams, type Sun } from './sprayWindow';
-import { parseInstant, phiEnd, reiEnd, waitOver } from './waits';
+import { isCalendarDate, parseInstant, phiEnd, reiEnd, waitOver } from './waits';
 
 // The rules engine (M3 start). PURE: no clock (`asOf` is an argument), no I/O. Deciding rules take ONLY a Known<SignedLabelUse>: an unsigned, changed or
 // incomplete label gives `unknown`, and unknown is «blocked», never «passed». A rule whose own thresholds are not signed (`ruleStatus: unsigned`) may
@@ -175,7 +175,24 @@ function frost(s: Snapshot): Output[] {
     const pids = [...new Set(tender.map((p) => p.parcelId))]; const n = nightsOf(pids);
     out.push(blank({ rule_id: 'FROST', kind: 'recommendation', category: 'cover', confidence: 'low', parcel_ids: pids, planting_ids: tender.map((p) => p.id), window: n.window, values: { ...values(n), cover_gain_range_c: [...f.params.coverGainC], cover_gain_basis: 'EST' } }));
   }
-  if (guard.length > 0) {
+  if (f.thaw) {
+    const held = new Set(phi(s).flatMap((o) => o.vetoes.map((v) => v.planting_id)));
+    for (const planting of guard) {
+      const harvestFrom = f.thaw.harvestFromByPlanting[planting.id];
+      if (held.has(planting.id)) continue;
+      const base = { rule_id: 'FROST', parcel_ids: [planting.parcelId], planting_ids: [planting.id] };
+      const unknown = () => blank({ ...base, kind: 'info', category: 'thaw_unknown', values: { badge: 'unknown' } });
+      if (!harvestFrom || !isCalendarDate(harvestFrom)) { out.push(unknown()); continue; }
+      const days = hit.find((x) => x.id === planting.parcelId)?.hits.map((h) => h.night.to).filter((day) => day >= harvestFrom) ?? [];
+      if (!days.length) continue;
+      const thawAt = thawMornings(f.thaw, planting.parcelId, days, f.params.leafBelowAirC[1]);
+      if (!thawAt) { out.push(unknown()); continue; }
+      const times = Object.values(thawAt).sort();
+      out.push(blank({ ...base, kind: 'recommendation', category: 'no_harvest_before_thaw', confidence: 'low',
+        window: { start: times[0], end: times[times.length - 1] },
+        values: { thaw_at: thawAt, phi_clear: true, harvest_from: harvestFrom, modeled: true } }));
+    }
+  } else if (guard.length > 0) {
     const pids = [...new Set(guard.map((p) => p.parcelId))]; const n = nightsOf(pids);
     out.push(blank({ rule_id: 'FROST', kind: 'recommendation', category: 'no_harvest_before_thaw', confidence: 'low', parcel_ids: pids, planting_ids: guard.map((p) => p.id), window: n.window, values: values(n) }));
   }

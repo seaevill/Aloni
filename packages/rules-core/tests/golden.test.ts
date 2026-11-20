@@ -8,7 +8,7 @@ import { fingerprint, known, makeDose, parseDecimal, parseMaxApps, parsePhiDays,
 type J = Record<string, any>;
 const DIR = new URL('../fixtures/golden/', import.meta.url);
 const cases: J[] = readdirSync(DIR).filter((f) => f.endsWith('.json')).sort().map((f) => JSON.parse(readFileSync(new URL(f, DIR), 'utf8')) as J);
-export const LANDED = ['A06-stock-low-mandipropamid', 'A07-stock-expired-acetamiprid', 'A08-stock-expiring-spinosad', 'A01-frost-low-plain', 'A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-end-time-blocks', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'R05-frost-cover-herbs', 'REI-after-r01-spray', 'A10-salt-pachi-well'];
+export const LANDED = ['A06-stock-low-mandipropamid', 'A07-stock-expired-acetamiprid', 'A08-stock-expiring-spinosad', 'A01-frost-low-plain', 'A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-end-time-blocks', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'R05-frost-cover-herbs', 'REI-after-r01-spray', 'A10-salt-pachi-well', 'R06-chicory-harvest-after-thaw'];
 
 const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[+-]\d{2}:\d{2}|Z)$/;
 const ms = (v: unknown): unknown => (typeof v === 'string' && ISO.test(v) ? Date.parse(v) : v); // times compare as instants, whatever their offset
@@ -45,6 +45,13 @@ function frostOf(c: J): Pick<Snapshot, 'frost'> {
     parcels[pid] = { elevationM, topo: syn.topo_class[pid] as Topo, nights };
   }
   return { frost: { parcels, tenderCrops: ['coriander', 'dill'], guardCrops: ['spinach', 'chicory', 'endive'], coversOnHand: !!syn.covers_on_hand,
+    ...(c.rule_state.params.thaw_rule ? { thaw: {
+      firstLocalHour: 6, minLeafTempC: 0, // Explicit test-only values in the R06 thaw_rule fixture.
+      hoursByParcel: Object.fromEntries(Object.entries(syn.weather_hourly as J).map(([id, list]) => [id, (list as J[]).map((h) => ({
+        at: utc(h.time), localDay: String(h.time).slice(0, 10), localHour: Number(String(h.time).slice(11, 13)), tempC: h.temp_c,
+      }))])),
+      harvestFromByPlanting: Object.fromEntries((c.inputs.plantings as J[]).map((p) => [p.id, p.harvest_from])),
+    } } : {}),
     params: { tminMaxC: v('tmin_2m_max_c'), windMaxKmh: v('wind_max_kmh'), cloudMaxOktas: v('cloud_max_oktas'), elevationMaxM: v('elevation_max_m'), offsetC: { plain: off.plain, slope: off.slope, coastal: off.coastal }, leafBelowAirC: c.rule_state.params.leaf_below_air_c.value, coverGainC: [1, 2] /* EST, test-only */ } } };
 }
 
@@ -125,7 +132,7 @@ function check(c: J, outs: Output[]): void {
   if (e.severity !== undefined && e.severity !== null) expect(o.severity).toBe(e.severity);
   if (e.confidence) expect(o.confidence).toBe(e.confidence);
   for (const k of ['parcel_ids', 'planting_ids', 'product_ids', 'crop_ids'] as const) if (e.targets?.[k]) expect(sameSet(o[k], e.targets[k]), `${k}: ${o[k]}`).toBe(true);
-  if (e.window) { expect(ms(o.window?.start)).toBe(ms(e.window.start)); expect(ms(o.window?.end)).toBe(ms(e.window.end)); }
+  if (e.window) { expect(ms(o.window?.start)).toBe(ms(e.window.start)); if (e.window.end !== undefined) expect(ms(o.window?.end)).toBe(ms(e.window.end)); }
   // These two expected values are prose in the fixture («range = tmin − 3 … tmin − 1», «1–2 (EST)»): the structured values are checked instead.
   const PROSE = ['leaf_surface_estimate_c', 'cover_gain_c'];
   if (e.values?.leaf_surface_estimate_c) for (const [i, n] of (o.values.nights as J[]).entries()) for (const [pid, t] of Object.entries(n).filter(([k]) => k !== 'night')) {
@@ -174,6 +181,20 @@ describe('golden cases', () => {
         planting_ids: [], product_ids: [], crop_ids: [], vetoes: [],
         values: { water_EC_dS_m: salinity.samples[0].waterEcDsM, sampled_on: '2026-08', coastal_well: true, badge: 'unknown' },
       });
+    }
+  });
+  it('FROST never offers a modeled harvest time with unsigned settings, missing hourly data or an unknown PHI', () => {
+    const s = snapshot(cases.find((x) => x.id === 'R06-chicory-harvest-after-thaw')!);
+    const frost = s.frost!;
+    const thaw = frost.thaw!;
+    const casesToBlock: Snapshot[] = [
+      { ...s, ruleStatus: { FROST: 'unsigned' } },
+      { ...s, frost: { ...frost, thaw: { ...thaw, hoursByParcel: {} } } },
+      { ...s, jobs: [{ id: 'unresolved-spray', kind: 'spray', status: 'done', plantingIds: ['PL03'],
+        productId: 'unresolved-product', startedAt: '2026-11-15T06:00:00Z', endedAt: undefined }] },
+    ];
+    for (const input of casesToBlock) {
+      expect(runRules(input).filter((o) => o.rule_id === 'FROST' && o.category === 'no_harvest_before_thaw')).toEqual([]);
     }
   });
   it('the matcher itself goes red: an output that breaks a must_not is caught, a time in another offset still matches', () => {
