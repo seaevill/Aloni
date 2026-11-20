@@ -18,7 +18,7 @@ export function Orders({ onBack }: { onBack: () => void }) {
   const [orders, setOrders] = useState<KlouvesOrders | undefined>(undefined);
   const [map, setMap] = useState<Record<string, string>>({});
   const [bad, setBad] = useState(false); const [note, setNote] = useState(0);
-  const crops = useRows('crops'); const plantings = useRows('plantings'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const harvests = useRows('job_harvest');
+  const crops = useRows('crops'); const plantings = useRows('plantings'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const harvests = useRows('job_harvest'); const labels = useRows('label_uses');
   const farm = activeFarm.value;
   useEffect(() => {
     let live = true;
@@ -43,7 +43,7 @@ export function Orders({ onBack }: { onBack: () => void }) {
   const lastWeek = thisWeek === undefined ? undefined : mondayOf(new Date(Date.parse(`${thisWeek}T00:00:00Z`) - DAY).toISOString().slice(0, 10));
   const now = cratesByCrop(thisWeek === undefined ? undefined : orders?.weeks[thisWeek], map);
   const before = cratesByCrop(lastWeek === undefined ? undefined : orders?.weeks[lastWeek], map);
-  const supply = supplyByCrop(new Date().toISOString(), crops.rows ?? [], plantings.rows ?? [], links.rows ?? [], sprays.rows ?? [], harvests.rows ?? []);
+  const supply = supplyByCrop(new Date().toISOString(), crops.rows ?? [], plantings.rows ?? [], links.rows ?? [], sprays.rows ?? [], harvests.rows ?? [], labels.rows ?? []);
   const slugs = CATALOG.filter((c) => now.bySlug[c.slug] !== undefined || before.bySlug[c.slug] !== undefined);
   const unmapped = new Set([...now.unmapped, ...before.unmapped]).size;
   return (

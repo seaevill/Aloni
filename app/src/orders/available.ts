@@ -11,7 +11,7 @@ const DAY = 86_400_000;
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 const GROWING = new Set(['growing', 'harvesting']);
 
-export function supplyByCrop(nowIso: string, crops: readonly Row[], plantings: readonly Row[], links: readonly Row[], sprayRows: readonly Row[], harvests: readonly Row[]): Record<string, CropSupply> {
+export function supplyByCrop(nowIso: string, crops: readonly Row[], plantings: readonly Row[], links: readonly Row[], sprayRows: readonly Row[], harvests: readonly Row[], labels: readonly Row[]): Record<string, CropSupply> {
   const slugOf = new Map(crops.map((c) => [text(c.id), text(c.slug)]));
   const whole = nowIso.replace(/\.\d+Z$/, 'Z');
   const since = new Date(Date.parse(nowIso) - 7 * DAY).toISOString();
@@ -23,7 +23,7 @@ export function supplyByCrop(nowIso: string, crops: readonly Row[], plantings: r
     if (!slug || p.deleted_at) continue;
     slugOfPlanting.set(text(p.id), slug);
     if (!GROWING.has(text(p.status))) continue;
-    const g = harvestGate(text(p.id), whole, links, sprayRows);
+    const g = harvestGate(text(p.id), whole, links, sprayRows, plantings, labels);
     const c = of(slug);
     if (g.ok) c.free += 1; else if (g.reason === 'unknown') c.unknown += 1; else c.held += 1;   // a bad clock time also blocks: counted as held
   }

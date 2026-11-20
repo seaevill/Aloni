@@ -82,9 +82,7 @@ test('a spray with an UNSIGNED label is still recorded, marked, and its waiting 
   await expect(page.getByTestId('spray')).toHaveCount(1); // still one spray on the screen
   await expect(card.getByTestId('spray-phi')).toContainText('Αναμονή λήγει');
   await closeHistory(page);
-  await expect(page.getByTestId('cut').first()).toHaveAttribute('data-state', 'from'); // his entered value gives a date, and it still has to run out
-  await closeHistory(page);
-  await expect(page.getByTestId('cut-source').first()).toHaveText('Πηγή: από ετικέτα – καταχώριση ιδιοκτήτη'); // the source is shown
+  await expect(page.getByTestId('cut').first()).toHaveAttribute('data-state', 'unknown'); // m9 S-NEW-1: his typed value is kept, but the label is an unsigned draft: the planting stays closed
   await openHistory(page);
   await expect(card.getByTestId('spray-manual')).toHaveText('Τιμή που καταχωρίσατε εσείς από την ετικέτα');
   await expect(card.getByTestId('wait-open')).toHaveCount(0); // once known it cannot be entered again (it could only shorten it)

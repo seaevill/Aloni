@@ -67,7 +67,7 @@ export function WorkerApp() {
   const finished = mine.filter((j) => j.status !== 'planned');
   const plantingsOf = (job: Row) => (links.rows ?? []).filter((l) => l.job_id === job.id).map((l) => plantings.rows?.find((p) => p.id === l.planting_id)).filter((p): p is Row => !!p);
   const plantingName = (p: Row) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) });
-  const lockOf = (job: Row): Lock => reiLockJob([...new Set(plantingsOf(job).map((p) => text(p.parcel_id)))], instantOf(new Date()) ?? '', plantings.rows ?? [], links.rows ?? [], sprays.rows ?? []); // ANY field of the job locks it
+  const lockOf = (job: Row): Lock => reiLockJob([...new Set(plantingsOf(job).map((p) => text(p.parcel_id)))], instantOf(new Date()) ?? '', plantings.rows ?? [], links.rows ?? [], sprays.rows ?? [], labels.rows ?? []); // ANY field of the job locks it
   const finishedLine = (j: Row): string => [j.status === 'done' ? t('worker.status.done') : t('worker.status.skipped'), j.done_at ? formatDateTime(text(j.done_at)) : ''].filter(Boolean).join(' · ');
   const lockText = (l: Lock): string => (l.state === 'running' ? ts('worker.lock.running', { d: formatDateTime(l.until) }) : ts('worker.lock.unknown'));
   const doseText = (j: Row) => t('labeluse.dosevalue', { v: formatDose(known(text(j.dose_str) as Decimal)), unit: t(UNIT_KEYS[j.dose_unit as keyof typeof UNIT_KEYS]) });

@@ -46,7 +46,7 @@ describe('phone ↔ server contract', () => {
     const bare = ok(buildSpray({ plantingIds: [id(2)], productId: id(3), applicatorId: id(10), sprayedAt: '2026-11-10T08:30:00Z', startedAt: '2026-11-10T08:00:00Z', dose: '0,025', doseUnit: 'ml/str', lotKey: undefined, qty: '', water: '', note: '' },
       { label: undefined, plantings: [{ ...planting, crop_id: crop.id }], lot: undefined, lotBalance: undefined, today: '2026-11-10' }, F, now, { job: id(22), spray: id(23), movement: id(24), plantingLinks: [id(25)] }));
     const wait = ok(buildWaitEntry(bare.spray, '7', '24', now, id(15), 'label values entered'));
-    const harvest = ok(buildHarvest({ plantingId: id(2), crates: '12', harvestedAt: '2026-11-10T09:00:00Z', note: 'n', cutBy: id(10) }, [], [], F, now, id(16))).row;
+    const harvest = ok(buildHarvest({ plantingId: id(2), crates: '12', harvestedAt: '2026-11-10T09:00:00Z', note: 'n', cutBy: id(10) }, [], [], F, now, id(16), [], [])).row;
     const obs = buildObservation(id(1), 'pest', 'aphids', worker, F, now, id(17)) as Row;
     const planned: Row = { id: id(18), farm_id: F, kind: 'spray', status: 'planned', product_id: id(3), label_use_id: id(5), worker_id: id(10), planned_for: '2026-11-11', dose_str: '0.025', dose_unit: 'ml/str', created_at: now, updated_at: now, deleted_at: null };
     const done = completeSprayJob(planned, label, [planting], worker, '2026-11-10T08:00:00Z', 'n', now, id(20), undefined, '2026-11-10T07:30:00Z');

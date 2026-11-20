@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildLabelUse, withSignOff, type LabelUseInput } from '../../src/labels/label-use';
-import { buildHarvest, cutFromParcel, doneBlocked, harvestGate, reiLockJob, reiLockParcel } from '../../src/spray/harvest';
+import { buildHarvest as buildHarvest0, cutFromParcel as cutFromParcel0, doneBlocked, harvestGate as harvestGate0, reiLockJob as reiLockJob0, reiLockParcel as reiLockParcel0 } from '../../src/spray/harvest';
 import { buildCorrection, buildSpray, buildWaitEntry, effectiveSprays, type SprayContext, type SprayInput } from '../../src/spray/spray';
 import type { Row } from '../../src/db/schema';
 
@@ -12,6 +12,13 @@ const luInput = (over: Partial<LabelUseInput> = {}): LabelUseInput => ({ product
 const labelRow = (over: Partial<LabelUseInput> = {}): Row => { const r = buildLabelUse(luInput(over), F, now, 'lu'); if (!r.ok) throw new Error('setup'); return r.row; };
 const signedLabel = (): Row => withSignOff(labelRow(), 'Agronomist', '2026-11-17', now)!;
 const planting = (id = 'pl1'): Row => ({ id, farm_id: F, crop_id: 'crop', parcel_id: 'p', area_str: '0.5' });
+// the phone's gate reads the SIGNED label of the planting's own crop (as the server does): these wrappers hand it the plantings and the signed label the sprays were built from
+const PLS = [planting('pl1'), planting('pl2'), planting('pl3')];
+const harvestGate = (id: string, at: string, links: Row[], sprays: Row[], label: Row = signedLabel()) => harvestGate0(id, at, links, sprays, PLS, [label]);
+const cutFromParcel = (parcel: string, at: string, pls: Row[], links: Row[], sprays: Row[]) => cutFromParcel0(parcel, at, pls, links, sprays, [signedLabel()]);
+const reiLockParcel = (parcel: string, at: string, pls: Row[], links: Row[], sprays: Row[]) => reiLockParcel0(parcel, at, pls, links, sprays, [signedLabel()]);
+const buildHarvest = (input: Parameters<typeof buildHarvest0>[0], links: Row[], sprays: Row[], farm: string, nowIso: string, id: string) => buildHarvest0(input, links, sprays, farm, nowIso, id, PLS, [signedLabel()]);
+const reiLockJob = (parcels: string[], at: string, pls: Row[], links: Row[], sprays: Row[]) => reiLockJob0(parcels, at, pls, links, sprays, [signedLabel()]);
 const lot: Row = { id: 'lot', lot_key: 'lot', farm_id: F, product_id: 'prod', expiry: '2028-03-31' };
 const half = (end: string): string => (Number.isNaN(Date.parse(end)) ? end : new Date(Date.parse(end) - 1_800_000).toISOString().replace(/\.\d{3}Z$/, 'Z')); // a start 30 minutes before the end
 const input = (over: Partial<SprayInput> = {}): SprayInput => ({ plantingIds: ['pl1'], productId: 'prod', applicatorId: 'w1', sprayedAt: T0, startedAt: half(over.sprayedAt ?? T0), dose: '0,025', doseUnit: 'ml/str', lotKey: 'lot', qty: '0,25', water: '', note: '', ...over });
@@ -168,13 +175,14 @@ describe('harvest gate: only a KNOWN waiting period that has run out unblocks; n
     for (const at of ['Invalid Date', 'NaN', '', '2030-01-01']) expect(harvestGate('pl1', at, links, [])).toEqual({ ok: false, reason: 'time' });
   });
   it('PHI over but the REI still running: NO permission to start a harvest (the harvester enters the field); the gate names the REI', () => {
-    const r = build(input(), ctx({ label: withSignOff(labelRow({ phi: field('0'), rei: field('72') }), 'Agronomist', '2026-11-17', now)! })).spray;
+    const lab72 = withSignOff(labelRow({ phi: field('0'), rei: field('72') }), 'Agronomist', '2026-11-17', now)!;
+    const r = build(input(), ctx({ label: lab72 })).spray;
     expect(r.phi_until).toBe('2026-11-20T08:00:00Z'); expect(r.rei_until).toBe('2026-11-23T08:00:00Z');
-    expect(harvestGate('pl1', '2026-11-21T00:00:00Z', links, [r])).toEqual({ ok: false, reason: 'running', until: '2026-11-23T08:00:00Z', source: 'label', by: 'rei' });
-    expect(harvestGate('pl1', '2026-11-23T08:00:00Z', links, [r])).toEqual({ ok: false, reason: 'running', until: '2026-11-23T08:00:00Z', source: 'label', by: 'rei' }); // AT the end: still blocked
-    expect(harvestGate('pl1', '2026-11-23T08:00:01Z', links, [r])).toEqual({ ok: true });
+    expect(harvestGate('pl1', '2026-11-21T00:00:00Z', links, [r], lab72)).toEqual({ ok: false, reason: 'running', until: '2026-11-23T08:00:00Z', source: 'label', by: 'rei' });
+    expect(harvestGate('pl1', '2026-11-23T08:00:00Z', links, [r], lab72)).toEqual({ ok: false, reason: 'running', until: '2026-11-23T08:00:00Z', source: 'label', by: 'rei' }); // AT the end: still blocked
+    expect(harvestGate('pl1', '2026-11-23T08:00:01Z', links, [r], lab72)).toEqual({ ok: true });
     // the later of the two decides, and says which
-    const both = build(input(), ctx({ label: withSignOff(labelRow({ phi: field('7'), rei: field('24') }), 'Agronomist', '2026-11-17', now)! })).spray;
+    const both = build(input(), ctx({ label: signedLabel() })).spray;
     expect(harvestGate('pl1', '2026-11-21T00:00:00Z', links, [both])).toEqual({ ok: false, reason: 'running', until: '2026-11-27T08:00:00Z', source: 'label', by: 'phi' });
   });
   it('an UNKNOWN REI blocks the harvest as well (never read as «no wait»)', () => {

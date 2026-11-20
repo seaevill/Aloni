@@ -16,7 +16,7 @@ export interface CutToday {
   heldParcels: number;
 }
 
-export function cutToday(parcels: readonly Row[], plantings: readonly Row[], links: readonly Row[], sprays: readonly Row[], cropName: (id: unknown) => string, now: string): CutToday {
+export function cutToday(parcels: readonly Row[], plantings: readonly Row[], links: readonly Row[], sprays: readonly Row[], cropName: (id: unknown) => string, now: string, labels: readonly Row[]): CutToday {
   const lines: CutLine[] = [];
   const noPlanting: Row[] = [];
   let freeParcels = Number('0'); let heldParcels = Number('0');
@@ -25,7 +25,7 @@ export function cutToday(parcels: readonly Row[], plantings: readonly Row[], lin
     const before = lines.length;
     let held = false;
     for (const pl of mine) {
-      const g = harvestGate(String(pl.id), now, links, sprays);
+      const g = harvestGate(String(pl.id), now, links, sprays, plantings, labels);
       const base = { id: String(pl.id), parcelId: String(p.id), parcel: text(p.name), crop: cropName(pl.crop_id) };
       if (g.ok) { if (GROWING.has(text(pl.status))) lines.push({ ...base, state: 'free', at: '', source: 'label', late: false }); continue; }
       held = true;      // EVERY planting is gated, whatever its status: a sprayed planting that is «planned» or «finished» but not yet cut is never hidden
