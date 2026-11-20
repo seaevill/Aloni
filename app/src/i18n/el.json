@@ -656,7 +656,13 @@
   "spray.flag.quantity_unknown": "Άγνωστη ποσότητα",
   "spray.oneCrop": "Μία καλλιέργεια ανά καταχώριση.",
   "job.error.nolabel": "Δεν μπορείτε να αναθέσετε: λείπουν τα στοιχεία ετικέτας για αυτή την καλλιέργεια.",
-  "job.planned.line": "{product} · {worker} · {date}",
   "today.fields": "Χωράφια",
-  "orders.map.title": "Αντιστοίχιση ειδών με καλλιέργειες"
+  "orders.map.title": "Αντιστοίχιση ειδών με καλλιέργειες",
+  "jobs.group.overdue": "Καθυστερημένες",
+  "jobs.group.today": "Σήμερα",
+  "jobs.group.tomorrow": "Αύριο",
+  "jobs.group.later": "Αργότερα",
+  "job.plantings": "Φυτεύσεις για ψεκασμό",
+  "job.worker": "Ποιος θα ψεκάσει",
+  "job.dose": "Δόση προς εφαρμογή"
 }

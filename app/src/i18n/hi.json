@@ -80,5 +80,9 @@
   "sync.rejected.title": "सर्वर ने ये रिकॉर्ड नहीं माने",
   "invite.title": "निमंत्रण",
   "worker.start": "छिड़काव शुरू होने का समय",
-  "worker.start.error": "लिखें कि छिड़काव कब शुरू हुआ। शुरू होने का समय खत्म होने के बाद का नहीं हो सकता।"
+  "worker.start.error": "लिखें कि छिड़काव कब शुरू हुआ। शुरू होने का समय खत्म होने के बाद का नहीं हो सकता।",
+  "jobs.group.overdue": "देर हो चुके",
+  "jobs.group.today": "आज",
+  "jobs.group.tomorrow": "कल",
+  "jobs.group.later": "बाद में"
 }

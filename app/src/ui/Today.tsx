@@ -1,6 +1,7 @@
 import { useState } from 'preact/hooks';
 import { activeFarm, loadDemo, realFarmId, farmLabel } from '../db';
 import { tab } from './nav';
+import { groupJobs } from '../summary/jobs';
 import { formatDate, formatDateTime, t } from '../i18n';
 import { formatArea, formatQty } from '../i18n/format';
 import { athensToday } from '../plantings/planting';
@@ -23,6 +24,7 @@ import type { Row } from '../db/schema';
 
 /** Symbols that mean the same in every language (a word always sits next to them: colour is never the only signal). */
 const MARK = { blocked: '✕', wait: '◷', info: 'ⓘ' } as const;
+const JOB_GROUPS = [['overdue', 'jobs.group.overdue'], ['today', 'jobs.group.today'], ['tomorrow', 'jobs.group.tomorrow'], ['later', 'jobs.group.later']] as const;
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 const SP = ' ';
 const BADGE = { unknown: { cls: 'badge blocked', mark: MARK.blocked }, from: { cls: 'badge unsigned', mark: MARK.wait }, free: { cls: 'badge neutral', mark: MARK.info } } as const;
@@ -132,7 +134,9 @@ export function Today() {
   const weatherOf = new Map(weatherRows.map((w) => [w.parcel_id, parseDays(w.days)] as const));
   const harvestRows = useRows('job_harvest');
   const summary = todaySummary(athensToday(new Date()) ?? '', sprays.rows ?? [], harvestRows.rows ?? [], jobs.rows ?? [], (id) => text(workers.rows?.find((w) => w.id === id)?.name), (id) => nameOf(products.rows?.find((p) => p.id === id) ?? {}));
+  const jobLine = (j: Row): string => [...new Set(links.rows?.filter((l) => l.job_id === j.id).map((l) => plantings.rows?.find((p) => p.id === l.planting_id)).filter((p): p is Row => !!p).map((p) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) })) ?? [])].concat(text(workers.rows?.find((w) => w.id === j.worker_id)?.name), typeof j.planned_for === 'string' && j.planned_for !== '' ? formatDate(j.planned_for) : '').filter(Boolean).join(' · ');
   const openJobs = (jobs.rows ?? []).filter((j) => !j.deleted_at && j.kind === 'spray' && j.status === 'planned');
+  const jobGroups = groupJobs(openJobs, athensToday(new Date()) ?? '');
   const live = (q: Rows) => q.rows?.filter((r) => !r.deleted_at) ?? [];
   const demo = activeFarm.value !== realFarmId.value;
   const cropsInUse = demo ? live(crops).length : new Set(live(plantings).map((p) => p.crop_id)).size;
@@ -195,7 +199,12 @@ export function Today() {
       )}
       {loaded && has && <h2>{t('worker.jobs')}</h2>}
       {loaded && has && openJobs.length === 0 && <p class="muted" data-testid="jobs-none">{t('today.jobs.none')}</p>}
-      {openJobs.map((j) => <div class="card" key={j.id} data-testid="job-planned">{t('job.planned.line', { product: nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {}), worker: text(workers.rows?.find((w) => w.id === j.worker_id)?.name), date: text(j.planned_for) })}</div>)}
+      {JOB_GROUPS.map(([key, label]) => jobGroups[key].length > 0 && (
+        <section key={key} data-testid={`jobs-${key}`}>
+          <h3 class={key === 'overdue' ? 'late' : undefined}>{t(label)}</h3>
+          {jobGroups[key].map((j) => <div class="card" key={j.id} data-testid="job-planned">{jobLine(j)}</div>)}
+        </section>
+      ))}
       {loaded && has && <button class="btn" data-testid="job-open" disabled={demo} onClick={() => setPlanning(true)}>{t('job.add.plus')}</button>}
       {loaded && has && !demo && (
         <div class="pair">
