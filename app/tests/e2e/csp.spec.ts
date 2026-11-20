@@ -25,5 +25,5 @@ test('the app runs under the production CSP: no violations, demo import and serv
 test('the version with its build id is visible in More', async ({ page }) => {
   await page.goto('/');
   await page.locator('nav.tabs [data-tab="more"]').click();
-  await expect(page.locator('main')).toContainText(/Έκδοση: \d+\.\d+\.\d+ · \w{5,7}/);
+  await expect(page.locator('main')).toContainText(/Αλώνι · έκδοση \d+\.\d+\.\d+ · \w{5,7}/);
 });

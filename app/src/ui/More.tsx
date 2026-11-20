@@ -75,7 +75,6 @@ export function More() {
       <SettingsBox />
       <Notifications />
       {legacyKept.value && <p class="draft" role="note">{t('more.legacyKept')}</p>}
-      <p class="muted">{t('more.version', { v: APP_VERSION })}</p>
       <details class="card" data-testid="dev-section">
         <summary>{t('dev.title')}</summary>
         <Readiness part="dev" />
