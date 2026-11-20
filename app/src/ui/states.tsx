@@ -3,13 +3,18 @@ import { db } from '../db';
 import { pendingOps, rejectedOps, unsyncedIds } from '../repo';
 import { dismissRejected } from '../repo/sync-apply';
 import { t, tn, type I18nKey } from '../i18n';
-import { syncError } from '../sync/run';
+import { lastSyncOk, syncError } from '../sync/run';
+import { syncChip } from '../sync/chip';
+import { syncEnabled } from '../sync/golive';
 import { online } from './sync';
 
 /**
  * Global chip. Without a server (SYNC_CONNECTED = false) it only says, calmly, that the records are saved on this phone and will be sent when an
  * account is connected. With a server: «Εκτός σύνδεσης» and/or «N μη συγχρονισμένα». Hidden when there is nothing to say.
  */
+const CLOCK = new Intl.DateTimeFormat('el-GR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Athens' });
+const athensClock = (iso: string): string => CLOCK.format(new Date(iso));
+
 export function SyncChip() {
   const n = pendingOps.value;
   const offline = !online.value;
@@ -19,8 +24,10 @@ export function SyncChip() {
   else if (offline) text = t('sync.offline');
   else if (n > 0) text = tn('sync.pending', n);
   if (SYNC_CONNECTED && syncError.value) text = [text, t('sync.error')].filter(Boolean).join(' · ');
+  const live = syncChip({ connected: SYNC_CONNECTED, enabled: syncEnabled.value, online: online.value, pending: n, failed: syncError.value !== undefined, lastOk: lastSyncOk.value }, athensClock);
+  if (live) text = live.keys.map((k) => (k.key === 'sync.pending' ? tn('sync.pending', k.n) : k.key === 'sync.last' ? t('sync.last', k.vars) : t(k.key))).join(' · ');
   if (!text) return null;
-  return <p class={SYNC_CONNECTED ? 'chip' : 'chip calm'} role="status" data-testid="sync-chip">{text}</p>;
+  return <p class={live ? `chip ${live.tone}` : SYNC_CONNECTED ? 'chip' : 'chip calm'} role="status" data-testid="sync-chip">{text}</p>;
 }
 
 /** The records the server REFUSED (only with a live sync): they stay here until the owner has seen them. Never a silent loss. */

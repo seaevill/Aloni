@@ -8,6 +8,8 @@ import { syncOnce, type Transport } from './engine';
 
 /** The last failure of a round (undefined = the last round worked or none ran yet). Shown as a calm line; the next round retries by itself. */
 export const syncError = signal<string | undefined>(undefined);
+/** The clock time (ISO) of the last round that really worked in this session; undefined = none yet. The chip shows it; nothing else is claimed. */
+export const lastSyncOk = signal<string | undefined>(undefined);
 
 export interface Deps {
   db: AppDB;
@@ -31,6 +33,7 @@ export function createRunner(d: Deps): { tick: () => Promise<'skipped' | 'ok' | 
         if (!tr) return 'skipped';
         const r = await syncOnce(d.db, tr, d.farm());
         syncError.value = undefined;
+        lastSyncOk.value = new Date().toISOString();
         if (r.written > 0 || r.sent > 0 || r.rejected > 0 || r.weather) d.changed();
         return 'ok';
       } catch (e) {
