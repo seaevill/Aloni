@@ -16,6 +16,7 @@ import { Title, nameOf, retry } from './screens';
 import { useRows, type Rows } from './useRows';
 import { dayOf, farmDay, parseDays, provenance, type Day } from '../weather/strip';
 import { todaySummary, cutCrates } from '../summary/today';
+import { cutToday, type CutLine, type CutToday } from '../summary/cutlist';
 import { useWeather } from './useWeather';
 import type { Row } from '../db/schema';
 
@@ -51,13 +52,14 @@ function WeatherStrip({ perParcel }: { perParcel: ReadonlyArray<readonly Day[]> 
   return (
     <section class="wx dark" data-testid="weather-strip" aria-label={t('today.weather')}>
       <h2>{t('today.weather')}</h2>
-      <div class="tiles">
+      {!any && <p class="wx-none" data-testid="wx-none">{t('today.weather.setup')}</p>}
+      {any && <div class="tiles">
         <div class="tile"><small>{t('wx.maxmin')}</small><strong data-testid="wx-now-temp">{now && now.tmax !== undefined && now.tmin !== undefined ? t('wx.temp', { min: formatQty(now.tmin), max: formatQty(now.tmax) }) : DASH}</strong></div>
         <div class="tile"><small>{t('wx.wind')}</small><strong>{val(now?.wind, 'wx.kmh')}</strong>{now?.gust !== undefined && <small>{t('wx.gust', { kmh: formatQty(now.gust) })}</small>}</div>
         <div class="tile"><small>{t('wx.humidity')}</small><strong>{val(now?.rh, 'wx.pct')}</strong></div>
         <div class="tile"><small>{t('wx.rain.today')}</small><strong>{now?.rain === undefined ? DASH : t('wx.rain', { mm: formatQty(now.rain) })}</strong></div>
-      </div>
-      <div class="wx-row">
+      </div>}
+      {any && <div class="wx-row">
         {dates.map((date, i) => {
           const d = days[i];
           return (
@@ -68,8 +70,7 @@ function WeatherStrip({ perParcel }: { perParcel: ReadonlyArray<readonly Day[]> 
             </div>
           );
         })}
-      </div>
-      {!any && <p class="wx-none">{t('today.weather.none')}</p>}
+      </div>}
       {any && src && (
         <p class="wx-source" data-testid="wx-source">{sourceLine(src)}{src.stale && <strong data-testid="wx-stale"> {t('wx.stale')}</strong>}</p>
       )}
@@ -96,26 +97,33 @@ function Welcome() {
   );
 }
 
-function Fields({ cards, onUrgent }: { cards: FieldCard[]; onUrgent: () => void }) {
-  void onUrgent;
+const LINE = {
+  free: { cls: 'badge calm', key: 'cut.line.free' },
+  from: { cls: 'badge blocked', key: 'cut.line.from' },
+  unknown: { cls: 'badge unsigned', key: 'cut.line.unknown' },
+} as const;
+const sourceText = (src: CutLine['source']): string => t(src === 'manual' ? 'cut.source.manual' : 'cut.source.label');
+const lineText = (l: CutLine): string => (l.state === 'from' ? t(LINE.from.key, { d: formatDateTime(l.at) }) : t(LINE[l.state].key));
+
+/** «Κοπή σήμερα»: one line per growing planting (green free, red waiting until a date, amber waiting period missing); a parcel with nothing growing says so. */
+function CutTodaySection({ ct }: { ct: CutToday }) {
+  const blocked = ct.lines.filter((l) => l.state !== 'free').length;
   return (
-    <>
-      <h2>{t('today.fields')}</h2>
-      {cards.map((c) => {
-        const look = BADGE[c.state];
-        const line = c.state === 'free' ? t('cut.free') : c.state === 'unknown' ? t('cut.unknown') : t('cut.from', { d: formatDateTime(c.at) });
-        return (
-          <div class={c.state === 'unknown' ? 'card field blocked' : 'card field'} key={c.p.id} data-testid="cut" data-state={c.state}>
-            <div class="field-head"><strong>{text(c.p.name)}</strong>{typeof c.p.area_str !== 'undefined' && <span class="muted">{formatArea(c.p.area_str as number | string)}</span>}</div>
-            {c.crops && <small>{c.crops}</small>}
-            {c.weather && <small data-testid="field-weather">{c.weather}</small>}
-            <span class={look.cls} data-testid="cut-line">{line}</span>
-            {c.source && <small data-testid="cut-source">{c.source}</small>}
-            {c.late && <span class="badge warn" data-testid="cut-late">{t('cut.late')}</span>}
-          </div>
-        );
-      })}
-    </>
+    <section data-testid="cut-today" aria-label={t('cut.today')}>
+      <h2>{t('cut.today')}</h2>
+      {ct.lines.length > 0 && <p class="muted" data-testid="cut-headline">{t('cut.headline', { n: blocked, total: ct.lines.length })}</p>}
+      {ct.lines.map((l) => (
+        <div class="card cutline" key={l.id} data-testid="cut" data-state={l.state}>
+          <div class="field-head"><strong>{l.crop}</strong><span class="muted">{l.parcel}</span></div>
+          <span class={LINE[l.state].cls} data-testid="cut-line">{lineText(l)}</span>
+          {l.state === 'from' && <small data-testid="cut-source">{sourceText(l.source)}</small>}
+          {l.late && <span class="badge warn" data-testid="cut-late">{t('cut.late')}</span>}
+        </div>
+      ))}
+      {ct.noPlanting.map((p) => (
+        <div class="card cutline" key={String(p.id)} data-testid="cut-empty"><div class="field-head"><strong>{text(p.name)}</strong><span class="muted">{t('cut.none')}</span></div></div>
+      ))}
+    </section>
   );
 }
 
@@ -153,6 +161,7 @@ export function Today() {
     const crops_ = [...new Set(live(plantings).filter((x) => x.parcel_id === p.id).map((x) => nameOf(crops.rows?.find((c2) => c2.id === x.crop_id) ?? {})))].join(', ');
     return { weather: fieldWeather(weatherOf.get(p.id) ?? [], athensToday(new Date()) ?? ''), p, state: c.state, at: c.state === 'from' ? c.at : '', late: c.state === 'from' && c.late === true, source: c.state === 'from' ? t(c.source === 'manual' ? 'cut.source.manual' : 'cut.source.label') : '', crops: crops_ };
   });
+  const ct = cutToday(live(parcels), live(plantings), links.rows ?? [], sprays.rows ?? [], (id) => nameOf(crops.rows?.find((c2) => c2.id === id) ?? {}), now);
   const urgent = cards.find((c) => c.state === 'unknown') ?? cards.filter((c) => c.state === 'from').sort((a, b) => a.at.localeCompare(b.at))[0];
   const today = athensToday(new Date()) ?? '';
   return (
@@ -165,8 +174,27 @@ export function Today() {
       {rows.some((q) => q.failed) && <ErrorState onRetry={retry} />}
       {loaded && !has && <Welcome />}
       {loaded && !has && (
-        <EmptyState message={t('welcome.2.body')} actionLabel={t('parcel.add')} onAction={() => { tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
+        <EmptyState message={t('welcome.start')} actionLabel={t('parcel.add')} onAction={() => { tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
       )}
+      {loaded && has && <CutTodaySection ct={ct} />}
+      {loaded && has && <h2>{t('worker.jobs')}</h2>}
+      {loaded && has && openJobs.length === 0 && <p class="muted" data-testid="jobs-none">{t('today.jobs.none')}</p>}
+      {JOB_GROUPS.map(([key, label]) => jobGroups[key].length > 0 && (
+        <section key={key} data-testid={`jobs-${key}`}>
+          <h3 class={key === 'overdue' ? 'late' : undefined}>{t(label)}</h3>
+          {jobGroups[key].map((j) => <div class="card" key={j.id} data-testid="job-planned">{jobLine(j)}</div>)}
+        </section>
+      ))}
+      {loaded && has && <button class="btn" data-testid="job-open" disabled={demo} onClick={() => setPlanning(true)}>{t('job.add.plus')}</button>}
+      {loaded && has && !demo && (
+        <div class="pair">
+          <button class="btn big" data-testid="spray-open" onClick={() => setSpraying(true)}>{t('spray.add')}</button>
+          <button class="btn big" data-testid="harvest-open" onClick={() => setHarvesting(true)}>{t('harvest.add')}</button>
+        </div>
+      )}
+      {planned && <p class="msg" role="status" data-testid="job-saved">{t('job.saved')}</p>}
+      {harvested && <p class="msg" role="status" data-testid="harvest-saved">{t('harvest.saved')}</p>}
+      {recorded && <p class="msg" role="status" data-testid="spray-saved">{t('spray.saved')}</p>}
       {loaded && has && urgent && (
         <section class="hero" data-testid="urgent" aria-label={t('today.urgent')}>
           <span class="kicker"><span aria-hidden="true">{BADGE[urgent.state].mark}</span>{SP}{t('today.urgent')}</span>
@@ -181,13 +209,9 @@ export function Today() {
           <div class="kpi"><small>{t('today.kpi.crops')}</small><strong>{formatQty(cropsInUse)}</strong></div>
           <div class="kpi" data-testid="today-cut7"><small>{t('today.kpi.cut7')}</small><strong>{formatQty(cutCrates(harvestRows.rows ?? [], new Date().toISOString(), 7))}</strong></div>
           <div class="kpi" data-testid="today-cut28"><small>{t('today.kpi.cut28')}</small><strong>{formatQty(cutCrates(harvestRows.rows ?? [], new Date().toISOString(), 28))}</strong></div>
-          <div class="kpi wide" data-testid="today-canharvest"><small>{t('today.kpi.harvest')}</small><strong>{formatQty(cards.filter((c) => c.state === 'free').length)}</strong><small>{t('today.kpi.held', { n: cards.filter((c) => c.state !== 'free').length })}</small></div>
+          <div class="kpi wide" data-testid="today-canharvest"><small>{t('today.kpi.harvest')}</small><strong>{formatQty(ct.freeParcels)}</strong><small>{t('today.kpi.held', { n: ct.heldParcels })}</small></div>
         </section>
       )}
-      {loaded && has && <Fields cards={cards} onUrgent={() => setHistory(true)} />}
-      {planned && <p class="msg" role="status" data-testid="job-saved">{t('job.saved')}</p>}
-      {harvested && <p class="msg" role="status" data-testid="harvest-saved">{t('harvest.saved')}</p>}
-      {recorded && <p class="msg" role="status" data-testid="spray-saved">{t('spray.saved')}</p>}
       {loaded && has && (
         <section class="card" data-testid="today-who">
           <strong>{t('today.who')}</strong>
@@ -196,21 +220,6 @@ export function Today() {
           {summary.harvests > 0 && <small data-testid="today-who-crates">{t('today.who.crates', { n: formatQty(summary.crates) })}</small>}
           {summary.overdue.length > 0 && <small class="late" data-testid="today-who-overdue">{t('today.who.overdue', { n: summary.overdue.length })}</small>}
         </section>
-      )}
-      {loaded && has && <h2>{t('worker.jobs')}</h2>}
-      {loaded && has && openJobs.length === 0 && <p class="muted" data-testid="jobs-none">{t('today.jobs.none')}</p>}
-      {JOB_GROUPS.map(([key, label]) => jobGroups[key].length > 0 && (
-        <section key={key} data-testid={`jobs-${key}`}>
-          <h3 class={key === 'overdue' ? 'late' : undefined}>{t(label)}</h3>
-          {jobGroups[key].map((j) => <div class="card" key={j.id} data-testid="job-planned">{jobLine(j)}</div>)}
-        </section>
-      ))}
-      {loaded && has && <button class="btn" data-testid="job-open" disabled={demo} onClick={() => setPlanning(true)}>{t('job.add.plus')}</button>}
-      {loaded && has && !demo && (
-        <div class="pair">
-          <button class="btn secondary" data-testid="spray-open" onClick={() => setSpraying(true)}>{t('spray.add')}</button>
-          <button class="btn secondary" data-testid="harvest-open" onClick={() => setHarvesting(true)}>{t('harvest.add')}</button>
-        </div>
       )}
       {loaded && has && <button class="row" data-testid="history-open" onClick={() => setHistory(true)}><span>{t('history.title')}</span><span aria-hidden="true" class="chev" /></button>}
       {loaded && has && <p class="card" data-testid="today-counts">{t('today.counts', { parcels: live(parcels).length, crops: formatQty(cropsInUse), plantings: formatQty(live(plantings).length) })}</p>}
