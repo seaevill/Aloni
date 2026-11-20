@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { dataVersion, db, activeFarm, lastBackupAt, realFarmId } from '../db';
 import { formatDate, t, type I18nKey } from '../i18n';
-import { backupStale, storageWarnings } from '../backup/warnings';
+import { backupStale, isIos, storageWarnings } from '../backup/warnings';
 import { downloadText } from '../backup/download';
 import { pendingOps } from '../repo';
 import { BackupError, makeBackup, markBackupDone, parseBackup, restoreBackup, type BackupErrorCode } from '../repo/backup';
@@ -23,7 +23,7 @@ export function Backup() {
   const file = useRef<HTMLInputElement>(null);
   useEffect(() => { void navigator.storage?.persisted?.().then(setPersisted); }, []);
   const standalone = matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true;
-  const warnings = storageWarnings({ standalone, ios: /iPad|iPhone|iPod/.test(navigator.userAgent), persisted });
+  const warnings = storageWarnings({ standalone, ios: isIos(navigator.userAgent, navigator.maxTouchPoints), persisted });
   const last = lastBackupAt.value;
 
   const exportBackup = async () => {

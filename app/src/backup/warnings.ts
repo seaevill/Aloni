@@ -16,3 +16,8 @@ export function storageWarnings(env: { standalone: boolean; ios: boolean; persis
   if (env.persisted === false) out.push('warn.persist');
   return out;
 }
+
+/** iPhone, iPod and iPad; a modern iPad says «Macintosh» but has a touch screen. */
+export function isIos(ua: string, touchPoints: number): boolean {
+  return /iPad|iPhone|iPod/.test(ua) || (/Mac/.test(ua) && touchPoints > 1);
+}
