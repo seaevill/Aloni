@@ -27,7 +27,6 @@ export function Orders({ onBack }: { onBack: () => void }) {
   const [bad, setBad] = useState(false); const [note, setNote] = useState(0);
   const crops = useRows('crops'); const plantings = useRows('plantings'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const harvests = useRows('job_harvest'); const labels = useRows('label_uses');
   const [offset, setOffset] = useState(0); const [copied, setCopied] = useState<keyof typeof COPY_NOTE | ''>('');
-  const crops = useRows('crops'); const plantings = useRows('plantings'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const harvests = useRows('job_harvest');
   const farm = activeFarm.value;
   useEffect(() => {
     let live = true;
