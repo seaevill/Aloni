@@ -121,6 +121,7 @@ create function private.harvest_conflicts_rows()
   from job_harvest h cross join lateral private.planting_gate(h.planting_id, h.harvested_at) g
   where (private.has_role(h.farm_id, array['owner', 'worker']) or (auth.uid() is null and current_setting('role') in ('none', 'service_role')))      -- maintenance (the database owner, the service role) sees all; a signed-in person only her own farms
     and (g.phi_problem is not null or g.rei_problem is not null)
+    and (not (private.has_role(h.farm_id, array['worker']) and not private.has_role(h.farm_id, array['owner'])) or h.created_by = auth.uid())      -- a worker-only caller sees only the harvests SHE recorded (as the old view did through RLS)
 $$;
 revoke execute on function private.harvest_conflicts_rows() from public, anon;
 do $$ begin

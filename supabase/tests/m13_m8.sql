@@ -72,6 +72,11 @@ do $$ declare n int; begin
   select count(*) into n from harvest_conflicts where planting_id = 'dddddddd-0000-0000-0000-0000000013a1' and rei_problem = 'rei_running';
   if n < 1 then raise exception '(S2) the owner sees nothing in harvest_conflicts for a harvest recorded inside the crop-A REI'; end if;
 end $$;
+reset role; set test.uid = ''; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000b2';     -- the WORKER: the fixture harvest above is not hers
+do $$ declare n int; begin
+  select count(*) into n from harvest_conflicts;
+  if n <> 0 then raise exception '(S2) a worker reads % harvest conflicts of OTHER people''s harvests', n; end if;
+end $$;
 reset role; set test.uid = ''; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000f9';     -- a signed-in stranger (no member of the farm)
 do $$ declare n int; begin
   select count(*) into n from harvest_conflicts;
