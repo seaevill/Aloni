@@ -23,6 +23,7 @@ export default defineConfig({
         short_name: APP_NAME,
         description: 'Field management for a Greek leafy-greens farm',
         lang: 'el',
+        id: '/',
         start_url: '/',
         scope: '/',
         display: 'standalone',
@@ -31,7 +32,7 @@ export default defineConfig({
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
-          { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: 'icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {
