@@ -83,3 +83,20 @@ test('a server error switches nothing on, says so in plain words, and keeps the 
   await page.locator('nav.tabs [data-tab="parcels"]').click();
   await expect(page.locator('main .card').first()).toContainText('Κάτω Κάμπος');   // the data is still on the phone
 });
+
+// B5: «back up first» is ONE tap in the wizard, not a trip to another screen.
+test('without a fresh backup the wizard offers «Αντίγραφο τώρα»: one tap downloads the backup and opens the button', async ({ page }) => {
+  await mock(page);
+  await prepare(page);
+  await page.evaluate(() => new Promise<void>((done) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const tx = r.result.transaction('settings', 'readwrite'); tx.objectStore('settings').delete('last_backup_at'); tx.oncomplete = () => done(); }; }));
+  await page.goto('/');
+  await signIn(page);
+  await expect(page.getByTestId('golive-backup')).toHaveAttribute('data-ok', 'no');
+  await expect(page.getByTestId('golive-start')).toBeDisabled();
+  const download = page.waitForEvent('download');
+  await page.getByTestId('golive-backup-now').click();
+  expect((await download).suggestedFilename()).toMatch(/^aloni-backup-\d{4}-\d{2}-\d{2}\.json$/);
+  await expect(page.getByTestId('golive-backup')).toHaveAttribute('data-ok', 'yes');
+  await expect(page.getByTestId('golive-start')).toBeEnabled();
+  await expect(page.getByTestId('golive-backup-now')).toHaveCount(0);                         // nothing to offer once the backup is fresh
+});

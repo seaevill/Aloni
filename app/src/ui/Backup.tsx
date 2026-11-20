@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { dataVersion, db, activeFarm, lastBackupAt, realFarmId } from '../db';
 import { formatDate, t, type I18nKey } from '../i18n';
 import { backupStale, isIos, storageWarnings } from '../backup/warnings';
-import { downloadText } from '../backup/download';
+import { exportBackupNow } from '../backup/export';
 import { pendingOps } from '../repo';
 import { BackupError, makeBackup, markBackupDone, parseBackup, restoreBackup, type BackupErrorCode } from '../repo/backup';
 import { APP_VERSION } from '../version';
@@ -26,15 +26,7 @@ export function Backup() {
   const warnings = storageWarnings({ standalone, ios: isIos(navigator.userAgent, navigator.maxTouchPoints), persisted });
   const last = lastBackupAt.value;
 
-  const exportBackup = async () => {
-    const farm = await db.farms.get(realFarmId.value);
-    const b = await makeBackup(db, { id: realFarmId.value, name: farm?.name ?? '' }, APP_VERSION);
-    const now = new Date().toISOString();
-    downloadText(`aloni-backup-${now.slice(0, 10)}.json`, JSON.stringify(b));
-    await markBackupDone(db, now);
-    lastBackupAt.value = now;
-    setMsg(t('backup.exported', { n: Object.values(b.tables).flat().length + b.settings.length }));
-  };
+  const exportBackup = async () => { setMsg(t('backup.exported', { n: await exportBackupNow() })); };
   const restore = async (e: Event) => {
     const input = e.target as HTMLInputElement;
     const f = input.files?.[0];
