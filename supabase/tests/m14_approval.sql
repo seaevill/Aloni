@@ -108,7 +108,7 @@ reset role; set test.uid = '';
 do $$
 declare f constant uuid := '11111111-1111-1111-1111-111111111111'; v jsonb; r jsonb; got text; n int := 0;
 begin
-  for v in select jsonb_array_elements(j) from golden loop
+  for v in select jsonb_array_elements(j->'examples') from golden loop
     r := v->'row'; n := n + 1;
     insert into products(id,farm_id,name,type,unit) values ((r->>'product_id')::uuid, f, 'golden p', 'fungicide', 'kg') on conflict do nothing;
     insert into crops(id,farm_id,slug,name_el) values ((r->>'crop_id')::uuid, f, 'golden', 'γκ') on conflict do nothing;
@@ -118,6 +118,26 @@ begin
     if got is distinct from v->>'fingerprint' then raise exception '(A4d) the server fingerprint differs from the phone''s on example %: % <> %', n, got, v->>'fingerprint'; end if;
   end loop;
   if n < 4 then raise exception '(A4d) too few examples'; end if;
+end $$;
+-- A4e: the PHONE cannot read these stored values (ambiguous decimal, a whole number of more than 4 digits): the server refuses to sign them, and nothing changes (the shared «refused» examples)
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; v jsonb; r jsonb; lid uuid; n int := 0; before_n int := (select count(*) from label_approvals);
+begin
+  for v in select jsonb_array_elements(j->'refused') from golden loop
+    r := v->'row'; n := n + 1;
+    insert into label_uses(farm_id,product_id,crop_id,target,dose_kind,dose_unit,dose_min,dose_max,phi_days,rei_hours,max_apps)
+      values (f,(r->>'product_id')::uuid,(r->>'crop_id')::uuid,'refused ' || n,r->>'dose_kind',r->>'dose_unit',(r->>'dose_min')::numeric,(r->>'dose_max')::numeric,(r->>'phi_days')::int,(r->>'rei_hours')::int,(r->>'max_apps')::int) returning id into lid;
+    set local role authenticated; perform set_config('test.uid', '00000000-0000-0000-0000-0000000000a1', true);
+    begin
+      insert into label_approvals(farm_id,label_use_id,label_seq,approver_name,approved_on,fingerprint)
+        values (f, lid, (select server_seq from label_uses where id = lid), 'Agronomist Test', current_date, private.label_fingerprint((select lbl from label_uses lbl where lbl.id = lid)));
+      raise exception '(A4e) a value the phone cannot read was signed: %', v->>'why';
+    exception when check_violation then if sqlerrm not like '%cannot be read the way the phone reads it%' then raise; end if; end;
+    reset role; perform set_config('test.uid', '', true);
+    if (select sign_off_by from label_uses where id = lid) is not null then raise exception '(A4e) the label was signed: %', v->>'why'; end if;
+  end loop;
+  if n < 5 then raise exception '(A4e) too few refused examples'; end if;
+  if (select count(*) from label_approvals) <> before_n then raise exception '(A4e) a refused approval left a ledger row'; end if;
 end $$;
 -- A5: grants: authenticated may only select and insert; anon has nothing
 reset role; set test.uid = '';

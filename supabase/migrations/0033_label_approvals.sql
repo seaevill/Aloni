@@ -60,6 +60,14 @@ begin
   if lu.dose_kind is null or lu.dose_unit is null or lu.dose_min is null or (lu.dose_kind = 'range' and lu.dose_max is null) or lu.phi_days is null or lu.rei_hours is null or lu.max_apps is null then
     raise exception 'an incomplete label use cannot be approved (kind, unit, dose, PHI, REI and max applications are all needed)' using errcode = 'check_violation';
   end if;
+  -- a stored value the PHONE cannot read as a known value must stay unsigned (the server gate counts a signature as present; the phone would reject it): plain decimals only, and «1.500» is ambiguous (thousands or
+  -- decimals?) exactly as in packages/rules-core parseDecimal; whole numbers of at most 4 digits as in parseWhole. Shared negative examples: supabase/tests/label-fingerprint.json («refused»).
+  if lu.dose_min::text !~ '^\d+(\.\d+)?$' or (lu.dose_kind = 'range' and lu.dose_max::text !~ '^\d+(\.\d+)?$')
+     or (lu.dose_min::text ~ '^\d+\.\d{3}$' and split_part(lu.dose_min::text, '.', 1) <> '0')
+     or (lu.dose_kind = 'range' and lu.dose_max::text ~ '^\d+\.\d{3}$' and split_part(lu.dose_max::text, '.', 1) <> '0')
+     or lu.phi_days not between 0 and 9999 or lu.rei_hours not between 0 and 9999 or lu.max_apps not between 0 and 9999 then
+    raise exception 'a stored value cannot be read the way the phone reads it (an ambiguous decimal or a whole number of more than 4 digits): correct the label use first' using errcode = 'check_violation';
+  end if;
   if new.approved_on > (now() at time zone 'Europe/Athens')::date then raise exception 'the approval date cannot be in the future' using errcode = 'check_violation'; end if;
   if new.approved_on < date '2020-01-01' then raise exception 'the approval date is implausibly old' using errcode = 'check_violation'; end if;
   if new.photo_id is not null and not exists (select 1 from public.media m where m.id = new.photo_id and m.farm_id = new.farm_id and m.job_id is null) then
