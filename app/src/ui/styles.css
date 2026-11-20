@@ -3,6 +3,11 @@ html, body { margin:0; background:var(--bg); color:var(--fg); font:var(--fs-16)/
 #app { min-height:100dvh; display:flex; flex-direction:column; }
 main { flex:1; padding:var(--sp-16) var(--sp-16) calc(var(--main-pad-bottom) + env(safe-area-inset-bottom)); max-width:var(--max-w); width:100%; margin:0 auto; }
 h2 { font-size:var(--fs-22); font-weight:800; line-height:1.15; letter-spacing:var(--ls-h2); margin:var(--sp-16) 0 var(--sp-8); }
+/* UX1: the spraying form reads as numbered STEPS; a step turns «✓» when the farmer has chosen it (presentation only: nothing here decides anything) */
+.detail { counter-reset: step; }
+h2.step { counter-increment: step; display:flex; align-items:center; gap:var(--sp-8); }
+h2.step::before { content:counter(step); flex:none; display:inline-flex; align-items:center; justify-content:center; min-width:var(--sp-24); height:var(--sp-24); border-radius:var(--r-pill); border:var(--bw-2) solid var(--line); color:var(--muted); font-size:var(--fs-16); font-weight:700; }
+h2.step[data-done="yes"]::before { content:"✓"; background:var(--green); border-color:var(--green); color:var(--white); }
 h1 { font-size:var(--fs-30); font-weight:800; line-height:1.05; letter-spacing:var(--ls-title); margin:0 0 var(--sp-12); display:flex; flex-wrap:wrap; gap:var(--sp-8); align-items:center; overflow-wrap:break-word; hyphens:auto; }
 .badge { font-size:var(--fs-14); font-weight:700; background:var(--warn); color:var(--white); padding:var(--sp-2) var(--sp-8); border-radius:var(--r-pill); }
 .card { overflow-wrap:break-word; hyphens:auto; background:var(--card); border:0; box-shadow:var(--shadow-card); border-radius:var(--r-card); padding:var(--sp-12) var(--sp-14); margin:0 0 var(--sp-10); }
