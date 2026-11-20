@@ -52,7 +52,7 @@ function WeatherStrip({ perParcel }: { perParcel: ReadonlyArray<readonly Day[]> 
   return (
     <section class="wx dark" data-testid="weather-strip" aria-label={t('today.weather')}>
       <h2>{t('today.weather')}</h2>
-      {!any && <p class="wx-none" data-testid="wx-none">{t('today.weather.none')}</p>}
+      {!any && <p class="wx-none" data-testid="wx-none">{t('today.weather.setup')}</p>}
       {any && <div class="tiles">
         <div class="tile"><small>{t('wx.maxmin')}</small><strong data-testid="wx-now-temp">{now && now.tmax !== undefined && now.tmin !== undefined ? t('wx.temp', { min: formatQty(now.tmin), max: formatQty(now.tmax) }) : DASH}</strong></div>
         <div class="tile"><small>{t('wx.wind')}</small><strong>{val(now?.wind, 'wx.kmh')}</strong>{now?.gust !== undefined && <small>{t('wx.gust', { kmh: formatQty(now.gust) })}</small>}</div>
