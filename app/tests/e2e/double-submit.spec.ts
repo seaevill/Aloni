@@ -2,6 +2,9 @@ import { expect, test, type Page } from '@playwright/test';
 import { setup, closeHistory } from './helpers/farm';
 import { iphone } from './helpers/iphone';
 
+// a safety test is never retried: a failure that comes and goes is a real race, not noise (see playwright.config.ts)
+test.describe.configure({ retries: 0 });
+
 const count = (page: Page, store: string) => page.evaluate((s) => new Promise<number>((res) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const q = r.result.transaction(s).objectStore(s).count(); q.onsuccess = () => res(q.result); }; }), store);
 
 test('a double tap or a triple tap on a save button makes exactly ONE record (harvest, worker, parcel) and the day shows the true crate count', async ({ page }) => {
