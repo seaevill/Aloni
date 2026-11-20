@@ -52,7 +52,7 @@ export function Register({ onBack }: { onBack: () => void }) {
     <section class="register detail" data-testid="register">
       <header class="band">
         <div class="noprint"><BackBar onBack={onBack} /></div>
-        <h1>{t('register.title')}{demo && <span class="badge">{t('badge.demo')}</span>}</h1>
+        <h1 tabIndex={-1}>{t('register.title')}{demo && <span class="badge">{t('badge.demo')}</span>}</h1>
       </header>
       <p class="badge blocked" data-testid="register-draft">{t('register.draft')}</p>
       {fillIn.length > 0 && <p class="card" data-testid="register-fillin">{fillText}</p>}

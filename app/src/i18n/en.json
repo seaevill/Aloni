@@ -118,6 +118,7 @@
   "photos.duplicate": "This photo is already stored.",
   "photos.error": "The photo was not saved. Check the phone's free space and try again.",
   "photos.alt": "Photo",
+  "photos.viewer": "Photo {n} of {total} · {when}",
   "photos.close": "Close",
   "photos.demoActive": "This is the demo. Choose \"My farm\" in More to add a photo.",
   "product.add": "Add product",

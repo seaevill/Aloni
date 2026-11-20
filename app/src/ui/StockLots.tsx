@@ -50,7 +50,7 @@ export function StockLots({ product, onBack, readOnly = false }: { product: Row;
   return (
     <section>
       <BackBar onBack={onBack} />
-      <h1>{nameOf(product)}</h1>
+      <h1 tabIndex={-1}>{nameOf(product)}</h1>
       {lots.rows && <p class="card" data-testid="stock-total">{t('stock.total', { qty: qtyText(balanceOf(mine), unit) })}</p>}
       {!readOnly && <button class="btn" data-testid="receive-open" onClick={() => setView('receive')}>{t('stock.receive')}</button>}
       {lots.rows && list.length === 0 && <p class="muted" data-testid="stock-empty">{t('stock.empty')}</p>}

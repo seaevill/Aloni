@@ -73,7 +73,7 @@ export function Workers({ onBack }: { onBack: () => void }) {
   return (
     <section>
       <BackBar onBack={onBack} />
-      <h1>{t('workers.title')}</h1>
+      <h1 tabIndex={-1}>{t('workers.title')}</h1>
       <p class="muted">{t('workers.note')}</p>
       {demo && <p class="muted" data-testid="workers-demo">{t('workers.demo')}</p>}
       {!demo && (

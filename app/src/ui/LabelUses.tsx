@@ -67,7 +67,7 @@ export function LabelUses({ product, onBack, readOnly = false }: { product: Row;
   return (
     <section>
       <BackBar onBack={onBack} />
-      <h1>{nameOf(product)}</h1>
+      <h1 tabIndex={-1}>{nameOf(product)}</h1>
       <h2>{t('labeluse.title')}</h2>
       {!readOnly && <button class="btn" data-testid="labeluse-add" onClick={() => setEditing('new')}>{t('labeluse.add')}</button>}
       {uses.rows && mine.length === 0 && <p class="muted" data-testid="labeluse-empty">{t('labeluse.empty')}</p>}

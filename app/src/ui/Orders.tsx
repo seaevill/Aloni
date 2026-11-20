@@ -49,7 +49,7 @@ export function Orders({ onBack }: { onBack: () => void }) {
   return (
     <section data-testid="orders">
       <BackBar onBack={onBack} />
-      <h1>{t('orders.title')}</h1>
+      <h1 tabIndex={-1}>{t('orders.title')}</h1>
       <p class="muted">{t('orders.note')}</p>
       <label class="btn secondary">{t('orders.import')}<input type="file" accept=".json,application/json" hidden data-testid="orders-file" onChange={(e) => void load((e.target as HTMLInputElement).files?.[0])} /></label>
       {bad && <p class="msg error" role="alert" data-testid="orders-bad">{t('orders.bad')}</p>}

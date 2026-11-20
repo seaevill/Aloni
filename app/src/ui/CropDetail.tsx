@@ -23,7 +23,7 @@ export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) 
     <section class="detail" data-testid="crop-detail">
       <header class="band">
         <BackBar onBack={onBack} testId="detail-back" />
-        <h1>{nameOf(crop)}</h1>
+        <h1 tabIndex={-1}>{nameOf(crop)}</h1>
         {typeof crop.latin === 'string' && crop.latin !== '' && <p class="latin">{crop.latin}</p>}
       </header>
       <h2>{t('detail.plantings')}</h2>

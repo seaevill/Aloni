@@ -118,6 +118,7 @@
   "photos.duplicate": "Bu fotoğraf zaten var.",
   "photos.error": "Fotoğraf kaydedilemedi. Telefonun boş yerini kontrol edip tekrar deneyin.",
   "photos.alt": "Fotoğraf",
+  "photos.viewer": "Fotoğraf {n} / {total} · {when}",
   "photos.close": "Kapat",
   "photos.demoActive": "Burası demo. Fotoğraf eklemek için «Diğer» sekmesinde «Çiftliğim»i seçin.",
   "product.add": "İlaç/gübre ekle",

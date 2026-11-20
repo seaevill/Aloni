@@ -47,7 +47,7 @@ export function Analyses({ parcel, onBack, readOnly = false }: { parcel: Row; on
   return (
     <section>
       <BackBar onBack={onBack} />
-      <h1>{String(parcel.name)}</h1>
+      <h1 tabIndex={-1}>{String(parcel.name)}</h1>
       <h2>{t('analysis.title')}</h2>
       {!readOnly && <button class="btn" data-testid="analysis-add-soil" onClick={() => setAdding('soil')}>{t('analysis.add.soil')}</button>}
       {!readOnly && <button class="btn" data-testid="analysis-add-water" onClick={() => setAdding('water')}>{t('analysis.add.water')}</button>}

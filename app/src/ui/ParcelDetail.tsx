@@ -53,7 +53,7 @@ export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: {
     <section class="detail" data-testid="parcel-detail">
       <header class="band">
         <BackBar onBack={onBack} testId="detail-back" />
-        <h1>{text(parcel.name)}</h1>
+        <h1 tabIndex={-1}>{text(parcel.name)}</h1>
       </header>
       {validBoundary(parcel.boundary) ? <Sketch b={parcel.boundary} /> : <p class="muted" data-testid="parcel-nosketch">{t('detail.nosketch')}</p>}
       <div class="card facts">{rows.map(([k, v]) => <div class="fact" key={k}><span>{t(k)}</span><strong>{v}</strong></div>)}</div>
