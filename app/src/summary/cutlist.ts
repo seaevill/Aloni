@@ -21,17 +21,18 @@ export function cutToday(parcels: readonly Row[], plantings: readonly Row[], lin
   const noPlanting: Row[] = [];
   let freeParcels = Number('0'); let heldParcels = Number('0');
   for (const p of parcels.filter((x) => !x.deleted_at)) {
-    const growing = plantings.filter((x) => x.parcel_id === p.id && !x.deleted_at && GROWING.has(text(x.status)));
-    if (growing.length === 0) { noPlanting.push(p); continue; }
+    const mine = plantings.filter((x) => x.parcel_id === p.id && !x.deleted_at);
+    const before = lines.length;
     let held = false;
-    for (const pl of growing) {
+    for (const pl of mine) {
       const g = harvestGate(String(pl.id), now, links, sprays);
       const base = { id: String(pl.id), parcelId: String(p.id), parcel: text(p.name), crop: cropName(pl.crop_id) };
-      if (g.ok) { lines.push({ ...base, state: 'free', at: '', source: 'label', late: false }); continue; }
-      held = true;
+      if (g.ok) { if (GROWING.has(text(pl.status))) lines.push({ ...base, state: 'free', at: '', source: 'label', late: false }); continue; }
+      held = true;      // EVERY planting is gated, whatever its status: a sprayed planting that is «planned» or «finished» but not yet cut is never hidden
       if (g.reason === 'running' && g.until) lines.push({ ...base, state: 'from', at: g.until, source: g.source ?? 'label', late: g.late === true });
       else lines.push({ ...base, state: 'unknown', at: '', source: 'label', late: false });
     }
+    if (lines.length === before) { noPlanting.push(p); continue; }
     if (held) heldParcels += 1; else freeParcels += 1;
   }
   return { lines, noPlanting, freeParcels, heldParcels };
