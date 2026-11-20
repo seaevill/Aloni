@@ -5,8 +5,11 @@
 2. Etiketleri imzalamaya ne zaman gelebilir? (İmzasız taslak etiket artık «bilinmiyor = kapalı» sayılır.)
 3. **(m9 S-NEW-3, şimdilik DEĞİŞTİRİLMEDİ)** İşçinin «Έγινε» kilidi giriş yasağını ilaçlamanın **bitişinde** kontrol ediyor, **başlangıcında** değil: eski bir giriş yasağı sürerken işçi 20 dakika tarlada çalışmış olabilir ve kayıt «rei_conflict» işaretsiz geçiyor. Koruyucu donanımlı uygulayıcı için istisna var mı? Yoksa kapıyı başlangıç saatine de bakacak şekilde sıkılaştırırız.
 
-## m8 düzeltildi, ekip yeniden bakacak (2026-11-20)
-- **0032_planting_gate.sql** (yeni dosya; 0022–0031'e dokunulmadı): tek hasat/giriş kapısı `private.planting_gate`; M1, M2 (MUST), S1–S4 ve LOW'lar düzeltildi; testler `supabase/tests/m13_m8.sql` (önce kırmızı, sonra yeşil, rastgele «değişmez» testi dahil). **Yüklemeden önce RUNBOOK §15'teki salt okunur sorguyu sen çalıştıracaksın.** `docs/reviews/team/` kontrol edildi: m8 dışında açık MUST yok.
+## 0022–0032 yüklemeye hazır (2026-11-20)
+- **Ekip m9 incelemesi: MUST yok, 0022–0032 birlikte yüklemeye hazır.** m9'un istediği düzeltmeler main'de: 0032'de imzasız taslak etiket = bilinmiyor = kapalı (#213), telefondaki kapı sunucuyla aynı kural (#216), weather fonksiyonu için `verify_jwt=false` ve RUNBOOK §14 sırası (#215), CI'da yeniden deneme (#219). `docs/reviews/team/` kontrol edildi: açık MUST yok.
+- **Sırayla (senin elinde):** 1) RUNBOOK §15'teki salt okunur sorguyu çalıştır; satır dönerse **dur** ve bana yaz. 2) Migration'ları RUNBOOK §10'a göre yükle. 3) Hava için RUNBOOK §14: ÖNCE token (adım 1), sonra fonksiyon.
+- **Yükleme bitene kadar başka hiçbir şey merge edilmeyecek** (T16b, T10, T11, #211, T8b bekliyor). Bitince bana «yükleme tamam» yaz, kuyruk devam eder.
+- **Açık soru (değiştirilmedi):** «Έγινε» kilidi giriş yasağını ilaçlamanın bitişinde kontrol ediyor, başlangıcında değil (aşağıda «γεωπόνος soruları» 3).
 
 ## SABAH RAPORU (gece çalışması, 2026-11-19 → 20)
 - **Ekibin yeniden bakacağı SQL commit'i:** `4586098` (m7: N1 ekim başına etiket, N2 bitiş ≤ şimdi + kapı, N3 stok/`sync_xid`; bağımsız alt ajan incelemesi: «NO MUST»). Sonradan yalnızca yeni dosyalar eklendi: 0030 (hava takvimi), 0031 («Ποιος έκοψε»). 0022–0029'a dokunulmadı. Temiz çıkarsa 0022–0031'i birlikte yükleriz; ben başlatmam.
