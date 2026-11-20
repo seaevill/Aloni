@@ -2,6 +2,8 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { fingerprint } from '@aloni/rules-core';
 import { readUse, statusOf } from '../../src/labels/label-use';
+import type { Row } from '../../src/db/schema';
+const asRow = (r: Record<string, unknown>): Row => r as Row;                       // the examples carry only the label's values (no id or farm)
 
 // The agronomist's approval covers EXACTLY the values of a label (the fingerprint). The phone computes it here; the SERVER computes and checks the same string in migration 0033 (private.label_fingerprint),
 // so an approval can never sign a label with a fingerprint the phone would reject. Both sides are locked to ONE file of examples: this test fails if the phone's fingerprint drifts from the file,
@@ -26,7 +28,7 @@ const REFUSED = [
 const compact = (v: ReturnType<typeof vectors>): string => `{\n "examples": [\n${v.examples.map((x) => '  ' + JSON.stringify(x)).join(',\n')}\n ],\n "refused": [\n${v.refused.map((x) => '  ' + JSON.stringify(x)).join(',\n')}\n ],\n "blank_names": ${JSON.stringify(v.blank_names)}\n}\n`;
 // names the phone's trim() reads as EMPTY: the server must not sign with them either (Codex review P2), and the zero-width space (stricter on the server)
 const BLANK_NAMES = ['\f', '\v', '\ufeff', '\u2003', '\u00a0', '\u3000', '\u2028', '\u1680', '\u202f', '\u205f'];
-const vectors = () => ({ examples: ROWS.map((row) => ({ row, fingerprint: fingerprint(readUse(row)) })), refused: REFUSED, blank_names: BLANK_NAMES });
+const vectors = () => ({ examples: ROWS.map((row) => ({ row, fingerprint: fingerprint(readUse(asRow(row))) })), refused: REFUSED, blank_names: BLANK_NAMES });
 
 describe('the label fingerprint is the same string on the phone and on the server', () => {
   it('matches the checked-in examples that the SQL test also uses', () => {
@@ -35,7 +37,7 @@ describe('the label fingerprint is the same string on the phone and on the serve
   });
   it('the phone\'s trim() reads every blank name as empty', () => { for (const n of BLANK_NAMES) expect(n.trim(), JSON.stringify(n)).toBe(''); });
   it('the phone reads every «refused» row as blocked (some value unknown), and every example as complete', () => {
-    for (const r of REFUSED) expect(statusOf(r.row), r.why).toBe('blocked');
-    for (const row of ROWS) expect(statusOf(row)).not.toBe('blocked');
+    for (const r of REFUSED) expect(statusOf(asRow(r.row)), r.why).toBe('blocked');
+    for (const row of ROWS) expect(statusOf(asRow(row))).not.toBe('blocked');
   });
 });
