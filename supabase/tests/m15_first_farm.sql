@@ -75,6 +75,25 @@ do $$ begin
   if (select count(*) from farms where id = 'aaaa1500-0000-0000-0000-0000000000f1') <> 1 or (select count(*) from farm_creations where user_id = '00000000-0000-0000-0000-0000000015a1') <> 1 then raise exception '(F3b) the retry created something'; end if;
 end $$;
 set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000015a1';
+-- F3c: the replay needs CURRENT ownership: with the membership switched off (or the farm deleted) the same call is refused, not answered with a success (Codex SHOULD)
+reset role; set test.uid = '';
+update farm_members set active = false where farm_id = 'aaaa1500-0000-0000-0000-0000000000f1';
+set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000015a1';
+do $$ begin
+  begin perform create_first_farm('aaaa1500-0000-0000-0000-0000000000f1', 'Bora''s farm'); raise exception '(F3c) the replay succeeded for a membership that is switched off';
+  exception when check_violation then null; end;
+end $$;
+reset role; set test.uid = '';
+update farm_members set active = true where farm_id = 'aaaa1500-0000-0000-0000-0000000000f1';
+update farms set deleted_at = now() where id = 'aaaa1500-0000-0000-0000-0000000000f1';
+set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000015a1';
+do $$ begin
+  begin perform create_first_farm('aaaa1500-0000-0000-0000-0000000000f1', 'Bora''s farm'); raise exception '(F3c) the replay succeeded for a deleted farm';
+  exception when check_violation then null; end;
+end $$;
+reset role; set test.uid = '';
+update farms set deleted_at = null where id = 'aaaa1500-0000-0000-0000-0000000000f1';
+set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000015a1';
 -- F4: ONE farm per user for good: a second call fails (also after the first membership is gone)
 do $$ begin
   begin perform create_first_farm('aaaa1500-0000-0000-0000-0000000000f2', 'Second farm'); raise exception '(F4) a second farm was created';

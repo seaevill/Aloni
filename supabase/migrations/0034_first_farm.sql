@@ -31,8 +31,8 @@ begin
   select lower(btrim(coalesce(u.email, ''))) into mail from auth.users u where u.id = me and u.email_confirmed_at is not null;
   if not found then raise exception 'confirm your e-mail address first' using errcode = 'insufficient_privilege'; end if;
   if p_farm is null then raise exception 'the farm id is missing' using errcode = 'check_violation'; end if;
-  -- a retry after a lost answer: the same person asking again for the farm they already own with THIS id gets the same success, not an error
-  if exists (select 1 from farm_creations c join farm_members m on m.farm_id = c.farm_id and m.user_id = c.user_id and m.role = 'owner' where c.user_id = me and c.farm_id = p_farm) then return p_farm; end if;
+  -- a retry after a lost answer: the same person asking again for the farm they CURRENTLY own (active owner, live farm) with THIS id gets the same success, not an error
+  if exists (select 1 from farm_creations c join farm_members m on m.farm_id = c.farm_id and m.user_id = c.user_id and m.role = 'owner' and m.active join farms f on f.id = c.farm_id and f.deleted_at is null where c.user_id = me and c.farm_id = p_farm) then return p_farm; end if;
   if length(nm) < 1 or length(nm) > 120 then raise exception 'the farm name must be 1–120 characters' using errcode = 'check_violation'; end if;
   if exists (select 1 from farm_members m where m.user_id = me) then raise exception 'you already belong to a farm' using errcode = 'check_violation'; end if;
   if exists (select 1 from farm_creations c where c.user_id = me) then raise exception 'one farm per person: you have set up a farm before' using errcode = 'check_violation'; end if;
