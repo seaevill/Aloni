@@ -10,7 +10,7 @@
   --fs-hero:44px; --fs-title:30px; --fs-h2:22px; --fs-row:18px; --fs-body:16px; --fs-meta:14px;
   --hold-bg:#fce3dc; --hold-fg:#6e1708; --blocked-bg:#6e1708; --blocked-fg:#fff; --frost-bg:#e1ecfa; --frost-fg:#0a2c52;
   --lime-soft:#eaf8c4; --lime-soft-fg:#134a2b; --unknown-border:#c9d5c3; --unknown-fg:#2d4033;
-  --chip-h:32px; --tag-h:28px; --icon-sm:16px; --icon-md:24px; --tile:56px; --r-sheet:24px; --sheet-max:85vh; --handle-w:40px; --handle-h:4px; --empty-art:160px; --bar-h:56px;
+  --chip-h:32px; --tag-h:28px; --icon-sm:16px; --icon-md:24px; --tile:56px; --invite-qr:280px; --qr-ink:#000000; --r-sheet:24px; --sheet-max:85vh; --handle-w:40px; --handle-h:4px; --empty-art:160px; --bar-h:56px;
   --dur-1:120ms; --dur-2:200ms; --dur-3:280ms; --ease:cubic-bezier(.2,.8,.2,1);
   --fs-14:.875rem; --fs-16:1rem; --fs-18:1.125rem; --fs-20:1.25rem; --fs-22:1.375rem; --fs-30:1.875rem; --ls-title:-.025em; --ls-h2:-.015em; --fs-count:2.5rem;
   --sp-2:2px; --sp-4:4px; --sp-6:6px; --sp-8:8px; --sp-10:10px; --sp-12:12px; --sp-14:14px; --sp-16:16px; --sp-24:24px; --sp-48:48px;

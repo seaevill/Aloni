@@ -114,5 +114,21 @@
   "ui.mark.sent": "sent",
   "ui.mark.rejected": "not accepted",
   "ui.refused.title": "Why it was not accepted",
-  "ui.refused.none": "The server's answer for this record is no longer here. The record is still on the phone."
+  "ui.refused.none": "The server's answer for this record is no longer here. The record is still on the phone.",
+  "ui.invite.open": "Invite with QR or link",
+  "ui.invite.title": "Worker invitation",
+  "ui.invite.for": "For: {name}",
+  "ui.invite.lang": "Worker's language",
+  "ui.invite.qr.alt": "QR code with the invitation link",
+  "ui.invite.qr.none": "The link is too long for a QR code. Use the link.",
+  "ui.invite.link": "Link",
+  "ui.invite.copy": "Copy link",
+  "ui.invite.copied": "The link was copied.",
+  "ui.invite.copy.failed": "Not copied. Press and hold the link and choose «Copy».",
+  "ui.invite.share": "Share",
+  "ui.invite.steps": "What the worker does",
+  "ui.invite.step1": "Opens the link, or scans the QR code with the phone camera.",
+  "ui.invite.step2": "Types the email you sent the invitation to.",
+  "ui.invite.step3": "Types the 6-digit code that arrives in the email.",
+  "ui.invite.note": "The link does not give access by itself: first send an invitation to the worker's email (above). The link contains only the language."
 }

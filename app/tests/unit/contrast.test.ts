@@ -23,6 +23,7 @@ const TEXT: Array<[string, string, string]> = [
   ['primary button', '#fff', GREEN], ['danger button', WARN, CARD], ['badge', '#fff', WARN], ['draft banner and sync chip', AMBER_FG, AMBER_BG], ['toast', '#fff', FG], ['blocked badge', '#fff', DANGER], ['calm chip', CALM_FG, CALM_BG],
   ['chip hold', token('hold-fg'), token('hold-bg')], ['chip blocked', token('blocked-fg'), token('blocked-bg')], ['chip frost', token('frost-fg'), token('frost-bg')], ['chip ready / lime-soft surface', token('lime-soft-fg'), token('lime-soft')],
   ['chip unknown (text on card)', token('unknown-fg'), CARD], ['chip warn / unsigned (amber)', AMBER_FG, AMBER_BG],
+  ['QR code ink on its white square (a scanner needs more than text does)', token('qr-ink'), '#fff'],
   ['white on the dark band', '#fff', FOREST2], ['white on a dark weather tile', '#fff', token('card-on-dark')],
 ];
 

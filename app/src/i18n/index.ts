@@ -1,3 +1,4 @@
+import { langFromSearch } from '../auth/invite-link';
 import { signal } from '@preact/signals';
 import el from './el.json';
 import uiEl from './ui.el.json';
@@ -47,6 +48,7 @@ function initialLang(): Lang {
     const s = localStorage.getItem('lang');
     if (isLang(s)) return s;
   } catch { /* storage may be unavailable */ }
+  try { const fromLink = langFromSearch(location.search); if (fromLink) return fromLink; } catch { /* no address (unit tests) */ }      // an invitation link opens the app in the invited person's language (only when no language was saved on this phone)
   try { return pickLang(navigator.languages ?? []); } catch { return 'el'; }
 }
 

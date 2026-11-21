@@ -167,3 +167,8 @@ button.tasks-counts { display:block; width:100%; text-align:start; border:0; bac
 .synced { display:inline-flex; align-items:center; gap:var(--sp-4); color:var(--green); font-size:var(--fs-14); font-weight:700; }
 .synced svg { width:var(--sp-14); height:var(--sp-14); }
 button.refused-mark { min-height:var(--tap); padding:0 var(--sp-12); border:0; border-radius:var(--r-pill); background:var(--blocked-bg, var(--lime-soft)); color:var(--fg); font:inherit; font-size:var(--fs-14); font-weight:800; cursor:pointer; }
+.invite-qr { display:block; width:100%; max-width:var(--invite-qr); height:auto; margin:var(--sp-12) auto; border-radius:var(--r-md); }
+.invite-qr-bg { fill:var(--white); }
+.invite-qr-ink { fill:var(--qr-ink); }
+.ds-steps { margin:0 0 var(--sp-12); padding-inline-start:var(--sp-24); }
+.ds-steps li { margin-bottom:var(--sp-6); }

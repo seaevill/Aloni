@@ -1,3 +1,5 @@
+import { openSheet } from './nav';
+import './InviteSheet';
 import { useEffect, useState } from 'preact/hooks';
 import { AUTH_ENABLED, BACKEND } from '../config';
 import { invite, openInvitations, session, tokenFor, withdrawInvitation, type OpenInvitation } from '../auth/gotrue';
@@ -43,6 +45,7 @@ function Invite({ worker, controller }: { worker: Row; controller: Controller | 
       ))}
       <label class="field">{t('invite.email')}<input class="input" type="email" value={email} autoComplete="off" onInput={(e) => setEmail((e.target as HTMLInputElement).value)} /></label>
       <button class="btn secondary" data-testid="invite-send" onClick={() => void send()}>{t('invite.send')}</button>
+      <button type="button" class="btn secondary" data-testid="invite-qr-open" onClick={() => openSheet('invite', String(worker.id))}>{t('ui.invite.open')}</button>
       {state === 'sent' && <p class="msg" role="status">{t('invite.sent')}</p>}
       {state === 'failed' && <p class="msg error" role="alert">{t('invite.error')}</p>}
     </>
