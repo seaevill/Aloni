@@ -1,4 +1,9 @@
 {
   "ui.unknown": "पता नहीं",
-  "ui.sheet.close": "बंद करें"
+  "ui.sheet.close": "बंद करें",
+  "ui.bell.label": "सूचनाएँ",
+  "ui.bell.label.count": "सूचनाएँ, {n} नई",
+  "ui.bell.title": "क्या नया है",
+  "ui.bell.none": "पिछली बार देखने के बाद कुछ नया नहीं है।",
+  "ui.bell.new": "आपके लिए नया काम"
 }

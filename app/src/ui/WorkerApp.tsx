@@ -1,3 +1,4 @@
+import { Bell } from './Bell';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { activeFarm, dataVersion, db } from '../db';
 import { AUTH_ENABLED, DEMO_FARM_ID, SYNC_CONNECTED } from '../config';
@@ -129,7 +130,7 @@ export function WorkerApp() {
     <main data-testid="worker-app">
       {lang.value === 'hi' && <p class="badge warn bi" data-testid="hi-review">{ts('lang.review')}</p>}
       <div class="seg big" data-testid="worker-lang">{LANGS.map((l) => <button key={l} lang={l} aria-label={t(LANG_NAME[l])} aria-pressed={lang.value === l} onClick={() => setWorkerLang(l)}>{LANG_META[l].label}</button>)}</div>
-      <h1>{t('worker.title')}</h1>
+      <div class="worker-head"><h1>{t('worker.title')}</h1><Bell id={`worker-${text(me.id)}`} /></div>
       <details class="card" data-testid="worker-data" open={!noticeSeen}>
         <summary>{t('worker.data.title')}</summary>
         {DATA_LINES.map((k) => <p key={k}>{t(k)}</p>)}
