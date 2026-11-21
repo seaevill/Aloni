@@ -1,5 +1,6 @@
-import { BigNum, Card, Chip, HeroCard, IconTile, ListRow, PageHead, SectionHead, Sparkline, Tag, TONES, WeatherStrip, WeekBars, type Tone, type WeatherDay, type WeekBar } from './index';
+import { BigNum, Card, CropIcon, Chip, HeroCard, IconTile, ListRow, PageHead, SectionHead, Sparkline, Tag, TONES, WeatherStrip, WeekBars, type Tone, type WeatherDay, type WeekBar } from './index';
 import { Icon } from '../icons/Icon';
+import { CATALOG } from '../../crops/catalog';
 
 // Every design-system component with fixed sample texts (Greek, Demo data only: nothing here is a record). Used for screenshots and for the gallery e2e. Reached by `?ds-gallery` in a build with VITE_DS_GALLERY=true.
 const SAMPLE: Record<Tone, string> = {
@@ -40,6 +41,9 @@ export function Gallery() {
         <Sparkline values={[2, 4, 3, 6]} caption={CAP[1]!} />
         <WeekBars weeks={WEEKS} />
         <WeatherStrip days={DAYS} />
+      </section>
+      <section data-testid="gallery-crops">
+        {CATALOG.map((c) => <div class="gallery-crop" key={c.slug}><span class="ds-tile"><CropIcon slug={c.slug} size="calc(var(--tile) - var(--sp-16))" /></span><CropIcon slug={c.slug} size="var(--thumb)" /><span>{c.el}</span></div>)}
       </section>
       <section data-testid="gallery-fill">{FILL.map((x) => <p key={x}>{x}</p>)}</section>
       <section data-testid="gallery-tags">
