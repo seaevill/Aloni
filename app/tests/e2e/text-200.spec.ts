@@ -12,6 +12,8 @@ test('200 % text size: no sideways scroll on any screen, el/tr/en, empty and dem
   await eachScreen(page, async ({ lang, route, state }) => {
     const wide = await page.evaluate(() => document.documentElement.scrollWidth - 375);
     if (wide > 0) failures.push(`${state}/${lang}/${route}: ${wide}px too wide`);
+    const clipped = await page.evaluate(() => [...document.querySelectorAll('nav.tabs button')].filter((b) => b.scrollWidth > b.clientWidth + 1).length);   // a tab label must fit inside its own cell (every engine)
+    if (clipped > 0) failures.push(`${state}/${lang}/${route}: ${clipped} tab labels overflow their cell`);
   });
   expect(failures).toEqual([]);
 });

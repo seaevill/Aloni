@@ -17,6 +17,8 @@ nav.tabs button { min-width:0; padding:0 var(--sp-2); line-height:1.15; text-ali
 nav.tabs button[aria-current="page"] { color:var(--forest-2); font-weight:700; }
 nav.tabs button { min-width:0; padding:0 var(--sp-2); line-height:1.15; text-align:center; overflow-wrap:break-word; hyphens:auto; min-height:var(--tap); border:0; background:none; font:inherit; font-size:var(--fs-14); color:var(--tab); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--sp-2); }
 nav.tabs button[aria-current="page"] { color:var(--forest-2); font-weight:800; }
+nav.tabs button { overflow-wrap:anywhere; overflow:hidden; }
+nav.tabs button > * { min-width:0; max-width:100%; }   /* 200 % text: a long label breaks inside its own cell instead of pushing the page sideways (D15) */
 nav.tabs button[aria-current="page"] .ico { background:var(--lime); color:var(--on-lime); border-radius:var(--r-pill); padding:var(--sp-2) var(--sp-14); }
 @supports ((backdrop-filter:none) or (-webkit-backdrop-filter:none)) { nav.tabs { background:var(--bar); -webkit-backdrop-filter:var(--blur-bar); backdrop-filter:var(--blur-bar); } }
 nav.tabs .ico { font-size:var(--fs-20); line-height:1; }
@@ -65,7 +67,7 @@ nav.tabs .ico { font-size:var(--fs-20); line-height:1; }
 .card .badge.blocked { font-weight:700; }
 /* the tab bar: line icons, ONE line per label */
 nav.tabs .ico svg { display:block; width:var(--icon); height:var(--icon); }
-nav.tabs .lbl { white-space:normal; overflow-wrap:normal; hyphens:manual; text-align:center; line-height:1.15; }
+nav.tabs .lbl { white-space:normal; overflow-wrap:anywhere; hyphens:manual; text-align:center; line-height:1.15; }
 .wx-row .d span { white-space:nowrap; }
 .filters .tag-btn { flex:0 0 auto; white-space:nowrap; }
 /* a closed button LOOKS closed (grey, no green fill) and still answers a press (the worker is told why) */
