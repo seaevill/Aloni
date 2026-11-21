@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { dictionaries, withUi } from '../../src/i18n';
+import { dictionaries, withUi, ensureAllLangs } from '../../src/i18n';
+await ensureAllLangs();      // tr, en and hi are loaded on demand in the app; the checks compare all of them
 import uiEl from '../../src/i18n/ui.el.json';
 import uiTr from '../../src/i18n/ui.tr.json';
 import uiEn from '../../src/i18n/ui.en.json';

@@ -1,7 +1,8 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { dictionaries } from '../../src/i18n';
+import { dictionaries, ensureAllLangs } from '../../src/i18n';
+await ensureAllLangs();      // tr, en and hi are loaded on demand in the app; the checks compare all of them
 import { findI18nProblems, type Dicts } from './helpers/i18n-check';
 
 const SRC = new URL('../../src/', import.meta.url).pathname;

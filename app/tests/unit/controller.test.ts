@@ -2,7 +2,8 @@ import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { AppDB } from '../../src/db/schema';
 import { assertCanInviteWorkers, canInviteWorkers, loadController, saveController } from '../../src/legal/controller';
-import { dictionaries } from '../../src/i18n';
+import { dictionaries, ensureAllLangs } from '../../src/i18n';
+await ensureAllLangs();      // tr, en and hi are loaded on demand in the app; the checks compare all of them
 import { TEST_FARM_ID } from '../helpers/factories';
 
 let db: AppDB;
