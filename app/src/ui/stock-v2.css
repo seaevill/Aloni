@@ -1,0 +1,26 @@
+@media (min-width: 320px) {
+  .stock-v2 .filters {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+  .stock-v2 .filters .tag-btn {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+}
+.stock-v2 .product-card {
+  border: 1px solid var(--line);
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+.stock-v2 .product-card > strong {
+  display: block;
+  font-size: 1.125rem;
+}
+.stock-v2 .product-identity {
+  color: var(--muted);
+}
+.stock-v2 .product-card .row {
+  min-height: 56px;
+}
