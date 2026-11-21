@@ -12,7 +12,7 @@ import { MediaThumb } from './Photos';
 import { UnsyncedMark } from './states';
 import { showUndo } from './Toast';
 import { useRows } from './useRows';
-import { AnalysisExplain, type Measurement } from './AnalysisExplain';
+import type { Measurement } from './AnalysisExplain';
 import { ListRow } from './ds';
 import { BackBar } from './BackBar';
 
@@ -22,7 +22,8 @@ const KIND_KEYS: Record<Kind, I18nKey> = { soil: 'analysis.kind.soil', water: 'a
 
 /** One parcel's soil and water analyses, newest first. Add (soil or water) and archive with undo; the report photo stays on the phone. */
 export function Analyses({ parcel, onBack, readOnly = false }: { parcel: Row; onBack: () => void; readOnly?: boolean }) {
-  const [reading, setReading] = useState<{ kind: Kind; row: Row; field: Measurement } | undefined>(undefined);
+  const [reading, setReading] = useState<{ kind: Kind; row: Row; field: Measurement; Explain: typeof import('./AnalysisExplain').AnalysisExplain } | undefined>(undefined);
+  const [sourceFailed, setSourceFailed] = useState(false);
   const [adding, setAdding] = useState<Kind | undefined>(undefined);
   const soil = useRows('soil_tests');
   const water = useRows('water_tests');
@@ -31,7 +32,16 @@ export function Analyses({ parcel, onBack, readOnly = false }: { parcel: Row; on
     ...(soil.rows ?? []).map((r) => ({ kind: 'soil' as const, r })),
     ...(water.rows ?? []).map((r) => ({ kind: 'water' as const, r })),
   ].filter((x) => x.r.parcel_id === parcel.id && !x.r.deleted_at).sort((a, b) => text(b.r.sampled_on).localeCompare(text(a.r.sampled_on)));
-  if (reading) return <AnalysisExplain field={reading.field} row={reading.row}
+  const openReading = async (kind: Kind, row: Row, field: Measurement) => {
+    setSourceFailed(false);
+    try {
+      const { AnalysisExplain: Explain } = await import('./AnalysisExplain');
+      setReading({ kind, row, field, Explain });
+    } catch {
+      setSourceFailed(true);
+    }
+  };
+  if (reading) return <reading.Explain field={reading.field} row={reading.row}
     records={rows.filter((item) => item.kind === reading.kind).map((item) => item.r)} onBack={() => setReading(undefined)} />;
   const archive = async (kind: Kind, r: Row) => {
     await put(db, TABLES[kind], archived(r, new Date().toISOString()));
@@ -52,16 +62,17 @@ export function Analyses({ parcel, onBack, readOnly = false }: { parcel: Row; on
       <BackBar onBack={onBack} />
       <h1 tabIndex={-1}>{String(parcel.name)}</h1>
       <h2>{t('analysis.title')}</h2>
+      {sourceFailed && <p role="alert">{t('state.error')}</p>}
       {!readOnly && <button class="btn" data-testid="analysis-add-soil" onClick={() => setAdding('soil')}>{t('analysis.add.soil')}</button>}
       {!readOnly && <button class="btn" data-testid="analysis-add-water" onClick={() => setAdding('water')}>{t('analysis.add.water')}</button>}
       {soil.rows && water.rows && cards.length === 0 && <p class="muted" data-testid="analysis-empty">{t('analysis.empty')}</p>}
       {cards.map((c) => (
         <div class="card" key={c.r.id} data-testid="analysis">{c.title}
           {text(c.r.ph) && <ListRow testid="analysis-ph-source" heading={t('labeluse.line', { name: t('analysis.name.ph'), value: formatQty(text(c.r.ph)) })}
-            onClick={() => setReading({ kind: c.kind, row: c.r, field: 'ph' })} />}
+            onClick={() => void openReading(c.kind, c.r, 'ph')} />}
           {text(c.r.ec) && <ListRow testid="analysis-ec-source" heading={t('labeluse.line', { name: t('analysis.name.ec'), value:
               t('labeluse.dosevalue', { v: formatQty(text(c.r.ec)), unit: unitText(c.r.ec_unit) }) })}
-            onClick={() => setReading({ kind: c.kind, row: c.r, field: 'ec' })} />}
+            onClick={() => void openReading(c.kind, c.r, 'ec')} />}
           {c.lines.map((l) => <small key={l}>{l}</small>)}
           {text(c.r.photo_id) && <div class="photos"><MediaThumb id={text(c.r.photo_id)} /></div>}
           <UnsyncedMark id={c.r.id} />
