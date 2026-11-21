@@ -1,3 +1,4 @@
+import { ParcelSketch } from './ParcelSketch';
 import { useEffect, useState } from 'preact/hooks';
 import { openParcelForm } from './nav';
 import { useBack } from './backstack';
@@ -48,6 +49,19 @@ export function Parcels() {
       <header class="today-head band"><Title k="parcels.title" /></header>
       {demo ? <p class="muted" data-testid="parcel-demo-note">{t('parcel.demoActive')}</p> : live.length > 0 && <button class="btn" data-testid="parcel-add" onClick={() => setAdding(true)}>{t('parcel.add')}</button>}
       <Status q={{ ...q, rows: q.rows && live.length === 0 ? [] : q.rows }} message={t('list.empty')} action={demo ? undefined : { label: t('parcel.add'), run: () => setAdding(true) }} />
+      {live.length > 0 && <section aria-label={t('detail.sketch')} data-testid="parcel-sketch-overview">
+        <h2>{t('detail.sketch')}</h2>
+        <div class="parcel-sketch-grid">
+          {live.map((r) => {
+            const wait = parcelWait(String(r.id), instantOf(new Date()) ?? '', plantings.rows ?? [], links.rows ?? [], sprays.rows ?? [], labels.rows ?? []);
+            return <button type="button" class="parcel-sketch-tile" key={r.id} data-testid="parcel-sketch-open" data-wait={wait.state} onClick={() => setShownId(String(r.id))}>
+              <ParcelSketch boundary={r.boundary} sample={demo ? r.sketch : undefined} decorative />
+              <strong>{String(r.name)}</strong>
+              <small data-testid="parcel-sketch-status">{waitLine(wait)}</small>
+            </button>;
+          })}
+        </div>
+      </section>}
       {live.length > 0 && <RecordSearch query={query} onQuery={setQuery} empty={filtered.length === 0} />}
       {filtered.map((r) => (
         <div class="card" key={r.id}>
