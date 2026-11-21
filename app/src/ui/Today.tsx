@@ -29,6 +29,10 @@ import { CATALOG, cropName } from '../crops/catalog';
 import type { KlouvesOrders } from '../orders/klouves';
 import { useWeather } from './useWeather';
 import { openCropSheet } from './TodaySheets';
+import './WaitSheet';
+import './WeatherSheet';
+import { WaitRing } from './ds/WaitRing';
+import { runningSince, waitRing } from '../summary/wait';
 import type { Row } from '../db/schema';
 
 // Σήμερα (Design 2): the date and the farm, ONE big card for the most urgent thing, the weather strip (empty until the data exists), a card per field with its cut counter,
@@ -61,7 +65,7 @@ function WeatherStrip({ perParcel }: { perParcel: ReadonlyArray<readonly Day[]> 
   const any = days.some((d) => d !== undefined);
   const val = (n: number | undefined, key: 'wx.kmh' | 'wx.pct'): string => (n === undefined ? DASH : t(key, { v: formatQty(n) }));
   return (
-    <section class="wx dark" data-testid="weather-strip" aria-label={t('today.weather')}>
+    <section class="wx dark" data-testid="weather-strip" role="button" tabIndex={0} onClick={() => openSheet('weather', 'farm')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSheet('weather', 'farm'); } }}>
       <h2>{t('today.weather')}</h2>
       {!any && <p class="wx-none" data-testid="wx-none">{t('today.weather.setup')}</p>}
       {any && <div class="tiles">
@@ -119,10 +123,13 @@ const lineText = (l: CutLine): string => (l.state === 'from' ? t(LINE.from.key, 
 /** «Κοπή σήμερα»: one line per growing planting (green free, red waiting until a date, amber waiting period missing); a parcel with nothing growing says so. */
 const FOLD_FREE_FROM = 4;   // from this many «free to cut» rows on, they fold into one line (fewer stay as they are)
 
-function CutRow({ l }: { l: CutToday['lines'][number] }) {
+type Rings = ReadonlyMap<string, { daysLeft: number; percent: number } | undefined>;
+function CutRow({ l, rings }: { l: CutToday['lines'][number]; rings: Rings }) {
+  const ring = rings.get(l.id);
+  const explain = l.state !== 'free';     // a waiting or unknown planting opens the sheet that explains the wait; a free one opens its crop
   return (
-    <button type="button" class="card cutline" data-testid="cut" data-state={l.state} onClick={() => openCropSheet(l.cropId)}>
-      <div class="field-head"><strong>{l.crop}</strong><span class="muted">{l.parcel}</span></div>
+    <button type="button" class="card cutline" data-testid="cut" data-state={l.state} onClick={() => (explain ? openSheet('wait', l.id) : openCropSheet(l.cropId))}>
+      <div class="field-head"><strong>{l.crop}</strong><span class="muted">{l.parcel}</span>{ring && <WaitRing daysLeft={ring.daysLeft} percent={ring.percent} />}</div>
       <span class={LINE[l.state].cls} data-testid="cut-line">{lineText(l)}</span>
       {l.state === 'from' && <small data-testid="cut-source">{sourceText(l.source)}</small>}
       {l.late && <span class="badge warn" data-testid="cut-late">{t('cut.late')}</span>}
@@ -153,7 +160,7 @@ function TodayNumbers({ ct, harvests }: { ct: CutToday; harvests: readonly Row[]
   );
 }
 
-function CutTodaySection({ ct }: { ct: CutToday }) {
+function CutTodaySection({ ct, rings }: { ct: CutToday; rings: Rings }) {
   const blocked = ct.lines.filter((l) => l.state !== 'free').length;
   const attention = ct.lines.filter((l) => l.state !== 'free');
   const free = ct.lines.filter((l) => l.state === 'free');
@@ -162,9 +169,9 @@ function CutTodaySection({ ct }: { ct: CutToday }) {
     <section data-testid="cut-today" aria-label={t('cut.today')}>
       <h2>{t('cut.today')}</h2>
       {ct.lines.length > 0 && <p class="muted" data-testid="cut-headline">{t('cut.headline', { n: blocked, total: ct.lines.length })}</p>}
-      {attention.map((l) => <CutRow key={l.id} l={l} />)}
-      {fold && <details class="fold" data-testid="cut-free-group"><summary>{t('cut.free.n', { n: free.length })}</summary>{free.map((l) => <CutRow key={l.id} l={l} />)}</details>}
-      {!fold && free.map((l) => <CutRow key={l.id} l={l} />)}
+      {attention.map((l) => <CutRow key={l.id} l={l} rings={rings} />)}
+      {fold && <details class="fold" data-testid="cut-free-group"><summary>{t('cut.free.n', { n: free.length })}</summary>{free.map((l) => <CutRow key={l.id} l={l} rings={rings} />)}</details>}
+      {!fold && free.map((l) => <CutRow key={l.id} l={l} rings={rings} />)}
       {ct.noPlanting.map((p) => (
         <div class="card cutline" key={String(p.id)} data-testid="cut-empty"><div class="field-head"><strong>{text(p.name)}</strong><span class="muted">{t('cut.none')}</span></div></div>
       ))}
@@ -244,6 +251,7 @@ export function Today() {
     return { weather: fieldWeather(weatherOf.get(p.id) ?? [], athensToday(new Date()) ?? ''), p, state: c.state, at: c.state === 'from' ? c.at : '', late: c.state === 'from' && c.late === true, source: c.state === 'from' ? t(c.source === 'manual' ? 'cut.source.manual' : 'cut.source.label') : '', crops: crops_ };
   });
   const ct = cutToday(live(parcels), live(plantings), links.rows ?? [], sprays.rows ?? [], (id) => nameOf(crops.rows?.find((c2) => c2.id === id) ?? {}), now, labelRows.rows ?? []);
+  const rings: Rings = new Map(ct.lines.filter((l) => l.state === 'from').map((l) => { const since = runningSince(l.id, now, links.rows ?? [], sprays.rows ?? [], plantings.rows ?? [], labelRows.rows ?? []); return [l.id, since === undefined ? undefined : waitRing(since, l.at, now)] as const; }));
   const urgent = cards.find((c) => c.state === 'unknown') ?? cards.filter((c) => c.state === 'from').sort((a, b) => a.at.localeCompare(b.at))[0];
   const today = athensToday(new Date()) ?? '';
   return (
@@ -275,7 +283,7 @@ export function Today() {
           <button class="btn big" data-testid="harvest-open" onClick={() => setHarvesting(true)}>{t('harvest.add')}</button>
         </div>
       )}
-      {loaded && has && <CutTodaySection ct={ct} />}
+      {loaded && has && <CutTodaySection ct={ct} rings={rings} />}
       {loaded && has && <h2>{t('tasks.title')}</h2>}
       {loaded && has && <p class="muted" data-testid="tasks-counts">{t('tasks.counts', { o: hub.counts.overdue, t: hub.counts.today, u: hub.counts.upcoming, d: hub.counts.doneToday })}</p>}
       {loaded && has && openJobs.length === 0 && <p class="muted" data-testid="jobs-none">{t('today.jobs.none')}</p>}
