@@ -104,5 +104,11 @@
   "ui.quick.observe": "Gözlem",
   "ui.quick.job": "Yarın için iş",
   "ui.quick.observe.error": "Tarlayı ve ne gördüğünüzü seçin.",
-  "ui.quick.saved": "Gözlem kaydedildi."
+  "ui.quick.saved": "Gözlem kaydedildi.",
+  "ui.bell.label": "Bildirimler",
+  "ui.bell.label.count": "Bildirimler, {n} yeni",
+  "ui.bell.title": "Yeni olanlar",
+  "ui.bell.none": "Son baktığınızdan beri yeni bir şey yok.",
+  "ui.bell.done": "İş tamamlandı",
+  "ui.bell.new": "Sizin için yeni iş"
 }

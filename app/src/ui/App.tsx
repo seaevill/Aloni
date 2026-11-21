@@ -53,7 +53,7 @@ export function App() {
   const [onboarding, endOnboarding] = useOnboarding();
   const roster = useRows('workers');
   const isWorkerAccount = AUTH_ENABLED && !!session.value && !!roster.rows?.some((w) => !w.deleted_at && w.user_id === session.value?.user_id); // a roster worker's own account: no owner screens
-  if (isWorkerAccount || workerView.value !== undefined) return <><UpdateBar /><WorkerApp /><Toast /></>;
+  if (isWorkerAccount || workerView.value !== undefined) return <><UpdateBar /><WorkerApp /><SheetHost /><Toast /></>;
   if (onboarding) return <main><Onboarding done={endOnboarding} /></main>;   // owner first run only: never reached by the worker route above
   return (
     <>

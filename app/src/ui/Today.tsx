@@ -1,3 +1,4 @@
+import { Bell } from './Bell';
 import { useEffect, useState } from 'preact/hooks';
 import { useBack } from './backstack';
 import { APP_NAME_EL } from '../config';
@@ -265,6 +266,7 @@ export function Today() {
         <p class="date" data-testid="today-date">{today ? formatDate(today) : ''}</p>
         <Title k="today.title" />
         <p class="farm" data-testid="today-farm">{farmLabel(activeFarm.value)}</p>
+        {loaded && has && <Bell id="owner" />}
         {loaded && has && <button type="button" class="share-btn" data-testid="share-open" aria-label={t('ui.share.button')} onClick={openShare}><Icon name="share" /></button>}
       </header>
       {rows.some((q) => q.failed) && <ErrorState onRetry={retry} />}

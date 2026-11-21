@@ -17,6 +17,7 @@ export const ICON_PATHS = {
   parcels: 'M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14',
   stock: 'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10',
   more: 'M5 12h.01M12 12h.01M19 12h.01',
+  bell: 'M6 17V11a6 6 0 0112 0v6l1.5 2h-15zM10 21a2 2 0 004 0',
   plus: 'M12 5v14M5 12h14',
   check: 'M5 12.5l4.5 4.5L19 7',
   'x-mark': 'M6 6l12 12M18 6L6 18',

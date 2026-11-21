@@ -104,5 +104,11 @@
   "ui.quick.observe": "Observation",
   "ui.quick.job": "Job for tomorrow",
   "ui.quick.observe.error": "Choose a field and what you saw.",
-  "ui.quick.saved": "The observation was recorded."
+  "ui.quick.saved": "The observation was recorded.",
+  "ui.bell.label": "Notifications",
+  "ui.bell.label.count": "Notifications, {n} new",
+  "ui.bell.title": "What is new",
+  "ui.bell.none": "Nothing new since you last looked.",
+  "ui.bell.done": "Job finished",
+  "ui.bell.new": "New job for you"
 }
