@@ -2,7 +2,6 @@ import { expect, test, type Page } from '@playwright/test';
 import { athensDateTime, TEST_NOW } from '../helpers/clock';
 import { fixClock } from './helpers/clock';
 import { setup } from './helpers/farm';
-import { expect, test } from '@playwright/test';
 import { Server, mockFor, ownerInvitesWorker, signIn } from './helpers/mock-server';
 
 // B7: the whole worker story against a MOCK server shared by TWO phones (the e2e build; nothing leaves the machine):
