@@ -5,9 +5,10 @@ import { DEMO_FARM_ID } from '../../src/config';
 import { AppDB, FARM_TABLES } from '../../src/db/schema';
 import { statusOf } from '../../src/labels/label-use';
 import { guardAppendOnly, put } from '../../src/repo';
+import { loadOrders, saveOrders } from '../../src/orders/store';
 import { balanceOf } from '../../src/stock/stock';
 import { GREEK_NAME_FIXES, importDemo, removeDemo, type PrototypeData } from '../../src/db/import-demo';
-import { newDb, putParcel } from '../helpers/factories';
+import { newDb, putParcel, TEST_FARM_ID } from '../helpers/factories';
 
 const data = JSON.parse(readFileSync(new URL('../../../reference/prototype/data.json', import.meta.url), 'utf8')) as PrototypeData;
 const src = (t: string) => (data[t] as Array<Record<string, unknown>> | undefined) ?? []; // label_uses: the prototype has none (its `registered[]` stays in the product)
@@ -23,6 +24,32 @@ describe('demo import (schema v2: UUID ids)', () => {
     for (const t of EXTRA) expect(await db[t as 'workers'].where('farm_id').equals(DEMO_FARM_ID).count(), t).toBeGreaterThan(0);
     expect(await db.weather.count()).toBe(Object.keys(data.weather.by_parcel).length);
     expect((await db.farms.get(DEMO_FARM_ID))?.is_demo).toBe(true);
+  });
+
+  it('loads the v2 weekly orders, harvest estimates and sketches into Demo only', async () => {
+    const real = { products: [{ id: 'real', name: 'Real order' }], weeks: { '2026-11-16': { real: 2 } }, skipped: 0 };
+    await saveOrders(db, TEST_FARM_ID, real, { real: 'rocket' });
+    await importDemo(db, data, new Date('2026-11-15T22:30:00Z'));
+    const { orders, map } = await loadOrders(db, DEMO_FARM_ID);
+    const weekly = Object.fromEntries(src('orders_weekly').map((row) => [row.crop_id, row.crates_per_week]));
+    expect(orders?.weeks).toEqual(Object.fromEntries(['2026-11-16', '2026-11-23', '2026-11-30', '2026-12-07'].map((date) => [date, weekly])));
+    expect(map.spinach).toBe('spinach');
+    expect(orders?.clients).toBeUndefined();
+    expect(orders?.days).toBeUndefined();
+
+    const plantings = await db.plantings.where('farm_id').equals(DEMO_FARM_ID).toArray();
+    const parcels = await db.parcels.where('farm_id').equals(DEMO_FARM_ID).toArray();
+    for (const row of src('plantings')) expect(plantings.find((p) => p.legacy_id === row.id)?.est_crates).toBe(row.est_crates);
+    for (const row of src('parcels')) {
+      const parcel = parcels.find((p) => p.legacy_id === row.id);
+      expect(parcel?.sketch).toEqual(row.sketch);
+      expect(parcel?.boundary).toBeUndefined();
+    }
+    expect(await loadOrders(db, TEST_FARM_ID)).toEqual({ orders: real, map: { real: 'rocket' } });
+    expect(await db.outbox.count()).toBe(0);
+    await removeDemo(db);
+    expect(await loadOrders(db, DEMO_FARM_ID)).toEqual({ orders: undefined, map: {} });
+    expect(await loadOrders(db, TEST_FARM_ID)).toEqual({ orders: real, map: { real: 'rocket' } });
   });
 
   it('every id is a UUIDv5, the prototype id is kept as legacy_id, and re-importing gives the SAME ids', async () => {
