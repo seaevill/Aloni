@@ -1,0 +1,18 @@
+.analysis-scale {
+  margin: var(--sp-16) 0;
+}
+.analysis-scale svg {
+  display: block;
+  width: 100%;
+}
+.analysis-scale line {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.analysis-scale circle {
+  fill: var(--fg);
+}
+.analysis-scale > div {
+  display: flex;
+  justify-content: space-between;
+}
