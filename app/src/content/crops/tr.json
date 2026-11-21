@@ -1,0 +1,121 @@
+{
+  "spinach": {
+    "history": "Ispanak Asya'dan batıya yayıldı. Körpe yaprakları ilkbahar ve sonbahar yetiştiriciliğinde yaygınlaştı.",
+    "facts": ["Genç yapraklar genellikle daha düzdür.", "Bazı çeşitlerin yaprağı buruşuktur.", "Çiçeklenirken sap uzayabilir."],
+    "tips": "Sık fideleri seyreltin ve sulamadan önce toprağın nemine bakın.",
+    "strength": "Körpe yapraklar", "weakness": "Sıcakta çiçeklenme eğilimi",
+    "problems": ["Mildiyö", "Yaprak galeri sinekleri"]
+  },
+  "rocket": {
+    "history": "Roka Akdeniz çevresinde eskiden beri yetiştirilir. Yaprakları çiğ veya pişmiş yenir.",
+    "facts": ["Yapraklar derin loplu olabilir.", "Tadı çoğu zaman biberimsidir.", "Açık renkli çiçeklerde koyu damarlar görülür."],
+    "tips": "Toprağı dengeli nemli tutun ve körpe yaprakları kökü çekmeden kesin.",
+    "strength": "Hızlı yaprak gelişimi", "weakness": "Sıcakta sertleşen yapraklar",
+    "problems": ["Pire böcekleri", "Çiçeklenme"]
+  },
+  "parsley": {
+    "history": "Maydanoz Akdeniz mutfağında eskiden beri kullanılır. Düz ve kıvırcık yapraklı tipleri yetiştirilir.",
+    "facts": ["Düz yaprakların lopları geniştir.", "Kıvırcık yaprakların kenarı dalgalıdır.", "Yeni yapraklar ortadan çıkar."],
+    "tips": "Fideler tutana kadar toprağı nemli tutun ve önce dış yaprakları kesin.",
+    "strength": "Tekrar yaprak hasadı", "weakness": "Yavaş çimlenme",
+    "problems": ["Yaprak lekeleri", "Yaprak bitleri"]
+  },
+  "dill": {
+    "history": "Dereotu eskiden beri kokulu bir ot olarak yetiştirilir. Yemeklerde yaprakları ve kurutulmuş meyveleri kullanılır.",
+    "facts": ["Yaprakları ince parçalara ayrılır.", "Çiçekler sap uçlarında kümelenir.", "İçi boş sap kolay ezilir."],
+    "tips": "Doğrudan yatağa ekin ve hasatta sapları nazikçe tutun.",
+    "strength": "Kokulu yapraklar", "weakness": "Kolay ezilen saplar",
+    "problems": ["Yaprak bitleri", "Çiçeklenme"]
+  },
+  "coriander": {
+    "history": "Kişniş antik çağlardan beri yetiştirilir. Taze yaprakları ve kuru meyveleri mutfakta farklı amaçlarla kullanılır.",
+    "facts": ["Alt yapraklar geniş ve lopludur.", "Üst yapraklar daha incedir.", "Kuru meyveleri yuvarlaktır."],
+    "tips": "Serin koşullarda ekin ve çiçekli sapları yaprak demetlerinden ayırın.",
+    "strength": "Yenebilir yaprak ve meyveler", "weakness": "Sıcakta kolay çiçeklenir",
+    "problems": ["Yaprak bitleri", "Çiçeklenme"]
+  },
+  "chicory": {
+    "history": "Hindiba Avrupa'da eskiden beri toplanır ve yetiştirilir. Yapraklı tipleri salatalarda ve pişirilerek kullanılır.",
+    "facts": ["Dip yapraklar rozet oluşturur.", "Birçok tipin yaprağı acıdır.", "Açan çiçekler genellikle mavidir."],
+    "tips": "Kayıtlı bitkinin dış yapraklarını alın ve ortasını sağlam bırakın.",
+    "strength": "Kalıcı yaprak rozeti", "weakness": "Acılık değişebilir",
+    "problems": ["Sümüklü böcekler", "Yaprak lekeleri"]
+  },
+  "endive": {
+    "history": "Endivyen eskiden beri salata sebzesi olarak yetiştirilir. Geniş ve kıvırcık yapraklı tipleri farklı yemeklerde kullanılır.",
+    "facts": ["Kıvırcık tiplerin yaprakları dar ve saçaklıdır.", "Geniş tiplerin yaprakları daha enlidir.", "Orta yapraklar daha açık renkli olabilir."],
+    "tips": "Gevşek başı nazikçe tutun ve zedelenmiş dış yaprakları ayırın.",
+    "strength": "Farklı yaprak dokuları", "weakness": "Zedelenebilen dış yapraklar",
+    "problems": ["Sümüklü böcekler", "Uç yanıklığı"]
+  },
+  "chard": {
+    "history": "Pazı pancarla aynı türdendir. Şişkin kök yerine yaprakları ve sapları için seçilmiştir.",
+    "facts": ["Saplar açık renkli veya renkli olabilir.", "Yaprak yüzeyi düz veya buruşuk olabilir.", "Yeni yapraklar göbekten çıkar."],
+    "tips": "İçteki yaprakları zedelemeden olgun dış yaprakları kesin.",
+    "strength": "Tekrar yaprak hasadı", "weakness": "Geniş yapraklar yırtılabilir",
+    "problems": ["Yaprak lekeleri", "Yaprak galeri sinekleri"]
+  },
+  "onion": {
+    "history": "Soğan uzun zamandır yetiştirilir. Taze soğan yaprakları ve henüz gelişmemiş dibi için hasat edilir.",
+    "facts": ["Yaprakların içi boştur.", "Beyaz dibi üst üste binen yaprak kınları oluşturur.", "Ezilen yapraklar çabuk biçimini kaybeder."],
+    "tips": "Bitkileri nazikçe çıkarın ve yaprakları temiz demetlerde hizalayın.",
+    "strength": "Yaprak ve dip kısmı kullanılır", "weakness": "İçi boş yapraklar ezilebilir",
+    "problems": ["Tripsler", "Mildiyö"]
+  },
+  "leek": {
+    "history": "Pırasa Avrupa bahçelerinde eskiden beri yetiştirilir. Açık renkli gövdesi hafif tadıyla bilinir.",
+    "facts": ["Yaprakları düzdür.", "Yaprak kınları açık renkli gövdeyi oluşturur.", "Yaprak uçları yelpaze gibi açılır."],
+    "tips": "Bitkiyi dikkatle çıkarın ve yaprak aralarına toprak girmesini önleyin.",
+    "strength": "Sert yenebilir gövde", "weakness": "Yaprak arasında toprak kalabilir",
+    "problems": ["Pas", "Tripsler"]
+  },
+  "vlita": {
+    "history": "Horoz ibiği türleri birçok bölgede yaprak sebzesi olarak kullanılır. Yunanistan'da pişirilen bu yeşilliklere sıklıkla vlita denir.",
+    "facts": ["Yapraklar dik saplar boyunca çıkar.", "Körpe uçlar pişirilerek yenir.", "Olgun saplar liflenir."],
+    "tips": "Kayıtlı bitkinin körpe uçlarını kesin ve kesimden sonra gölgede tutun.",
+    "strength": "Körpe sürgünler", "weakness": "Yaşlı saplar sertleşir",
+    "problems": ["Yaprak yenikleri", "Solma"]
+  },
+  "kaukalithra": {
+    "history": "Kafkalitra geleneksel mutfakta kullanılan kokulu yeşilliklere verilen Yunanca bir addır. Yerel ad tek başına bitkinin türünü göstermez.",
+    "facts": ["Çiftlik kaydı adı hasatla eşleştirir.", "Körpe saplar kolay ezilir.", "Kokulu otlar ayıklandıktan sonra karıştırılabilir."],
+    "tips": "Yalnızca üreticinin kaydettiği bitkiyle çalışın ve partileri ayırın.",
+    "strength": "Kokulu yapraklar", "weakness": "Yerel adlar belirsiz olabilir",
+    "problems": ["Ezilme", "Solma"]
+  },
+  "cabbage": {
+    "history": "Yaprak lahanaları uzun zamandır yetiştirilen bir gruptur. Bazı tipler yaprak, bazıları baş verir.",
+    "facts": ["Yaprak yüzeyi mumsu görünebilir.", "Orta damar çoğu zaman belirgindir.", "Dış yapraklar yeni çıkanları çevreler."],
+    "tips": "Keserken geniş yaprakları destekleyin ve zedelenenleri ayırın.",
+    "strength": "Dayanıklı yapraklar", "weakness": "Dış yapraklar yırtılabilir",
+    "problems": ["Tırtıllar", "Pire böcekleri"]
+  },
+  "myroni": {
+    "history": "Mironi geleneksel Yunan mutfağında kullanılan kokulu yeşilliklere verilen bir addır. Çiftlikte bitkiyi üreticinin kaydından tanıyın.",
+    "facts": ["Yerel adlar farklı olabilir.", "İnce yapraklar çabuk ezilir.", "Küçük demetler daha kolay ayıklanır."],
+    "tips": "Yalnızca kayıtlı bitkiyi alın ve temiz kasaya gevşekçe yerleştirin.",
+    "strength": "Hoş kokulu yapraklar", "weakness": "Narin saplar",
+    "problems": ["Ezilme", "Solma"]
+  },
+  "beet": {
+    "history": "Yaprağı yenen pancar tipleri pek çok modern kök çeşidinden önce yetiştiriliyordu. Kök pancarı ve pazı aynı türdendir.",
+    "facts": ["Yapraklar rozet oluşturur.", "Bazı saplarda kırmızı damarlar görülür.", "Kök yuvarlak veya uzun olabilir."],
+    "tips": "Kökleri nazikçe çıkarın ve kullanılacak yaprakları zedelemeyin.",
+    "strength": "Yenebilir kök ve yapraklar", "weakness": "Kökler zedelenebilir",
+    "problems": ["Yaprak lekeleri", "Kök çatlaması"]
+  },
+  "radish": {
+    "history": "Turp keskin tatlı kökü için eskiden beri yetiştirilir. Yetiştiriciler farklı şekil ve renkte tipler seçmiştir.",
+    "facts": ["Yapraklar çoğu zaman pürüzlüdür.", "Köklerin rengi ve şekli değişir.", "Kök yaşlandıkça süngerimsi olabilir."],
+    "tips": "Kökleri sık kontrol edin ve geliştiklerinde nazikçe sökün.",
+    "strength": "Hızlı gelişim", "weakness": "Olgun kök süngerimsi olabilir",
+    "problems": ["Pire böcekleri", "Kök çatlaması"]
+  },
+  "celery": {
+    "history": "Kalın saplı tipler yayılmadan önce kereviz kokulu bir bitki olarak yetiştiriliyordu. Yaprak kerevizi kokulu yaprakları için saklanır.",
+    "facts": ["Yaprak sapları olukludur.", "Yapraklar yaprakçıklara bölünür.", "Yaprak ezilince kokusu çıkar."],
+    "tips": "Sapları nazikçe tutun ve ayrılmış demetleri gölgede bekletin.",
+    "strength": "Kokulu yapraklar", "weakness": "Saplar bükülüp ezilebilir",
+    "problems": ["Yaprak lekeleri", "Solma"]
+  }
+}
