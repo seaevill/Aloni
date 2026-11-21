@@ -569,7 +569,7 @@
   "register.missing": "λείπει",
   "register.fill.name": "όνομα προϊόντος",
   "register.fill.area": "επεξεργασμένη έκταση",
-  "register.json": "Αρχείο JSON (μηχανικό)",
+  "register.json": "Λήψη μηχανικού αρχείου (δεύτερη μορφή)",
   "spray.correct.title": "Διόρθωση ψεκασμού",
   "spray.correct.note": "Η αρχική καταχώριση μένει όπως ήταν. Η διόρθωση είναι νέα εγγραφή με τον λόγο της. Το προϊόν δεν αλλάζει.",
   "spray.correct.reason": "Λόγος διόρθωσης",
