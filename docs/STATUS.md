@@ -1,6 +1,16 @@
 # DURUM – Aloni (Bora'nın sayfası)
 
-**Bitti:** 15 PR hazır (aşağıda), SQL 0035 Codex'te. **Sıradaki:** CI yeşil olunca otomatik merge; sonra UX1 adım 2-4 artığı. **Bora'dan beklenen:** LIVE adımları (SABAH RAPORU madde 4) + #252 onayı.
+**Bitti:** tasarım sprinti D1–D15 + ortak alt sayfa (DetailSheet) + Σήμερα'daki her sayının kaynak sayfası, bekleme halkası, hava ve Εργασίες sayfaları; E1 «＋» menüsü, E2 zil, E3 kayıt işaretleri, E4 işçi daveti (QR), E5 hava RUNBOOK tek sayfa, E6 sezon hedefi (telefonda), E7 hesap silme sayfası; E8 hız ölçümü (PR'da). SQL: production 0001–0034; 0035 (#271) Codex incelemesi temiz, en sona bırakıldı.
+**Sıradaki:** E8 + Codex ekran PR'larının merge'ü → #271'i en son merge et → kuyruğu durdur → «main yeşil (sha …), 0035 yüklemeye hazır» yaz → sen yüklersin. Sonra B1–B5 SQL (0036–0040, ayrı PR'lar; tasarım `docs/plan/B-TICKETS-SQL-DESIGN.md`).
+**Bora'dan beklenen:** (1) `docs/milestones/E-PACK-BORA.md` içindeki 10 telefon kontrolü (özellikle QR'ı kamerayla tara); (2) Codex ekran PR'larına görsel puan (aşağıdaki liste); (3) 0035'i yüklemek (main yeşil olunca); (4) hava için RUNBOOK §14a (yalnızca sen «tamam» deyince).
+
+## Bora onayı bekliyor (görsel puan; CI yeşil, merge edildi/edilecek, puanı sen verirsin)
+Codex ekran PR'ları: #294 Καλλιέργειες kartları · #296 Χωράφια çizimi · #297 Αποθήκη kartları · #298 Μητρώο kimliği · #299 Άλλα menü sırası · #300 ψεκασμός formu adımları · #308 Χωράφια listesi ayrıştırma · #292 Demo haftalık sipariş · #326/#329/#330/#331 kaynak/bilinmeyen bileşenleri, ekim eskizi, analiz açıklaması, hasat kaynağı. Benim ekran işlerim: E1–E7 (yukarıdaki 10 kontrol).
+
+## Sorular (cevap gelene kadar durmuyorum)
+1. **E-posta gönderimi (para):** Supabase'in kendi e-postası saatte az kod gönderir; sürekli kullanım için kendi SMTP/EU sağlayıcı gerekir → sen karar ver, ben ücret/hesap açmam.
+2. **Alıcı telefonu (B1) gizlilik metni:** B1 yapılmadan uygulama metnine yazılmadı; avukat soruları `docs/compliance/privacy-notice-draft.md`.
+3. **QR üreticisi:** yeni paket kurma izni verilmedi (reddedildi, dolanılmadı); kendi küçük üreticimi yazdım ve şartname değerleriyle sınadım; gerçek kabul = senin telefon kameran.
 
 ## Eklentiler (2026-11-20)
 - **Superpowers ve Task Observer bu oturumda YÜKLÜ GÖRÜNMÜYOR.** Beceri listesinde ve eklenti listesinde yoklar (yalnızca pre-landing-review, karpathy-guidelines vb. var). Büyük olasılıkla eklentiler oturum açıldıktan sonra açıldı: yeni bir oturum başlatınca tekrar kontrol edeceğim. Yüklenene kadar kuralları elle uyguluyorum (önce kırmızı test, bitirmeden önce doğrulama, kök neden aramadan yama yok).
