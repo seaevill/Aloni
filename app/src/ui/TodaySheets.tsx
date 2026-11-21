@@ -1,3 +1,4 @@
+import { TargetBlock } from './TargetBlock';
 import { formatDate, t } from '../i18n';
 import { formatArea, formatQty } from '../i18n/format';
 import { cropSummary, harvestTable, type HarvestLine } from '../summary/drill';
@@ -97,7 +98,7 @@ function CropSheet({ id, close }: SheetProps) {
     <DetailSheet heading={nameOf(crop)} icon={<CropIcon slug={String(crop.slug)} size="calc(var(--tile) - var(--sp-16))" />} onClose={close} testid="sheet-crop">
       <SheetFact name={t('ui.sheet.crop.today')} value={s.today === undefined ? undefined : formatQty(s.today)} unknown={t('ui.sheet.crop.today.none')} />
       <SheetFact name={t('ui.sheet.crop.logged')} value={s.logged === undefined ? undefined : formatQty(s.logged)} unknown={t('ui.sheet.crop.logged.none')} />
-      <SheetFact name={t('ui.sheet.crop.target')} unknown={t('ui.sheet.crop.target.none')} />
+      <TargetBlock cropId={id} />
       <h3>{t('ui.sheet.crop.plantings')}</h3>
       {s.plantings.length === 0 && <p class="ds-muted" data-testid="sheet-why">{t('ui.sheet.crop.plantings.none')}</p>}
       {s.plantings.map((p) => <ListRow key={p.id} heading={p.parcel === '' ? t('ui.unknown') : p.parcel} meta={p.area === '' ? t('ui.sheet.area.unknown') : formatArea(p.area)} />)}
