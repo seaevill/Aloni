@@ -1,6 +1,5 @@
 import { formatDate, formatDateTime, t, type I18nKey } from '../i18n';
 import { formatArea, formatQty } from '../i18n/format';
-import { validBoundary, type Boundary } from '../map/geo';
 import { athensToday, validDate } from '../plantings/planting';
 import { cutFromParcel } from '../spray/harvest';
 import { effectiveSprays } from '../spray/spray';
@@ -9,6 +8,7 @@ import { parcelTimeline, type TimelineEvent } from '../summary/timeline';
 import { dayOf, parseDays } from '../weather/strip';
 import type { Row } from '../db/schema';
 import { BackBar } from './BackBar';
+import { ParcelSketch } from './ParcelSketch';
 import { EditTrail } from './EditTrail';
 import { TOPO_KEYS } from './ParcelForm';
 import { STATUS_KEYS } from './PlantingForm';
@@ -18,18 +18,6 @@ import { useWeather } from './useWeather';
 
 const text = (v: unknown): string => (typeof v === 'string' ? v : typeof v === 'number' ? String(v) : '');
 const DASH = '\u2014';
-
-/** The outline as a small SVG (the prototype's «sketch»): the drawn boundary scaled to the box, north up. Nothing is drawn without a boundary. */
-function Sketch({ b }: { b: Boundary }) {
-  const ring = b.coordinates[0];
-  const xs = ring.map((p) => p[0]); const ys = ring.map((p) => p[1]);
-  const x0 = Math.min(...xs); const y0 = Math.min(...ys); const w = Math.max(...xs) - x0; const h = Math.max(...ys) - y0;
-  const span = Math.max(w, h);
-  if (span <= 0) return null;                  // a point or a line has no outline to draw
-  const k = 100 / span;
-  const pts = ring.map((p) => `${(p[0] - x0) * k},${(h - (p[1] - y0)) * k}`).join(' ');
-  return <svg class="sketch" viewBox={`-4 -4 ${w * k + 8} ${h * k + 8}`} role="img" aria-label={t('detail.sketch')} data-testid="parcel-sketch"><polygon points={pts} /></svg>;
-}
 
 /** Tapped from the parcel list (prototype «Parcel detail»): a sketch, the facts, today's weather, the plantings and the last sprayings on THIS parcel. Everything is read from the same records; nothing is decided here. */
 export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: { parcel: Row; onBack: () => void; onEdit: () => void; onAnalyses: () => void; readOnly: boolean }) {
@@ -62,7 +50,7 @@ export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: {
         <BackBar onBack={onBack} testId="detail-back" />
         <h1 tabIndex={-1}>{text(parcel.name)}</h1>
       </header>
-      {validBoundary(parcel.boundary) ? <Sketch b={parcel.boundary} /> : <p class="muted" data-testid="parcel-nosketch">{t('detail.nosketch')}</p>}
+      <ParcelSketch boundary={parcel.boundary} sample={readOnly ? parcel.sketch : undefined} />
       <div class="card facts">{rows.map(([k, v]) => <div class="fact" key={k}><span>{t(k)}</span><strong>{v}</strong></div>)}</div>
       <div class={cut.state === 'unknown' ? 'card field blocked' : 'card'}><small data-testid="detail-cut">{cutLine}</small></div>
       <h2>{t('detail.weather')}</h2>

@@ -1,0 +1,32 @@
+.parcel-sketch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: .5rem;
+  margin-block: .5rem 1rem;
+}
+.parcel-sketch-tile {
+  align-content: start;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: .75rem;
+  color: var(--fg);
+  display: grid;
+  gap: .25rem;
+  min-height: 56px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding: .5rem;
+  text-align: start;
+}
+.parcel-sketch-tile .parcel-sketch {
+  margin: 0;
+}
+.parcel-sketch-tile[data-wait="running"] .parcel-sketch polygon {
+  fill: var(--amber-bg);
+  stroke: var(--amber-fg);
+}
+.parcel-sketch-tile[data-wait="unknown"] .parcel-sketch polygon {
+  fill: var(--card);
+  stroke: var(--danger);
+  stroke-dasharray: 7 3;
+}
