@@ -4,6 +4,9 @@ import { activeFarm, dataVersion, db, loadDemo, realFarmId } from '../db';
 import { t } from '../i18n';
 import { formatArea } from '../i18n/format';
 import { formatDate } from '../i18n';
+import { plantingWait } from '../summary/wait';
+import { waitLine } from './waitLine';
+import { instantOf } from '../spray/time';
 import { archived, restored } from '../parcels/parcel'; // generic: set / clear deleted_at
 import { validDate } from '../plantings/planting';
 import { put } from '../repo';
@@ -30,6 +33,7 @@ export function Crops() {
   const crops = useRows('crops');
   const plantings = useRows('plantings');
   const parcels = useRows('parcels');
+  const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const labels = useRows('label_uses');
   const liveParcels = parcels.rows?.filter((p) => !p.deleted_at) ?? [];
   useBack(adding || !!editing || !!shownId, () => { setAdding(false); setEditing(undefined); setShownId(undefined); }, adding || !!editing);
   if (adding) return <PlantingForm parcels={liveParcels} onDone={() => setAdding(false)} />;
@@ -45,6 +49,7 @@ export function Crops() {
     showUndo(t('planting.archived'), async () => { await put(db, 'plantings', restored(r, new Date().toISOString())); dataVersion.value++; });
   };
   const sown = (r: Row) => { const d = text(r.sown_on) || text(r.sown); return validDate(d) ? formatDate(d) : t('value.unknown'); };
+  const now = instantOf(new Date()) ?? '';
   const canAdd = !demo && liveParcels.length > 0;
   // Only crops that are really planted are listed (label details for a crop do not make it «grown»); the demo shows its whole list.
   const shown = demo ? crops.rows : crops.rows?.filter((c) => live.some((p) => p.crop_id === c.id));
@@ -70,6 +75,7 @@ export function Crops() {
             <div class="line" key={p.id} data-testid="planting">
               <span>{dot(parcelName(p.parcel_id), formatArea(p.area_str as string | number))}</span>
               <small>{dot(sown(p), statusText(p.status), text(p.variety), text(p.lot_label))}</small>
+              <small data-testid="planting-wait">{waitLine(plantingWait(String(p.id), now, links.rows ?? [], sprays.rows ?? [], plantings.rows ?? [], labels.rows ?? []))}</small>
               <UnsyncedMark id={p.id} />
               {!demo && <button class="row" data-testid="planting-edit" onClick={() => setEditing(p)}><span>{t('edit.open')}</span><span aria-hidden="true" class="chev" /></button>}
               <EditTrail row={p} />
