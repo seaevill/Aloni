@@ -4,7 +4,6 @@ import './ui/fonts.css';
 import './ui/tokens.css';
 import './ui/styles.css';
 import { App } from './ui/App';
-import { GALLERY } from './config';
 import { initDb } from './db';
 import { lang } from './i18n';
 import { bootSync } from './sync/boot';
@@ -14,7 +13,7 @@ document.documentElement.lang = lang.value;
 setApply(registerSW({ immediate: true, onNeedRefresh, onOfflineReady, onRegisteredSW: (_url, reg) => watchForUpdates(reg) }).bind(null, true) as () => void);
 watchDirty();
 void initDb().finally(async () => {
-  if (GALLERY && location.search.includes('ds-gallery')) { const { Gallery } = await import('./ui/ds/Gallery'); render(<Gallery />, document.getElementById('app')!); return; }   // never in production
+  if (import.meta.env.VITE_DS_GALLERY === 'true' && location.search.includes('ds-gallery')) { const { Gallery } = await import('./ui/ds/Gallery'); render(<Gallery />, document.getElementById('app')!); return; }   // never in production
   render(<App />, document.getElementById('app')!); void bootSync();
 });
 

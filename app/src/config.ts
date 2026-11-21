@@ -20,8 +20,6 @@ const ENV = (import.meta as { env?: Record<string, string | undefined> }).env;
 /** The live features are OFF unless the BUILD says so: Cloudflare build variable VITE_LIVE=true (set by Bora, RUNBOOK 12b). No variable = everything closed, exactly as tested in CI. Removing the variable and redeploying is the way back. */
 const LIVE = ENV?.VITE_LIVE === 'true' && !!ENV?.VITE_SUPABASE_URL && !!ENV?.VITE_SUPABASE_PUBLISHABLE_KEY;   // a half-filled set of variables stays closed
 export const SYNC_CONNECTED = LIVE || E2E;
-/** The design-system gallery (`?ds-gallery`, Demo data only): ON only in the test build and in dev (VITE_DS_GALLERY=true); the production build never contains it. */
-export const GALLERY = ENV?.VITE_DS_GALLERY === 'true';
 
 /** Sign-in and worker invitations (src/auth, SignIn, Workers). OFF: nothing is shown and no request is made. Turned on by Bora after the 0001–0018 migrations and the real-account trial (RUNBOOK 12). */
 export const AUTH_ENABLED = LIVE || E2E;
