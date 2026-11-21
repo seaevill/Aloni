@@ -29,9 +29,9 @@ export function harvestStock(crop: string, today: string, movements: readonly Ha
   let unknown = 0;
   for (const row of throughToday) {
     if (row.kind === 'in') {
-      if (row.wait === 'held') held += row.crates;
-      else if (row.wait === 'unknown') unknown += row.crates;
-      else lots.push({ id: row.id, crates: row.crates, ageDays: (Date.parse(today) - Date.parse(row.day)) / dayMs });
+      if (row.wait === 'eligible') lots.push({ id: row.id, crates: row.crates, ageDays: (Date.parse(today) - Date.parse(row.day)) / dayMs });
+      else if (row.wait === 'held') held += row.crates;
+      else unknown += row.crates;
       continue;
     }
     let remaining = row.crates;
