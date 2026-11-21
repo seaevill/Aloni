@@ -1,5 +1,13 @@
 # Codex handoff
 
+## 2026-11-21 (Claude, data side for the screens you build)
+
+- **Observation → review → job.** Data layer is in `app/src/summary/observations.ts` and `observations-store.ts`: `pendingObservations(rows, seenIds)` (unseen, newest first, max 20), `jobParcelPicks(plantings, parcelId)` (live plantings of one parcel: the ONLY thing «Νέα εργασία» may preselect; product, dose, worker stay empty), `seenObservationIds()` / `markObservationSeen(id)` (farm setting `observations_reviewed`; the row is never changed). Worker side: `buildObservation(parcel, kind, note, worker, farm, nowIso, id, photoId?)` adds `photo` only when a photo was stored (`storePhoto` from `media/photo`, as SignOff does). No diagnosis text anywhere: label it «Δεν είναι διάγνωση». Open items: server-side review state needs SQL (BACKLOG); the worker's photo upload against server rules is unverified (check in RUNBOOK 12c).
+- **Εργασίες cycle.** Two-phone e2e exists: `tests/e2e/live-job-cycle.spec.ts` + `helpers/mock-server.ts` (shared mock server). Worker completes with `queueCompletion` (rpc `complete_spray_job`), writes only start and end time. A worker's real-farm «Δεν έγινε» needs a server function (BACKLOG 0036+); keep it hidden until then. Count badges on the group headings are done (`jobs-count-*`).
+- **Login.** `auth/code.ts` (`cleanCode`, `codeError`, `resendLeft`) and the six-digit code screen are in #290; keys `signin.err.*`, `signin.resend*`.
+- **Register export.** `export/machine.ts` has `toMachineJson` and two new fill-in codes; `registerLines(data, { ...fmt, missing })` marks an empty authorisation number. Screen button `register-json` is in #301.
+- **Tomorrow.** `orders/tomorrow.ts` is in #258 (`tomorrowBoard`, `cutTodayBySlug`); the card sits BELOW the two big buttons (first-screen rule).
+
 ## 2026-11-21
 
 - **Hindi.** Deferred until #259 merges. The open PR still changes `app/src/i18n/hi.json`.
