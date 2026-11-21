@@ -96,3 +96,18 @@ test('data viz: unknown is not zero, gaps break the line, hatched unknown is sep
   await expect(rows.nth(1)).toContainText('άγνωστο');
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
 });
+
+// D6: 17 crop drawings, decorative (aria-hidden), at tile size and hero size; the crop name is printed beside each; a neutral leaf for an unknown slug is in CropIcon.
+test('17 crop illustrations: aria-hidden, sized, one fill colour and one stroke colour', async ({ page }) => {
+  await page.goto('/?ds-gallery');
+  const rows = page.locator('.gallery-crop');
+  await expect(rows).toHaveCount(17);
+  const svgs = page.locator('.gallery-crop svg.ds-crop');
+  await expect(svgs).toHaveCount(34);
+  for (const hidden of await svgs.evaluateAll((els) => els.map((e) => e.getAttribute('aria-hidden')))) expect(hidden).toBe('true');
+  const sizes = await svgs.evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().width)));
+  expect(new Set(sizes)).toEqual(new Set([40, 96]));
+  const paint = await page.locator('.ds-crop-fill').first().evaluate((e) => { const cs = getComputedStyle(e); return [cs.fill, cs.stroke]; });
+  expect(paint).toEqual(['rgb(234, 248, 196)', 'rgb(19, 74, 43)']);
+  await expect(rows.first()).toContainText('Σπανάκι');
+});
