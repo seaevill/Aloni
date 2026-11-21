@@ -52,3 +52,37 @@
 .crop-weather-grid time {
   display: block;
 }
+
+.crop-detail-hero {
+  display: grid;
+  gap: var(--sp-8);
+  justify-items: center;
+  padding-block: var(--sp-16) var(--sp-24);
+  text-align: center;
+}
+
+.crop-detail-art {
+  align-items: center;
+  background: var(--lime-soft);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  margin-block-end: var(--sp-4);
+  padding: var(--sp-16);
+}
+
+.crop-detail-hero .ds-title,
+.crop-detail-hero .latin {
+  margin: 0;
+}
+
+.crop-detail-hero .latin {
+  color: var(--muted);
+  font-size: var(--fs-meta);
+  font-style: italic;
+}
+
+.crop-detail-source {
+  display: grid;
+  margin-block-end: var(--sp-16);
+}
