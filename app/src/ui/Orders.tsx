@@ -1,3 +1,5 @@
+import { DEMO_FARM_ID } from '../config';
+import { demoWeeklyOrders } from '../db/import-demo';
 import { useEffect, useState } from 'preact/hooks';
 import { activeFarm, dataVersion, db } from '../db';
 import { loadOrders, saveMap, saveOrders } from '../orders/store';
@@ -22,10 +24,11 @@ const COPY_NOTE = { shared: '', copied: 'dispatch.copied', manual: 'dispatch.man
 
 /** More → «Διαθέσιμες κλούβες»: the Κλούβες backup (read by hand, one way), what is ordered per crop, and what can be cut now. Waiting-period-held plantings never count as supply. */
 export function Orders({ onBack }: { onBack: () => void }) {
-  const [orders, setOrders] = useState<KlouvesOrders | undefined>(undefined);
-  const [map, setMap] = useState<Record<string, string>>({});
+  const [imported, setOrders] = useState<KlouvesOrders | undefined>(undefined);
+  const [importedMap, setMap] = useState<Record<string, string>>({});
   const [bad, setBad] = useState(false); const [note, setNote] = useState(0);
   const crops = useRows('crops'); const plantings = useRows('plantings'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const harvests = useRows('job_harvest'); const labels = useRows('label_uses');
+  const weekly = useRows('orders_weekly');
   const [offset, setOffset] = useState(0); const [copied, setCopied] = useState<keyof typeof COPY_NOTE | ''>('');
   const farm = activeFarm.value;
   useEffect(() => {
@@ -33,6 +36,9 @@ export function Orders({ onBack }: { onBack: () => void }) {
     void loadOrders(db, farm).then((r) => { if (live) { setOrders(r.orders); setMap(r.map); } });      // this farm's own import only
     return () => { live = false; };
   }, [farm, dataVersion.value]);
+  const sample = farm === DEMO_FARM_ID && imported === undefined ? demoWeeklyOrders(crops.rows ?? [], weekly.rows ?? [], new Date()) : undefined;
+  const orders = imported ?? sample?.orders;
+  const map = sample?.map ?? importedMap;
   const load = async (file: File | undefined) => {
     if (!file) return;
     const parsed = parseBackup(await file.text());
@@ -67,7 +73,7 @@ export function Orders({ onBack }: { onBack: () => void }) {
       <label class="btn secondary">{t('orders.import')}<input type="file" accept=".json,application/json" hidden data-testid="orders-file" onChange={(e) => void load((e.target as HTMLInputElement).files?.[0])} /></label>
       {bad && <p class="msg error" role="alert" data-testid="orders-bad">{t('orders.bad')}</p>}
       {note > 0 && <p class="muted" role="status" data-testid="orders-skipped">{t('orders.skipped', { n: formatQty(note) })}</p>}
-      {orders && !orders.days && <p class="muted" data-testid="dispatch-reimport">{t('dispatch.reimport')}</p>}
+      {imported && !imported.days && <p class="muted" data-testid="dispatch-reimport">{t('dispatch.reimport')}</p>}
       {orders?.days && (
         <section data-testid="dispatch">
           <h2>{t('dispatch.title')}</h2>
@@ -115,7 +121,7 @@ export function Orders({ onBack }: { onBack: () => void }) {
           <summary>{t('orders.map.toggle', { n: orders.products.length })}</summary>
           {orders.products.map((p) => (
             <label class="field" key={p.id}>{p.name}
-              <select class="input" value={map[p.id] ?? ''} data-testid={`orders-map-${p.id}`} onChange={(e) => void choose(p.id, (e.target as HTMLSelectElement).value)}>
+              <select class="input" disabled={sample !== undefined} value={map[p.id] ?? ''} data-testid={`orders-map-${p.id}`} onChange={(e) => void choose(p.id, (e.target as HTMLSelectElement).value)}>
                 <option value="">{t('orders.map.none')}</option>
                 {CATALOG.map((c) => <option key={c.slug} value={c.slug}>{cropName(c, lang.value)}</option>)}
               </select>

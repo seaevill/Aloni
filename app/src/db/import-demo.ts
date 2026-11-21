@@ -1,3 +1,7 @@
+import { dateAfterDays } from '@aloni/rules-core';
+import { mondayOf, type KlouvesOrders } from '../orders/klouves';
+import { mapKey, ordersKey } from '../orders/store';
+import { athensToday } from '../plantings/planting';
 import { DEMO_FARM_ID, DEMO_NAMESPACE } from '../config';
 import { AppDB, FARM_TABLES, type FarmTable, type Row, type WeatherRow } from './schema';
 import { demoExtraRows } from './demo-extra';
@@ -46,6 +50,41 @@ function fixGreekName(r: Record<string, unknown>): Record<string, unknown> {
 const legacyId = (table: FarmTable, r: Record<string, unknown>, i: number): string =>
   typeof r.id === 'string' ? r.id : table === 'orders_weekly' && typeof r.crop_id === 'string' ? r.crop_id : String(i);
 
+// Keep the existing Demo product keys for the original three sample crops.
+const DEMO_ORDER_IDS: Readonly<Record<string, string>> = { spinach: 'd-sp', rocket: 'd-ro', parsley: 'd-pa' };
+
+/** The Demo source gives weekly baselines only. Client orders and seasonal multipliers are not inferred. */
+export function demoWeeklyOrders(crops: readonly Row[], targets: readonly Row[], asOf: Date): { orders: KlouvesOrders; map: Record<string, string> } | undefined {
+  const sourceDay = athensToday(asOf);
+  if (sourceDay === undefined) return;
+  const first = mondayOf(sourceDay);
+  if (first === undefined) return;
+  const weekly = new Map<string, number>();
+  const products: KlouvesOrders['products'] = [];
+  const map: Record<string, string> = {};
+  for (const row of targets) {
+    if (row.farm_id !== DEMO_FARM_ID || row.deleted_at) continue;
+    const crop = crops.find((item) => item.id === row.crop_id && item.farm_id === DEMO_FARM_ID && !item.deleted_at);
+    const slug = crop?.slug;
+    const name = crop?.name_el;
+    const crates = row.crates_per_week;
+    if (typeof slug !== 'string' || typeof name !== 'string' || !name || typeof crates !== 'number' ||
+      !Number.isFinite(crates) || crates < 0) continue;
+    const id = DEMO_ORDER_IDS[slug] ?? `d-${slug}`;
+    if (weekly.has(id)) continue;
+    products.push({ id, name });
+    weekly.set(id, crates);
+    map[id] = slug;
+  }
+  if (!products.length) return;
+  const weeks: KlouvesOrders['weeks'] = {};
+  for (const offset of [0, 7, 14, 21]) {
+    const week = dateAfterDays(first, offset);
+    if (week.known) weeks[week.value] = Object.fromEntries(weekly);
+  }
+  return { orders: { products, weeks, skipped: 0 }, map };
+}
+
 /**
  * Loads the prototype sample data into the Demo farm ONLY, with UUIDv5 ids (stable: importing twice gives the same ids).
  * Values are copied exactly: nothing is rounded, defaulted or invented (missing label data stays missing = unknown).
@@ -61,7 +100,7 @@ export async function importDemo(db: AppDB, data: PrototypeData): Promise<void> 
     if (!id) throw new Error(`demo data: ${t} "${legacy}" does not exist`);
     return id;
   };
-  const tables = [db.farms, db.weather, ...FARM_TABLES.map((t) => db[t])];
+  const tables = [db.farms, db.weather, db.settings, ...FARM_TABLES.map((t) => db[t])];
   const weather: WeatherRow[] = await Promise.all(Object.entries(data.weather.by_parcel).map(async ([p, days]) =>
     ({ id: await uuidv5(`weather:${p}`, DEMO_NAMESPACE), farm_id: DEMO_FARM_ID, parcel_id: ref('parcels', p) as string, days })));
 
@@ -85,6 +124,7 @@ export async function importDemo(db: AppDB, data: PrototypeData): Promise<void> 
     }
     for (const [table, rows] of Object.entries(extra)) await db[table as FarmTable].bulkPut(rows ?? []);
     await db.weather.bulkPut(weather);
+
   });
 }
 
@@ -92,9 +132,10 @@ async function removeFarmRows(db: AppDB, farmId: string) {
   for (const table of FARM_TABLES) await db[table].where('farm_id').equals(farmId).delete();
   await db.weather.where('farm_id').equals(farmId).delete();
   await db.farms.delete(farmId);
+  await db.settings.bulkDelete([ordersKey(farmId), mapKey(farmId)]);
 }
 
 export async function removeDemo(db: AppDB): Promise<void> {
-  const tables = [db.farms, db.weather, ...FARM_TABLES.map((t) => db[t])];
+  const tables = [db.farms, db.weather, db.settings, ...FARM_TABLES.map((t) => db[t])];
   await db.transaction('rw', tables, () => removeFarmRows(db, DEMO_FARM_ID));
 }
