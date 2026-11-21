@@ -8,7 +8,7 @@ import { fingerprint, known, makeDose, parseDecimal, parseMaxApps, parsePhiDays,
 type J = Record<string, any>;
 const DIR = new URL('../fixtures/golden/', import.meta.url);
 const cases: J[] = readdirSync(DIR).filter((f) => f.endsWith('.json')).sort().map((f) => JSON.parse(readFileSync(new URL(f, DIR), 'utf8')) as J);
-export const LANDED = ['A03-phi-guard-harvesting-spinach', 'R02-harvest-not-spray', 'NEG-P0-1-dose-never-rounded', 'A05-gap-spinach', 'NEG-P0-2-phi-lot-not-supply', 'A06-stock-low-mandipropamid', 'A07-stock-expired-acetamiprid', 'A08-stock-expiring-spinosad', 'A01-frost-low-plain', 'A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-end-time-blocks', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'R05-frost-cover-herbs', 'REI-after-r01-spray', 'A10-salt-pachi-well', 'R06-chicory-harvest-after-thaw'];
+export const LANDED = ['R04-sow-spinach-south-plain', 'A03-phi-guard-harvesting-spinach', 'R02-harvest-not-spray', 'NEG-P0-1-dose-never-rounded', 'A05-gap-spinach', 'NEG-P0-2-phi-lot-not-supply', 'A06-stock-low-mandipropamid', 'A07-stock-expired-acetamiprid', 'A08-stock-expiring-spinosad', 'A01-frost-low-plain', 'A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-end-time-blocks', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'R05-frost-cover-herbs', 'REI-after-r01-spray', 'A10-salt-pachi-well', 'R06-chicory-harvest-after-thaw'];
 
 const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[+-]\d{2}:\d{2}|Z)$/;
 const ms = (v: unknown): unknown => (typeof v === 'string' && ISO.test(v) ? Date.parse(v) : v); // times compare as instants, whatever their offset
@@ -113,6 +113,28 @@ function dosesOf(c: J, jobs: J[]): Pick<Snapshot, 'doseChecks'> {
   }) };
 }
 
+function sowingOf(c: J): Pick<Snapshot, 'sowing'> {
+  if (c.id !== 'R04-sow-spinach-south-plain') return {};
+  const input: J = c.inputs; const synthetic: J = c.synthetic_inputs;
+  const params: J = c.rule_state.params; const cropId = synthetic.requested.crop_id as string;
+  const cropFamily = 'Amaranthaceae'; // spinach family from RULES.md; the runtime receives the recorded family
+  return { sowing: {
+    cropId, cropFamily, area: synthetic.requested.area_str,
+    sameFamilyYears: params.same_family_years.value,
+    rainDays: params.workable_rain_days.value, maxRain: params.workable_max_rain_mm.value,
+    minSoil: params.germination_c.value[cropId].min, maxSoil: params.germination_c.value[cropId].poor_above,
+    yieldKgPerArea: params.yield_kg_per_str.value[cropId], crateKg: params.crate_kg.value[cropId], wastePercent: params.waste_pct.value,
+    parcels: (input.parcels as J[]).map(({ id }) => ({
+      id, freeArea: synthetic.free_area_str[id], soil: synthetic.soil_temp_5_10cm_c[id],
+      history: [...input.history[id], ...(synthetic.history_extra[id] ?? [])].filter((r: J) => r.family !== undefined)
+        .map((r: J) => ({ family: r.family, date: r.harvested ?? r.season?.split('-')[0] })),
+      flags: (input.disease_flags as J[]).filter((f) => f.parcel_id === id && f.level === 'high')
+        .map((f) => ({ family: f.family, source: f.rule_id })),
+      rain: (input.weather_daily[id] ?? []).map((d: J) => ({ date: d.date, mm: d.rain_mm, forecast: d.kind === 'forecast' })),
+    })),
+  } };
+}
+
 function snapshot(c: J): Snapshot {
   const syn: J = c.synthetic_inputs ?? {};
   const uses: UseFact[] = ((c.inputs.label_uses ?? []) as J[]).map((l) => {
@@ -132,7 +154,7 @@ function snapshot(c: J): Snapshot {
     tasks: ((syn.worker_tasks ?? []) as J[]).map((t) => ({ id: t.id, plantingIds: t.planting_ids, at: utc(t.at) })),
     draftJobs: ([...(syn.draft_job ? [syn.draft_job] : []), ...(syn.draft_jobs ?? [])] as J[]).map((j) => ({ id: j.id, kind: j.kind, plantingIds: j.planting_ids, productId: j.product_id })),
     products: ((c.inputs.products ?? []) as J[]).map((p) => ({ id: p.id, groupCode: p.group_code ?? undefined })),
-    ...weatherOf(c), ...frostOf(c), ...stockOf(c), ...gapOf(c), ...dosesOf(c, jobs), ...salinityOf(c),
+    ...sowingOf(c), ...weatherOf(c), ...frostOf(c), ...stockOf(c), ...gapOf(c), ...dosesOf(c, jobs), ...salinityOf(c),
     ruleStatus: { [c.rule_id]: c.rule_state.status === 'unsigned' ? 'unsigned' : 'signed' },
   };
 }
@@ -214,6 +236,15 @@ describe('golden cases', () => {
     expect(outs).toContainEqual(expect.objectContaining({ category: 'harvest_spray_conflict' }));
     const held = runRules({ ...s, asOf: '2026-11-08T09:00:00Z' }).filter((o) => o.rule_id === 'PHI-GUARD');
     expect(held.map((o) => o.kind)).toEqual(['block']);
+  });
+  it('SOW exposes inputs only without a signature and does not fill missing rainfall', () => {
+    const s = snapshot(cases.find((c) => c.id === 'R04-sow-spinach-south-plain')!);
+    const unsigned = runRules({ ...s, ruleStatus: {} }).filter((out) => out.rule_id === 'SOW');
+    expect(unsigned).toMatchObject([{ kind: 'info', notify: false, vetoes: [] }]);
+    const sowing = s.sowing!;
+    const parcels = sowing.parcels.map((p) => ({ ...p, rain: [] }));
+    const incomplete = runRules({ ...s, sowing: { ...sowing, parcels } });
+    expect(incomplete.some((out) => out.rule_id === 'SOW' && out.kind === 'recommendation')).toBe(false);
   });
   it('SALT shows the sample without a verdict or notification until signed', () => {
     const c = cases.find((x) => x.id === 'A10-salt-pachi-well')!;
