@@ -2,7 +2,7 @@ import { useState } from 'preact/hooks';
 import { useBack } from './backstack';
 import { APP_NAME_EL } from '../config';
 import { activeFarm, loadDemo, realFarmId, farmLabel } from '../db';
-import { groupJobs } from '../summary/jobs';
+import { jobHub } from '../summary/jobs';
 import { openParcelForm, tab } from './nav';
 import { formatDate, formatDateTime, t } from '../i18n';
 import { formatArea, formatQty } from '../i18n/format';
@@ -158,8 +158,9 @@ export function Today() {
   const harvestRows = useRows('job_harvest');
   const summary = todaySummary(athensToday(new Date()) ?? '', sprays.rows ?? [], harvestRows.rows ?? [], jobs.rows ?? [], (id) => text(workers.rows?.find((w) => w.id === id)?.name), (id) => nameOf(products.rows?.find((p) => p.id === id) ?? {}));
   const jobLine = (j: Row): string => [...new Set(links.rows?.filter((l) => l.job_id === j.id).map((l) => plantings.rows?.find((p) => p.id === l.planting_id)).filter((p): p is Row => !!p).map((p) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) })) ?? [])].concat(text(workers.rows?.find((w) => w.id === j.worker_id)?.name), typeof j.planned_for === 'string' && j.planned_for !== '' ? formatDate(j.planned_for) : '').filter(Boolean).join(' · ');
-  const openJobs = (jobs.rows ?? []).filter((j) => !j.deleted_at && j.kind === 'spray' && j.status === 'planned');
-  const jobGroups = groupJobs(openJobs, athensToday(new Date()) ?? '');
+  const hub = jobHub(jobs.rows ?? [], athensToday(new Date()) ?? '');
+  const jobGroups = hub.open;
+  const openJobs = [...jobGroups.overdue, ...jobGroups.today, ...jobGroups.tomorrow, ...jobGroups.later];
   const live = (q: Rows) => q.rows?.filter((r) => !r.deleted_at) ?? [];
   const demo = activeFarm.value !== realFarmId.value;
   const cropsInUse = demo ? live(crops).length : new Set(live(plantings).map((p) => p.crop_id)).size;
@@ -193,7 +194,8 @@ export function Today() {
         <EmptyState message={t('welcome.start')} actionLabel={t('parcel.add')} onAction={() => { openParcelForm.value = true; tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
       )}
       {loaded && has && <CutTodaySection ct={ct} />}
-      {loaded && has && <h2>{t('worker.jobs')}</h2>}
+      {loaded && has && <h2>{t('tasks.title')}</h2>}
+      {loaded && has && <p class="muted" data-testid="tasks-counts">{t('tasks.counts', { o: hub.counts.overdue, t: hub.counts.today, u: hub.counts.upcoming, d: hub.counts.doneToday })}</p>}
       {loaded && has && openJobs.length === 0 && <p class="muted" data-testid="jobs-none">{t('today.jobs.none')}</p>}
       {JOB_GROUPS.map(([key, label]) => jobGroups[key].length > 0 && (
         <section key={key} data-testid={`jobs-${key}`}>
@@ -201,6 +203,12 @@ export function Today() {
           {jobGroups[key].map((j) => <div class="card" key={j.id} data-testid="job-planned">{jobLine(j)}</div>)}
         </section>
       ))}
+      {hub.doneToday.length > 0 && (
+        <section data-testid="jobs-done">
+          <h3>{t('jobs.group.done')}</h3>
+          {hub.doneToday.map((j) => <div class="card" key={j.id} data-testid="job-done-today">{jobLine(j)}<small>{formatDateTime(text(j.done_at))}</small></div>)}
+        </section>
+      )}
       {loaded && has && <button class="btn" data-testid="job-open" onClick={() => setPlanning(true)}>{t('job.add.plus')}</button>}
       {loaded && has && (
         <div class="pair">
