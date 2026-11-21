@@ -68,7 +68,7 @@ export function Photos({ onBack }: { onBack: () => void }) {
       {demo ? <p class="muted" data-testid="photos-demo-note">{t('photos.demoActive')}</p>
         : rows && rows.length > 0 && <button class="btn" data-testid="photo-add" onClick={add}>{t('photos.add')}</button>}
       {msg && <p class="msg" role="status" data-testid="photo-msg">{t(MSG_KEYS[msg])}</p>}
-      {rows && rows.length === 0 && !demo && <EmptyState message={t('photos.empty')} actionLabel={t('photos.add')} onAction={add} />}
+      {rows && rows.length === 0 && !demo && <EmptyState art="photos" message={t('photos.empty')} actionLabel={t('photos.add')} onAction={add} />}
       {rows && rows.length > 0 && <p class="muted" data-testid="photo-count">{tn('photos.count', rows.length)}</p>}
       <div class="photos">
         {rows?.map((m) => <button key={m.id} class="thumb" data-testid="photo" onClick={() => setOpen(m)}><Picture m={m} /></button>)}

@@ -87,3 +87,8 @@
 .ds-wordmark { display:inline-flex; flex-direction:column; color:var(--green); }
 .ds-wordmark-el { font-size:var(--fs-title); font-weight:800; letter-spacing:-.03em; line-height:1; }
 .ds-wordmark-latin { font-size:var(--fs-meta); font-weight:600; margin-top:var(--sp-2); }
+
+/* Empty states (D8): the ring ground is faint, the motif is in the crops' hand */
+.ds-empty-stone { fill:var(--lime-soft); stroke:var(--line); stroke-width:var(--bw-1); }
+.ds-empty-art { display:block; margin:0 auto var(--sp-12); }
+.ds-empty-headline { margin:0 0 var(--sp-6); font-size:var(--fs-20); font-weight:800; line-height:1.2; }
