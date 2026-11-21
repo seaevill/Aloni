@@ -10,9 +10,6 @@ import { formatArea, formatQty } from '../i18n/format';
 import { archived, restored } from '../parcels/parcel';
 import { put } from '../repo';
 import { Analyses } from './Analyses';
-import { parcelWait } from '../summary/wait';
-import { instantOf } from '../spray/time';
-import { waitLine } from './waitLine';
 import { EditTrail } from './EditTrail';
 import { ParcelForm } from './ParcelForm';
 import { ParcelDetail } from './ParcelDetail';
@@ -57,7 +54,6 @@ export function Parcels() {
   const [editing, setEditing] = useState<Row | undefined>(undefined);
   const [shownId, setShownId] = useState<string | undefined>(undefined);
   const q = useRows('parcels');
-  const plantings = useRows('plantings'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const labels = useRows('label_uses');
   useBack(adding || !!analysing || !!editing || !!shownId, () => { setAdding(false); setAnalysing(undefined); setEditing(undefined); setShownId(undefined); }, adding || !!editing);
   useEffect(() => { if (openParcelForm.value) { openParcelForm.value = false; setAdding(true); } }, [openParcelForm.value]);
   if (adding) return <ParcelForm onDone={() => setAdding(false)} />;
@@ -79,7 +75,6 @@ export function Parcels() {
       {live.map((r) => (
         <div class="card" key={r.id}>
           <button class="row" data-testid="parcel-open" onClick={() => setShownId(String(r.id))}><span>{String(r.name)}{typeof r.area_str !== 'undefined' && <small>{formatArea(r.area_str as number | string)}</small>}</span><span aria-hidden="true" class="chev" /></button>
-          <small data-testid="parcel-wait">{waitLine(parcelWait(String(r.id), instantOf(new Date()) ?? '', plantings.rows ?? [], links.rows ?? [], sprays.rows ?? [], labels.rows ?? []))}</small>
           <UnsyncedMark id={r.id} />
           {!demo && <button class="btn quiet" onClick={() => void archive(r)}>{t('parcel.archive')}</button>}
         </div>

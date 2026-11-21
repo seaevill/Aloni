@@ -1,4 +1,3 @@
-import { gapOutputs, type GapFacts } from './gap';
 import { frostNights, thawMornings, type FrostFacts, type FrostHit } from './frost';
 import { known, type Known } from './known';
 import { salinityReading, type SalinityFacts } from './salinity';
@@ -35,7 +34,6 @@ export interface Snapshot {
   /** Shelf, planned uses and the STOCK thresholds. */
   stock?: StockFacts;
   salinity?: SalinityFacts;
-  gap?: GapFacts;
 }
 
 const blank = (o: Pick<Output, 'rule_id' | 'kind' | 'category'> & Partial<Output>): Output => ({ notify: false, parcel_ids: [], planting_ids: [], product_ids: [], crop_ids: [], values: {}, vetoes: [], ...o });
@@ -242,6 +240,5 @@ function infoOnly(s: Snapshot): Output[] {
 export function runRules(s: Snapshot): Output[] {
   // no readable «now»: everything is blocked, said out loud; never an empty list that reads as «all clear»
   if (!parseInstant(s.asOf).known) return [blank({ rule_id: 'ENGINE', kind: 'block', category: 'now_unreadable', severity: 'high', vetoes: [{ by: 'ENGINE', vetoed: 'everything', reason: 'unreadable_now' }] })];
-  const gaps = s.gap ? gapOutputs(s.gap, s.asOf, s.ruleStatus.GAP === 'signed') : [];
-  return [...phi(s), ...rei(s), ...reg(s), ...rot(s), ...sprayWindowClosed(s), ...frost(s), ...salinity(s), ...stock(s), ...gaps.map((gap) => blank({ rule_id: 'GAP', ...gap })), ...infoOnly(s)];
+  return [...phi(s), ...rei(s), ...reg(s), ...rot(s), ...sprayWindowClosed(s), ...frost(s), ...salinity(s), ...stock(s), ...infoOnly(s)];
 }

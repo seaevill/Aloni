@@ -72,8 +72,3 @@ Kime: Bora ve bir sonraki projede çalışacak her yapay zeka (Claude Code, Code
 - Kurulacaklar: Superpowers (TDD, verification, debugging becerileri; alt ajanlı geliştirme kapalı), Task Observer (öğrenilen kurallar PR ile CLAUDE.md'ye), Security Guidance, Supabase eklentisi (yalnızca best-practices becerisi; MCP salt okunur ya da kapalı).
 - Kurulmayacaklar: find-skills (onaysız dış kod), claude-mem (bulutta kalıcı değil, kota yer), her PR'ı inceleyen çoklu ajan eklentileri, GitHub'da ikinci bir Claude.
 - Codex iyi bir ikinci yardımcı: bağımsız SQL incelemesi, zor test hatası avı, saf kütüphane işleri (Aloni'de kural motoru). Claude kotasını harcamaz.
-- 2026-11-21 — The «migration applied» constant in the app (`EXPECTED_MIGRATION`) must be bumped in its own small PR right after Bora applies a migration; a stale value blocked a worker-flow test (B7).
-- 2026-11-21 — After a union-style rebase look for duplicate declarations (`DEVICE_ONLY`, `crops/plantings` in Orders.tsx): tsc finds them, a green merge does not mean a correct merge.
-- 2026-11-21 — The PR helper script queues every PR for auto-merge; a SQL PR must be removed from the queue by hand (0035, #271 stays open for Codex). Better: the helper should take a `--no-queue` flag.
-- 2026-11-21 — A sync chip may only claim what the code guarantees (refused records, stale rounds and cleared state each made it say «works» when it did not).
-- 2026-11-21 — Local SQL test DB is `aloni_test_plain` after `run.sh plain`; PG* variables do not persist between shell calls.
