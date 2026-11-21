@@ -64,6 +64,7 @@ test('the button is closed until everything is ok; signing in sends nothing; pre
   await expect(page.getByTestId('golive-start')).toBeEnabled();
   await page.getByTestId('golive-start').click();
   await expect(page.getByTestId('golive-on')).toBeVisible();
+  await expect(page.getByTestId('sync-chip')).toContainText('τελευταίος', { timeout: 15_000 });      // B5: after a round that WORKED the chip shows its clock time (and nothing is claimed before that)
   expect(seen.applied[0]).toHaveLength(0);                                       // the empty call first
   expect(seen.applied.flat().map((o) => o.table)).toContain('parcels');          // then the record
   expect(seen.pulls).toBeGreaterThan(0);
