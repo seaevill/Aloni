@@ -34,9 +34,11 @@ describe('demo import (schema v2: UUID ids)', () => {
     expect(sample).toBeDefined();
     const { orders, map } = sample!;
     expect(await loadOrders(db, DEMO_FARM_ID)).toEqual({ orders: undefined, map: {} });
-    const weekly = Object.fromEntries(src('orders_weekly').map((row) => [row.crop_id, row.crates_per_week]));
+    const byCrop = new Map(src('orders_weekly').map((row) => [row.crop_id, row.crates_per_week]));
+    const weekly = Object.fromEntries(Object.entries(map).map(([id, slug]) => [id, byCrop.get(slug)]));
     expect(orders?.weeks).toEqual(Object.fromEntries(['2026-11-16', '2026-11-23', '2026-11-30', '2026-12-07'].map((date) => [date, weekly])));
-    expect(map.spinach).toBe('spinach');
+    expect(Object.values(map).sort()).toEqual([...byCrop.keys()].sort());
+    expect(map['d-sp']).toBe('spinach');
     expect(orders?.clients).toBeUndefined();
     expect(orders?.days).toBeUndefined();
 

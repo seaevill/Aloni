@@ -116,12 +116,12 @@ export function Orders({ onBack }: { onBack: () => void }) {
       })}
       {slugs.length > 0 && <p class="muted">{t('orders.sow.note')}</p>}
       {unmapped > 0 && <p class="muted" data-testid="orders-unmapped">{t('orders.unmapped', { n: formatQty(unmapped) })}</p>}
-      {imported && orders && (
+      {orders && (
         <details class="card" data-testid="orders-map">
           <summary>{t('orders.map.toggle', { n: orders.products.length })}</summary>
           {orders.products.map((p) => (
             <label class="field" key={p.id}>{p.name}
-              <select class="input" value={map[p.id] ?? ''} data-testid={`orders-map-${p.id}`} onChange={(e) => void choose(p.id, (e.target as HTMLSelectElement).value)}>
+              <select class="input" disabled={sample !== undefined} value={map[p.id] ?? ''} data-testid={`orders-map-${p.id}`} onChange={(e) => void choose(p.id, (e.target as HTMLSelectElement).value)}>
                 <option value="">{t('orders.map.none')}</option>
                 {CATALOG.map((c) => <option key={c.slug} value={c.slug}>{cropName(c, lang.value)}</option>)}
               </select>
