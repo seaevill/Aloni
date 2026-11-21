@@ -209,3 +209,7 @@ details.fold[open] > summary { margin-bottom:var(--sp-12); }
 
 /* the static splash in index.html (the ring mark) until the app mounts: no animation, nothing pulses (design sprint D7) */
 .splash { display:block; margin:var(--sp-48) auto 0; }
+
+/* a control never grows wider than its column, whatever its own intrinsic width (WebKit sizes inputs and buttons by their text at a large text size) */
+main :where(input, select, textarea, button, .btn, .field, .card, .seg) { max-width:100%; box-sizing:border-box; }
+main :where(.field, .seg) { min-width:0; }
