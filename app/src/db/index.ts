@@ -7,7 +7,7 @@ import { APP_NAME, DEMO_FARM_ID } from '../config';
 import { t } from '../i18n';
 import { commitAllHeld } from '../worker/held';
 import { demoOrders, mapKey, migrateUnkeyedOrders, ordersKey, saveOrders } from '../orders/store';
-import { parseHash, savedState, tab } from '../ui/nav';
+import { parseHash, savedState, sheet, tab } from '../ui/nav';
 import { dbBlocked, dirty, needRefresh } from '../pwa/update';
 
 export const db = new AppDB();
@@ -38,6 +38,8 @@ export async function initDb() {
   await commitAllHeld(db).catch(() => undefined);      // a worker's action held when the phone was closed (T4)
   const where = parseHash(location.hash) ?? savedState((await db.settings.get('ui_state'))?.value);       // come back to the same farm and tab (T7)
   if (where) { tab.value = where.tab; if (where.farm === 'demo' && hasDemo.value) activeFarm.value = DEMO_FARM_ID; }
+  const fromAddress = parseHash(location.hash);
+  if (fromAddress?.sheet) sheet.value = fromAddress.sheet;      // a reload or a shared link comes back to the same detail sheet
   await refreshPending(db);
   // Ask the browser not to evict our data (iOS evicts storage of non-installed sites).
   try { await navigator.storage?.persist?.(); } catch { /* ignore */ }
