@@ -135,6 +135,16 @@ Actions çalışmazsa: sırayla `0001_core` → … → `0012_phone_contract` (v
 ## 11. Yeni görünümü (Tasarım 2, 2026-11) geri almak
 Görünüm yalnızca iki dosyada: `app/src/ui/tokens.css` (renk, ölçü, gölge) ve `app/src/ui/styles.css`. Mantık, veri ve metin değişmedi. Beğenmezsen: GitHub → **Pull requests → Closed** → «Görünüm: …» (theme) başlıklı PR'ı aç → **Revert** → açılan PR'ı birleştir (CI yeşil olunca). Her görünüm PR'ı tek commit olarak birleşir; en yenisinden başlayıp eskiye doğru hepsini geri alırsan uygulama tamamen eski renklere döner. Geri alma, verini ya da kayıtlarını etkilemez. Kararın kaydı: `docs/design/theme-2026-11/README.md`.
 
+## 12c. Gerçek işçi denemesi – 8 satır (sahip telefonu + işçi telefonu; senkron AÇIK olmalı, §13)
+1. **Sahip:** Άλλα → **Εργάτες** → işçinin satırında **Email του εργάτη** → **Αποθήκευση πρόσκλησης**. Doğru: **«Η πρόσκληση αποθηκεύτηκε…»**
+2. **İşçi telefonu:** Safari → uygulama adresi → **Ana Ekrana Ekle** → aç → **Άλλα → Σύνδεση** → davet edilen e-posta → mailden kod. Doğru: yalnızca **Δουλειές / Συγκομιδή / Σημείωση**; Αποθήκη, fiyat, sipariş **yok**.
+3. **Sahip:** Σήμερα → **+ Ανάθεση δουλειάς** → işçiye bir ilaçlama işi ata. Doğru: iş **yalnızca o işçide** görünür (başkasının işi görünmez).
+4. **İşçi:** **Δουλειές** → **Έγινε** → başlangıç saatini yaz → onayla (10 saniye geri alma süresi). Doğru: **«Αποθηκεύτηκε…»**.
+5. **İşçi:** **Συγκομιδή** → ekimi seç → **+** ile kasa → **Καταγραφή**. Doğru: kayıt «Ποιος έκοψε» olarak **kendi adını** taşır. (İlaçlamadan sonra bekleme süresi bitmediyse hasat **kapalı** kalır: bu doğrudur.)
+6. **Sahip:** Σήμερα → **Ποιος έκανε τι**: işi ve kasaları görürsün (en geç birkaç dakikada; çip «Ο συγχρονισμός δουλεύει»).
+7. **İşçiyi uçak moduna al** → **Έγινε** → **«Αποθηκεύτηκε · θα σταλεί όταν έχει σήμα»** → bağlantıyı aç. Doğru: kendiliğinden gider, bir kez.
+8. **Ters giderse:** ekrandaki metni bana yaz (kırmızı kutu nedenini söyler); tahmin etmem. Denemeden sonra test işçisini Supabase → Authentication → Users'tan **sen** sil (gerçek işçiyse silme).
+
 ## 12a. Gerçek hesap denemesi – KISA (telefonda, 10 satır; ayrıntı aşağıda §12)
 Her satır: **Nerede → Ne yap → Doğru sonuç.** Farklıysa **dur**, ekran görüntüsünü Claude'a gönder. Parola ve gizli anahtarı hiçbir yere yazma. Veritabanına **elle SQL yapıştırmak yok**; Claude da üretime dokunmaz.
 **Önkoşullar (sırayla):** (a) 0033 ve 0034 **onaylı workflow** ile yüklendi ✔ (2026-11-20, run 44799478194); (b) §12b'deki 3 Cloudflare değişkeni girildi ve yeniden dağıtıldı (giriş ekranları açılır; senkron AÇILMAZ).
@@ -216,27 +226,15 @@ rollback;
 **11. Temizlik** — Authentication → Users → test işçisini sil; SQL Editor: `delete from farms where name = 'Deneme 2';`
  Doğru sonuç: Users listesinde test işçisi yok; `select count(*) from farms where name = 'Deneme 2';` → 0.
 
-## 13. Senkronu ilk kez açma (canlıya geçiş; her adımı sen yaparsın)
-**Önkoşul:** §12a'daki deneme (en az 1–6. adım) bitti; Supabase'e 0001–0034 uygulandı ✔; uygulamada canlı özellikler açık (§12b'deki 3 Cloudflare değişkeni ✔; **kod PR'ı gerekmez**, geri alma değişkenleri silmektir). **Sihirbaz yalnızca `LIVE` açıkken görünür.** Gizli anahtarları hiçbir yere yazma.
-
-1. **Yedek al** — Uygulama → **Άλλα** → «Αντίγραφο» → dışa aktar.
- Doğru sonuç: «Τελευταίο αντίγραφο: bugün»; dosya telefonda/Dosyalar'da. (Sihirbaz bunu da ister: yedek yeni değilse düğme kapalı.)
-2. **Hazırlık kartı** — **Άλλα → «Σύνδεση λογαριασμού: τι λείπει»**: veri sorumlusu, çiftlik adı, ΑΦΜ, «migration 0026 uygulandı», «Advisor kontrolü yapıldı».
- Doğru sonuç: beş satır da yeşil «Έτοιμο».
-3. **Advisor'a bak** — Supabase → **Advisors → Security** ve **Performance** → *Refresh*.
- Doğru sonuç: «RLS Disabled in Public» ve herkese açık fonksiyon uyarısı **yok**. Varsa dur, ekran görüntüsünü Claude'a gönder.
-4. **Giriş** — **Άλλα → Σύνδεση** → e-posta → kod.
- Doğru sonuç: «Συνδεθήκατε…»; hiçbir şey **gönderilmez** (giriş tek başına senkronu açmaz).
-5. **Sihirbaz** — **Άλλα → «Άνοιγμα συγχρονισμού»**: yedek ve giriş satırları da yeşil olunca **düğme açılır** → bas.
- Doğru sonuç: «Ανεβαίνουν τα στοιχεία…» → bitince «Ο συγχρονισμός είναι ανοιχτός.» Sırayla: boş çağrı (sunucu cevap veriyor mu) → kayıtlar (ebeveyn önce) → fotoğraflar (sırayla, en çok 2 paralel, küçültülmeden) → çekme. Demo verisi hiç gitmez.
-6. **Kontrol** — Supabase → **Table Editor** → `parcels`, `job_spray`: kayıtlar görünür; sayıları telefonla karşılaştır.
- Doğru sonuç: aynı sayı. Fotoğraflar için `photos` deposu (bucket) **0028 migration'ıyla** oluşur (özel, yalnızca JPEG, 5 MB sınır, çiftlik başına klasör). 0028 uygulanmadıysa fotoğraf yüklemesi hata verir; sihirbaz «açılmadı» der ve veri telefonda kalır.
-
-**Geri dönüş yolu (hata olursa):**
-- Sihirbaz hata verirse senkron **açılmaz**; telefonda hiçbir şey silinmez ya da değişmez; sunucuya giden kayıtlar sunucuda kalır, kalanlar sırada bekler. Düzeltilince aynı düğmeye tekrar basarsın: **kaldığı yerden** devam eder (gönderilenler tekrar gitmez).
-- Bir kaydı sunucu reddederse (ör. bekleme süresi kuralı) telefonda «Δεν έγιναν δεκτές» listesinde durur; silinmez.
-- Senkronu geri kapatmak için: uygulamadan çıkış yap (Άλλα → Αποσύνδεση) ve yedeğinden dönülecekse §3.
-- Sunucu tarafında sorun çıkarsa: Supabase **Backups**'tan geri yükleme (RUNBOOK §10.3 ve «sistem kimliği» adımı) ve ardından senkronu yeniden aç.
+## 13. Senkronu açma – 8 satır (her adımı sen yaparsın; gizli anahtar yazma)
+1. **Yedek:** Άλλα → **Αντίγραφο** (ya da sihirbazda **Αντίγραφο τώρα**) → dosya telefona iner. Doğru: «Τελευταίο αντίγραφο: bugün».
+2. **Hazırlık kartı:** Άλλα → **Σύνδεση λογαριασμού: τι λείπει**. **«Επιβεβαιώνω: εφαρμόστηκαν οι αλλαγές έως 0034»** düğmesine bir kez bas; Advisor için Supabase → **Advisors → Security / Performance → Refresh** («RLS Disabled in Public» yok) sonra onayla. Doğru: bütün satırlar **«Έτοιμο»**.
+3. **Giriş:** Άλλα → **Σύνδεση** → «Συνδεδεμένος: …». (Giriş tek başına hiçbir şey göndermez.)
+4. **Aç:** Άλλα → **Άνοιγμα συγχρονισμού** (düğme yalnızca her satır yeşilken açılır) → bas. Doğru: «Ανεβαίνουν τα στοιχεία…», sonra **«Ο συγχρονισμός είναι ανοιχτός.»**
+5. **Çip:** üstte **«Ο συγχρονισμός δουλεύει · τελευταίος: SS:DD»** (bir tur başarılı olunca; önce «Αναμονή πρώτου συγχρονισμού»). **«N μη συγχρονισμένα»** = bekleyen kayıt; **«Εκτός σύνδεσης»** = sinyal yok; **«Δεν στάλθηκε. Θα ξαναδοκιμάσουμε.»** = son tur olmadı, kendiliğinden dener.
+6. **Kontrol:** Supabase → **Table Editor** → `parcels`, `job_spray`: sayılar telefonla aynı olmalı.
+7. **Kırmızı kutu «Ο διακομιστής δεν δέχτηκε αυτές τις εγγραφές»:** her satır ne olduğunu, nedenini ve ne yapılacağını yazar; **kayıt telefonda durur, kaybolmaz**. Ekrandaki metni bana yaz; «Το είδα» yalnızca satırı kaldırır.
+8. **Sorun olursa geri dönüş:** (a) **Άλλα → Αποσύνδεση**: senkron durur, telefonda hiçbir şey silinmez, bekleyenler sırada kalır; düzelince yeniden giriş + aynı düğme **kaldığı yerden** devam eder. (b) Telefon verisi bozulursa §3 (yedekten dön). (c) Sunucu tarafı için §10.3 (Supabase Backups). Üretime hiçbir yapay zeka dokunmaz.
 
 ## 14a. Hava durumu – KISA yol (tek tarla dry-run, sonra çalıştırma)
 Ayrıntı aşağıdaki §14'te. Gizli anahtarı **hiçbir yere yazma**; Claude üretime dokunmaz, her tıklamayı **sen** yaparsın.

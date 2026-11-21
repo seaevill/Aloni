@@ -55,3 +55,4 @@ Bu dosya benim iş listem. Bitirdiğimi `[x]` ile işaretlerim. `docs/reviews/te
 ## E6 – Bora kararları
 - [x] STATUS.md «(d)» bölümünde sade dille, varsayılan önerimle: EPPO onayı, OpenFreeMap şartları, Hintçe kontrolü, logo, veri sorumlusu bilgileri, LIVE. *Bitti:* bölüm güncel.
 - 2026-11-21 (D12): attach a photo to the CURRENT JOB (not only to an observation) = add `job_id` to the phone media row, the phone contract (phone-columns.json) and the media sync, then a server check that the job belongs to the farm. Worker photo upload permission (media RLS) is also unproven by the mock: check in RUNBOOK 12c.
+- 2026-11-21 (weather sheet): hourly forecast needs the phone to pull `weather_hourly` (sync + contract change); today the sheet says why it has none.
