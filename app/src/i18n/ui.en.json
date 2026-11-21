@@ -78,5 +78,19 @@
   "ui.wait.source.label": "product label (signed)",
   "ui.wait.source.manual": "value entered by the owner",
   "ui.wait.note": "From the recorded data. The product label is the law; the app never shortens a waiting period.",
-  "ui.wait.open.crop": "Crop page"
+  "ui.wait.open.crop": "Crop page",
+  "ui.weather.deg": "{v}°",
+  "ui.weather.kmh": "km/h",
+  "ui.weather.mm": "mm",
+  "ui.weather.gust": "Gusts",
+  "ui.weather.legend": "Day · high · low · rain · wind",
+  "ui.weather.source": "Source",
+  "ui.weather.source.demo": "demo data (no source)",
+  "ui.weather.issued": "Issued",
+  "ui.weather.issued.unknown": "unknown: no issue time is written",
+  "ui.weather.stale": "Old data (more than 12 hours)",
+  "ui.weather.hourly": "Hourly forecast",
+  "ui.weather.hourly.why": "not on the phone: the server keeps daily values only here",
+  "ui.weather.none.chip": "No data",
+  "ui.weather.none.why": "No stored weather: no field has a location or the forecast has not been fetched yet. Give a field a location."
 }

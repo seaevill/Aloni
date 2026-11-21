@@ -78,5 +78,19 @@
   "ui.wait.source.label": "ürün etiketi (imzalı)",
   "ui.wait.source.manual": "sahibin yazdığı değer",
   "ui.wait.note": "Kayıtlı verilerden. Ürün etiketi esastır; uygulama bir bekleme süresini asla kısaltmaz.",
-  "ui.wait.open.crop": "Ürün sayfası"
+  "ui.wait.open.crop": "Ürün sayfası",
+  "ui.weather.deg": "{v}°",
+  "ui.weather.kmh": "km/sa",
+  "ui.weather.mm": "mm",
+  "ui.weather.gust": "Hamle",
+  "ui.weather.legend": "Gün · en yüksek · en düşük · yağış · rüzgâr",
+  "ui.weather.source": "Kaynak",
+  "ui.weather.source.demo": "deneme verisi (kaynak yok)",
+  "ui.weather.issued": "Yayın zamanı",
+  "ui.weather.issued.unknown": "bilinmiyor: yayın saati yazılı değil",
+  "ui.weather.stale": "Eski veri (12 saatten fazla)",
+  "ui.weather.hourly": "Saatlik tahmin",
+  "ui.weather.hourly.why": "telefonda yok: sunucu burada yalnızca günlük değer tutuyor",
+  "ui.weather.none.chip": "Veri yok",
+  "ui.weather.none.why": "Kayıtlı hava durumu yok: hiçbir tarlanın konumu yok ya da tahmin henüz alınmadı. Tarlaya konum girin."
 }

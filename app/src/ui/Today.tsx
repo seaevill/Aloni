@@ -30,6 +30,7 @@ import type { KlouvesOrders } from '../orders/klouves';
 import { useWeather } from './useWeather';
 import { openCropSheet } from './TodaySheets';
 import './WaitSheet';
+import './WeatherSheet';
 import { WaitRing } from './ds/WaitRing';
 import { runningSince, waitRing } from '../summary/wait';
 import type { Row } from '../db/schema';
@@ -64,7 +65,7 @@ function WeatherStrip({ perParcel }: { perParcel: ReadonlyArray<readonly Day[]> 
   const any = days.some((d) => d !== undefined);
   const val = (n: number | undefined, key: 'wx.kmh' | 'wx.pct'): string => (n === undefined ? DASH : t(key, { v: formatQty(n) }));
   return (
-    <section class="wx dark" data-testid="weather-strip" aria-label={t('today.weather')}>
+    <section class="wx dark" data-testid="weather-strip" role="button" tabIndex={0} onClick={() => openSheet('weather', 'farm')} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSheet('weather', 'farm'); } }}>
       <h2>{t('today.weather')}</h2>
       {!any && <p class="wx-none" data-testid="wx-none">{t('today.weather.setup')}</p>}
       {any && <div class="tiles">
