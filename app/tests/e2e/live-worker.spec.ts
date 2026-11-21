@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { athensInput, fixClock } from './helpers/clock';
 
 // A worker's own phone against a MOCK backend (the e2e build): the invitation is claimed at the first sign-in, the farm's id is taken, the server's rows arrive by pull and the worker
 // sees only her own job. «Έγινε» is a call to the server (complete_spray_job): queued while there is no signal, sent when there is, and the job is then done on the server's side.
@@ -47,6 +48,7 @@ test('a worker\'s first sign-in: the farm is taken from the invitation, the rost
 });
 
 test('«Έγινε» without signal waits in the outbox and says so; with signal it goes to the server once, and the job is then done', async ({ page, context }) => {
+  await fixClock(page);
   const state = await mock(page);
   await page.goto('/');
   await page.locator('nav.tabs [data-tab="more"]').click();
@@ -57,7 +59,7 @@ test('«Έγινε» without signal waits in the outbox and says so; with signal
   await expect(page.getByTestId('worker-job')).toHaveCount(1);
   await context.setOffline(true);
   await page.getByTestId('job-done').click();
-  await page.getByTestId('worker-start').fill(new Date(Date.now() - 3_600_000).toISOString().slice(0, 16));
+  await page.getByTestId('worker-start').fill(await athensInput(page, -3_600_000));
   await page.getByTestId('job-confirm').click();
   // 10 seconds to take it back, then it is queued
   await expect(page.getByTestId('worker-waiting')).toContainText('Αποθηκεύτηκε · θα σταλεί όταν έχει σήμα', { timeout: 20000 });

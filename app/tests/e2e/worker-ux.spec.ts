@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { athensInput, fixClock } from './helpers/clock';
 import { iphone } from './helpers/iphone';
 
 // The worker's screens: a closed button still answers, every panel has a way back, the undo button is big, the view survives a reload.
@@ -13,6 +14,7 @@ async function demoWorker(page: import('@playwright/test').Page) {
 }
 
 test('the panels have a «Πίσω», the undo button is 72 px and the worker view survives a reload', async ({ page }) => {
+  await fixClock(page);
   await demoWorker(page);
   await page.getByTestId('job-done').first().click();
   await expect(page.getByTestId('job-confirm')).toBeVisible();
@@ -24,7 +26,7 @@ test('the panels have a «Πίσω», the undo button is 72 px and the worker vi
   await page.getByTestId('job-back').click();
   await expect(page.getByTestId('skip-rain')).toHaveCount(0);
   await page.getByTestId('job-done').first().click();
-  await page.getByTestId('worker-start').fill(new Date(Date.now() - 3_600_000).toISOString().slice(0, 16));
+  await page.getByTestId('worker-start').fill(await athensInput(page, -3_600_000));
   await page.getByTestId('job-confirm').click();
   const undo = page.getByTestId('toast').getByRole('button');
   expect((await undo.boundingBox())!.height).toBeGreaterThanOrEqual(72);

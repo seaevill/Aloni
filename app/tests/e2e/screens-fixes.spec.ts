@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { athensInput, fixClock } from './helpers/clock';
 import { iphone } from './helpers/iphone';
 
 const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
@@ -48,8 +49,9 @@ test('the GPS line names latitude and longitude, and a negative balance uses a r
 });
 
 test('the «expires soon» warning follows the setting in More (60 days by default, changeable); EC can be mS/cm', async ({ page }) => {
+  await fixClock(page);
   await iphone(page);
-  const inDays = await page.evaluate((n) => { const d = new Date(Date.now() + n * 86400000); return d.toISOString().slice(0, 10); }, 45);
+  const inDays = (await athensInput(page, 45 * 86_400_000)).slice(0, 10);
   await tab(page, 'stock');
   await page.getByTestId('empty-state').locator('button').click();
   await page.locator('input.input').nth(0).fill('Kocide 2000');

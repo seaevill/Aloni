@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { fixClock } from './helpers/clock';
 import { iphone } from './helpers/iphone';
 import { openHistory, closeHistory } from './helpers/farm';
 
@@ -67,6 +68,7 @@ test('the demo farm fills every screen, read-only, in Greek at 375 px without ov
 });
 
 test('the weather names its source and licence and the time of the data; after 12 hours it says «παλιά δεδομένα»', async ({ page }) => {
+  await fixClock(page);
   await iphone(page);
   await tab(page, 'parcels');                                                      // the REAL farm: one parcel, then stored weather for it
   await page.getByTestId('empty-state').locator('button').click();

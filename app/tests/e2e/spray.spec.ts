@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { athensInput, fixClock } from './helpers/clock';
 import { setup, spray, openHistory, closeHistory, fillStart } from './helpers/farm';
 import { iphone } from './helpers/iphone';
 
@@ -114,10 +115,11 @@ test('the spray form meets the UX bar in el/tr/en (375 px, targets, axe)', async
 });
 
 test('a spraying entered 10 days late: refused without «Λόγος καθυστέρησης», recorded and marked with it', async ({ page }) => {
+  await fixClock(page);
   await iphone(page);
   await setup(page, true);
   await spray(page);
-  const tenDaysAgo = await page.evaluate(() => new Date(Date.now() - new Date().getTimezoneOffset() * 60000 - 10 * 86400000).toISOString().replace(/:\d{2}\.\d{3}Z$/, ''));
+  const tenDaysAgo = await athensInput(page, -10 * 86_400_000);
   await page.locator('input[type=datetime-local]').nth(1).fill(tenDaysAgo);   // the END (the first one is the start)
   await fillStart(page, new Date(Date.parse(`${tenDaysAgo}:00Z`) - 3_600_000).toISOString().slice(0, 16));
   await expect(page.getByTestId('spray-late-reason')).toBeVisible();
@@ -154,9 +156,8 @@ test('a label an UNSIGNED spray used is not edited in place: a change makes a NE
   await inputs(page).nth(1).fill('10');
   await page.getByTestId('labeluse-save').click();
   await expect(page.getByTestId('labeluse-save')).toHaveCount(0);                    // the form closed = the save finished (the card's status was visible BEFORE the save: waiting on it read the old row on a slow runner)
-  all = await rows();
-  expect(all).toHaveLength(2);
-  expect(all.find((x) => !x.deleted_at)).toMatchObject({ supersedes_id: oldRow.id, change_reason: 'label revised', phi_days: '10' });
+  await expect.poll(async () => (await rows()).find((x) => !x.deleted_at)).toMatchObject({ supersedes_id: oldRow.id, change_reason: 'label revised', phi_days: '10' });
+  expect(await rows()).toHaveLength(2);
 });
 
 test('«Διόρθωση»: every field can be corrected with a reason; the original stays next to it; a changed quantity moves the stock exactly; the end can not go earlier', async ({ page }) => {

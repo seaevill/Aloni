@@ -1,10 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
+import { athensInput, installClock, fixClock } from './helpers/clock';
 import { iphone } from './helpers/iphone';
 
 const count = (page: Page, store: string) => page.evaluate((s) => new Promise<number>((res) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const q = r.result.transaction(s).objectStore(s).count(); q.onsuccess = () => res(q.result); }; }), store);
 
 test('worker view (demo only): assigned sprays «Έγινε / Δεν έγινε» with 72 px buttons and a 10 s undo; product and dose cannot be changed', async ({ page }) => {
-  await page.clock.install();
+  await installClock(page);
   const errors = await iphone(page);
   await expect(page.getByTestId('open-worker-view')).toHaveCount(0); // not offered on the real farm
   await page.getByTestId('empty-state').locator('button').nth(1).click();
@@ -24,7 +25,7 @@ test('worker view (demo only): assigned sprays «Έγινε / Δεν έγινε�
   const sprays = await count(page, 'job_spray');
   await jobs.first().getByTestId('job-done').click();
   await expect(page.getByTestId('worker-start')).toBeVisible(); // start, end time and note only (no dose or product)
-  await page.getByTestId('worker-start').fill(new Date(Date.now() - 3_600_000).toISOString().slice(0, 16));
+  await page.getByTestId('worker-start').fill(await athensInput(page, -3_600_000));
   await page.getByTestId('job-confirm').click();
   await expect(jobs).toHaveCount(1);
   await page.getByTestId('toast').getByRole('button', { name: 'Αναίρεση' }).click(); // taken back: nothing was written
@@ -32,7 +33,7 @@ test('worker view (demo only): assigned sprays «Έγινε / Δεν έγινε�
   expect(await count(page, 'job_spray')).toBe(sprays);
 
   await jobs.first().getByTestId('job-done').click();
-  await page.getByTestId('worker-start').fill(new Date(Date.now() - 3_600_000).toISOString().slice(0, 16));
+  await page.getByTestId('worker-start').fill(await athensInput(page, -3_600_000));
   await page.getByTestId('job-confirm').click();
   await expect(page.getByTestId('toast')).toContainText('10″');
   await page.clock.fastForward(10500); // the 10 seconds pass
@@ -66,6 +67,7 @@ test('worker view (demo only): assigned sprays «Έγινε / Δεν έγινε�
 });
 
 test('worker view: a field that was just sprayed shows a red re-entry warning and the «Έγινε» button is locked', async ({ page }) => {
+  await fixClock(page);
   await iphone(page);
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-counts')).toBeVisible(); // the demo is loaded
