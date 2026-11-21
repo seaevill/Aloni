@@ -1,0 +1,20 @@
+{
+  "app": "klouves",
+  "at": "2026-11-21T10:30:00Z",
+  "data": {
+    "klv.db.cfg": {
+      "products": [
+        { "id": "known", "name": "ΣΠΑΝΑΚΙ" },
+        { "id": "unknown-slug", "name": "Άγνωστο προϊόν" }
+      ],
+      "clients": [
+        { "id": "client-a", "name": "Μανάβικο Άνοιξη" },
+        { "id": "client-a", "name": "Μανάβικο Άνοιξη" }
+      ]
+    },
+    "klv.db.day.2026-11-20": { "orders": {} },
+    "klv.db.day.2026-11-21": {
+      "orders": { "client-a": { "known": 0.5, "unknown-slug": 1.25 } }
+    }
+  }
+}
