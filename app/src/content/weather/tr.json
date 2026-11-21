@@ -1,0 +1,8 @@
+{
+  "gusts": "Rüzgâr hamlesi kısa süreli güçlü esintidir. Ortalama rüzgârdan farklıdır.",
+  "dewPoint": "Çiy noktası, yüzeylerde su damlacıkları oluşmaya başlamadan önce havanın ne kadar soğuması gerektiğini anlamaya yardımcı olur.",
+  "leafWetness": "Yaprak ıslaklığı, yüzeyde su olup olmadığını ve ne kadar süre ıslak kaldığını gösterir. Ölçüm veya tahmin olabilir.",
+  "rain": "Yağışın milimetre değeri, düz bir yüzeyde birikecek suyun derinliğini gösterir. Bir zaman aralığına aittir.",
+  "soilTemperature": "Toprak sıcaklığı, belirtilen derinlikteki toprağın sıcaklığıdır. Hava sıcaklığından farklı olabilir.",
+  "frost": "Kırağı soğuk yüzeylerde buz oluşmasıdır. Yaprağın sıcaklığı havadan farklı olabilir."
+}
