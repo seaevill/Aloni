@@ -13,9 +13,14 @@ test('Demo lot details show the recorded ledger with no adjustment action', asyn
   const open = page.getByTestId('lot-detail-open').first();
   await expect(open).toHaveAccessibleName('Κινήσεις παρτίδας');
   expect((await open.boundingBox())?.height).toBeGreaterThanOrEqual(56);
+  const days = page.getByTestId('lot').first().getByTestId('lot-days-left');
+  await expect(days).toContainText('Ημέρες έως τη λήξη');
+  await expect(days.locator('[data-tone="info"]')).toBeVisible();
+  const expectedDays = await days.innerText();
   await open.click();
   const detail = page.getByTestId('lot-detail');
   await expect(detail.getByTestId('lot-detail-movement').first()).toBeVisible();
+  await expect(detail.getByTestId('lot-days-left')).toHaveText(expectedDays);
   await expect(detail.getByTestId('adjust-open')).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
   await detail.getByRole('button', { name: 'Επιστροφή' }).click();

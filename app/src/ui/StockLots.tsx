@@ -49,11 +49,13 @@ export function StockLots({ product, onBack, readOnly = false }: { product: Row;
     if (f.negative) flags.push('stock.flag.negative');
     if (f.unknown) flags.push('stock.flag.unknown');
     const expiryDate = asDate(lot.expiry);
+    const days = expiryDate && isCalendarDate(today) ? (Date.parse(expiryDate) - Date.parse(today)) / dayMs : undefined;
+    const daysLeft = days !== undefined && days >= 0 ? words.days.replace('{n}', formatQty(days)) : undefined;
     if (f.expired && expiryDate !== undefined && isCalendarDate(today)) flags.push('stock.flag.expired');
     if (f.soon) flags.push('stock.flag.soon');
     const lines = own.map((m) => ({ id: m.id, at: text(m.created_at), line: t('stock.movement', { sign: m.direction === 'in' ? '+' : '−', qty: formatQty(text(m.qty_str)), reason: reasonText(m.reason) }) }));
     return {
-      lot, flags, lines, expiryDate,
+      lot, flags, lines, daysLeft,
       title: text(lot.batch) ? t('stock.batch', { batch: text(lot.batch) }) : t('stock.noBatch'),
       expiry: expiryDate ? t('stock.expiry', { date: formatDateLong(expiryDate) }) : words.unknown,
       balance: t('stock.balance', { qty: qtyText(balance, unit) }),
@@ -61,14 +63,12 @@ export function StockLots({ product, onBack, readOnly = false }: { product: Row;
   });
   const detail = detailKey === undefined ? undefined : cards.find((c) => c.lot.lot_key === detailKey);
   if (detail) {
-    const days = detail.expiryDate && isCalendarDate(today) ? (Date.parse(detail.expiryDate) - Date.parse(today)) / dayMs : undefined;
-    const daysLeft = days !== undefined && days >= 0 ? words.days.replace('{n}', formatQty(days)) : undefined;
     return <section data-testid="lot-detail">
       <PageHead heading={detail.title} back={() => setDetailKey(undefined)} backText={t('info.back')} />
       <Card>
         <p>{detail.balance}</p>
         <p>{detail.expiry}</p>
-        {daysLeft !== undefined && <p data-testid="lot-days-left">{daysLeft}</p>}
+        {detail.daysLeft !== undefined && <span data-testid="lot-days-left"><Chip tone="info">{detail.daysLeft}</Chip></span>}
         {detail.flags.map((key) => <Chip key={key} tone={key === 'stock.flag.expired' ? 'blocked' : 'warn'}>{t(key)}</Chip>)}
       </Card>
       <h2>{words.moves}</h2>
@@ -88,6 +88,7 @@ export function StockLots({ product, onBack, readOnly = false }: { product: Row;
       {cards.map((c) => (
         <div class="card" key={c.lot.id} data-testid="lot">{c.title}
           <small>{c.expiry}</small>
+          {c.daysLeft !== undefined && <span data-testid="lot-days-left"><Chip tone="info">{c.daysLeft}</Chip></span>}
           <small data-testid="lot-balance">{c.balance}</small>
           {c.flags.map((k) => <span key={k} data-testid="lot-flag"><Chip tone={k === 'stock.flag.expired' ? 'blocked' : 'warn'}>{t(k)}</Chip></span>)}
           {c.lines.map((m) => <small key={m.id} data-testid="movement">{m.line}</small>)}
