@@ -47,7 +47,7 @@ export async function initDb() {
 
 export async function loadDemo() {
   const data = (await import('../../../reference/prototype/data.json')).default as unknown as PrototypeData;
-  await importDemo(db, data, new Date());
+  await importDemo(db, data);
   hasDemo.value = true;
   activeFarm.value = DEMO_FARM_ID;
   dataVersion.value++;
