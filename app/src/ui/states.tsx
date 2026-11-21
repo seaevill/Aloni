@@ -2,7 +2,6 @@ import { useEffect, useState } from 'preact/hooks';
 import { SYNC_CONNECTED } from '../config';
 import { db } from '../db';
 import { pendingOps, rejectedOps, unsyncedIds } from '../repo';
-import { dismissRejected } from '../repo/sync-apply';
 import { t, tn, type I18nKey } from '../i18n';
 import { lastSyncOk, syncError } from '../sync/run';
 import { syncChip } from '../sync/chip';
@@ -31,23 +30,6 @@ export function SyncChip() {
   if (live) text = live.keys.map((k) => (k.key === 'sync.pending' ? tn('sync.pending', k.n) : k.key === 'sync.refused' ? tn('sync.refused', k.n) : k.key === 'sync.last' ? t('sync.last', k.vars) : t(k.key))).join(' · ');
   if (!text) return null;
   return <p class={live ? `chip ${live.tone}` : SYNC_CONNECTED ? 'chip' : 'chip calm'} role="status" data-testid="sync-chip">{text}</p>;
-}
-
-/** The records the server REFUSED (only with a live sync): they stay here until the owner has seen them. Never a silent loss. */
-export function RejectedList() {
-  const rows = rejectedOps.value;
-  if (!SYNC_CONNECTED || rows.length === 0) return null;
-  return (
-    <section class="card blocked" role="alert" data-testid="sync-rejected">
-      <strong>{t('sync.rejected.title')}</strong>
-      {rows.map((o) => (
-        <div class="line" key={o.op_id}>
-          <small>{t('sync.rejected.line', { table: o.table, reason: o.reason ?? '' })}</small>
-          <button class="btn secondary" onClick={() => void dismissRejected(db, o.op_id)}>{t('sync.rejected.dismiss')}</button>
-        </div>
-      ))}
-    </section>
-  );
 }
 
 /** The wording under a saved worker record: with a live sync «saved, will be sent when there is signal»; without it the older, calmer line. */

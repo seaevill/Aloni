@@ -100,3 +100,32 @@ test('without a fresh backup the wizard offers «Αντίγραφο τώρα»: 
   await expect(page.getByTestId('golive-start')).toBeEnabled();
   await expect(page.getByTestId('golive-backup-now')).toHaveCount(0);                         // nothing to offer once the backup is fresh
 });
+
+// B6: a record the server REFUSES is explained in plain Greek (what, why, what to do), stays on the phone, and «Το είδα» only removes the line.
+test('a refused record is explained, never lost; «Το είδα» removes the line but not the record', async ({ page }) => {
+  await mock(page);
+  await prepare(page);
+  await signIn(page);
+  await page.getByTestId('golive-start').click();
+  await expect(page.getByTestId('golive-on')).toBeVisible();
+  await page.route('**/mock/rest/v1/rpc/apply_ops', (r) => {                                  // from now on the server refuses every record
+    const ops = (JSON.parse(r.request().postData() ?? '{}') as { p_ops: Array<{ op_id: string }> }).p_ops;
+    return r.fulfill(json(ops.map((o) => ({ op_id: o.op_id, status: 'rejected', code: '23514', reason: 'harvest blocked: a spray on this planting has an unknown or running waiting (PHI) or re-entry (REI) period' }))));
+  });
+  await page.locator('nav.tabs [data-tab="parcels"]').click();
+  await page.locator('main button.btn').first().click();
+  await page.locator('input.input').nth(0).fill('Νέο χωράφι'); await page.locator('input.input').nth(1).fill('0,7');
+  await page.getByTestId('parcel-save').click();
+  await page.evaluate(() => window.dispatchEvent(new Event('online')));                       // a sync round now
+  const box = page.getByTestId('sync-rejected');
+  await expect(box).toBeVisible({ timeout: 15_000 });
+  await expect(box.getByTestId('rejected-why')).toContainText('Η συγκομιδή είναι κλειστή');
+  await expect(box.getByTestId('rejected-fix')).toContainText('Περιμένετε');
+  await expect(box).toContainText('παραμένει στο τηλέφωνο');
+  await expect(box.getByTestId('rejected-raw')).toContainText('harvest blocked');             // the server's own words stay visible
+  const parcels = () => page.evaluate(() => new Promise<number>((ok) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const q = r.result.transaction(['parcels']).objectStore('parcels').count(); q.onsuccess = () => { r.result.close(); ok(q.result); }; }; }));
+  expect(await parcels()).toBe(2);                                                            // both parcels are still on the phone
+  await box.getByRole('button', { name: 'Το είδα' }).click();
+  await expect(box).toHaveCount(0);
+  expect(await parcels()).toBe(2);                                                            // dismissing the line deleted no record
+});
