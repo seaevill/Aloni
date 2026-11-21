@@ -155,3 +155,4 @@ button.card.cutline { display:block; width:100%; text-align:start; border:0; fon
 .cutline .field-head { align-items:center; }
 .ds-pair { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--sp-8); margin:0 0 var(--sp-8); }
 .wx[role="button"] { cursor:pointer; }
+button.tasks-counts { display:block; width:100%; text-align:start; border:0; background:none; font:inherit; padding:var(--sp-8) 0; min-height:var(--tap); }

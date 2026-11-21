@@ -92,5 +92,9 @@
   "ui.weather.hourly": "Saatlik tahmin",
   "ui.weather.hourly.why": "telefonda yok: sunucu burada yalnızca günlük değer tutuyor",
   "ui.weather.none.chip": "Veri yok",
-  "ui.weather.none.why": "Kayıtlı hava durumu yok: hiçbir tarlanın konumu yok ya da tahmin henüz alınmadı. Tarlaya konum girin."
+  "ui.weather.none.why": "Kayıtlı hava durumu yok: hiçbir tarlanın konumu yok ya da tahmin henüz alınmadı. Tarlaya konum girin.",
+  "ui.jobs.none": "İş yok: ne açık iş ne de bugün yapılan.",
+  "ui.jobs.worker.none": "işçi yok",
+  "ui.jobs.where.none": "ekim yok",
+  "ui.jobs.day.none": "gün yok"
 }
