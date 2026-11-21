@@ -38,8 +38,10 @@ export default defineConfig({
       workbox: {
         skipWaiting: false, clientsClaim: false,
         globPatterns: ['**/*.{js,css,html,png,svg,webmanifest,woff2}'], navigateFallback: '/index.html',
+        // the Hindi font (121 kB) is for worker phones only: it is not part of the first install (that made every owner phone download it); it is cached the first time it is used and then works offline
+        globIgnores: ['**/noto-sans-devanagari-*.woff2'],
         // the base map: the tiles and style the owner has SEEN stay available offline (cache first, at most 400 entries, 30 days); nothing is fetched unless the map is opened
-        runtimeCaching: [{ urlPattern: ({ url }) => url.hostname === 'tiles.openfreemap.org', handler: 'CacheFirst', options: { cacheName: 'map-tiles', expiration: { maxEntries: 400, maxAgeSeconds: 30 * 86400 }, cacheableResponse: { statuses: [0, 200] } } }],
+        runtimeCaching: [{ urlPattern: ({ url }) => /\/noto-sans-devanagari-[^/]*\.woff2$/.test(url.pathname), handler: 'CacheFirst', options: { cacheName: 'font-hindi', expiration: { maxEntries: 2, maxAgeSeconds: 365 * 86400 }, cacheableResponse: { statuses: [0, 200] } } }, { urlPattern: ({ url }) => url.hostname === 'tiles.openfreemap.org', handler: 'CacheFirst', options: { cacheName: 'map-tiles', expiration: { maxEntries: 400, maxAgeSeconds: 30 * 86400 }, cacheableResponse: { statuses: [0, 200] } } }],
       },
     }),
   ],
