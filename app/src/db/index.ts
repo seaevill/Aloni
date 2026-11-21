@@ -8,8 +8,6 @@ import { t } from '../i18n';
 import { commitAllHeld } from '../worker/held';
 import { demoOrders, mapKey, migrateUnkeyedOrders, ordersKey, saveOrders } from '../orders/store';
 import { parseHash, savedState, sheet, tab } from '../ui/nav';
-import { migrateUnkeyedOrders } from '../orders/store';
-import { parseHash, savedState, tab } from '../ui/nav';
 import { dbBlocked, dirty, needRefresh } from '../pwa/update';
 
 export const db = new AppDB();
