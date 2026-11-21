@@ -7,11 +7,11 @@ const NBSP = ' ';
 /** One big number (44 or 24): label above, value, unit joined to it by a no-break space. A missing value is «άγνωστο» in muted 22/700: never 0 and never a lone dash. `value` is already formatted by the caller. */
 export function BigNum({ value, unit, caption, size = 'big' }: { value: string | undefined; unit?: string; caption: string; size?: 'big' | 'small' }) {
   const known = value !== undefined && value !== '';
-  const shown = known ? (unit !== undefined ? `${value}${NBSP}${unit}` : value) : t('ui.unknown');
+  const shown = known ? value : t('ui.unknown');
   return (
     <div class="ds-bignum" data-size={size} data-known={known ? 'yes' : 'no'}>
       <span class="ds-bignum-caption">{caption}</span>
-      <span class="ds-bignum-value">{shown}</span>
+      <span class="ds-bignum-value">{shown}{known && unit !== undefined && <>{NBSP}<span class="ds-bignum-unit">{unit}</span></>}</span>
     </div>
   );
 }
