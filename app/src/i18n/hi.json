@@ -57,7 +57,6 @@
   "pwa.offline": "बिना इंटरनेट के चलने के लिए तैयार",
   "pwa.blocked": "ऐप के दूसरे टैब बंद करें।",
   "sync.both": "{offline} · {pending}",
-  "sync.rejected.line": "{table} — {reason}",
   "info.back": "वापस",
   "worker.choose": "कर्मचारी",
   "worker.committed": "काम 10 सेकंड में दर्ज होगा।",
