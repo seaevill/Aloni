@@ -43,7 +43,7 @@ import type { Row } from '../db/schema';
 // today's jobs and «+ Ανάθεση εργασίας». The records of the past live on their own screen («Ιστορικό»). Nothing here decides anything: the numbers come from the same functions as before.
 
 /** Symbols that mean the same in every language (a word always sits next to them: colour is never the only signal). */
-const MARK = { blocked: '✕', wait: '◷', info: 'ⓘ' } as const;
+const MARK = { blocked: 'lock', wait: 'hourglass', info: 'info' } as const;      // drawn icons by tone (a text glyph such as × looked like a close button)
 const JOB_GROUPS = [['overdue', 'jobs.group.overdue'], ['today', 'jobs.group.today'], ['tomorrow', 'jobs.group.tomorrow'], ['later', 'jobs.group.later']] as const;
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 const SP = ' ';
@@ -276,7 +276,7 @@ export function Today() {
       )}
       {loaded && has && urgent && (
         <section class="hero" data-testid="urgent" aria-label={t('today.urgent')}>
-          <span class="kicker"><span aria-hidden="true">{BADGE[urgent.state].mark}</span>{SP}{t('today.urgent')}</span>
+          <span class="kicker"><span aria-hidden="true"><Icon name={BADGE[urgent.state].mark} /></span>{SP}{t('today.urgent')}</span>
           <h2>{urgent.state === 'unknown' ? t('today.urgent.unknown', { parcel: text(urgent.p.name) }) : t('today.urgent.wait', { d: formatDate(urgent.at.slice(0, 10)), crop: urgent.crops.split(', ')[0] ?? '', parcel: text(urgent.p.name) })}</h2>
           <button class="btn lime" data-testid="urgent-action" onClick={() => setHistory(true)}>{t('today.urgent.action')}</button>
         </section>
