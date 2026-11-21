@@ -1,6 +1,5 @@
 import { shiftWeather } from './demo-weather';
 import { dateAfterDays, isCalendarDate } from '@aloni/rules-core';
-import { dateAfterDays } from '@aloni/rules-core';
 import { mondayOf, type KlouvesOrders } from '../orders/klouves';
 import { mapKey, ordersKey } from '../orders/store';
 import { athensToday } from '../plantings/planting';
