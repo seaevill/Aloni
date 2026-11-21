@@ -236,13 +236,25 @@ rollback;
 7. **Kırmızı kutu «Ο διακομιστής δεν δέχτηκε αυτές τις εγγραφές»:** her satır ne olduğunu, nedenini ve ne yapılacağını yazar; **kayıt telefonda durur, kaybolmaz**. Ekrandaki metni bana yaz; «Το είδα» yalnızca satırı kaldırır.
 8. **Sorun olursa geri dönüş:** (a) **Άλλα → Αποσύνδεση**: senkron durur, telefonda hiçbir şey silinmez, bekleyenler sırada kalır; düzelince yeniden giriş + aynı düğme **kaldığı yerden** devam eder. (b) Telefon verisi bozulursa §3 (yedekten dön). (c) Sunucu tarafı için §10.3 (Supabase Backups). Üretime hiçbir yapay zeka dokunmaz.
 
-## 14a. Hava durumu – KISA yol (tek tarla dry-run, sonra çalıştırma)
-Ayrıntı aşağıdaki §14'te. Gizli anahtarı **hiçbir yere yazma**; Claude üretime dokunmaz, her tıklamayı **sen** yaparsın.
-1. **Token'ı ÖNCE oluştur** (§14 adım 1): parola yöneticisinde 32+ karakterlik rastgele dize → Supabase **Edge Functions → Secrets** (`WEATHER_CRON_TOKEN`) ve **Database → Vault** (`weather_cron_token`, `weather_function_url`). SQL Editor'e anahtar yapıştırma.
-2. **GitHub → Actions → «Weather function deploy (manual)»** → önce `dry-run` (hiçbir şey yüklemez) → sonra `deploy` + `DEPLOY` → **Review deployments → Approve**.
-3. **Tek tarla denemesi:** Supabase → **Edge Functions → weather-fetch → Test**, gövdede **yalnızca bir tarlanın** `id`'si, başlık `Authorization: Bearer <WEATHER_CRON_TOKEN>`. Doğru: `"ok":true,"dryRun":true,"stored":0` ve günlere göre sıcaklıklar; **hiçbir tabloya yazılmaz**. Rakamları yr.no ile karşılaştır.
-4. Mantıklıysa **gerçek çalıştırma** (gövde `{}`), sonra telefonda **Σήμερα** hava kartı. Takvim kendiliğinden 6 saatte bir çalışır.
-5. Geri dönüş: §14'ün sonunda.
+## 14a. Hava durumu – TEK SAYFA (her adım tek yer, tek tıklama; sen yaparsın, Claude üretime dokunmaz)
+**Yayın yalnızca senin «tamam»ından sonra.** Gizli anahtarı **hiçbir yere yazma** (bana da, SQL Editor'e de). Ayrıntı ve geri dönüş: §14.
+
+**Önkoşul (bir bakış):** Supabase → **Database → Migrations** listesinde **0029, 0030, 0032** görünüyor (yoksa önce §10). Konumu girilmiş **en az bir tarla** var.
+
+| # | Nerede | Ne yaparsın | Doğru sonuç |
+|---|---|---|---|
+| 1 | Parola yöneticisi | 32+ karakterlik rastgele bir dize üret, adı `WEATHER_CRON_TOKEN` | (yalnızca sende durur) |
+| 2 | Supabase → **Edge Functions → Secrets → Add new secret** | ad `WEATHER_CRON_TOKEN`, değer = o dize | listede görünür |
+| 3 | Supabase → **Database → Vault → Add new secret** (2 kez) | ad `weather_cron_token` (aynı dize) ve ad `weather_function_url` (`https://<PROJE-KODU>.supabase.co/functions/v1/weather-fetch`) | iki satır görünür |
+| 4 | GitHub → **Actions → «Weather function deploy (manual)» → Run workflow** | `mode = dry-run` | yeşil; yalnızca hedefi (aloni, Frankfurt) ve dosyaları listeler, **hiçbir şey yüklemez** |
+| 5 | aynı yer | `mode = deploy`, `confirm = DEPLOY` → **Review deployments → Approve** | yeşil, «Deployed Functions … weather-fetch» |
+| 6 | Supabase → **Table Editor → parcels** | denenecek **tek** tarlanın `id`'sini kopyala | — |
+| 7 | Supabase → **Edge Functions → weather-fetch → Test** | başlık `Authorization: Bearer <WEATHER_CRON_TOKEN>` (service_role anahtarı DEĞİL); gövde `{"dry_run": true, "parcel_id": "<TARLA-ID>"}` | `"ok":true,"source":"metno","dryRun":true,"stored":0` + günlere göre en düşük/en yüksek sıcaklık. **Hiçbir tabloya yazılmaz.** |
+| 8 | yr.no | aynı yeri aç, sıcaklıkları karşılaştır | mantıklı → bana «tamam» de |
+| 9 | Supabase → aynı Test kutusu | gövde `{}` (gerçek çalıştırma, bir kez) | `"stored":N`; **Table Editor → weather_daily** ve **weather_fetch_state** dolu |
+| 10 | Telefon → **Σήμερα** | hava kartına dokun (senkron açıksa ≤10 dk) | sayfada **Πηγή: MET Norway (CC BY 4.0)**, **Εκδόθηκε: <saat>**, günlere göre rakamlar. Veri 12 saatten eskiyse **«Παλιά δεδομένα»** etiketi çıkar. Veri yoksa kart yine açılır ve **«Χωρίς δεδομένα»** + nedenini yazar (hiçbir rakam uydurulmaz). |
+
+Takvim kendiliğinden **6 saatte bir** çalışır. **Geri dönüş (tek komut):** `select cron.unschedule('weather-fetch');` — fonksiyonu silmek gerekmez; telefonda eski veri 12 saat sonra «παλιά δεδομένα» olur. Hava yalnızca **bilgidir**: kural, bildirim veya ilaç kararı vermez.
 
 ## 14. Hava durumunu açma (6 saatte bir; ÖNCE 0029 uygulanmış olmalı)
 
