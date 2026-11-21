@@ -153,3 +153,5 @@ button.card.cutline { display:block; width:100%; text-align:start; border:0; fon
 .ds-ring-pct { margin-top:var(--sp-4); font-size:var(--fs-body); font-weight:700; color:var(--muted); }
 .ds-ring-block { display:flex; justify-content:center; margin:var(--sp-8) 0 var(--sp-12); }
 .cutline .field-head { align-items:center; }
+.ds-pair { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--sp-8); margin:0 0 var(--sp-8); }
+.wx[role="button"] { cursor:pointer; }
