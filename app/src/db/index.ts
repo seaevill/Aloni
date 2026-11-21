@@ -2,12 +2,14 @@ import { signal } from '@preact/signals';
 import { AppDB, type FarmRow } from './schema';
 import { importDemo, removeDemo, type PrototypeData } from './import-demo';
 import { migrateLegacyDb } from './legacy';
-import { delLocal, guardAppendOnly, putLocal, refreshPending } from '../repo';
+import { guardAppendOnly, putLocal, refreshPending } from '../repo';
 import { APP_NAME, DEMO_FARM_ID } from '../config';
 import { t } from '../i18n';
 import { commitAllHeld } from '../worker/held';
 import { demoOrders, mapKey, migrateUnkeyedOrders, ordersKey, saveOrders } from '../orders/store';
 import { parseHash, savedState, sheet, tab } from '../ui/nav';
+import { migrateUnkeyedOrders } from '../orders/store';
+import { parseHash, savedState, tab } from '../ui/nav';
 import { dbBlocked, dirty, needRefresh } from '../pwa/update';
 
 export const db = new AppDB();
@@ -49,8 +51,7 @@ export async function initDb() {
 
 export async function loadDemo() {
   const data = (await import('../../../reference/prototype/data.json')).default as unknown as PrototypeData;
-  await importDemo(db, data);
-  const sample = demoOrders(Date.now()); await saveOrders(db, DEMO_FARM_ID, sample.orders, sample.map);      // a fictional order list, in the demo farm only
+  await importDemo(db, data, new Date());
   hasDemo.value = true;
   activeFarm.value = DEMO_FARM_ID;
   dataVersion.value++;
@@ -58,7 +59,6 @@ export async function loadDemo() {
 
 export async function deleteDemo() {
   await removeDemo(db);
-  await delLocal(db, ordersKey(DEMO_FARM_ID)); await delLocal(db, mapKey(DEMO_FARM_ID));      // the demo's order sample goes with it
   hasDemo.value = false;
   if (activeFarm.value === DEMO_FARM_ID) activeFarm.value = realFarmId.value;
   dataVersion.value++;
