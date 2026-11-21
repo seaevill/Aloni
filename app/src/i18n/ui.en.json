@@ -96,5 +96,13 @@
   "ui.jobs.none": "No jobs: neither open nor done today.",
   "ui.jobs.worker.none": "no worker",
   "ui.jobs.where.none": "no planting",
-  "ui.jobs.day.none": "no day"
+  "ui.jobs.day.none": "no day",
+  "ui.quick.open": "Quick add",
+  "ui.quick.title": "Quick add",
+  "ui.quick.spray": "New spraying",
+  "ui.quick.harvest": "Harvest",
+  "ui.quick.observe": "Observation",
+  "ui.quick.job": "Job for tomorrow",
+  "ui.quick.observe.error": "Choose a field and what you saw.",
+  "ui.quick.saved": "The observation was recorded."
 }
