@@ -16,11 +16,12 @@ export interface HarvestTable { rows: HarvestLine[]; unreadable: HarvestLine[]; 
 
 /** The logged harvests of the last `days` days up to `nowIso`, newest first, and their exact sum (undefined when no count is readable). */
 export function harvestTable(harvests: readonly Row[], plantings: readonly Row[], parcels: readonly Row[], crops: readonly Row[], nowIso: string, days: number): HarvestTable {
-  const since = new Date(Date.parse(nowIso) - days * 86_400_000).toISOString();
+  const today = dayOf(nowIso); const first = dayOf(new Date(Date.parse(`${today}T12:00:00Z`) - (days - 1) * 86_400_000).toISOString());     // the SAME window as the tile and the sparkline (today.ts cratesPerDay): the last `days` Athens calendar days, today included
   const rows: HarvestLine[] = []; const unreadable: HarvestLine[] = [];
   for (const h of harvests) {
     const at = text(h.harvested_at);
-    if (at < since || at > nowIso) continue;
+    const day = dayOf(at);
+    if (day === '' || day < first || day > today) continue;
     const planting = plantings.find((p) => p.id === h.planting_id);
     const n = parseWhole<'Crates'>(text(h.crates_str));
     const line: HarvestLine = {
