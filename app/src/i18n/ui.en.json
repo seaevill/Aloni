@@ -20,5 +20,8 @@
   "ui.today.plantings.other": "plantings",
   "ui.today.holdUnknown": "+{n} waiting or unknown",
   "ui.today.cut7": "Crates, 7 days",
-  "ui.today.perDay": "per day, logged only"
+  "ui.today.perDay": "per day, logged only",
+  "ui.sheet.close": "Close",
+  "ui.sheet.notfound.head": "Not found",
+  "ui.sheet.notfound.body": "This page no longer exists or its data is missing."
 }

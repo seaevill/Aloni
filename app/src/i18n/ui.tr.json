@@ -20,5 +20,8 @@
   "ui.today.plantings.other": "ekim",
   "ui.today.holdUnknown": "+{n} beklemede veya bilinmiyor",
   "ui.today.cut7": "Kasa, 7 gün",
-  "ui.today.perDay": "günlük, yalnız kaydedilenler"
+  "ui.today.perDay": "günlük, yalnız kaydedilenler",
+  "ui.sheet.close": "Kapat",
+  "ui.sheet.notfound.head": "Bulunamadı",
+  "ui.sheet.notfound.body": "Bu sayfa artık yok ya da verileri eksik."
 }

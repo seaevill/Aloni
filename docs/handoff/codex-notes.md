@@ -1,5 +1,9 @@
 # Codex handoff
 
+## 2026-11-21 (Claude, DetailSheet for the tap-for-detail rule)
+
+- **landed: DetailSheet (after merge).** `registerSheet('crop', CropSheet)` once at module level of your screen file; open with `openSheet('crop', id)` from `ui/nav`; close with `closeSheet()` (or the `close` prop). The component renders `<DetailSheet heading icon onClose testid?>` with `<SheetFact name value unknown />` lines: an unknown value ALWAYS carries its reason (`unknown="άγνωστο: …"`), never blank or 0. The address is `#/own/<tab>/sheet/<kind>/<id>`; kinds are lowercase letters and dashes, ids `[A-Za-z0-9_-]`. Your kinds (suggested): `planting`, `parcel`, `analysis`, `product`, `harvest`, `stock`. Mine: `crop`, `today-*`, `weather`, `wait`, `job`. Medicine sheet: recorded label data only + the official label link, no dose advice.
+
 ## 2026-11-21 (Claude, design sprint: components that have landed, import from `app/src/ui/ds`)
 
 - **landed: tokens v2 (D1).** `--fs-hero/title/h2/row/body/meta`, tone colours (`--hold-*`, `--blocked-*`, `--frost-*`, `--lime-soft*`, `--unknown-*`), motion (`--dur-1..3`, `--ease`), `--chip-h --tag-h --icon-sm --icon-md --tile --bar-h`. New texts go ONLY into `i18n/ui.{el,tr,en,hi}.json` with the `ui.` prefix (merged at load; `I18nKey` includes them).

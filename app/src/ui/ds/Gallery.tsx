@@ -5,6 +5,7 @@ import { CATALOG } from '../../crops/catalog';
 import { EmptyState } from '../states';
 import { useState } from 'preact/hooks';
 import { CheckDraw } from './CheckDraw';
+import { DetailSheet, SheetFact } from './DetailSheet';
 
 // Every design-system component with fixed sample texts (Greek, Demo data only: nothing here is a record). Used for screenshots and for the gallery e2e. Reached by `?ds-gallery` in a build with VITE_DS_GALLERY=true.
 const SAMPLE: Record<Tone, string> = {
@@ -28,11 +29,16 @@ const EMPTY_ACTION = 'Η μία ενέργεια';
 const noop = (): void => undefined;
 const MOTION_BTN = 'Έγινε';
 const MOTION_NUM = '13';
+const SHEET_BTN = 'Άνοιγμα σελίδας';
+const SHEET_HEAD = 'Σπανάκι';
+const SHEET_NAME = 'Κλούβες σήμερα';
+const SHEET_WHY = 'άγνωστο: δεν έχει καταγραφεί συγκομιδή';
 const FILL = Array.from({ length: 30 }, (_, i) => `γραμμή ${i + 1}`);
 
 export function Gallery() {
   const [committed, setCommitted] = useState(false);
   const [shown, setShown] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   return (
     <main data-testid="ds-gallery">
       <PageHead heading={TITLE} subtitle={SUB} />
@@ -61,6 +67,15 @@ export function Gallery() {
         {committed && <p><CheckDraw /><span class="m-roll" data-testid="motion-roll">{MOTION_NUM}</span></p>}
         {shown && <div class="ds-card m-sheet" data-testid="motion-sheet">{MOTION_BTN}</div>}
         {shown && <span class="m-fade" data-testid="motion-fade"><Chip tone="info">{SAMPLE.info}</Chip></span>}
+      </section>
+      <section data-testid="gallery-sheet">
+        <button type="button" class="btn" data-testid="sheet-open" onClick={() => setSheetOpen(true)}>{SHEET_BTN}</button>
+        {sheetOpen && (
+          <DetailSheet heading={SHEET_HEAD} icon={<CropIcon slug="spinach" size="calc(var(--tile) - var(--sp-16))" />} onClose={() => setSheetOpen(false)}>
+            <SheetFact name={SHEET_NAME} value="12" />
+            <SheetFact name={SHEET_NAME} unknown={SHEET_WHY} />
+          </DetailSheet>
+        )}
       </section>
       <section data-testid="gallery-crops">
         {CATALOG.map((c) => <div class="gallery-crop" key={c.slug}><span class="ds-tile"><CropIcon slug={c.slug} size="calc(var(--tile) - var(--sp-16))" /></span><CropIcon slug={c.slug} size="var(--thumb)" /><span>{c.el}</span></div>)}
