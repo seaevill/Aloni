@@ -1,12 +1,6 @@
 import { signal } from '@preact/signals';
 import el from './el.json';
-import tr from './tr.json';
-import en from './en.json';
-import hi from './hi.json';
 import uiEl from './ui.el.json';
-import uiTr from './ui.tr.json';
-import uiEn from './ui.en.json';
-import uiHi from './ui.hi.json';
 import { TZ } from '../config';
 import { fill, pluralKey, type Params } from './plural';
 
@@ -19,7 +13,23 @@ export const LANGS: Lang[] = ['el', 'tr', 'en', 'hi'];
 export const LANG_META: Record<Lang, { locale: string; label: string }> = { el: { locale: 'el-GR', label: 'EL' }, tr: { locale: 'tr-TR', label: 'TR' }, en: { locale: 'en-GB', label: 'EN' }, hi: { locale: 'hi-IN', label: 'हिन्दी' } };
 /** The design system's own texts live in `ui.<lang>.json` (every key starts with `ui.`) and are merged here, so two people never edit the same file (design sprint §2). */
 export const withUi = (base: Record<string, string>, ui: Record<string, string>): Record<string, string> => ({ ...base, ...ui });
-export const dictionaries: Record<Lang, Record<string, string>> = { el: withUi(el, uiEl), tr: withUi(tr, uiTr), en: withUi(en, uiEn), hi: withUi(hi, uiHi) };
+/** Greek is always there; the other languages are loaded when they are first needed (they are not part of the first load: JS budget). A missing key falls back to Greek. */
+export const dictionaries: Record<Lang, Record<string, string>> = { el: withUi(el, uiEl), tr: {}, en: {}, hi: {} };
+const LOADERS: Record<Exclude<Lang, 'el'>, () => Promise<Record<string, string>>> = {
+  tr: async () => { const [a, b] = await Promise.all([import('./tr.json'), import('./ui.tr.json')]); return withUi(a.default, b.default); },
+  en: async () => { const [a, b] = await Promise.all([import('./en.json'), import('./ui.en.json')]); return withUi(a.default, b.default); },
+  hi: async () => { const [a, b] = await Promise.all([import('./hi.json'), import('./ui.hi.json')]); return withUi(a.default, b.default); },
+};
+const loading = new Map<Lang, Promise<void>>();
+/** Loads the dictionary of a language (once). Greek is already loaded. */
+export function ensureLang(l: Lang): Promise<void> {
+  if (l === 'el' || Object.keys(dictionaries[l]).length > 0) return Promise.resolve();
+  let p = loading.get(l);
+  if (!p) { p = LOADERS[l]().then((d) => { Object.assign(dictionaries[l], d); }); loading.set(l, p); }
+  return p;
+}
+/** Every dictionary (the tests and the checks compare all of them). */
+export const ensureAllLangs = (): Promise<void[]> => Promise.all(LANGS.map(ensureLang));
 const LOCALES: Record<Lang, string> = { el: LANG_META.el.locale, tr: LANG_META.tr.locale, en: LANG_META.en.locale, hi: LANG_META.hi.locale };
 
 /** The first of the phone's languages we have a text for (hi, tr, en); nothing else matches: Greek stays the default. */
@@ -45,19 +55,20 @@ export const WORKER_LANG_KEY = 'worker_lang';
 export function workerLang(): Lang | undefined {
   try { const s = localStorage.getItem(WORKER_LANG_KEY); return isLang(s) ? s : undefined; } catch { return undefined; }
 }
-export function setWorkerLang(l: Lang) { lang.value = l; try { localStorage.setItem(WORKER_LANG_KEY, l); } catch { /* ignore */ } }
+export function setWorkerLang(l: Lang) { try { localStorage.setItem(WORKER_LANG_KEY, l); } catch { /* ignore */ } void ensureLang(l).then(() => { lang.value = l; }); }
 /** Back to the owner's language (the saved one, or the phone's default). */
 export function restoreOwnerLang() {
-  try { const s = localStorage.getItem('lang'); lang.value = isLang(s) ? s : pickLang(navigator.languages ?? []); } catch { lang.value = 'el'; }
+  let l: Lang = 'el';
+  try { const s = localStorage.getItem('lang'); l = isLang(s) ? s : pickLang(navigator.languages ?? []); } catch { l = 'el'; }
+  void ensureLang(l).then(() => { lang.value = l; });
 }
 
 export const lang = signal<Lang>(initialLang());
 try { document.documentElement.lang = lang.value; } catch { /* no document (unit tests) */ }
 
 export function setLang(l: Lang) {
-  lang.value = l;
   try { localStorage.setItem('lang', l); } catch { /* ignore */ }
-  document.documentElement.lang = l;
+  void ensureLang(l).then(() => { lang.value = l; document.documentElement.lang = l; });
 }
 
 /** Every translation key, typed from the Greek file: a typo or a missing key is a compile error. */

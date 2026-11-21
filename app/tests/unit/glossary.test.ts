@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { dictionaries } from '../../src/i18n';
+import { dictionaries, ensureAllLangs } from '../../src/i18n';
+await ensureAllLangs();      // tr, en and hi are loaded on demand in the app; the checks compare all of them
 
 // docs/i18n/glossary-el.md holds a ```banned block: `regex | scope | reason`.
 const doc = readFileSync(new URL('../../../docs/i18n/glossary-el.md', import.meta.url), 'utf8');

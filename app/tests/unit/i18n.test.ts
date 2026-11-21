@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { dictionaries, formatDate, formatDateLong, formatDateTime, lang, ts } from '../../src/i18n';
+import { dictionaries, formatDate, formatDateLong, formatDateTime, lang, ts, ensureAllLangs } from '../../src/i18n';
+await ensureAllLangs();      // tr, en and hi are loaded on demand in the app; the checks compare all of them
 
 describe('i18n', () => {
   it('el/tr/en have identical key sets', () => {

@@ -7,7 +7,7 @@ import './ui/ds/ds.css';
 import './ui/ds/motion.css';
 import { App } from './ui/App';
 import { initDb } from './db';
-import { lang } from './i18n';
+import { ensureLang, lang } from './i18n';
 import { bootSync } from './sync/boot';
 import { onNeedRefresh, onOfflineReady, setApply, watchDirty, watchForUpdates } from './pwa/update';
 
@@ -15,6 +15,8 @@ document.documentElement.lang = lang.value;
 setApply(registerSW({ immediate: true, onNeedRefresh, onOfflineReady, onRegisteredSW: (_url, reg) => watchForUpdates(reg) }).bind(null, true) as () => void);
 watchDirty();
 void initDb().finally(async () => {
+  await ensureLang(lang.value).catch(() => undefined);      // the phone's language (not Greek) is loaded before the first screen
+
   if (import.meta.env.VITE_DS_GALLERY === 'true' && location.search.includes('ds-gallery')) { const { Gallery } = await import('./ui/ds/Gallery'); render(<Gallery />, document.getElementById('app')!); return; }   // never in production
   render(<App />, document.getElementById('app')!); void bootSync();
 });
