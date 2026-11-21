@@ -1,5 +1,10 @@
 # Codex handoff
 
+## 2026-11-21
+
+- **Hindi.** Deferred until #259 merges. The open PR still changes `app/src/i18n/hi.json`.
+- **Rules.** GAP uses the shared weekly supply model and enables A05 and NEG-P0-2. Unsigned or missing approval yields a table only. Unknown PHI excludes the planting and suppresses decisions for that crop.
+
 ## 2026-11-20
 
 - **SQL reviews.** #232: #235 and the review comments cover the upgrade and stale-version fixes. The latest reviewed revision, `5d141ec`, rejects an arbitrary fingerprint on supported inputs, but the server can still sign a stored dose the phone parser considers unknown. #236: #239 and the review comment cover the concurrent quota overrun and the missing explicit deny policy. Author branches remain untouched.
