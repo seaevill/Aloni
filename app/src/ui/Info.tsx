@@ -1,3 +1,4 @@
+import { ErrorReport } from './ErrorReport';
 import { openSheet } from './nav';
 import './AccountSheet';
 import { useEffect, useState } from 'preact/hooks';
@@ -42,6 +43,8 @@ export function Info({ onBack }: { onBack: () => void }) {
 
       <p class="card" data-testid="info-photos">{t('ui.info.privacy.photos')}</p>
       <button type="button" class="btn secondary" data-testid="account-open" onClick={() => openSheet('account', 'all')}>{t('ui.account.open')}</button>
+
+      <ErrorReport />
 
       <h2>{t('info.disclaimer.title')}</h2>
       <p class="card" data-testid="info-disclaimer">{t('info.disclaimer.body')}</p>

@@ -1,3 +1,4 @@
+import { installErrorLog } from './diag/errorlog';
 import { render } from 'preact';
 import { registerSW } from 'virtual:pwa-register';
 import './ui/fonts.css';
@@ -6,7 +7,7 @@ import './ui/styles.css';
 import './ui/ds/ds.css';
 import './ui/ds/motion.css';
 import { App } from './ui/App';
-import { initDb } from './db';
+import { db, initDb } from './db';
 import { ensureAllLangs, ensureLang, lang } from './i18n';
 import { bootSync } from './sync/boot';
 import { onNeedRefresh, onOfflineReady, setApply, watchDirty, watchForUpdates } from './pwa/update';
@@ -14,6 +15,7 @@ import { onNeedRefresh, onOfflineReady, setApply, watchDirty, watchForUpdates } 
 document.documentElement.lang = lang.value;
 setApply(registerSW({ immediate: true, onNeedRefresh, onOfflineReady, onRegisteredSW: (_url, reg) => watchForUpdates(reg) }).bind(null, true) as () => void);
 watchDirty();
+installErrorLog(db);      // the app's own errors are kept on this phone only (Info → «Αναφορά σφάλματος»); nothing is sent
 void initDb().finally(async () => {
   await ensureLang(lang.value).catch(() => undefined);      // the phone's language (not Greek) is loaded before the first screen
 

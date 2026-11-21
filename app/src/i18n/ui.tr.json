@@ -179,5 +179,13 @@
   "ui.job.harvests": "Aynı ürünlerde o günden beri hasatlar",
   "ui.job.harvests.none": "İşin tarihinden beri hasat kaydı yok.",
   "ui.job.crates": "{n} kasa",
-  "ui.job.crates.unknown": "bilinmiyor: sayı okunamıyor"
+  "ui.job.crates.unknown": "bilinmiyor: sayı okunamıyor",
+  "ui.diag.title": "Hata raporu",
+  "ui.diag.note": "Uygulama bir hata verirse yalnızca bu telefonda saklar. Kendiliğinden hiçbir şey gönderilmez. Raporu kopyalayıp kendiniz gönderebilirsiniz.",
+  "ui.diag.none": "Kayıtlı hata yok.",
+  "ui.diag.count": "Bu telefonda {n} hata kaydedildi.",
+  "ui.diag.copy": "Raporu kopyala",
+  "ui.diag.copied": "Rapor kopyalandı. Çiftliğe ait bilgi içermez.",
+  "ui.diag.copy.failed": "Kopyalanamadı. Metne uzun basıp «Kopyala»yı seçin.",
+  "ui.diag.clear": "Hataları sil"
 }
