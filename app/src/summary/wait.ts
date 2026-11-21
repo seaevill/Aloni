@@ -26,3 +26,27 @@ export function parcelWait(parcelId: string, now: string, plantings: readonly Ro
   const until = newest(waits.flatMap((w) => (w.until === undefined ? [] : [w.until])));
   return until === undefined ? { lastSprayAt, state: 'free' } : { lastSprayAt, state: 'running', until };
 }
+
+const DAY_MS = 86_400_000n;
+const msOf = (iso: string): bigint | undefined => { const n = Date.parse(iso); return Number.isNaN(n) ? undefined : BigInt(n); };
+/**
+ * The ring of a RUNNING waiting period: whole days left (rounded UP) and whole percent elapsed (rounded DOWN), by integer arithmetic. So the screen never shows the wait as shorter or further along than it is.
+ * No ring (undefined) when the end is not after now, the end is not after the start, or a time cannot be read: the screen then says why (or shows «Κοπή από …»).
+ */
+export function waitRing(sinceIso: string, untilIso: string, nowIso: string): { daysLeft: number; percent: number } | undefined {
+  const s = msOf(sinceIso); const u = msOf(untilIso); const n = msOf(nowIso);
+  if (s === undefined || u === undefined || n === undefined || u <= s || u <= n) return undefined;
+  const total = u - s; const done = n > s ? n - s : s - s;
+  return { daysLeft: Number((u - n + DAY_MS - 1n) / DAY_MS), percent: Number((done * 100n) / total) };
+}
+
+/** The spraying that sets the END of the running wait of this planting (its own period, alone, ends last); undefined when nothing is running. Uses the very same gate, spraying by spraying. */
+export function runningSince(plantingId: string, now: string, links: readonly Row[], sprays: readonly Row[], plantings: readonly Row[], labels: readonly Row[]): string | undefined {
+  const jobs = new Set(links.filter((l) => l.planting_id === plantingId).map((l) => text(l.job_id)));
+  let best: { until: string; since: string } | undefined;
+  for (const sp of effectiveSprays(sprays.filter((s) => jobs.has(text(s.job_id))))) {
+    const g = harvestGate(plantingId, now, links, [sp], plantings, labels);
+    if (!g.ok && g.reason === 'running' && g.until !== undefined && (best === undefined || g.until > best.until)) best = { until: g.until, since: text(sp.sprayed_at) };
+  }
+  return best?.since;
+}
