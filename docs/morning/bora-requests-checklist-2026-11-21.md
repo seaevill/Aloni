@@ -34,6 +34,8 @@ Global rule: **every number, chip, list row and card is tappable and opens a det
 | R26 | **Weather data** – even if not 100 % real, show real-looking values so we see progress; nothing paid | Σήμερα, parcel, weather sheet | Demo: fictional weather for every day, labelled «δεδομένα επίδειξης». Real farm: free MET Norway path ready (RUNBOOK §14a), activation = one approval click by Bora in the morning; until then «δεν υπάρχουν ακόμη δεδομένα – ενεργοποίηση καιρού εκκρεμεί». |
 | R27 | Spray record screen is great – keep it | Spray form | Unchanged behaviour; only shared polish |
 | R28 | Weekly report is great – keep it | Εβδομαδιαία αναφορά | Unchanged |
+| R29 | When I open a job, a notification lands on the workers' shared screen; they see it when they open the app | Worker screen + bell | New open job → badge on the workers' bell + banner «Νέα εργασία: …» on their home screen at next app open; owner's bell shows «Ανέλαβε ο …» when taken (in-app tonight; Web Push later) |
+| R30 | OM %: which crop grows better at which OM % (and same idea for pH/EC) | Analyses ⓘ | Inside the R18 card: «Για <ύλο>: συνήθως OM … % (πηγή)» per crop of that parcel, same chip and source rules |
 
 ## Order for tonight (most visible first)
 1. Clear blockers (≤30 min): Σήμερα KPI 0 vs 44 single source; #296/#298/#331 rebuilt on fresh branches and merged; #367 tab contrast; #366 Demo labels (~80 % signed + 1–2 deliberate locked examples, commented).
