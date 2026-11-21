@@ -15,6 +15,7 @@ import { useRows } from './useRows';
 import type { Flag } from '../spray/spray';
 import type { DoseUnit } from '@aloni/rules-core';
 import { BackBar } from './BackBar';
+import './register-v2.css';
 
 const COL_KEYS: Record<Column, I18nKey> = {
   start: 'register.col.start', lot: 'register.col.lot', when: 'register.col.when', parcel: 'register.col.parcel', crop: 'register.col.crop', area: 'register.col.area', product: 'register.col.product', reg_no: 'register.col.reg_no', dose: 'register.col.dose',
@@ -66,17 +67,21 @@ export function Register({ onBack }: { onBack: () => void }) {
           {vatSaved && <span class="msg" role="status">{t('register.vat.saved')}</span>}
         </label>
       )}
-      <div class="noprint">
+      <div class="noprint register-actions">
         <button class="btn" data-testid="register-csv" onClick={csv}>{t('register.csv')}</button>
-        <button class="btn" data-testid="register-csv-machine" onClick={machine}>{t('register.csv.machine')}</button>
         <button class="btn" data-testid="register-json" onClick={json}>{t('register.json')}</button>
-        <button class="btn" data-testid="register-csv-warnings" onClick={warnings}>{t('register.csv.warnings')}</button>
-        <button class="btn" data-testid="register-print" onClick={() => window.print()}>{t('register.print')}</button>
+        <button class="btn secondary" data-testid="register-csv-machine" onClick={machine}>{t('register.csv.machine')}</button>
+        <button class="btn secondary" data-testid="register-csv-warnings" onClick={warnings}>{t('register.csv.warnings')}</button>
+        <button class="btn secondary" data-testid="register-print" onClick={() => window.print()}>{t('register.print')}</button>
       </div>
       {sprays.rows && lines.length === 0 && <p class="muted" data-testid="register-empty">{t('register.empty')}</p>}
       {lines.map((l, i) => (
-        <div class="card" key={`${l.record}-${i}`} data-testid="register-line">
-          {COLUMNS.filter((c) => l[c]).map((c) => <small key={c}>{t('labeluse.line', { name: t(COL_KEYS[c]), value: l[c] })}</small>)}
+        <div class="card register-record" key={`${l.record}-${i}`} data-testid="register-line">
+          {(l.product || l.when) && <div class="register-record-head">
+            {l.product && <h2 data-testid="register-record-product">{t('labeluse.line', { name: t('register.col.product'), value: l.product })}</h2>}
+            {l.when && <small data-testid="register-record-end">{t('labeluse.line', { name: t('register.col.when'), value: l.when })}</small>}
+          </div>}
+          {COLUMNS.filter((c) => c !== 'product' && c !== 'when' && l[c]).map((c) => <small key={c}>{t('labeluse.line', { name: t(COL_KEYS[c]), value: l[c] })}</small>)}
         </div>
       ))}
       <p class="sign">{t('register.sign')}</p>
