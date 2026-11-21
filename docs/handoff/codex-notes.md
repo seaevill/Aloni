@@ -1,5 +1,36 @@
 # Codex handoff
 
+## 2026-11-21 (Codex, Sprint 2 continuation)
+
+- Y1 blocked by #289 on the shared engine and golden tests; main has 17 active of 27 golden cases.
+- Y2 blocked by #292 on Orders and #339 on weekly supply; sowing still needs recorded rule inputs.
+- Y3 blocked by #294 and #296 on the crop and parcel detail entry points.
+- Y4 blocked by #298 on the register screen and its print stylesheet.
+- Y5 blocked by #330 on the analyses locales; crop history, facts and notes await approved Greek source text.
+- Y6 (#343) adds the read-only lot ledger and expiry display; stock cards and low-stock display remain blocked by #297.
+- Y7 blocked by #296 and #330 on parcel detail and analysis; the rotation decision chip requires a signed rule.
+- Y8 (#344) adds axe regression tests for ten Greek owner routes. iPhone VoiceOver and manual focus order remain to be checked.
+- Y9 compares eight 375 px WebKit captures and checks the same screens at 320 px. CC-REQ: improve tab text contrast on the shared translucent bar; 34 of 80 samples were below 7:1 (minimum 5.58:1).
+
+### Bora için
+
+- Lot ayrıntısı kayıtlı hareketleri ve bilinen son kullanma tarihini gösteriyor.
+- On Yunanca sahip ekranında axe ciddi veya kritik ihlal bulmadı.
+- Sekiz ekran 320 px’de yatay taşmadan açıldı.
+- Sekme çubuğunda ölçülen en düşük metin kontrastı 5,58:1; hedef 7:1.
+- Golden sayısı 17/27; çakışan işler ve iPhone kontrolleri bekliyor.
+
+### iPhone — έλεγχος στα Ελληνικά
+
+1. Ανοίξτε την επίδειξη και ελέγξτε ότι ανακοινώνεται από το VoiceOver.
+2. Στα «Φυτά», ανοίξτε μια καλλιέργεια και ελέγξτε τη σειρά ανάγνωσης.
+3. Στα «Χωράφια», ανοίξτε ένα χωράφι και επιστρέψτε στη λίστα.
+4. Στην «Αποθήκη», ανοίξτε μια παρτίδα και διαβάστε τη λήξη και τις κινήσεις.
+5. Στις παραγγελίες, ελέγξτε ότι οι ποσότητες και οι μονάδες ακούγονται καθαρά.
+6. Στο «Μητρώο», ελέγξτε αν διαβάζονται οι επικεφαλίδες και τα κενά πεδία.
+7. Στη φόρμα ψεκασμού, ελέγξτε τη σειρά εστίασης χωρίς να αποθηκεύσετε εγγραφή.
+8. Στα «Άλλα», μεγεθύνετε το κείμενο και ελέγξτε ότι η μπάρα παραμένει ευανάγνωστη.
+
 ## 2026-11-21 (Claude, DetailSheet for the tap-for-detail rule)
 
 - **landed: DetailSheet (after merge).** `registerSheet('crop', CropSheet)` once at module level of your screen file; open with `openSheet('crop', id)` from `ui/nav`; close with `closeSheet()` (or the `close` prop). The component renders `<DetailSheet heading icon onClose testid?>` with `<SheetFact name value unknown />` lines: an unknown value ALWAYS carries its reason (`unknown="άγνωστο: …"`), never blank or 0. The address is `#/own/<tab>/sheet/<kind>/<id>`; kinds are lowercase letters and dashes, ids `[A-Za-z0-9_-]`. Your kinds (suggested): `planting`, `parcel`, `analysis`, `product`, `harvest`, `stock`. Mine: `crop`, `today-*`, `weather`, `wait`, `job`. Medicine sheet: recorded label data only + the official label link, no dose advice.
