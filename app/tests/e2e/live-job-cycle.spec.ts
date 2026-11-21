@@ -41,8 +41,8 @@ test('the owner assigns a job, the worker does it without retyping anything, it 
   expect(srv.all('job_spray')).toHaveLength(1);
 
   // 3. back on the owner's phone: no open job, one under «Έγιναν σήμερα»
-  await owner.evaluate(() => window.dispatchEvent(new Event('online')));
-  await expect(owner.getByTestId('jobs-done')).toBeVisible({ timeout: 30_000 });
+  // a sync round already running swallows ONE «online» event (WebKit is slower than Chromium here): ask again until the owner's phone has pulled the finished job
+  await expect(async () => { await owner.evaluate(() => window.dispatchEvent(new Event('online'))); await expect(owner.getByTestId('jobs-done')).toBeVisible({ timeout: 3_000 }); }).toPass({ timeout: 45_000, intervals: [1_000] });
   await expect(owner.getByTestId('job-planned')).toHaveCount(0);
   await ownerCtx.close(); await workerCtx.close();
 });
