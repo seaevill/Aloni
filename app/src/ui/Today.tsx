@@ -4,7 +4,7 @@ import { APP_NAME_EL } from '../config';
 import { activeFarm, dataVersion, db, loadDemo, realFarmId, farmLabel } from '../db';
 import { groupJobs } from '../summary/jobs';
 import { openParcelForm, tab } from './nav';
-import { formatDate, formatDateTime, lang, t } from '../i18n';
+import { formatDate, formatDateTime, lang, t, tn } from '../i18n';
 import { formatArea, formatQty } from '../i18n/format';
 import { athensToday } from '../plantings/planting';
 import { cutFromParcel } from '../spray/harvest';
@@ -17,7 +17,8 @@ import { EmptyState, ErrorState } from './states';
 import { Title, nameOf, retry } from './screens';
 import { useRows, type Rows } from './useRows';
 import { dayOf, farmDay, parseDays, provenance, type Day } from '../weather/strip';
-import { todaySummary, cutCrates } from '../summary/today';
+import { todaySummary, cutCrates, cratesLogged, cratesPerDay } from '../summary/today';
+import { BigNum, Sparkline } from './ds';
 import { cutToday, type CutLine, type CutToday } from '../summary/cutlist';
 import { loadOrders } from '../orders/store';
 import { supplyByCrop } from '../orders/available';
@@ -128,6 +129,28 @@ function CutRow({ l }: { l: CutToday['lines'][number] }) {
 }
 
 /** Σήμερα → «Κοπή»: the rows that need attention (waiting period running, unknown) come FIRST and are never folded; many «free to cut» rows fold into one line that opens on a tap. Presentation only: same rows, same states. */
+/** The two numbers of the day (design sprint D11): how many plantings can be cut today (eligible only; the held and the unknown are named, never added) and the crates LOGGED in 7 days with a small line of the logged days. Nothing here is estimated. */
+function TodayNumbers({ ct, harvests }: { ct: CutToday; harvests: readonly Row[] }) {
+  const free = ct.lines.filter((l) => l.state === 'free').length;
+  const others = ct.lines.length - free;
+  const nowIso = new Date().toISOString();
+  const logged = cratesLogged(harvests, nowIso, 7);
+  const unit = tn('ui.today.plantings', free);
+  const held = others > 0 ? t('ui.today.holdUnknown', { n: formatQty(others) }) : '';
+  return (
+    <section class="today-numbers" data-testid="today-numbers">
+      <div>
+        <BigNum caption={t('ui.today.forCut')} value={formatQty(free)} unit={unit} />
+        {held !== '' && <small class="ds-muted" data-testid="today-held">{held}</small>}
+      </div>
+      <div data-testid="today-cut7-big">
+        <BigNum caption={t('ui.today.cut7')} value={logged === undefined ? undefined : formatQty(logged)} />
+        <Sparkline values={cratesPerDay(harvests, nowIso, 7)} caption={t('ui.today.perDay')} />
+      </div>
+    </section>
+  );
+}
+
 function CutTodaySection({ ct }: { ct: CutToday }) {
   const blocked = ct.lines.filter((l) => l.state !== 'free').length;
   const attention = ct.lines.filter((l) => l.state !== 'free');
@@ -229,6 +252,21 @@ export function Today() {
       {loaded && !has && (
         <EmptyState art="parcels" message={t('welcome.start')} actionLabel={t('parcel.add')} onAction={() => { openParcelForm.value = true; tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
       )}
+      {loaded && has && urgent && (
+        <section class="hero" data-testid="urgent" aria-label={t('today.urgent')}>
+          <span class="kicker"><span aria-hidden="true">{BADGE[urgent.state].mark}</span>{SP}{t('today.urgent')}</span>
+          <h2>{urgent.state === 'unknown' ? t('today.urgent.unknown', { parcel: text(urgent.p.name) }) : t('today.urgent.wait', { d: formatDate(urgent.at.slice(0, 10)), crop: urgent.crops.split(', ')[0] ?? '', parcel: text(urgent.p.name) })}</h2>
+          <button class="btn lime" data-testid="urgent-action" onClick={() => setHistory(true)}>{t('today.urgent.action')}</button>
+        </section>
+      )}
+      {loaded && has && <WeatherStrip perParcel={[...weatherOf.values()]} />}
+      {loaded && has && <TodayNumbers ct={ct} harvests={harvestRows.rows ?? []} />}
+      {loaded && has && (
+        <div class="pair">
+          <button class="btn big" data-testid="spray-open" onClick={() => setSpraying(true)}>{t('spray.add')}</button>
+          <button class="btn big" data-testid="harvest-open" onClick={() => setHarvesting(true)}>{t('harvest.add')}</button>
+        </div>
+      )}
       {loaded && has && <CutTodaySection ct={ct} />}
       {loaded && has && <h2>{t('worker.jobs')}</h2>}
       {loaded && has && openJobs.length === 0 && <p class="muted" data-testid="jobs-none">{t('today.jobs.none')}</p>}
@@ -239,24 +277,10 @@ export function Today() {
         </section>
       ))}
       {loaded && has && <button class="btn" data-testid="job-open" onClick={() => setPlanning(true)}>{t('job.add.plus')}</button>}
-      {loaded && has && (
-        <div class="pair">
-          <button class="btn big" data-testid="spray-open" onClick={() => setSpraying(true)}>{t('spray.add')}</button>
-          <button class="btn big" data-testid="harvest-open" onClick={() => setHarvesting(true)}>{t('harvest.add')}</button>
-        </div>
-      )}
       {loaded && has && <TomorrowSection rows={{ crops: crops.rows ?? [], plantings: plantings.rows ?? [], links: links.rows ?? [], sprays: sprays.rows ?? [], harvests: harvestRows.rows ?? [], labels: labelRows.rows ?? [] }} />}
       {planned && <p class="msg" role="status" data-testid="job-saved">{t('job.saved')}</p>}
       {harvested && <p class="msg" role="status" data-testid="harvest-saved">{t('harvest.saved')}</p>}
       {recorded && <p class="msg" role="status" data-testid="spray-saved">{t('spray.saved')}</p>}
-      {loaded && has && urgent && (
-        <section class="hero" data-testid="urgent" aria-label={t('today.urgent')}>
-          <span class="kicker"><span aria-hidden="true">{BADGE[urgent.state].mark}</span>{SP}{t('today.urgent')}</span>
-          <h2>{urgent.state === 'unknown' ? t('today.urgent.unknown', { parcel: text(urgent.p.name) }) : t('today.urgent.wait', { d: formatDate(urgent.at.slice(0, 10)), crop: urgent.crops.split(', ')[0] ?? '', parcel: text(urgent.p.name) })}</h2>
-          <button class="btn lime" data-testid="urgent-action" onClick={() => setHistory(true)}>{t('today.urgent.action')}</button>
-        </section>
-      )}
-      {loaded && has && <WeatherStrip perParcel={[...weatherOf.values()]} />}
       {loaded && has && (
         <section class="kpis" data-testid="today-kpis">
           <div class="kpi"><small>{t('today.kpi.parcels')}</small><strong>{formatQty(live(parcels).length)}</strong></div>

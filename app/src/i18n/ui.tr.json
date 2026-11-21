@@ -14,5 +14,11 @@
   "ui.onb.3.body": "İlaç ya da doz seçmez ve bir bekleme süresini asla kısaltmaz. Ürün etiketi esastır.",
   "ui.onb.next": "İleri",
   "ui.onb.start": "Başlayalım",
-  "ui.onb.skip": "Geç"
+  "ui.onb.skip": "Geç",
+  "ui.today.forCut": "Bugün kesime hazır",
+  "ui.today.plantings.one": "ekim",
+  "ui.today.plantings.other": "ekim",
+  "ui.today.holdUnknown": "+{n} beklemede veya bilinmiyor",
+  "ui.today.cut7": "Kasa, 7 gün",
+  "ui.today.perDay": "günlük, yalnız kaydedilenler"
 }

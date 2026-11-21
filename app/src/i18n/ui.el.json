@@ -14,5 +14,11 @@
   "ui.onb.3.body": "Δεν διαλέγει προϊόν ή δόση και δεν κόβει ποτέ μια αναμονή. Η ετικέτα του προϊόντος είναι ο νόμος.",
   "ui.onb.next": "Επόμενο",
   "ui.onb.start": "Ξεκινάμε",
-  "ui.onb.skip": "Παράλειψη"
+  "ui.onb.skip": "Παράλειψη",
+  "ui.today.forCut": "Για κοπή σήμερα",
+  "ui.today.plantings.one": "φύτευση",
+  "ui.today.plantings.other": "φυτεύσεις",
+  "ui.today.holdUnknown": "+{n} σε αναμονή ή άγνωστο",
+  "ui.today.cut7": "Κλούβες 7 ημ.",
+  "ui.today.perDay": "ανά ημέρα, μόνο όσες καταγράφηκαν"
 }

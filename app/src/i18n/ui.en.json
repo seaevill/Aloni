@@ -14,5 +14,11 @@
   "ui.onb.3.body": "It never picks a product or a dose and never shortens a waiting period. The product label is the law.",
   "ui.onb.next": "Next",
   "ui.onb.start": "Let's start",
-  "ui.onb.skip": "Skip"
+  "ui.onb.skip": "Skip",
+  "ui.today.forCut": "To cut today",
+  "ui.today.plantings.one": "planting",
+  "ui.today.plantings.other": "plantings",
+  "ui.today.holdUnknown": "+{n} waiting or unknown",
+  "ui.today.cut7": "Crates, 7 days",
+  "ui.today.perDay": "per day, logged only"
 }

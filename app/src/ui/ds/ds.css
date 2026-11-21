@@ -44,6 +44,7 @@
 .ds-bignum { display:flex; flex-direction:column; gap:var(--sp-2); min-width:0; }
 .ds-bignum-caption { font-size:var(--fs-meta); font-weight:600; color:var(--muted); }
 .ds-bignum-value { font-size:var(--fs-hero); font-weight:800; line-height:1.05; color:var(--fg); font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.ds-bignum-unit { font-size:var(--fs-row); font-weight:700; }
 .ds-bignum[data-size="small"] .ds-bignum-value { font-size:var(--fs-h2); }
 .ds-bignum[data-known="no"] .ds-bignum-value { font-size:var(--fs-h2); font-weight:700; color:var(--muted); }
 .ds-spark { margin:0; display:flex; flex-direction:column; gap:var(--sp-4); }
@@ -98,3 +99,6 @@
 .ds-onboarding .ds-mark { margin:0 auto var(--sp-12); }
 .ds-onboarding-head { margin:0; font-size:var(--fs-title); font-weight:800; line-height:1.1; letter-spacing:var(--ls-title); }
 .ds-onboarding-body { margin:0 0 var(--sp-12); font-size:var(--fs-body); color:var(--muted); }
+
+/* Σήμερα numbers (D11) */
+.today-numbers { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:var(--sp-12); margin:var(--sp-12) 0; }

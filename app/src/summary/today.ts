@@ -32,3 +32,25 @@ export function cutCrates(harvests: readonly Row[], nowIso: string, days: number
   }
   return sum;
 }
+
+/** Whole crates LOGGED per Athens day for the last `days` days up to `nowIso`, oldest first. A day with no readable log is `null` (a gap), never 0: nobody logged it. A logged «0» stays 0. */
+export function cratesPerDay(harvests: readonly Row[], nowIso: string, days: number): Array<number | null> {
+  const base = Date.parse(`${dayOf(nowIso)}T12:00:00Z`);
+  if (Number.isNaN(base)) return [];
+  const keys = Array.from({ length: days }, (_, i) => new Date(base - (days - 1 - i) * 86_400_000).toISOString().slice(0, 10));
+  const sums = new Map<string, number>();
+  for (const h of harvests) {
+    const n = parseWhole<'Crates'>(typeof h.crates_str === 'string' ? h.crates_str : '');
+    const key = dayOf(h.harvested_at);
+    if (!n.known || key === '') continue;
+    const before = sums.get(key);
+    if (before === undefined) sums.set(key, n.value); else sums.set(key, before + n.value);
+  }
+  return keys.map((k) => sums.get(k) ?? null);
+}
+
+/** The exact crates logged in the window, or `undefined` when nothing readable was logged in it (the screen then says «άγνωστο», not 0). */
+export function cratesLogged(harvests: readonly Row[], nowIso: string, days: number): number | undefined {
+  const known = cratesPerDay(harvests, nowIso, days).filter((v): v is number => v !== null);
+  return known.length === 0 ? undefined : known.reduce((a, b) => a + b);
+}
