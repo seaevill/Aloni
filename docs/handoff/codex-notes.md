@@ -60,7 +60,7 @@
 - X13: #332 adds the pure stock calculation. TODO(B1): connect authoritative movements before showing balances, destination or receiver details. CC-REQ: provide the movement ordering and scope for the tomorrow board.
 - X14 blocked: needs the C3 four-week eligible/held series and the in-flight orders screen #292.
 - X15 blocked: needs the parcel detail base from X7/#296 and an authoritative observation/job-to-parcel photo linkage. CC-REQ: confirm the local/read-only photo linkage for both types.
-- X16 baseline: eight Greek Demo screens captured from `7dc3142` in WebKit. At 320 and 375 px, no page overflow or visible control below 56 px. All 281 first-viewport text samples on flat or alpha-composited backgrounds passed 7:1 and 14 px. A separate pixel scan hid the glyphs and sampled the rendered backing across 80 tab labels. Twenty-four labels had a sample below 7:1; the minimum was 5.58:1 on Άλλα and other screens. Tab text was at least 14 px. CC-REQ: increase the shared tab backing opacity or contrast in the Claude-owned theme, then repeat the integrated scan.
+- X16 baseline: eight Greek Demo screens captured from `7dc3142` in WebKit. At 320 and 375 px, no page overflow or visible control below 56 px. All 281 first-viewport text samples on flat or alpha-composited backgrounds passed 7:1 and 14 px. A separate pixel scan hid the glyphs and sampled the rendered backing across 80 tab labels. Twenty-five labels had a sample below 7:1; the minimum was 5.58:1 on Άλλα and other screens. Tab text was at least 14 px. CC-REQ: increase the shared tab backing opacity or contrast in the Claude-owned theme, then repeat the integrated scan.
 
 ### Έλεγχος στο iPhone
 
