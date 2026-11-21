@@ -231,7 +231,6 @@ export function Today() {
         <EmptyState message={t('welcome.start')} actionLabel={t('parcel.add')} onAction={() => { openParcelForm.value = true; tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
       )}
       {loaded && has && <CutTodaySection ct={ct} />}
-      {loaded && has && <TomorrowSection rows={{ crops: crops.rows ?? [], plantings: plantings.rows ?? [], links: links.rows ?? [], sprays: sprays.rows ?? [], harvests: harvestRows.rows ?? [], labels: labelRows.rows ?? [] }} />}
       {loaded && has && <h2>{t('tasks.title')}</h2>}
       {loaded && has && <p class="muted" data-testid="tasks-counts">{t('tasks.counts', { o: hub.counts.overdue, t: hub.counts.today, u: hub.counts.upcoming, d: hub.counts.doneToday })}</p>}
       {loaded && has && openJobs.length === 0 && <p class="muted" data-testid="jobs-none">{t('today.jobs.none')}</p>}
@@ -254,6 +253,7 @@ export function Today() {
           <button class="btn big" data-testid="harvest-open" onClick={() => setHarvesting(true)}>{t('harvest.add')}</button>
         </div>
       )}
+      {loaded && has && <TomorrowSection rows={{ crops: crops.rows ?? [], plantings: plantings.rows ?? [], links: links.rows ?? [], sprays: sprays.rows ?? [], harvests: harvestRows.rows ?? [], labels: labelRows.rows ?? [] }} />}
       {planned && <p class="msg" role="status" data-testid="job-saved">{t('job.saved')}</p>}
       {harvested && <p class="msg" role="status" data-testid="harvest-saved">{t('harvest.saved')}</p>}
       {recorded && <p class="msg" role="status" data-testid="spray-saved">{t('spray.saved')}</p>}
