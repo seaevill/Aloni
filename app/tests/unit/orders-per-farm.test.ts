@@ -7,6 +7,7 @@ import { cratesByCrop } from '../../src/orders/klouves';
 import { supplyByCrop } from '../../src/orders/available';
 import { putLocal } from '../../src/repo';
 import data from '../../../reference/prototype/data.json';
+import { TEST_NOW } from '../helpers/clock';
 import { newDb } from '../helpers/factories';
 
 const real = { products: [{ id: 'p1', name: 'Σπανάκι' }], weeks: { '2026-11-16': { p1: 9 } }, skipped: 0 };
@@ -32,7 +33,7 @@ describe('orders belong to one farm (T5)', () => {
     await saveOrders(db, DEMO_FARM_ID, s.orders, s.map);
     const crops = await db.crops.where('farm_id').equals(DEMO_FARM_ID).toArray();
     expect(crops.map((c) => c.slug)).toContain('spinach');
-    const sup = supplyByCrop(new Date().toISOString(), crops, await db.plantings.where('farm_id').equals(DEMO_FARM_ID).toArray(), await db.job_plantings.where('farm_id').equals(DEMO_FARM_ID).toArray(), await db.job_spray.where('farm_id').equals(DEMO_FARM_ID).toArray(), await db.job_harvest.where('farm_id').equals(DEMO_FARM_ID).toArray(), await db.label_uses.where('farm_id').equals(DEMO_FARM_ID).toArray());
+    const sup = supplyByCrop(TEST_NOW, crops, await db.plantings.where('farm_id').equals(DEMO_FARM_ID).toArray(), await db.job_plantings.where('farm_id').equals(DEMO_FARM_ID).toArray(), await db.job_spray.where('farm_id').equals(DEMO_FARM_ID).toArray(), await db.job_harvest.where('farm_id').equals(DEMO_FARM_ID).toArray(), await db.label_uses.where('farm_id').equals(DEMO_FARM_ID).toArray());
     expect(sup.spinach?.free).toBeGreaterThan(0);
     expect(cratesByCrop(s.orders.weeks['2026-11-16'], s.map).bySlug.spinach).toBeGreaterThan(0);
     expect((await loadOrders(db, 'real-farm')).orders).toBeUndefined();

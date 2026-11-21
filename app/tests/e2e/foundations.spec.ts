@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { installClock } from './helpers/clock';
 import { iphone } from './helpers/iphone';
 
 test('the offline chip appears without a connection and goes away when it is back', async ({ page, context }) => {
@@ -11,7 +12,7 @@ test('the offline chip appears without a connection and goes away when it is bac
 });
 
 test('empty state: the main action first, the demo second; undo (no dialog) brings the demo back; the toast disappears after 5 s', async ({ page }) => {
-  await page.clock.install();
+  await installClock(page);
   const dialogs: string[] = [];
   page.on('dialog', (d) => { dialogs.push(d.message()); void d.dismiss(); });
   await page.goto('/');

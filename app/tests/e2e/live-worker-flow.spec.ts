@@ -1,4 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
+import { athensDateTime, TEST_NOW } from '../helpers/clock';
+import { fixClock } from './helpers/clock';
 import { setup } from './helpers/farm';
 
 // B7: the whole worker story against a MOCK server shared by TWO phones (the e2e build; nothing leaves the machine):
@@ -57,6 +59,7 @@ test('owner invites -> worker signs in and sees only her own job -> records a ha
   const ownerCtx = await browser.newContext({ viewport: { width: 375, height: 667 }, hasTouch: true });
   const workerCtx = await browser.newContext({ viewport: { width: 375, height: 667 }, hasTouch: true });
   const owner = await ownerCtx.newPage(); const worker = await workerCtx.newPage();
+  await Promise.all([fixClock(owner), fixClock(worker)]);
   await mockFor(owner, srv, 'owner', 'bora@example.org'); await mockFor(worker, srv, 'worker', 'worker@example.org');
 
   // 1. the owner's farm: parcel, planting, product with a signed label, the worker «Γιώργος» (the helper), then the controller details the wizard and the invitation need
@@ -86,10 +89,10 @@ test('owner invites -> worker signs in and sees only her own job -> records a ha
   const george = srv.all('workers').find((w) => w.name === 'Γιώργος');
   const product = srv.all('products')[0]; const planting = srv.all('plantings')[0];
   expect(george && product && planting).toBeTruthy();
-  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Athens' }).format(new Date());
+  const today = athensDateTime(Date.parse(TEST_NOW)).slice(0, 10);
   for (const [id, workerId] of [['jobMine', george!.id], ['jobOther', 'someone-else']] as const) {
-    srv.put('jobs', { id, farm_id: farmId, kind: 'spray', status: 'planned', worker_id: workerId, product_id: product!.id, dose_str: '0.025', dose_unit: 'ml/str', planned_for: today, created_at: new Date().toISOString() });
-    srv.put('job_plantings', { id: `jp-${id}`, farm_id: farmId, job_id: id, planting_id: planting!.id, created_at: new Date().toISOString() });
+    srv.put('jobs', { id, farm_id: farmId, kind: 'spray', status: 'planned', worker_id: workerId, product_id: product!.id, dose_str: '0.025', dose_unit: 'ml/str', planned_for: today, created_at: TEST_NOW });
+    srv.put('job_plantings', { id: `jp-${id}`, farm_id: farmId, job_id: id, planting_id: planting!.id, created_at: TEST_NOW });
   }
 
   // 3. the worker signs in with the invited e-mail: the farm is taken from the invitation, only HER job arrives, no owner screens

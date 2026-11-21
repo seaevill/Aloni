@@ -1,11 +1,12 @@
 import { expect, test } from '@playwright/test';
+import { athensDateTime, DAY_MS, TEST_NOW } from '../helpers/clock';
+import { fixClock } from './helpers/clock';
 import { iphone } from './helpers/iphone';
 
 // T10: the dispatch list per client for tomorrow, and the copy text (clipboard) in the agreed Greek form.
-const ATHENS = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Athens', year: 'numeric', month: '2-digit', day: '2-digit' });
-const day = (n: number): string => ATHENS.format(new Date(Date.now() + n * 86_400_000)); // the Athens calendar day, as the app reads it
+const tomorrow = athensDateTime(Date.parse(TEST_NOW) + DAY_MS).slice(0, 10);
 const data = { 'klv.db.cfg': { products: [{ id: 'sp', name: 'Σπανάκι' }, { id: 'ro', name: 'Ρόκα' }], clients: [{ id: 'c1', name: 'Λαϊκή Νίκαιας' }, { id: 'c2', name: 'Μανάβικο Νίκος' }] },
-  [`klv.db.day.${day(1)}`]: { orders: { c1: { sp: 6, ro: 4.5 }, c2: { sp: 3 } } } };
+  [`klv.db.day.${tomorrow}`]: { orders: { c1: { sp: 6, ro: 4.5 }, c2: { sp: 3 } } } };
 
 test('dispatch tomorrow: one card per client, quarters as ½, copy puts the text on the clipboard', async ({ page }) => {
   // no share sheet and a recording clipboard (WebKit has no clipboard permission to grant): the app's own «share, then clipboard» path is what is tested
@@ -13,10 +14,11 @@ test('dispatch tomorrow: one card per client, quarters as ½, copy puts the text
     Object.defineProperty(navigator, 'share', { value: undefined, configurable: true });
     Object.defineProperty(navigator, 'clipboard', { value: { writeText: async (t: string) => { (window as unknown as { __copied: string }).__copied = t; } }, configurable: true });
   });
+  await fixClock(page);
   const errors = await iphone(page);
   await page.locator('nav.tabs [data-tab="more"]').click();
   await page.getByTestId('open-orders').click();
-  await page.getByTestId('orders-file').setInputFiles({ name: 'k.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ app: 'klouves', at: new Date().toISOString(), data })) });
+  await page.getByTestId('orders-file').setInputFiles({ name: 'k.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ app: 'klouves', at: TEST_NOW, data })) });
   await page.getByTestId('dispatch-tomorrow').click();
   await expect(page.getByTestId('dispatch-client')).toHaveCount(2);
   await expect(page.getByTestId('dispatch-client').first()).toContainText('Ρόκα: 4½');

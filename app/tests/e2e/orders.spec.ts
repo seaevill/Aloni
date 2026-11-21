@@ -1,10 +1,13 @@
 import { expect, test } from '@playwright/test';
+import { athensDateTime, TEST_NOW } from '../helpers/clock';
+import { fixClock } from './helpers/clock';
 import { iphone } from './helpers/iphone';
 
-const file = (data: object, app = 'klouves') => ({ name: 'klouves-backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ app, at: new Date().toISOString(), data })) });
-const today = new Date().toISOString().slice(0, 10);
+const file = (data: object, app = 'klouves') => ({ name: 'klouves-backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ app, at: TEST_NOW, data })) });
+const today = athensDateTime(Date.parse(TEST_NOW)).slice(0, 10);
 
 test('Κλούβες backup: loaded by hand, crates per crop this week, an unknown product is not counted, a wrong file is refused', async ({ page }) => {
+  await fixClock(page);
   const errors = await iphone(page);
   await page.locator('nav.tabs [data-tab="more"]').click();
   await page.getByTestId('open-orders').click();
