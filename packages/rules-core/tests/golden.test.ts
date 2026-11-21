@@ -120,7 +120,7 @@ function sowingOf(c: J): Pick<Snapshot, 'sowing'> {
   const cropFamily = 'Amaranthaceae'; // spinach family from RULES.md; the runtime receives the recorded family
   return { sowing: {
     cropId, cropFamily, area: synthetic.requested.area_str,
-    sameFamilyYears: params.same_family_years.value,
+    sameFamilyYears: params.same_family_years.value, diseaseYears: params.disease_years.value,
     rainDays: params.workable_rain_days.value, maxRain: params.workable_max_rain_mm.value,
     minSoil: params.germination_c.value[cropId].min, maxSoil: params.germination_c.value[cropId].poor_above,
     yieldKgPerArea: params.yield_kg_per_str.value[cropId], crateKg: params.crate_kg.value[cropId], wastePercent: params.waste_pct.value,
@@ -130,6 +130,8 @@ function sowingOf(c: J): Pick<Snapshot, 'sowing'> {
         .map((r: J) => ({ family: r.family, date: r.harvested ?? r.season?.split('-')[0] })),
       flags: (input.disease_flags as J[]).filter((f) => f.parcel_id === id && f.level === 'high')
         .map((f) => ({ family: f.family, source: f.rule_id })),
+      diseaseHistory: (input.disease_flags as J[]).filter((f) => f.parcel_id === id && f.history !== undefined)
+        .map((f) => ({ family: f.family })), // unstructured history has no verified date
       rain: (input.weather_daily[id] ?? []).map((d: J) => ({ date: d.date, mm: d.rain_mm, forecast: d.kind === 'forecast' })),
     })),
   } };

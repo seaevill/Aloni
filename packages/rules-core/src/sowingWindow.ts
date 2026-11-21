@@ -8,6 +8,7 @@ export interface SowingParcel {
   readonly freeArea: string;
   readonly soil?: number;
   readonly history: readonly { readonly family: string; readonly date?: string }[];
+  readonly diseaseHistory: readonly { readonly family: string; readonly date?: string }[];
   readonly flags: readonly { readonly family: string; readonly source: string }[];
   readonly rain: readonly { readonly date: string; readonly mm: number; readonly forecast: boolean }[];
 }
@@ -16,6 +17,7 @@ export interface SowingFacts {
   readonly cropFamily: string;
   readonly area: string;
   readonly sameFamilyYears: number;
+  readonly diseaseYears: number;
   readonly rainDays: number;
   readonly maxRain: number;
   readonly minSoil: number;
@@ -29,6 +31,18 @@ export interface SowingFacts {
 type SowingOutput = Pick<Output, 'rule_id' | 'kind' | 'category'> & Partial<Output>;
 const count = (n: number) => Number.isSafeInteger(n) && n > 0;
 const nonnegative = (n: number) => Number.isFinite(n) && n >= 0;
+
+function cutoffDay(today: string, years: number) {
+  const date = new Date(today);
+  date.setUTCFullYear(date.getUTCFullYear() - years);
+  return date.toISOString().split('T')[0];
+}
+
+function recentPeriod(date: string | undefined, earliest: string) {
+  if (!date || !/^\d{4}(?:-(?:0[1-9]|1[0-2])(?:-\d{2})?)?$/u.test(date) ||
+      (date.length === 10 && !isCalendarDate(date))) return 'unknown';
+  return date >= earliest.slice(0, date.length) ? 'recent' : 'older';
+}
 
 function rainWindow(p: SowingParcel, today: string, days: number, limit: number) {
   const measured = new Map(p.rain.filter((r) => isCalendarDate(r.date) && nonnegative(r.mm)).map((r) => [r.date, r.mm]));
@@ -61,6 +75,7 @@ export function sowingWindow(s: Snapshot): SowingOutput[] {
   if (s.ruleStatus.SOW !== 'signed') return [{ ...base, kind: 'info', category: 'sowing_inputs', values: { badge: 'not_signed_off' } }];
   const area = parseDecimal(facts.area);
   if (!area.known || parseFloat(area.value) <= 0 || !count(facts.sameFamilyYears) || facts.sameFamilyYears > 100 ||
+      !count(facts.diseaseYears) || facts.diseaseYears > 100 ||
       !count(facts.rainDays) || facts.rainDays > 366 || !nonnegative(facts.maxRain) ||
       !Number.isFinite(facts.minSoil) || !Number.isFinite(facts.maxSoil) || facts.minSoil > facts.maxSoil ||
       !nonnegative(facts.yieldKgPerArea) || !Number.isFinite(facts.crateKg) || facts.crateKg <= 0 ||
@@ -68,10 +83,9 @@ export function sowingWindow(s: Snapshot): SowingOutput[] {
     return [{ ...base, kind: 'info', category: 'sowing_unknown', values: { reason: 'incomplete_signed_inputs' } }];
   }
   const today = athensDate(s.asOf);
-  const cutoff = new Date(today);
-  cutoff.setUTCFullYear(cutoff.getUTCFullYear() - facts.sameFamilyYears);
-  const earliest = cutoff.toISOString().split('T')[0];
-  const rejected: Record<string, string[]> = {};
+  const earliest = cutoffDay(today, facts.sameFamilyYears);
+  const diseaseCutoff = cutoffDay(today, facts.diseaseYears);
+  const rejected = new Map<string, string[]>();
   const vetoes: Veto[] = [];
   const candidates: Array<{ id: string; window: { start: string; end: string } }> = [];
   for (const parcel of facts.parcels) {
@@ -81,8 +95,14 @@ export function sowingWindow(s: Snapshot): SowingOutput[] {
       vetoes.push({ by: flag.source, vetoed: 'sow', parcel_id: parcel.id, reason: 'disease_flag_family' });
     }
     for (const item of parcel.history.filter((r) => r.family === facts.cropFamily)) {
-      if (!item.date || !/^\d{4}(?:-\d{2}(?:-\d{2})?)?$/u.test(item.date)) reasons.push('unknown_history');
-      else if (item.date >= earliest.slice(0, item.date.length)) reasons.push('same_family_recent');
+      const recency = recentPeriod(item.date, earliest);
+      if (recency === 'unknown') reasons.push('unknown_history');
+      else if (recency === 'recent') reasons.push('same_family_recent');
+    }
+    for (const item of parcel.diseaseHistory.filter((r) => r.family === facts.cropFamily)) {
+      const recency = recentPeriod(item.date, diseaseCutoff);
+      if (recency === 'unknown') reasons.push('unknown_disease_history');
+      else if (recency === 'recent') reasons.push('recent_disease_history');
     }
     const free = parseDecimal(parcel.freeArea);
     if (!free.known) reasons.push('unknown_free_area');
@@ -98,11 +118,13 @@ export function sowingWindow(s: Snapshot): SowingOutput[] {
         else candidates.push({ id: parcel.id, window: { start: today, end } });
       }
     }
-    if (reasons.length) rejected[parcel.id] = [...new Set(reasons)];
+    if (reasons.length) rejected.set(parcel.id, [...new Set(reasons)]);
   }
+  const checks = Object.fromEntries(rejected);
+  if (candidates.length === 0) return [{ ...base, kind: 'info', category: 'sowing_unavailable', values: { rejected: checks } }];
   const crates = parseFloat(area.value) * facts.yieldKgPerArea / facts.crateKg * (1 - facts.wastePercent / 100);
   return Number.isFinite(crates) ? candidates.map((candidate) => ({
     ...base, kind: 'recommendation', category: 'sow', confidence: 'medium', parcel_ids: [candidate.id], window: candidate.window,
-    values: { area_str: area.value, expected_crates: crates, variety_prompt: true, chosen_variety: null, rejected }, vetoes,
+    values: { area_str: area.value, expected_crates: crates, variety_prompt: true, chosen_variety: null, rejected: checks }, vetoes,
   })) : [];
 }
