@@ -32,6 +32,21 @@ describe('the parcel timeline: one read-only stream of what happened on THIS par
     expect(h).toMatchObject({ kind: 'harvest', crop: 'crop:c1', crates: '3' });
     expect(parcelTimeline('A', [{ ...plantings[0]!, deleted_at: '2026-11-22T00:00:00.000Z' }], links, sprays, harvests, names)).toEqual([]);
   });
+  it.each([
+    ['23:30 winter', '2026-11-20', '2026-11-20T21:30:00Z'],
+    ['00:30 winter', '2026-11-21', '2026-11-20T22:30:00Z'],
+    ['00:30 summer', '2026-07-21', '2026-07-20T21:30:00Z'],
+  ])('sorts same-day events by Athens time at %s', (_case, sown, at) => {
+    const events = parcelTimeline('A', [planting('p1', 'A', 'c1', sown)], links,
+      [spray('s1', 'j1', at, 'x')], [], names);
+    expect(events.map((event) => [event.kind, event.at])).toEqual([['spray', at], ['sown', sown]]);
+  });
+  it('orders equal instants by kind and id even when timestamps have different offsets', () => {
+    const events = parcelTimeline('A', [planting('p1', 'A', 'c1', '2026-07-21')], links,
+      [spray('s2', 'j1', '2026-07-21T00:00:00+03:00', 'x'), spray('s1', 'j1', '2026-07-20T21:00:00.000Z', 'x')],
+      [harvest('h1', 'p1', '2026-07-20T21:00:00Z', '3')], names);
+    expect(events.map((event) => event.id)).toEqual(['h1', 's1', 's2', 'p1']);
+  });
   it('is capped so the screen stays short', () => {
     const many = Array.from({ length: TIMELINE_MAX + 10 }, (_, i) => harvest(`h${i}`, 'p1', `2026-11-${String(1 + (i % 28)).padStart(2, '0')}T06:00:00.000Z`, '1'));
     expect(parcelTimeline('A', plantings, links, [], many, names)).toHaveLength(TIMELINE_MAX);

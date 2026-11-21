@@ -1,4 +1,5 @@
 import type { Row } from '../db/schema';
+import { athensInstant } from '../spray/time';
 
 // «Χρονολόγιο» of a parcel: ONE read-only stream of what the records say happened on it (sowing, sprayings, harvests), newest first.
 // Information only: it shows the stored values as they are; a waiting-period end that is not stored is simply absent (unknown), never worked out here, and nothing is decided.
@@ -9,6 +10,22 @@ export type TimelineEvent =
   | { kind: 'sown'; id: string; at: string; crop: string }
   | { kind: 'spray'; id: string; at: string; product: string; phiUntil?: string; reiUntil?: string }
   | { kind: 'harvest'; id: string; at: string; crop: string; crates: string };
+
+const DATE = /^\d{4}-\d{2}-\d{2}$/;
+const ZONED_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
+const KIND_ORDER: Record<TimelineEvent['kind'], number> = { harvest: 0, spray: 1, sown: 2 };
+
+function timelineInstant(at: string): number | undefined {
+  const zoned = DATE.test(at) ? athensInstant(`${at}T00:00`) : ZONED_TIME.test(at) ? at : undefined;
+  if (zoned === undefined) return undefined;
+  const time = Date.parse(zoned);
+  return Number.isFinite(time) ? time : undefined;
+}
+
+function compareTie(a: TimelineEvent, b: TimelineEvent): number {
+  if (a.kind !== b.kind) return KIND_ORDER[a.kind] - KIND_ORDER[b.kind];
+  return a.id.localeCompare(b.id);
+}
 
 /** `sprays` must already be the EFFECTIVE ones (a correction replaces its original: see effectiveSprays). */
 export function parcelTimeline(
@@ -27,5 +44,13 @@ export function parcelTimeline(
     })),
     ...harvests.filter((h) => ids.has(String(h.planting_id)) && text(h.harvested_at) !== '').map((h): TimelineEvent => ({ kind: 'harvest', id: String(h.id), at: text(h.harvested_at), crop: cropOf(h.planting_id), crates: text(h.crates_str) })),
   ];
-  return events.sort((a, b) => b.at.localeCompare(a.at)).slice(Number('0'), TIMELINE_MAX);
+  const dated: { event: TimelineEvent; instant: number }[] = [];
+  const undated: TimelineEvent[] = [];
+  for (const event of events) {
+    const instant = timelineInstant(event.at);
+    if (instant === undefined) undated.push(event);
+    else dated.push({ event, instant });
+  }
+  dated.sort((a, b) => a.instant === b.instant ? compareTie(a.event, b.event) : b.instant - a.instant);
+  return [...dated.map(({ event }) => event), ...undated.sort(compareTie)].slice(Number('0'), TIMELINE_MAX);
 }
