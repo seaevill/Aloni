@@ -24,7 +24,7 @@ import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
 import { doneBlocked, reiLockJob, type Lock } from '../spray/harvest';
 import { useSubmit } from './useSubmit';
 import type { Row } from '../db/schema';
-import { DemoBanner } from './DemoBanner';
+import { DemoRibbon } from './DemoRibbon';
 import { HarvestForm } from './HarvestForm';
 import { nameOf } from './screens';
 import { queuedKey } from './states';
@@ -135,8 +135,7 @@ export function WorkerApp() {
         {DATA_LINES.map((k) => <p key={k}>{t(k)}</p>)}
         {!noticeSeen && <button class="btn big" data-testid="worker-data-ack" onClick={() => void ackNotice()}>{t('worker.data.ack')}</button>}
       </details>
-      {!real && <DemoBanner />}
-      {!real && <p class="muted">{t('worker.demoNote')}</p>}
+      {!real && <DemoRibbon />}
       {!real && <h2>{t('worker.choose')}</h2>}
       {!real && <div class="seg two big">{people.map((w) => <button key={w.id} aria-pressed={w.id === me.id} onClick={() => workerView.value = w.id}>{text(w.name)}</button>)}</div>}
 

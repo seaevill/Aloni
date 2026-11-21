@@ -8,7 +8,7 @@ import { More } from './More';
 import { RejectedList, SyncChip } from './states';
 import { hashOf, tab, workerView, type FarmKey, type Tab } from './nav';
 import { WorkerApp } from './WorkerApp';
-import { DemoBanner } from './DemoBanner';
+import { DemoRibbon } from './DemoRibbon';
 import { UpdateBar } from './UpdateBar';
 import { LeaveBar } from './LeaveBar';
 import { guarding, leaveAsk, tabReset } from './backstack';
@@ -55,7 +55,7 @@ export function App() {
   if (onboarding) return <main><Onboarding done={endOnboarding} /></main>;   // owner first run only: never reached by the worker route above
   return (
     <>
-      <main><UpdateBar /><LeaveBar /><DemoBanner /><SyncChip /><RejectedList /><BackupBanner /><Screen /></main>
+      <main><UpdateBar /><LeaveBar /><DemoRibbon /><SyncChip /><RejectedList /><BackupBanner /><Screen /></main>
       <Toast />
       <nav class="tabs" aria-label={t('nav.main')}>
         {TABS.map(({ id, icon, label }) => (

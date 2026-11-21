@@ -378,7 +378,6 @@
   "lang.name.en": "EN – English",
   "lang.name.hi": "हिन्दी",
   "worker.title": "Worker view",
-  "worker.demoNote": "Demo: whatever you do here only changes the demo data.",
   "worker.choose": "Worker",
   "worker.exit": "Leave the worker view",
   "worker.tab.jobs": "Jobs",

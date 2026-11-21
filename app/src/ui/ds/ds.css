@@ -113,3 +113,6 @@
 .today-head { position:relative; }
 .share-btn { position:absolute; top:var(--sp-8); right:var(--sp-8); width:var(--tap); height:var(--tap); display:inline-flex; align-items:center; justify-content:center; border:0; border-radius:var(--r-pill); background:var(--card-on-dark); color:var(--white); }
 .share-preview { display:block; width:100%; height:auto; border-radius:var(--r-card); box-shadow:var(--shadow-card); margin:0 0 var(--sp-12); }
+
+/* The one demo ribbon (D14) */
+.demo-ribbon { position:sticky; top:0; z-index:4; display:flex; align-items:center; justify-content:center; gap:var(--sp-6); margin:0 calc(-1 * var(--sp-16)) var(--sp-12); padding:var(--sp-6) var(--sp-16); background:var(--amber-bg); color:var(--amber-fg); font-size:var(--fs-meta); font-weight:700; text-align:center; }

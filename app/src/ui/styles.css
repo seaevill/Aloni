@@ -52,7 +52,6 @@ nav.tabs .ico { font-size:var(--fs-20); line-height:1; }
 .btn.big, .seg.big button { min-height:var(--tap-big); font-size:var(--fs-18); }
 .badge.calm { background:var(--calm-bg); color:var(--calm-fg); }
 @media print { nav.tabs, .noprint, .chip, .toast, .btn { display:none !important; } body { background:var(--white); } main { padding:0; } .card { break-inside:avoid; border:var(--bw-1) solid currentColor; } .sign { margin-top:var(--sp-48); } }
-.demo-banner { display:block; border-radius:var(--r-sm); padding:var(--sp-8) var(--sp-10); margin:0 0 var(--sp-10); text-align:center; }
 .counter { display:grid; grid-template-columns:var(--tap-big) minmax(0,1fr) var(--tap-big); gap:var(--sp-12); align-items:center; margin:0 0 var(--sp-4); }
 .counter button { min-height:var(--tap-big); min-width:0; padding:0; font:inherit; font-size:var(--fs-count); font-weight:700; border-radius:var(--r-md); border:var(--bw-2) solid var(--green); background:var(--card); color:var(--green); }
 .counter output { display:block; text-align:center; font-size:var(--fs-count); font-weight:700; line-height:1.1; }
@@ -110,7 +109,7 @@ h3 { font-size:var(--fs-18); font-weight:800; margin:var(--sp-12) 0 var(--sp-6);
 .badge.unsigned::before, .badge.changed::before, .badge.warn::before { content:"\25D4"; }
 .badge.blocked::before { content:"\2715"; }
 .badge.neutral::before, .badge.info::before { content:"\24D8"; }
-.badge.bi::before, .badge.demo-banner::before { content:none; }
+.badge.bi::before { content:none; }
 
 .welcome { list-style:none; margin:0 0 var(--sp-12); padding:var(--sp-12) var(--sp-14); display:grid; gap:var(--sp-12); }
 .welcome li { display:flex; gap:var(--sp-12); align-items:flex-start; }
