@@ -117,3 +117,22 @@ describe('the demo farm shows every screen, and stays apart from the real farm',
     await expect(guarded.stock_movements.update('real-m', { qty_str: '9' })).rejects.toThrow(/append-only/);
   });
 });
+
+describe('demo labels (fictional, Demo farm only)', () => {
+  it('about 90 % of the demo label uses are signed; a few stay unsigned or incomplete on purpose; every one belongs to the Demo farm and carries the Demo source', async () => {
+    await importDemo(db, data);
+    const rows = await db.label_uses.toArray();
+    expect(rows.length).toBeGreaterThan(20);
+    expect(rows.every((r) => r.farm_id === DEMO_FARM_ID)).toBe(true);                  // nothing for a real farm
+    expect(rows.every((r) => r.source === 'ΕΠΙΔΕΙΞΗ')).toBe(true);
+    const states = rows.map((l) => statusOf(l));
+    expect(states.filter((s) => s === 'signed').length / rows.length).toBeGreaterThanOrEqual(0.8);   // Σήμερα, Φυτά, Χωράφια are not «άγνωστο» everywhere
+    expect(states.filter((s) => s === 'unsigned').length).toBeGreaterThanOrEqual(1);                   // the examples that keep a worker job closed
+    expect(states.filter((s) => s === 'blocked').length).toBeGreaterThanOrEqual(1);
+    expect(states.filter((s) => s !== 'signed').length).toBeLessThanOrEqual(6);                        // «1–2 examples», not a screen full of them
+  });
+  it('a real farm on the same phone gets no label use from the Demo import', async () => {
+    await importDemo(db, data);
+    expect(await db.label_uses.where('farm_id').notEqual(DEMO_FARM_ID).count()).toBe(0);
+  });
+});

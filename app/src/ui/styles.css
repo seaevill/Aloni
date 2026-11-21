@@ -105,12 +105,11 @@ h3 { font-size:var(--fs-18); font-weight:800; margin:var(--sp-12) 0 var(--sp-6);
 
 /* One badge system: signed = green/lime, unsigned = amber, blocked = red, info = grey. Every badge has an icon AND a word (colour is never the only signal). */
 .badge { display:inline-flex; align-items:center; gap:var(--sp-6); }
-.badge::before { font-weight:700; }
-.badge.signed { background:var(--lime); color:var(--on-lime); }
-.badge.signed::before { content:"\2713"; }
-.badge.unsigned::before, .badge.changed::before, .badge.warn::before { content:"\25D4"; }
-.badge.blocked::before { content:"\2715"; }
-.badge.neutral::before, .badge.info::before { content:"\24D8"; }
+.badge::before { content:""; flex:none; width:var(--icon-sm); height:var(--icon-sm); background:currentColor; -webkit-mask:var(--badge-icon) center / contain no-repeat; mask:var(--badge-icon) center / contain no-repeat; }   /* a DRAWN icon (a mask), not a text glyph: «×» in a red pill looked like a close button */
+.badge.signed { background:var(--lime); color:var(--on-lime); --badge-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E"); }
+.badge.unsigned, .badge.changed, .badge.warn { --badge-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3a9 9 0 100 18 9 9 0 000-18zM12 7v5l3 2'/%3E%3C/svg%3E"); }
+.badge.blocked { --badge-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 11h14v10H5zM8 11V8a4 4 0 018 0v3'/%3E%3C/svg%3E"); }
+.badge.neutral, .badge.info { --badge-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3a9 9 0 100 18 9 9 0 000-18zM12 11v6M12 7.5h.01'/%3E%3C/svg%3E"); }
 .badge.bi::before { content:none; }
 
 .welcome { list-style:none; margin:0 0 var(--sp-12); padding:var(--sp-12) var(--sp-14); display:grid; gap:var(--sp-12); }
