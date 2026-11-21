@@ -13,6 +13,15 @@ const dayNumber = (iso: string): number => Date.parse(`${iso.slice(0, 10)}T00:00
 const isoOf = (n: number): string => new Date(n * DAY).toISOString().slice(0, 10);
 const mondayOf = (n: number): number => n - ((new Date(n * DAY).getUTCDay() + 6) % 7);
 
+/** Spread a remaining quantity evenly over an inclusive harvest range and count only overlapping days. */
+export function projectedCrates(remaining: number, from: number, to: number, start: number, end: number): number {
+  const span = to - from + 1;
+  const days = Math.min(to, end) - Math.max(from, start) + 1;
+  let volume = 0; // A known planting contributes zero days outside its harvest range.
+  if (days > 0 && span > 0 && remaining > 0) volume = (remaining * days) / span;
+  return volume;
+}
+
 /** The table for one crop from `asOf` (the first week is the week of asOf) for `weeks` weeks. A planting with an unreadable date counts for nothing (never guessed). */
 export function supplyTable(asOf: string, weeks: number, plantings: readonly SupplyPlanting[], order: WeeklyOrder): SupplyRow[] {
   const today = dayNumber(asOf);
@@ -31,10 +40,7 @@ export function supplyTable(asOf: string, weeks: number, plantings: readonly Sup
       const from = Math.max(...starts);
       const to = dayNumber(p.harvestTo);
       const remaining = p.estCrates - p.loggedCrates;
-      const span = to - from + 1;
-      if (!Number.isFinite(from) || !Number.isFinite(to) || span <= 0 || !(remaining > 0)) { byPlanting[p.id] = 0; continue; }
-      const days = Math.max(0, Math.min(to, start + 6) - Math.max(from, start) + 1);
-      byPlanting[p.id] = (remaining * days) / span;
+      byPlanting[p.id] = projectedCrates(remaining, from, to, start, start + 6);
     }
     const supply = Object.values(byPlanting).reduce((a, b) => a + b, 0);
     rows.push({ week, orders, supply, gap: orders - supply, byPlanting });
