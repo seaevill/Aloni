@@ -32,7 +32,7 @@ async function prepare(page: Page) {
       const tx = r.result.transaction('settings', 'readwrite'); const s = tx.objectStore('settings');
       s.put({ key: 'controller', value: { name: 'Bora', address: 'Megara', phone: '210' } });
       s.put({ key: 'business', value: { vat_id: '123456789', farm_name: 'Bora farm' } });
-      s.put({ key: 'readiness', value: { migration: '0026', advisor: true } });
+      s.put({ key: 'readiness', value: { migration: '0034', advisor: true } });
       s.put({ key: 'last_backup_at', value: new Date().toISOString() });
       tx.oncomplete = () => done();
     };

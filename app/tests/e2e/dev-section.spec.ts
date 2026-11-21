@@ -9,7 +9,7 @@ test('Άλλα: no migration / advisor wording until «Για προγραμμα
   await expect(page.getByTestId('opened-from')).toContainText('Ανοιχτό από');
   await expect(page.getByTestId('ready-controller')).toBeVisible();
   for (const key of ['ready-migration', 'ready-advisor', 'ready-migration-confirm', 'ready-advisor-confirm']) await expect(page.getByTestId(key)).toBeHidden();
-  expect(await page.getByText('0026').filter({ visible: true }).count()).toBe(0);
+  expect(await page.getByText('0034').filter({ visible: true }).count()).toBe(0);
   await page.getByTestId('dev-section').locator('summary').click();
   await expect(page.getByTestId('ready-migration')).toBeVisible();
   await expect(page.getByTestId('ready-advisor')).toBeVisible();
