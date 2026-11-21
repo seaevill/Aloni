@@ -50,6 +50,9 @@ function fixGreekName(r: Record<string, unknown>): Record<string, unknown> {
 const legacyId = (table: FarmTable, r: Record<string, unknown>, i: number): string =>
   typeof r.id === 'string' ? r.id : table === 'orders_weekly' && typeof r.crop_id === 'string' ? r.crop_id : String(i);
 
+// Keep the existing Demo product keys for the original three sample crops.
+const DEMO_ORDER_IDS: Readonly<Record<string, string>> = { spinach: 'd-sp', rocket: 'd-ro', parsley: 'd-pa' };
+
 /** The Demo source gives weekly baselines only. Client orders and seasonal multipliers are not inferred. */
 export function demoWeeklyOrders(crops: readonly Row[], targets: readonly Row[], asOf: Date): { orders: KlouvesOrders; map: Record<string, string> } | undefined {
   const sourceDay = athensToday(asOf);
@@ -58,16 +61,20 @@ export function demoWeeklyOrders(crops: readonly Row[], targets: readonly Row[],
   if (first === undefined) return;
   const weekly = new Map<string, number>();
   const products: KlouvesOrders['products'] = [];
+  const map: Record<string, string> = {};
   for (const row of targets) {
     if (row.farm_id !== DEMO_FARM_ID || row.deleted_at) continue;
     const crop = crops.find((item) => item.id === row.crop_id && item.farm_id === DEMO_FARM_ID && !item.deleted_at);
-    const id = crop?.slug;
+    const slug = crop?.slug;
     const name = crop?.name_el;
     const crates = row.crates_per_week;
-    if (typeof id !== 'string' || typeof name !== 'string' || !name || typeof crates !== 'number' ||
-      !Number.isFinite(crates) || crates < 0 || weekly.has(id)) continue;
+    if (typeof slug !== 'string' || typeof name !== 'string' || !name || typeof crates !== 'number' ||
+      !Number.isFinite(crates) || crates < 0) continue;
+    const id = DEMO_ORDER_IDS[slug] ?? `d-${slug}`;
+    if (weekly.has(id)) continue;
     products.push({ id, name });
     weekly.set(id, crates);
+    map[id] = slug;
   }
   if (!products.length) return;
   const weeks: KlouvesOrders['weeks'] = {};
@@ -75,7 +82,7 @@ export function demoWeeklyOrders(crops: readonly Row[], targets: readonly Row[],
     const week = dateAfterDays(first, offset);
     if (week.known) weeks[week.value] = Object.fromEntries(weekly);
   }
-  return { orders: { products, weeks, skipped: 0 }, map: Object.fromEntries(products.map(({ id }) => [id, id])) };
+  return { orders: { products, weeks, skipped: 0 }, map };
 }
 
 /**
