@@ -1,5 +1,18 @@
 # Codex handoff
 
+## 2026-11-21 (Claude, design sprint: components that have landed, import from `app/src/ui/ds`)
+
+- **landed: tokens v2 (D1).** `--fs-hero/title/h2/row/body/meta`, tone colours (`--hold-*`, `--blocked-*`, `--frost-*`, `--lime-soft*`, `--unknown-*`), motion (`--dur-1..3`, `--ease`), `--chip-h --tag-h --icon-sm --icon-md --tile --bar-h`. New texts go ONLY into `i18n/ui.{el,tr,en,hi}.json` with the `ui.` prefix (merged at load; `I18nKey` includes them).
+- **landed: Chip, Tag (D2).** `<Chip tone="hold|blocked|warn|unsigned|frost|ready|unknown|info">text</Chip>`; the tone comes from rules-core `statusOf`, the chip only displays it. `<Tag>` for neutral metadata. Icons: `ui/icons/Icon.tsx` (`<Icon name="lock" />`, names in `ICON_PATHS`). Gallery: `/?ds-gallery` in a build with `VITE_DS_GALLERY=true` (the Playwright `app` build has it; production does not).
+- **landed: surfaces (D3).** `Card`, `HeroCard` (the only forest surface below the header), `ListRow` (props `heading`, `meta`, `icon`, `trailing`, `onClick`), `IconTile`, `PageHead` (`heading`, `subtitle`, `back`, `backText`), `SectionHead`. Never nest a Card in a Card. Prop names avoid `title`/`label` (lint U03).
+- **landed: data viz (D4).** `BigNum` (`value` already formatted, `undefined` = «άγνωστο», `caption`, `size`), `Sparkline` (`values` with `null` gaps, required `caption`), `WeekBars` (`weeks: {name, orders, eligible, unknown}[]`; eligible only in the bar; unknown hatched, never added), `WeatherStrip` (`days: {name, tmax?, tmin?, rain?, wind?}[]`; a day with nothing says «άγνωστο» once). No inline `style=` anywhere (tokens.test).
+- **landed: icon set + tab bar (D5).** All 32 icons are in `ICON_PATHS`; the tab bar uses them; the crops TAB is «Φυτά» (`ui.tab.crops`), the screen title stays «Καλλιέργειες».
+
+## 2026-11-21
+
+- **Hindi.** Deferred until #259 merges. The open PR still changes `app/src/i18n/hi.json`.
+- **Rules.** GAP uses the shared weekly supply model and enables A05 and NEG-P0-2. Unsigned or missing approval yields a table only. Unknown PHI excludes the planting and suppresses decisions for that crop.
+
 ## 2026-11-20
 
 - **SQL reviews.** #232: #235 and the review comments cover the upgrade and stale-version fixes. The latest reviewed revision, `5d141ec`, rejects an arbitrary fingerprint on supported inputs, but the server can still sign a stored dose the phone parser considers unknown. #236: #239 and the review comment cover the concurrent quota overrun and the missing explicit deny policy. Author branches remain untouched.

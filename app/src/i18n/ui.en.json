@@ -4,5 +4,6 @@
   "ui.week.extra": "▲ {n} crates extra",
   "ui.week.even": "= covers exactly",
   "ui.week.unknown": "unknown (not counted)",
-  "ui.week.nodata": "No data"
+  "ui.week.nodata": "No data",
+  "ui.tab.crops": "Crops"
 }

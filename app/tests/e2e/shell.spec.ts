@@ -7,9 +7,9 @@ test('shell: five tabs in Greek, 375 px, no horizontal scroll', async ({ page })
   await expect(tabs).toHaveCount(5);
   // one short word per tab, drawn with line icons (no emoji), and every label stays on ONE line
   const labels = (await tabs.allInnerTexts()).map((s) => s.replace(/[\u00ad\s]/g, ''));
-  expect(labels).toEqual(['Σήμερα', 'Καλλιέργειες', 'Χωράφια', 'Αποθήκη', 'Άλλα']);
-  // every label is ONE line except the glossary word «Καλλιέργειες» (12 letters cannot fit 75 px at the 14 px minimum; it may break once, at its soft hyphen)
-  for (const l of await page.locator('nav.tabs .lbl').all()) { const text = (await l.innerText()).replace(/\u00ad/g, ''); expect((await l.boundingBox())!.height).toBeLessThanOrEqual(text === 'Καλλιέργειες' ? 40 : 20); }
+  expect(labels).toEqual(['Σήμερα', 'Φυτά', 'Χωράφια', 'Αποθήκη', 'Άλλα']);
+  // every label is ONE line (the crops tab is «Φυτά» since 2026-11-21: «Καλλιέρ-γειες» broke in the 75 px column)
+  for (const l of await page.locator('nav.tabs .lbl').all()) { const text = (await l.innerText()).replace(/\u00ad/g, ''); expect((await l.boundingBox())!.height).toBeLessThanOrEqual(20); }
   await expect(page.locator('nav.tabs svg')).toHaveCount(5);
   const vw = page.viewportSize()!.width;
   expect(vw).toBe(375);

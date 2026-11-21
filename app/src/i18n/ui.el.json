@@ -4,5 +4,6 @@
   "ui.week.extra": "▲ περισσεύουν {n} κλούβες",
   "ui.week.even": "= καλύπτει ακριβώς",
   "ui.week.unknown": "άγνωστο (δεν μετρά)",
-  "ui.week.nodata": "Δεν υπάρχουν δεδομένα"
+  "ui.week.nodata": "Δεν υπάρχουν δεδομένα",
+  "ui.tab.crops": "Φυτά"
 }
