@@ -8,6 +8,7 @@ test('gallery sheet: look, facts with their reasons, and every way to close it',
   await page.getByTestId('sheet-open').click();
   const sheet = page.locator('.ds-sheet');
   await expect(sheet).toBeVisible();
+  await page.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished)));     // measure after the slide-up: sizes taken mid-slide are off by a hair
   const look = await sheet.evaluate((e) => { const cs = getComputedStyle(e); return { tl: cs.borderTopLeftRadius, tr: cs.borderTopRightRadius, bl: cs.borderBottomLeftRadius, shadow: cs.boxShadow !== 'none' }; });
   expect(look).toEqual({ tl: '24px', tr: '24px', bl: '0px', shadow: true });
   expect(await sheet.locator('.ds-sheet-handle').evaluate((e) => [Math.round(e.getBoundingClientRect().width), Math.round(e.getBoundingClientRect().height)])).toEqual([40, 4]);
