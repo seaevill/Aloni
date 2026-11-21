@@ -8,3 +8,4 @@ export * from './engine';
 export * from './sprayWindow';
 export * from './frost';
 export * from './supply';
+export * from './harvestForecast';
