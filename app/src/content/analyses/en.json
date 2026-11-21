@@ -2,12 +2,15 @@
   "heading": "What the measurement shows",
   "ph": {
     "what": "pH describes how acidic or alkaline the sample is.",
-    "meaning": "Lower pH means a more acidic sample. Higher pH means a more alkaline sample."
+    "meaning": "Lower pH means a more acidic sample. Higher pH means a more alkaline sample.",
+    "effect": "Soil pH affects how easily the roots of leafy vegetables can take up some nutrients."
   },
   "ec": {
     "what": "Electrical conductivity describes how readily the sample conducts electricity.",
-    "meaning": "With the same unit and method, higher conductivity usually means more dissolved salts."
+    "meaning": "With the same unit and method, higher conductivity usually means more dissolved salts.",
+    "effect": "More dissolved salts around the roots can make it harder for leafy vegetables to take up water."
   },
   "range": "Range of recorded values",
-  "noRange": "There are fewer than two distinct values in the same unit to compare."
+  "noRange": "There are fewer than two distinct values in the same unit to compare.",
+  "approvalNote": "For information, without an agronomist signature"
 }

@@ -2,12 +2,15 @@
   "heading": "Ölçüm neyi gösteriyor?",
   "ph": {
     "what": "pH, örneğin ne kadar asitli veya bazik olduğunu gösterir.",
-    "meaning": "Düşük pH daha asitli, yüksek pH daha bazik bir örnek demektir."
+    "meaning": "Düşük pH daha asitli, yüksek pH daha bazik bir örnek demektir.",
+    "effect": "Toprağın pH değeri, yapraklı sebzelerin köklerinin bazı besinleri ne kadar kolay alabildiğini etkiler."
   },
   "ec": {
     "what": "Elektriksel iletkenlik, örneğin elektriği ne kadar kolay ilettiğini gösterir.",
-    "meaning": "Aynı birim ve yöntemle daha yüksek değer genellikle daha fazla çözünmüş tuz anlamına gelir."
+    "meaning": "Aynı birim ve yöntemle daha yüksek değer genellikle daha fazla çözünmüş tuz anlamına gelir.",
+    "effect": "Köklerin çevresinde daha fazla çözünmüş tuz varsa yapraklı sebzeler suyu almakta zorlanabilir."
   },
   "range": "Kayıtlı değer aralığı",
-  "noRange": "Karşılaştırmak için aynı birimde iki farklı değer yok."
+  "noRange": "Karşılaştırmak için aynı birimde iki farklı değer yok.",
+  "approvalNote": "Bilgi amaçlı, ziraat uzmanı imzası yok"
 }

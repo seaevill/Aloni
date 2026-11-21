@@ -46,6 +46,7 @@ export function AnalysisExplain({ field, row, records, onBack }: { field: Measur
       {display !== undefined && <strong data-testid="analysis-reading">{display}</strong>}
       <p>{copy[field].what}</p>
       <p>{copy[field].meaning}</p>
+      <p data-testid="analysis-leafy-effect">{copy[field].effect}</p>
       {range ? <figure class="analysis-scale" data-testid="analysis-recorded-range">
         <figcaption>{copy.range}</figcaption>
         <svg viewBox="0 0 100 8" aria-hidden="true">
@@ -54,7 +55,7 @@ export function AnalysisExplain({ field, row, records, onBack }: { field: Measur
         </svg>
         <div><span>{formatQty(range.low)}</span><span>{formatQty(range.high)}</span></div>
       </figure> : <small>{copy.noRange}</small>}
-      <p>{t('notify.rules.unsigned')}</p>
+      <p>{copy.approvalNote}</p>
     </Card>
   </section>;
 }

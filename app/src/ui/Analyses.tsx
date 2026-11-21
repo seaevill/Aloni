@@ -14,6 +14,7 @@ import { showUndo } from './Toast';
 import { useRows } from './useRows';
 import type { Measurement } from './AnalysisExplain';
 import { ListRow } from './ds';
+import { Icon } from './icons/Icon';
 import { BackBar } from './BackBar';
 
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
@@ -68,9 +69,9 @@ export function Analyses({ parcel, onBack, readOnly = false }: { parcel: Row; on
       {soil.rows && water.rows && cards.length === 0 && <p class="muted" data-testid="analysis-empty">{t('analysis.empty')}</p>}
       {cards.map((c) => (
         <div class="card" key={c.r.id} data-testid="analysis">{c.title}
-          {text(c.r.ph) && <ListRow testid="analysis-ph-source" heading={t('labeluse.line', { name: t('analysis.name.ph'), value: formatQty(text(c.r.ph)) })}
+          {text(c.r.ph) && <ListRow testid="analysis-ph-source" icon={<Icon name="info" />} heading={t('labeluse.line', { name: t('analysis.name.ph'), value: formatQty(text(c.r.ph)) })}
             onClick={() => void openReading(c.kind, c.r, 'ph')} />}
-          {text(c.r.ec) && <ListRow testid="analysis-ec-source" heading={t('labeluse.line', { name: t('analysis.name.ec'), value:
+          {text(c.r.ec) && <ListRow testid="analysis-ec-source" icon={<Icon name="info" />} heading={t('labeluse.line', { name: t('analysis.name.ec'), value:
               t('labeluse.dosevalue', { v: formatQty(text(c.r.ec)), unit: unitText(c.r.ec_unit) }) })}
             onClick={() => void openReading(c.kind, c.r, 'ec')} />}
           {c.lines.map((l) => <small key={l}>{l}</small>)}

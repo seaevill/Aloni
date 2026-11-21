@@ -22,6 +22,7 @@ test('a Demo report opens a neutral measurement explanation at 320 px', async ({
   const detail = page.getByTestId('analysis-explain');
   await expect(detail.getByTestId('analysis-reading')).not.toBeEmpty();
   await expect(detail).toContainText('πιο όξινο');
-  await expect(detail).toContainText('Χωρίς έγκριση γεωπόνου');
+  await expect(detail.getByTestId('analysis-leafy-effect')).toContainText('φυλλωδών λαχανικών');
+  await expect(detail).toContainText('Πληροφοριακό, χωρίς υπογραφή γεωπόνου');
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
 });
