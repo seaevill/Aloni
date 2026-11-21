@@ -1,3 +1,4 @@
+import { useId } from 'preact/hooks';
 import './crop-views-v2.css';
 
 export interface HarvestHeatCell {
@@ -18,10 +19,11 @@ export function HarvestHeat({ heading, weeks, rows, unknown, empty, onOpen }: {
   empty: string;
   onOpen?: (parcel: string, week: string) => void;
 }) {
+  const captionId = useId();
   const highest = Math.max(1, ...rows.flatMap((row) => row.cells.flatMap((cell) => cell.crates !== undefined && !cell.excluded ? [cell.crates] : [])));
-  return <section class="cx-crop-heat" data-testid="harvest-heat">
+  return <section class="cx-crop-heat" data-testid="harvest-heat" tabIndex={0} aria-labelledby={captionId}>
     <table>
-      <caption>{heading}</caption>
+      <caption id={captionId}>{heading}</caption>
       <thead><tr><th scope="col">{empty}</th>{weeks.map((week) => <th key={week} scope="col">{week}</th>)}</tr></thead>
       <tbody>{rows.map((row) => <tr key={row.parcel}>
         <th scope="row">{row.parcel}</th>
