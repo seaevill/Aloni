@@ -18,6 +18,21 @@ import { Notifications } from './Notifications';
 import { Readiness } from './Readiness';
 import { SignIn } from './SignIn';
 import { showUndo } from './Toast';
+import './more-v2.css';
+
+const MENU_ICONS = {
+  register: 'M6 3h12v18H6zM9 8h6M9 12h6M9 16h4',
+  orders: 'M3 9h18v11H3zM3 9l3-5h12l3 5M8 13v3m4-3v3m4-3v3',
+  worker: 'M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M13 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM17 10l2 2 3-4',
+  workers: 'M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M13 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM18 4a3 3 0 0 1 0 6m1 4a4 4 0 0 1 2 4v2',
+  photos: 'M3 5h18v14H3zM3 16l5-5 4 4 3-3 6 5M15 9h1',
+  info: 'M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0zM12 11v6m0-10h.01',
+};
+
+function MenuIcon({ name }: { name: keyof typeof MENU_ICONS }) {
+  return <span class="more-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d={MENU_ICONS[name]} /></svg></span>;
+}
 
 export function More() {
   const [msg, setMsg] = useState('');
@@ -33,15 +48,15 @@ export function More() {
   if (view === 'workers') return <Workers onBack={() => setView('main')} />;
   if (view === 'photos') return <Photos onBack={() => setView('main')} />;
   return (
-    <section>
+    <section class="more-v2">
       <header class="today-head band"><h1>{t('more.title')}</h1></header>
       <nav class="menu" data-testid="more-menu" aria-label={t('more.menu')}>
-        {activeFarm.value === DEMO_FARM_ID && <button class="row" data-testid="open-worker-view" onClick={() => { workerView.value = ''; }}><span>{t('more.workerView')}</span><span aria-hidden="true" class="chev" /></button>}
-        <button class="row" data-testid="open-orders" onClick={() => setView('orders')}><span>{t('orders.open')}</span><span aria-hidden="true" class="chev" /></button>
-        <button class="row" data-testid="open-register" onClick={() => setView('register')}><span>{t('register.open')}</span><span aria-hidden="true" class="chev" /></button>
-        <button class="row" data-testid="open-workers" onClick={() => setView('workers')}><span>{t('workers.open')}</span><span aria-hidden="true" class="chev" /></button>
-        <button class="row" data-testid="open-photos" onClick={() => setView('photos')}><span>{t('photos.title')}</span><span aria-hidden="true" class="chev" /></button>
-        <button class="row" data-testid="open-info" onClick={() => setView('info')}><span>{t('more.info')}</span><span aria-hidden="true" class="chev" /></button>
+        <button class="row" data-testid="open-register" onClick={() => setView('register')}><MenuIcon name="register" /><span>{t('register.open')}</span><span aria-hidden="true" class="chev" /></button>
+        <button class="row" data-testid="open-orders" onClick={() => setView('orders')}><MenuIcon name="orders" /><span>{t('orders.open')}</span><span aria-hidden="true" class="chev" /></button>
+        {activeFarm.value === DEMO_FARM_ID && <button class="row" data-testid="open-worker-view" onClick={() => { workerView.value = ''; }}><MenuIcon name="worker" /><span>{t('more.workerView')}</span><span aria-hidden="true" class="chev" /></button>}
+        <button class="row" data-testid="open-workers" onClick={() => setView('workers')}><MenuIcon name="workers" /><span>{t('workers.open')}</span><span aria-hidden="true" class="chev" /></button>
+        <button class="row" data-testid="open-photos" onClick={() => setView('photos')}><MenuIcon name="photos" /><span>{t('photos.title')}</span><span aria-hidden="true" class="chev" /></button>
+        <button class="row" data-testid="open-info" onClick={() => setView('info')}><MenuIcon name="info" /><span>{t('more.info')}</span><span aria-hidden="true" class="chev" /></button>
       </nav>
 
       <h2>{t('more.settings')}</h2>
