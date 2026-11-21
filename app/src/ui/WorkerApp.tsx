@@ -8,7 +8,7 @@ import { athensToday } from '../plantings/planting';
 import { COMPLETE } from '../worker/remote';
 import { cancelHeld, commitHeld, holdAction, type Held } from '../worker/held';
 import { RPC_PREFIX } from '../repo';
-import { formatDate, formatDateTime, lang, t, ts, type I18nKey, LANGS, LANG_META, restoreOwnerLang, setWorkerLang, workerLang } from '../i18n';
+import { formatDate, formatDateTime, lang, t, ts, type I18nKey, LANGS, LANG_META, ensureLang, restoreOwnerLang, setWorkerLang, workerLang } from '../i18n';
 import { UNIT_KEYS } from './LabelUseForm';
 import { formatDose } from '../i18n/format';
 import { known, type Decimal } from '@aloni/rules-core';
@@ -55,7 +55,7 @@ export function WorkerApp() {
   const people = workers.rows?.filter((w) => !w.deleted_at && (real ? w.user_id === session.value?.user_id : w.name !== 'Bora')) ?? [];
   const me = people.find((w) => w.id === workerView.value) ?? people[0];
   const [noticeSeen, setNoticeSeen] = useState(true);
-  useEffect(() => { const w = workerLang(); if (w) lang.value = w; return restoreOwnerLang; }, []);      // the worker's language lives only while this view is open
+  useEffect(() => { const w = workerLang(); if (w) void ensureLang(w).then(() => { lang.value = w; }).catch(() => undefined); return restoreOwnerLang; }, []);      // the worker's language lives only while this view is open
   useEffect(() => { void db.settings.get(`notice_seen_at:${text(me?.id)}`).then((r) => setNoticeSeen(r !== undefined)); }, [text(me?.id)]);
   const ackNotice = async () => { await putLocal(db, `notice_seen_at:${text(me?.id)}`, new Date().toISOString()); setNoticeSeen(true); };
   const [tabId, setTabId] = useState<'jobs' | 'harvest' | 'observe'>('jobs');
