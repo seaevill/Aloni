@@ -1,1 +1,9 @@
-{}
+{
+  "ui.unknown": "unknown",
+  "ui.week.short": "▼ {n} crates short",
+  "ui.week.extra": "▲ {n} crates extra",
+  "ui.week.even": "= covers exactly",
+  "ui.week.orders": "orders",
+  "ui.week.unknown": "unknown (not counted)",
+  "ui.week.nodata": "No data"
+}

@@ -60,3 +60,39 @@ test('surfaces: no nested cards, flat 56 px rows, hero is forest, title on sage,
   await expect(bar).toHaveAttribute('data-shown', 'no');
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
 });
+
+// D4: data viz. null is never 0; [3,null,5] draws two segments (here two lone dots); held/unknown supply is hatched, labelled and never part of the eligible bar; a missing weather day says «άγνωστο» once.
+test('data viz: unknown is not zero, gaps break the line, hatched unknown is separate, short/extra in words', async ({ page }) => {
+  await page.goto('/?ds-gallery');
+  const nums = page.locator('.ds-bignum');
+  await expect(nums).toHaveCount(3);
+  await expect(nums.nth(0).locator('.ds-bignum-value')).toHaveText('12 κλούβες');
+  expect(await nums.nth(0).locator('.ds-bignum-value').evaluate((e) => parseFloat(getComputedStyle(e).fontSize))).toBe(44);
+  await expect(nums.nth(1).locator('.ds-bignum-value')).toHaveText('άγνωστο');           // missing: never 0, never a dash
+  expect(await nums.nth(1).locator('.ds-bignum-value').evaluate((e) => parseFloat(getComputedStyle(e).fontSize))).toBe(22);
+  await expect(nums.nth(2).locator('.ds-bignum-value')).toHaveText('0');                  // a real zero stays a zero
+  expect(await nums.nth(2).locator('.ds-bignum-value').evaluate((e) => parseFloat(getComputedStyle(e).fontSize))).toBe(22);
+  const sparks = page.locator('.ds-spark');
+  await expect(sparks.nth(0).locator('circle.ds-spark-solo')).toHaveCount(2);              // [3, null, 5]: two segments, no line across the gap
+  await expect(sparks.nth(0).locator('polyline')).toHaveCount(0);
+  await expect(sparks.nth(1).locator('polyline')).toHaveCount(1);
+  await expect(sparks.nth(1).locator('circle.ds-spark-end')).toHaveCount(1);
+  await expect(sparks.nth(1).locator('figcaption')).toHaveText('Κλούβες 7 ημ.');           // the line never stands alone
+  expect(await sparks.nth(1).locator('svg').evaluate((e) => [e.getBoundingClientRect().width, e.getBoundingClientRect().height])).toEqual([120, 32]);
+  const weeks = page.getByTestId('week');
+  await expect(weeks).toHaveCount(4);
+  await expect(weeks.nth(0).getByTestId('week-delta')).toContainText('▼ λείπουν 20 κλούβες');   // 100 ordered, 80 eligible: the 20 unknown crates do NOT cover it
+  await expect(weeks.nth(0).getByTestId('week-unknown')).toBeVisible();
+  const eligibleW = await weeks.nth(0).getByTestId('week-eligible').evaluate((e) => e.getBoundingClientRect().width);
+  const trackW = await weeks.nth(0).locator('.ds-week-track').evaluate((e) => e.getBoundingClientRect().width);
+  expect(eligibleW / trackW).toBeCloseTo(0.8, 1);                                         // the bar is 80 of 100: the hatched 20 is not added
+  await expect(weeks.nth(1).getByTestId('week-delta')).toContainText('▲ περισσεύουν 20 κλούβες');
+  await expect(weeks.nth(2).getByTestId('week-delta')).toHaveCount(0);                     // no orders and no eligible number: nothing is claimed
+  await expect(weeks.nth(3).getByTestId('week-delta')).toContainText('καλύπτει ακριβώς');
+  const rows = page.locator('[data-testid="ds-weather"] tr');
+  await expect(rows).toHaveCount(3);
+  await expect(rows.nth(1)).toHaveAttribute('data-known', 'no');
+  await expect(rows.nth(1).locator('td')).toHaveCount(1);                                  // «άγνωστο» ONCE for the whole day
+  await expect(rows.nth(1)).toContainText('άγνωστο');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
+});

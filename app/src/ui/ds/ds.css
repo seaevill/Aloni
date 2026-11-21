@@ -39,3 +39,30 @@
 .ds-section h2 { margin:0; font-size:var(--fs-h2); font-weight:800; letter-spacing:var(--ls-h2); }
 .ds-section p { margin:var(--sp-2) 0 0; font-size:var(--fs-body); color:var(--muted); }
 @media (prefers-reduced-motion:reduce) { .ds-topbar { transition:none; } }
+
+/* Data viz (D4) */
+.ds-bignum { display:flex; flex-direction:column; gap:var(--sp-2); min-width:0; }
+.ds-bignum-caption { font-size:var(--fs-meta); font-weight:600; color:var(--muted); }
+.ds-bignum-value { font-size:var(--fs-hero); font-weight:800; line-height:1.05; color:var(--fg); font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.ds-bignum[data-size="small"] .ds-bignum-value { font-size:var(--fs-h2); }
+.ds-bignum[data-known="no"] .ds-bignum-value { font-size:var(--fs-h2); font-weight:700; color:var(--muted); }
+.ds-spark { margin:0; display:flex; flex-direction:column; gap:var(--sp-4); }
+.ds-spark figcaption { font-size:var(--fs-meta); color:var(--muted); }
+.ds-spark-line { fill:none; stroke:var(--green); stroke-width:var(--bw-2); stroke-linecap:round; stroke-linejoin:round; }
+.ds-spark-solo { fill:var(--green); }
+.ds-spark-end { fill:var(--lime); stroke:var(--green); stroke-width:var(--bw-2); }
+.ds-weeks { display:flex; flex-direction:column; gap:var(--sp-12); }
+.ds-week { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--sp-4); }
+.ds-week-caption { font-size:var(--fs-meta); font-weight:700; }
+.ds-week-track { position:relative; display:flex; align-items:stretch; height:var(--tile); padding-top:var(--sp-24); box-sizing:border-box; }
+.ds-week-bar { display:block; height:var(--sp-24); background:var(--green); border-radius:var(--r-sm); }
+.ds-week-hatch { display:block; height:var(--sp-24); border:var(--bw-1) solid var(--line); border-radius:var(--r-sm); background:repeating-linear-gradient(45deg, var(--line) 0 var(--sp-2), var(--card) var(--sp-2) var(--sp-6)); }
+.ds-week-mark { position:absolute; top:0; bottom:0; width:var(--sp-4); margin-inline-start:calc(-1 * var(--sp-2)); background:var(--fg); }
+.ds-week-mark b { position:absolute; top:0; left:50%; transform:translateX(-50%); font-size:var(--fs-meta); font-weight:800; line-height:1; white-space:nowrap; }
+.ds-week-note { font-size:var(--fs-meta); color:var(--muted); }
+.ds-week-delta { font-size:var(--fs-body); font-weight:700; }
+.ds-muted { color:var(--muted); font-size:var(--fs-body); }
+.ds-weather { width:100%; border-collapse:collapse; font-size:var(--fs-body); font-variant-numeric:tabular-nums; }
+.ds-weather th, .ds-weather td { padding:var(--sp-6) var(--sp-4); border-bottom:var(--bw-1) solid var(--line); text-align:start; }
+.ds-weather th { font-weight:700; }
+.ds-weather td.ds-unknown { color:var(--muted); font-weight:700; }
