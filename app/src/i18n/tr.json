@@ -587,6 +587,7 @@
   "golive.note": "Önce yedek, sonra düğme. Kendi verilerinizin hepsi bir kez, sırayla yüklenir; demo verisi asla.",
   "golive.signed_in": "Hesabınızla giriş yaptınız",
   "golive.backup": "Telefonda yeni bir yedek var (Diğer → yedek)",
+  "golive.backup.now": "Şimdi yedek al",
   "golive.start": "Senkronu aç",
   "golive.busy": "Veriler yükleniyor… uygulamayı kapatmayın.",
   "golive.failed": "Senkron AÇILMADI. Telefonda hiçbir şey değişmedi; verileriniz güvende, yeniden deneyebilirsiniz.",

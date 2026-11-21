@@ -2,6 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { AUTH_ENABLED, SYNC_CONNECTED } from '../config';
 import { session } from '../auth/gotrue';
 import { backupStale } from '../backup/warnings';
+import { exportBackupNow } from '../backup/export';
 import { dataVersion, db, lastBackupAt, realFarmId } from '../db';
 import { t, type I18nKey } from '../i18n';
 import { loadController } from '../legal/controller';
@@ -46,6 +47,7 @@ export function GoLive() {
       <ul class="checklist">
         {items.map((i) => { const look = i.ok ? { cls: 'badge signed', word: t('ready.ok') } : { cls: 'badge blocked', word: t('ready.missing') }; return <li key={i.key} data-testid={`golive-${i.key}`} data-ok={i.ok ? 'yes' : 'no'}><span class={look.cls}>{look.word}</span>{GAP}{t(LABELS[i.key])}</li>; })}
       </ul>
+      {items.some((i) => i.key === 'backup' && !i.ok) && <button class="btn secondary" data-testid="golive-backup-now" onClick={() => void exportBackupNow()}>{t('golive.backup.now')}</button>}
       <button class="btn" data-testid="golive-start" disabled={!ready || busy} onClick={() => void run()}>{t('golive.start')}</button>
       {busy && <p class="muted" role="status" data-testid="golive-busy">{t('golive.busy')}</p>}
       {result?.ok === false && <p class="msg error" role="alert" data-testid="golive-failed">{t('golive.failed')}<small>{result.message}</small></p>}
