@@ -3,6 +3,8 @@ import { registerSW } from 'virtual:pwa-register';
 import './ui/fonts.css';
 import './ui/tokens.css';
 import './ui/styles.css';
+import './ui/ds/ds.css';
+import './ui/ds/motion.css';
 import { App } from './ui/App';
 import { initDb } from './db';
 import { lang } from './i18n';

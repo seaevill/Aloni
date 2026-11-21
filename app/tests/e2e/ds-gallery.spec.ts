@@ -138,3 +138,27 @@ test('eight empty states: 160 px art, 20/800 headline, one action of at least 56
     expect(await s.locator('h2').evaluate((e) => [parseFloat(getComputedStyle(e).fontSize), getComputedStyle(e).fontWeight])).toEqual([20, '800']);
   }
 });
+
+// D10: motion confirms, never asks for attention. Check-draw 280 ms and roll 200 ms with their tokens; under reduced motion no transform animation runs and fades last at most 120 ms; the check exists only after the commit.
+const anims = (page: import('@playwright/test').Page) => page.evaluate(() => document.getAnimations().map((a) => ({ name: (a as CSSAnimation).animationName ?? '', ms: Number(a.effect?.getComputedTiming().duration), transform: (a.effect as KeyframeEffect).getKeyframes().some((k) => 'transform' in k), loops: a.effect?.getComputedTiming().iterations })));
+test('motion: check-draw and roll with the token durations, never a loop; the check appears only after the commit', async ({ page }) => {
+  await page.goto('/?ds-gallery');
+  await expect(page.getByTestId('check-draw')).toHaveCount(0);                        // nothing animates before the action is committed
+  await page.getByTestId('motion-commit').click();
+  await expect(page.getByTestId('check-draw')).toBeVisible();
+  const running = await anims(page);
+  const check = running.find((a) => a.name === 'ds-check-draw'); const roll = running.find((a) => a.name === 'ds-roll');
+  expect(check?.ms).toBe(280); expect(roll?.ms).toBe(200);
+  expect(running.every((a) => a.loops === 1)).toBe(true);                             // no loop anywhere
+});
+test('reduced motion: no transform animation, every fade at most 120 ms, no press scale', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/?ds-gallery');
+  await page.getByTestId('motion-commit').click();
+  await expect(page.getByTestId('check-draw')).toBeVisible();
+  const running = await anims(page);
+  expect(running.length).toBeGreaterThan(0);
+  expect(running.some((a) => a.transform)).toBe(false);
+  for (const a of running) expect(a.ms).toBeLessThanOrEqual(120);
+  expect(await page.getByTestId('motion-commit').evaluate((e) => getComputedStyle(e).transitionDuration)).toBe('0s');
+});

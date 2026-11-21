@@ -3,6 +3,8 @@ import { BigNum, Card, CropIcon, Mark, Wordmark, Chip, HeroCard, IconTile, ListR
 import { Icon } from '../icons/Icon';
 import { CATALOG } from '../../crops/catalog';
 import { EmptyState } from '../states';
+import { useState } from 'preact/hooks';
+import { CheckDraw } from './CheckDraw';
 
 // Every design-system component with fixed sample texts (Greek, Demo data only: nothing here is a record). Used for screenshots and for the gallery e2e. Reached by `?ds-gallery` in a build with VITE_DS_GALLERY=true.
 const SAMPLE: Record<Tone, string> = {
@@ -24,9 +26,13 @@ const EMPTY_HEAD = 'Δεν υπάρχει τίποτα ακόμα';
 const EMPTY_BODY = 'Μια πρόταση που λέει τι να κάνετε.';
 const EMPTY_ACTION = 'Η μία ενέργεια';
 const noop = (): void => undefined;
+const MOTION_BTN = 'Έγινε';
+const MOTION_NUM = '13';
 const FILL = Array.from({ length: 30 }, (_, i) => `γραμμή ${i + 1}`);
 
 export function Gallery() {
+  const [committed, setCommitted] = useState(false);
+  const [shown, setShown] = useState(false);
   return (
     <main data-testid="ds-gallery">
       <PageHead heading={TITLE} subtitle={SUB} />
@@ -50,6 +56,12 @@ export function Gallery() {
       </section>
       <section data-testid="gallery-brand"><Mark size="var(--thumb)" /><Wordmark latin /></section>
       <section data-testid="gallery-empty">{EMPTY_ARTS.map((a) => <EmptyState key={a} art={a} headline={EMPTY_HEAD} message={EMPTY_BODY} actionLabel={EMPTY_ACTION} onAction={noop} />)}</section>
+      <section data-testid="gallery-motion">
+        <button type="button" class="btn" data-testid="motion-commit" onClick={() => { setCommitted(true); setShown(true); }}>{MOTION_BTN}</button>
+        {committed && <p><CheckDraw /><span class="m-roll" data-testid="motion-roll">{MOTION_NUM}</span></p>}
+        {shown && <div class="ds-card m-sheet" data-testid="motion-sheet">{MOTION_BTN}</div>}
+        {shown && <span class="m-fade" data-testid="motion-fade"><Chip tone="info">{SAMPLE.info}</Chip></span>}
+      </section>
       <section data-testid="gallery-crops">
         {CATALOG.map((c) => <div class="gallery-crop" key={c.slug}><span class="ds-tile"><CropIcon slug={c.slug} size="calc(var(--tile) - var(--sp-16))" /></span><CropIcon slug={c.slug} size="var(--thumb)" /><span>{c.el}</span></div>)}
       </section>
