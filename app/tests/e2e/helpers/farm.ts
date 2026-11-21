@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+import { athensInput } from './clock';
 
 const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
 const inputs = (page: Page) => page.locator('main input.input');
@@ -81,6 +82,6 @@ export async function closeHistory(page: Page): Promise<void> {
 
 /** The start of a spraying is required and never pre-filled: type «one hour ago» (Athens clock), or the given local time «YYYY-MM-DDTHH:mm». */
 export async function fillStart(page: Page, local?: string): Promise<void> {
-  const value = local ?? await page.evaluate(() => new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Athens', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(Date.now() - 3_600_000)).replace(' ', 'T'));
+  const value = local ?? await athensInput(page, -3_600_000);
   await page.getByTestId('spray-start').fill(value);
 }

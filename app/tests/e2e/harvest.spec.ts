@@ -1,12 +1,11 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { setup, spray, openHistory, closeHistory } from './helpers/farm';
+import { advanceDays, athensInput, fixClock } from './helpers/clock';
+import { DAY_MS } from '../helpers/clock';
 import { iphone } from './helpers/iphone';
 
 // a safety test is never retried: a failure that comes and goes is a real race, not noise (see playwright.config.ts)
 test.describe.configure({ retries: 0 });
-
-/** «YYYY-MM-DDTHH:mm» in the phone's clock, `days` from now. */
-const at = (page: Page, days: number) => page.evaluate((n) => new Date(Date.now() - new Date().getTimezoneOffset() * 60000 + n * 86400000).toISOString().replace(/:\d{2}\.\d{3}Z$/, ''), days);
 
 test('harvest counter: +1 buttons, nothing blocks a planting that was never sprayed', async ({ page }) => {
   const errors = await iphone(page);
@@ -24,10 +23,8 @@ test('harvest counter: +1 buttons, nothing blocks a planting that was never spra
   expect(errors).toEqual([]);
 });
 
-const EIGHT_DAYS = 8 * 86400000;
-
 test('after a SIGNED spray the harvest is blocked until the waiting period has run out by the CLOCK (a later typed time cannot step over it), with no override', async ({ page }) => {
-  await page.clock.install();
+  await fixClock(page);
   await iphone(page);
   await setup(page, true);
   await spray(page);
@@ -38,13 +35,13 @@ test('after a SIGNED spray the harvest is blocked until the waiting period has r
   await page.getByTestId('harvest-crates').fill('5');
   await expect(page.getByTestId('harvest-blocked')).toContainText('Σε αναμονή μέχρι');
   await expect(page.getByTestId('harvest-save')).toBeDisabled();
-  await page.locator('input[type=datetime-local]').fill(await at(page, 6)); // still inside the 7 days
+  await page.locator('input[type=datetime-local]').fill(await athensInput(page, 6 * DAY_MS)); // still inside the 7 days
   await expect(page.getByTestId('harvest-save')).toBeDisabled();
-  await page.locator('input[type=datetime-local]').fill(await at(page, 8)); // a time after it: the gate still looks at NOW
+  await page.locator('input[type=datetime-local]').fill(await athensInput(page, 8 * DAY_MS)); // a time after it: the gate still looks at NOW
   await expect(page.getByTestId('harvest-blocked')).toContainText('Σε αναμονή μέχρι');
   await expect(page.getByTestId('harvest-save')).toBeDisabled();
   await page.getByRole('button', { name: 'Ακύρωση' }).click();
-  await page.clock.setSystemTime(Date.now() + EIGHT_DAYS); // the 7 days really pass
+  await advanceDays(page, 8); // the 7 days really pass
   await closeHistory(page);
   await page.getByTestId('harvest-open').click();
   await page.getByTestId('harvest-chip').filter({ hasText: 'Σπανάκι' }).first().click();
@@ -57,7 +54,7 @@ test('after a SIGNED spray the harvest is blocked until the waiting period has r
 });
 
 test('after an UNSIGNED spray the PHI is unknown: blocked even far in the future, and his typed value does not open it while the label is unsigned', async ({ page }) => {
-  await page.clock.install();
+  await fixClock(page);
   await iphone(page);
   await setup(page, false);
   await spray(page);
@@ -65,7 +62,7 @@ test('after an UNSIGNED spray the PHI is unknown: blocked even far in the future
   await closeHistory(page);
   await page.getByTestId('harvest-open').click();
   await page.getByTestId('harvest-chip').filter({ hasText: 'Σπανάκι' }).first().click();
-  await page.locator('input[type=datetime-local]').fill(await at(page, 3650));
+  await page.locator('input[type=datetime-local]').fill(await athensInput(page, 3650 * DAY_MS));
   await expect(page.getByTestId('harvest-blocked')).toContainText('άγνωστη αναμονή');
   await expect(page.getByTestId('harvest-save')).toBeDisabled();
   await page.getByRole('button', { name: 'Ακύρωση' }).click();
