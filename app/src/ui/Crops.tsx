@@ -19,6 +19,7 @@ import { nameOf, Status, Title } from './screens';
 import { EmptyState, UnsyncedMark } from './states';
 import { showUndo } from './Toast';
 import { useRows } from './useRows';
+import { matchesRecord, RecordSearch } from './cx/RecordSearch';
 import './crops-v2.css';
 
 const dot = (...xs: string[]): string => xs.filter(Boolean).join(' · ');
@@ -30,6 +31,7 @@ const statusText = (v: unknown): string => {
 
 /** Crops in use, each with its plantings (parcel · area · sowing date · status). Adding is only for the real farm. */
 export function Crops() {
+  const [query, setQuery] = useState('');
   const [adding, setAdding] = useState(false); const [editing, setEditing] = useState<Row | undefined>(undefined); const [shownId, setShownId] = useState<string | undefined>(undefined);
   const crops = useRows('crops');
   const plantings = useRows('plantings');
@@ -54,6 +56,7 @@ export function Crops() {
   const canAdd = !demo && liveParcels.length > 0;
   // Only crops that are really planted are listed (label details for a crop do not make it «grown»); the demo shows its whole list.
   const shown = demo ? crops.rows : crops.rows?.filter((c) => live.some((p) => p.crop_id === c.id));
+  const filtered = shown?.filter((r) => matchesRecord(query, nameOf(r)));
   if (!demo && parcels.rows && crops.rows && liveParcels.length === 0) {
     return (
       <section>
@@ -69,7 +72,8 @@ export function Crops() {
       {canAdd && live.length > 0 && <button class="btn" data-testid="planting-add" onClick={() => setAdding(true)}>{t('planting.add')}</button>}
       <Status q={{ ...crops, rows: shown && shown.length === 0 ? [] : shown ?? null }} message={t('list.empty')}
         action={canAdd ? { label: t('planting.add'), run: () => setAdding(true) } : undefined} />
-      {shown?.map((c) => {
+      {shown && shown.length > 0 && <RecordSearch query={query} onQuery={setQuery} empty={filtered?.length === 0} />}
+      {filtered?.map((c) => {
         const cropPlantings = live.filter((p) => p.crop_id === c.id);
         return <div class="card crop-card" key={c.id}>
           <button class="row crop-open" data-testid="crop-open" onClick={() => setShownId(String(c.id))}><span><strong>{nameOf(c)}</strong>{typeof c.latin === 'string' && <small>{c.latin}</small>}<small data-testid="crop-planting-count">{dot(t('detail.plantings'), formatQty(cropPlantings.length))}</small></span><span aria-hidden="true" class="chev" /></button><UnsyncedMark id={c.id} />

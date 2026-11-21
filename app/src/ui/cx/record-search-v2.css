@@ -1,0 +1,9 @@
+.record-search {
+  margin-block: var(--sp-12);
+}
+
+.record-search input {
+  min-block-size: var(--tap);
+  min-inline-size: 0;
+  width: 100%;
+}
