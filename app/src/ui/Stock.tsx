@@ -12,6 +12,7 @@ import type { Row } from '../db/schema';
 import { MediaThumb } from './Photos';
 import { LabelUses } from './LabelUses';
 import { StockLots } from './StockLots';
+import { ProductSheet } from './ProductSheet';
 import { ProductForm, TYPE_KEYS } from './ProductForm';
 import { nameOf, Status, Title } from './screens';
 import { UnsyncedMark } from './states';
@@ -29,6 +30,7 @@ const stockText = (product: Row, moves: Row[]): string => { const b = balanceOf(
 export function Stock() {
   const demo = activeFarm.value !== realFarmId.value;
   const [adding, setAdding] = useState(false);
+  const [sourceId, setSourceId] = useState<unknown>(undefined);
   const [open, setOpen] = useState<Row | undefined>(undefined);
   const [lots, setLots] = useState<Row | undefined>(undefined);
   const q = useRows('products');
@@ -40,6 +42,7 @@ export function Stock() {
   if (lots) return <StockLots product={lots} readOnly={demo} onBack={() => setLots(undefined)} />;
   if (open) return <LabelUses product={open} readOnly={demo} onBack={() => setOpen(undefined)} />;
   const live = q.rows?.filter((r) => !r.deleted_at) ?? [];
+  const source = sourceId === undefined ? undefined : live.find((row) => row.id === sourceId && row.farm_id === activeFarm.value);
   const types = [...new Set(live.map((r) => text(r.type)).filter((x) => x !== ''))];
   const shown = filter === '' ? live : live.filter((r) => text(r.type) === filter);
   /** The nearest expiry among the product's lots (a real date only). */
@@ -72,7 +75,7 @@ export function Stock() {
         const group = system && system !== '-' && code && code !== '-' ? `${system} ${code}` : '';
         const active = text(r.active);
         return (
-          <div class="card product-card" key={r.id} data-testid="product"><strong>{nameOf(r)}</strong>
+          <div class="card product-card" key={r.id} data-testid="product"><button class="row" data-testid="product-source-open" onClick={() => setSourceId(r.id)}><strong>{nameOf(r)}</strong><span aria-hidden="true" class="chev" /></button>
             {active && <small class="product-identity" lang={demo ? 'en' : undefined} data-testid="stock-active">{active}</small>}
             <div class="tags">{group && <span class="tag" data-testid="stock-group">{group}</span>}{typeText(r.type) && <span class="tag">{typeText(r.type)}</span>}{text(r.reg_no) && <span class="tag">{text(r.reg_no)}</span>}</div>
             {!text(r.reg_no) && <span class="badge warn" data-testid="product-noreg">{t('product.noreg')}</span>}
@@ -90,6 +93,7 @@ export function Stock() {
           </div>
         );
       })}
+      {source && <ProductSheet product={source} onClose={() => setSourceId(undefined)} />}
     </section>
   );
 }

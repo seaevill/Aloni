@@ -1,0 +1,8 @@
+{
+  "active": "Etkin madde",
+  "missingLabel": "bilinmiyor – etikette yok",
+  "missingCrop": "bilinmiyor – ürün bitkisi kaydı eksik",
+  "missingStock": "bilinmiyor – stok hareketleri eksik veya okunamıyor",
+  "missingRegistry": "Etiket için resmî bağlantı doğrulanmadı.",
+  "signed": "Ziraat uzmanı imzalı"
+}
