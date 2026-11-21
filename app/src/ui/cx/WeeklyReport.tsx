@@ -107,11 +107,11 @@ export function WeeklyReport({ onBack }: { onBack: () => void }) {
       <button class="btn secondary weekly-report-controls" onClick={() => window.print()}>{copy.print}</button>
       <h2>{copy.harvest}</h2>
       <Card>{groups.size > 0 ? <>
-        <WeekBars weeks={[...groups.values()].map((g) => ({ name: nameOf(g.row), eligible: g.total, orders: null, unknown: null }))} />
         {[...groups.values()].map((g) => <details key={g.row.id}>
           <summary>{detailLine(nameOf(g.row), formatQty(g.total))}</summary>
           {amountLines(g.records)}
         </details>)}
+        <WeekBars weeks={[...groups.values()].map((g) => ({ name: nameOf(g.row), eligible: g.total, orders: null, unknown: null }))} />
       </> : empty}
         {excludes.length > 0 && <details><summary>{copy.excluded}</summary>{amountLines(excludes, false)}</details>}
       </Card>
