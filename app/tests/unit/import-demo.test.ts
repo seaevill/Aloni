@@ -7,7 +7,7 @@ import { statusOf } from '../../src/labels/label-use';
 import { guardAppendOnly, put } from '../../src/repo';
 import { loadOrders, saveOrders } from '../../src/orders/store';
 import { balanceOf } from '../../src/stock/stock';
-import { GREEK_NAME_FIXES, importDemo, removeDemo, type PrototypeData } from '../../src/db/import-demo';
+import { GREEK_NAME_FIXES, demoWeeklyOrders, importDemo, removeDemo, type PrototypeData } from '../../src/db/import-demo';
 import { newDb, putParcel, TEST_FARM_ID } from '../helpers/factories';
 
 const data = JSON.parse(readFileSync(new URL('../../../reference/prototype/data.json', import.meta.url), 'utf8')) as PrototypeData;
@@ -29,8 +29,11 @@ describe('demo import (schema v2: UUID ids)', () => {
   it('loads the v2 weekly orders, harvest estimates and sketches into Demo only', async () => {
     const real = { products: [{ id: 'real', name: 'Real order' }], weeks: { '2026-11-16': { real: 2 } }, skipped: 0 };
     await saveOrders(db, TEST_FARM_ID, real, { real: 'rocket' });
-    await importDemo(db, data, new Date('2026-11-15T22:30:00Z'));
-    const { orders, map } = await loadOrders(db, DEMO_FARM_ID);
+    await importDemo(db, data);
+    const sample = demoWeeklyOrders(await db.crops.toArray(), await db.orders_weekly.toArray(), new Date('2026-11-15T22:30:00Z'));
+    expect(sample).toBeDefined();
+    const { orders, map } = sample!;
+    expect(await loadOrders(db, DEMO_FARM_ID)).toEqual({ orders: undefined, map: {} });
     const weekly = Object.fromEntries(src('orders_weekly').map((row) => [row.crop_id, row.crates_per_week]));
     expect(orders?.weeks).toEqual(Object.fromEntries(['2026-11-16', '2026-11-23', '2026-11-30', '2026-12-07'].map((date) => [date, weekly])));
     expect(map.spinach).toBe('spinach');
