@@ -29,7 +29,7 @@ export async function demoExtraRows(data: Record<string, unknown>, idOf: (table:
     push('workers', { id, farm_id: DEMO_FARM_ID, name, created_at: NOW, updated_at: NOW, deleted_at: null });
   }
 
-  // label uses (from `registered[]`, fictional values, Demo farm only): MOST are complete and signed so the Demo does not read «άγνωστο / μπλοκαρισμένη» everywhere; one in five is left unsigned and one in five incomplete (any five in a row show both) so those two states can still be seen
+  // label uses (from `registered[]`): signed / unsigned / incomplete in turn
   const labels = new Map<string, Row>();
   let n = 0;
   for (const p of arr('products')) {
@@ -37,12 +37,12 @@ export async function demoExtraRows(data: Record<string, unknown>, idOf: (table:
       const pid = idOf('products', String(p.id)); const cid = idOf('crops', String(reg.crop_id));
       const input: LabelUseInput = {
         productId: pid, cropId: cid, target: '', source: 'ΕΠΙΔΕΙΞΗ', kind: 'single', unit: p.unit === 'kg' ? 'kg/str' : 'l/str',
-        doseMin: field(String(reg.dose_per_str)), doseMax: field(''), phi: field(String(reg.phi_days)), rei: field(String(reg.rei_h)), maxApps: field(n % 5 === 4 ? '' : '3'),
+        doseMin: field(String(reg.dose_per_str)), doseMax: field(''), phi: field(String(reg.phi_days)), rei: field(String(reg.rei_h)), maxApps: field(n % 3 === 2 ? '' : '3'),
       };
       const built = buildLabelUse(input, DEMO_FARM_ID, NOW, await u(`label_use:${p.id}:${reg.crop_id}`));
       if (!built.ok) continue;
       let row = built.row;
-      if (n % 5 !== 3) row = withSignOff(row, DEMO_SIGNER, '2026-11-01', NOW) ?? row;
+      if (n % 3 === 0) row = withSignOff(row, DEMO_SIGNER, '2026-11-01', NOW) ?? row;
       labels.set(`${p.id}|${reg.crop_id}`, row);
       push('label_uses', row);
       n += 1;

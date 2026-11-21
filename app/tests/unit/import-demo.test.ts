@@ -119,16 +119,14 @@ describe('the demo farm shows every screen, and stays apart from the real farm',
 });
 
 describe('demo labels (fictional, Demo farm only)', () => {
-  it('most demo label uses are complete and signed, a few stay unsigned or incomplete; every one belongs to the Demo farm and carries the Demo source', async () => {
+  it('every demo label use belongs to the Demo farm and carries the Demo source; signed, unsigned and incomplete ones exist', async () => {
     await importDemo(db, data);
     const rows = await db.label_uses.toArray();
     expect(rows.length).toBeGreaterThan(5);
     expect(rows.every((r) => r.farm_id === DEMO_FARM_ID)).toBe(true);                  // nothing for a real farm
     expect(rows.every((r) => r.source === 'ΕΠΙΔΕΙΞΗ')).toBe(true);
-    const states = rows.map((l) => statusOf(l));
-    const signed = states.filter((s) => s === 'signed').length;
-    expect(signed / rows.length).toBeGreaterThan(0.5);                                  // the Demo is not «άγνωστο» everywhere
-    expect(states).toContain('unsigned'); expect(states).toContain('blocked');          // the other states can still be shown
+    const states = new Set(rows.map((l) => statusOf(l)));
+    expect([...states].sort()).toEqual(['blocked', 'signed', 'unsigned']);             // the worker screen's closed «Έγινε» example depends on the unsigned / incomplete ones
   });
   it('a real farm on the same phone gets no label use from the Demo import', async () => {
     await importDemo(db, data);

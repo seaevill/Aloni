@@ -8,6 +8,7 @@
 Codex ekran PR'ları: #294 Καλλιέργειες kartları · #296 Χωράφια çizimi · #297 Αποθήκη kartları · #298 Μητρώο kimliği · #299 Άλλα menü sırası · #300 ψεκασμός formu adımları · #308 Χωράφια listesi ayrıştırma · #292 Demo haftalık sipariş · #326/#329/#330/#331 kaynak/bilinmeyen bileşenleri, ekim eskizi, analiz açıklaması, hasat kaynağı. Benim ekran işlerim: E1–E7 (yukarıdaki 10 kontrol).
 
 ## Sorular (cevap gelene kadar durmuyorum)
+0b. **Demo'da imzalı etiket oranı:** Demo etiketlerinin çoğunu imzalı yaparsam işçi ekranındaki «kilitli iş» örneği (Έγινε kapalı) kayboluyor ve 4 test buna dayanıyor. Hangisi: (a) Demo daha az «άγνωστο» görünsün, kilitli örnek ayrı bir sahte ilaçlamayla korunsun (ben yaparım, biraz iş) mi, (b) şimdiki hâli kalsın mı?
 0. **Demo etiket işi (import-demo.ts bende):** görevin ayrıntısı repoda yok. Etiket verisi (doz, PHI, REI) uydurmam; Demo'da yalnızca prototipin `registered[]` değerleri kullanılır. Ne istediğini bir cümleyle yazarsan yaparım (örn. «Demo'daki her ilaca resmi etiket bağlantısı»).
 1. **E-posta gönderimi (para):** Supabase'in kendi e-postası saatte az kod gönderir; sürekli kullanım için kendi SMTP/EU sağlayıcı gerekir → sen karar ver, ben ücret/hesap açmam.
 2. **Alıcı telefonu (B1) gizlilik metni:** B1 yapılmadan uygulama metnine yazılmadı; avukat soruları `docs/compliance/privacy-notice-draft.md`.
