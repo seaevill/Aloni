@@ -1,0 +1,21 @@
+/* Motion (D10, design sprint §1.11): motion only CONFIRMS an action, it never asks for attention. Allowed: press, check-draw (after the write is committed), counter roll, sheet slide-up, chip fade-in.
+   Forbidden: pulsing, blinking, loops, parallax, shimmer, animated hold or blocked cards, anything that delays input. Durations and easing come from tokens.css. */
+:where(.btn, .seg button, .ds-row):active { transform:scale(.97); }
+:where(.btn, .seg button, .ds-row) { transition:transform var(--dur-1) var(--ease); }
+
+@keyframes ds-check-draw { from { stroke-dashoffset:1; } to { stroke-dashoffset:0; } }
+.m-check path { stroke-dasharray:1; stroke-dashoffset:0; animation:ds-check-draw var(--dur-3) var(--ease) 1 both; }
+@keyframes ds-roll { from { transform:translateY(40%); opacity:0; } to { transform:translateY(0); opacity:1; } }
+.m-roll { animation:ds-roll var(--dur-2) var(--ease) 1 both; }
+@keyframes ds-sheet { from { transform:translateY(100%); } to { transform:translateY(0); } }
+.m-sheet { animation:ds-sheet var(--dur-3) var(--ease) 1 both; }
+@keyframes ds-fade { from { opacity:0; } to { opacity:1; } }
+.m-fade { animation:ds-fade var(--dur-2) var(--ease) 1 both; }
+
+/* reduced motion: every transform is removed, fades are 120 ms at most */
+@media (prefers-reduced-motion:reduce) {
+  :where(.btn, .seg button, .ds-row):active { transform:none; }
+  :where(.btn, .seg button, .ds-row) { transition:none; }
+  .m-check path { animation:ds-fade var(--dur-1) linear 1 both; stroke-dasharray:none; }
+  .m-roll, .m-sheet, .m-fade { animation:ds-fade var(--dur-1) linear 1 both; }
+}

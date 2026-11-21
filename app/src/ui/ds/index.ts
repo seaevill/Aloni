@@ -7,3 +7,5 @@ export { BigNum, Sparkline, WeekBars, WeatherStrip, type WeekBar, type WeatherDa
 export { Mark, Wordmark } from '../brand/Brand';
 export { CropIcon } from '../illustrations/crops/CropIcon';
 export { EmptyArtImage, EMPTY_ARTS, type EmptyArt } from '../illustrations/empty/EmptyArt';
+export { CheckDraw } from './CheckDraw';
+export { usePrefersReducedMotion } from './motion';
