@@ -1,3 +1,4 @@
+import { useState } from 'preact/hooks';
 import { dateAfterDays } from '@aloni/rules-core';
 import { formatDate, formatDateTime, t, type I18nKey } from '../i18n';
 import { formatArea, formatQty } from '../i18n/format';
@@ -5,6 +6,8 @@ import { athensToday, validDate } from '../plantings/planting';
 import { effectiveSprays } from '../spray/spray';
 import type { Row } from '../db/schema';
 import { BackBar } from './BackBar';
+import { CropIcon, DetailSheet, ListRow } from './ds';
+import { TapNum } from './cx/TapNum';
 import { STATUS_KEYS } from './PlantingForm';
 import { waitLine } from './Sprays';
 import { nameOf } from './screens';
@@ -19,6 +22,7 @@ const DASH = '—';
 export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) {
   const plantings = useRows('plantings'); const parcels = useRows('parcels'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const products = useRows('products');
   const weather = useWeather();
+  const [showPlantingSource, setShowPlantingSource] = useState(false);
   const today = athensToday(new Date());
   const mine = (plantings.rows ?? []).filter((p) => p.crop_id === crop.id && !p.deleted_at);
   const jobIds = new Set((links.rows ?? []).filter((l) => mine.some((p) => p.id === l.planting_id)).map((l) => l.job_id));
@@ -27,11 +31,18 @@ export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) 
   const parcelName = (p: Row): string => text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name);
   return (
     <section class="detail" data-testid="crop-detail">
-      <header class="band">
-        <BackBar onBack={onBack} testId="detail-back" />
-        <h1 tabIndex={-1}>{nameOf(crop)}</h1>
-        {typeof crop.latin === 'string' && crop.latin !== '' && <p class="latin">{crop.latin}</p>}
+      <BackBar onBack={onBack} testId="detail-back" />
+      <header class="crop-detail-hero">
+        <div class="crop-detail-art"><CropIcon slug={text(crop.slug)} size="var(--thumb)" /></div>
+        <h1 class="ds-title" tabIndex={-1}>{nameOf(crop)}</h1>
+        {typeof crop.latin === 'string' && crop.latin !== '' && <p class="latin" lang="la">{crop.latin}</p>}
       </header>
+      {mine.length > 0 && <div class="crop-detail-source">
+        <TapNum caption={t('detail.plantings')} source={{ value: formatQty(mine.length), count: mine.length }} onOpen={() => setShowPlantingSource(true)} />
+      </div>}
+      {showPlantingSource && <DetailSheet heading={t('detail.plantings')} onClose={() => setShowPlantingSource(false)} history={false} testid="crop-planting-source">
+        {mine.map((p) => <ListRow key={p.id} heading={parcelName(p) || t('value.unknown')} meta={line(p)} />)}
+      </DetailSheet>}
       <h2>{t('detail.plantings')}</h2>
       {mine.length === 0 && <p class="muted">{t('list.empty')}</p>}
       {mine.map((p, i) => {
