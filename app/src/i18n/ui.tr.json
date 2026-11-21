@@ -3,7 +3,6 @@
   "ui.week.short": "▼ {n} kasa eksik",
   "ui.week.extra": "▲ {n} kasa fazla",
   "ui.week.even": "= tam karşılıyor",
-  "ui.week.orders": "siparişler",
   "ui.week.unknown": "bilinmiyor (sayılmaz)",
   "ui.week.nodata": "Veri yok"
 }

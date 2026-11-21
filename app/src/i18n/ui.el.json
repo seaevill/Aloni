@@ -3,7 +3,6 @@
   "ui.week.short": "▼ λείπουν {n} κλούβες",
   "ui.week.extra": "▲ περισσεύουν {n} κλούβες",
   "ui.week.even": "= καλύπτει ακριβώς",
-  "ui.week.orders": "παραγγελίες",
   "ui.week.unknown": "άγνωστο (δεν μετρά)",
   "ui.week.nodata": "Δεν υπάρχουν δεδομένα"
 }

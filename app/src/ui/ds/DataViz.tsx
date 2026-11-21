@@ -31,25 +31,30 @@ export function Sparkline({ values, caption }: { values: ReadonlyArray<number | 
   );
 }
 
+const hatchId = (i: number): string => `ds-hatch-${i}`;
 export interface WeekBar extends Week { name: string }
 /** Orders against supply, one row per week. The bar is ELIGIBLE supply only; held/unknown supply is a separate hatched segment labelled «άγνωστο» and is never added to it. Short or extra is stated in words with an icon-like mark, never by colour alone. */
 export function WeekBars({ weeks }: { weeks: readonly WeekBar[] }) {
   const scale = weekScale(weeks);
   if (scale === undefined) return <p class="ds-muted" data-testid="weekbars-empty">{t('ui.week.nodata')}</p>;
-  const pct = (v: number | null) => (v === null ? '0%' : `${(v / scale) * 100}%`);
+  const pct = (v: number): string => `${(v / scale) * 100}%`;
   return (
     <div class="ds-weeks">
-      {weeks.map((w) => {
+      {weeks.map((w, i) => {
         const d = weekDelta(w.orders, w.eligible);
         const line = d === undefined ? '' : d.kind === 'short' ? t('ui.week.short', { n: formatQty(d.n) }) : d.kind === 'extra' ? t('ui.week.extra', { n: formatQty(d.n) }) : t('ui.week.even');
+        const hatch = hatchId(i);
+        const unknownFrom = w.eligible === null ? undefined : pct(w.eligible);   // the hatched part starts where the eligible bar ends (undefined = at the left edge)
         return (
           <div class="ds-week" key={w.name} data-testid="week">
             <span class="ds-week-caption">{w.name}</span>
-            <div class="ds-week-track">
-              {w.eligible !== null && <span class="ds-week-bar" style={{ width: pct(w.eligible) }} data-testid="week-eligible" />}
-              {w.unknown !== null && <span class="ds-week-hatch" style={{ width: pct(w.unknown) }} data-testid="week-unknown" />}
-              {w.orders !== null && <span class="ds-week-mark" style={{ left: pct(w.orders) }} data-testid="week-orders"><b>{formatQty(w.orders)}</b></span>}
-            </div>
+            {/* the track is an SVG so the widths are attributes, never inline styles (tokens.test); 100 % = the largest known number of all weeks */}
+            <svg class="ds-week-track" width="100%" height="56" aria-hidden="true" focusable="false">
+              <defs><pattern id={hatch} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" class="ds-hatch-line" /></pattern></defs>
+              {w.eligible !== null && <rect x="0" y="30" width={pct(w.eligible)} height="24" rx="8" class="ds-week-bar" data-testid="week-eligible" />}
+              {w.unknown !== null && <rect x={unknownFrom} y="30" width={pct(w.unknown)} height="24" rx="8" fill={`url(#${hatch})`} class="ds-week-hatch" data-testid="week-unknown" />}
+              {w.orders !== null && <g data-testid="week-orders"><rect x={pct(w.orders)} y="16" width="3" height="40" class="ds-week-mark" /><text x={pct(w.orders)} y="12" text-anchor="middle" class="ds-week-num">{formatQty(w.orders)}</text></g>}
+            </svg>
             {w.unknown !== null && <small class="ds-week-note">{t('ui.week.unknown')}</small>}
             {line !== '' && <span class="ds-week-delta" data-testid="week-delta" data-kind={d?.kind}>{line}</span>}
           </div>

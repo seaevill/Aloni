@@ -54,11 +54,12 @@
 .ds-weeks { display:flex; flex-direction:column; gap:var(--sp-12); }
 .ds-week { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--sp-4); }
 .ds-week-caption { font-size:var(--fs-meta); font-weight:700; }
-.ds-week-track { position:relative; display:flex; align-items:stretch; height:var(--tile); padding-top:var(--sp-24); box-sizing:border-box; }
-.ds-week-bar { display:block; height:var(--sp-24); background:var(--green); border-radius:var(--r-sm); }
-.ds-week-hatch { display:block; height:var(--sp-24); border:var(--bw-1) solid var(--line); border-radius:var(--r-sm); background:repeating-linear-gradient(45deg, var(--line) 0 var(--sp-2), var(--card) var(--sp-2) var(--sp-6)); }
-.ds-week-mark { position:absolute; top:0; bottom:0; width:var(--sp-4); margin-inline-start:calc(-1 * var(--sp-2)); background:var(--fg); }
-.ds-week-mark b { position:absolute; top:0; left:50%; transform:translateX(-50%); font-size:var(--fs-meta); font-weight:800; line-height:1; white-space:nowrap; }
+.ds-week-track { display:block; width:100%; overflow:visible; }
+.ds-week-bar { fill:var(--green); }
+.ds-week-hatch { stroke:var(--line); stroke-width:var(--bw-1); }
+.ds-hatch-line { stroke:var(--line); stroke-width:var(--bw-2); }
+.ds-week-mark { fill:var(--fg); }
+.ds-week-num { fill:var(--fg); font-size:var(--fs-meta); font-weight:800; font-family:inherit; }
 .ds-week-note { font-size:var(--fs-meta); color:var(--muted); }
 .ds-week-delta { font-size:var(--fs-body); font-weight:700; }
 .ds-muted { color:var(--muted); font-size:var(--fs-body); }
