@@ -110,5 +110,9 @@
   "ui.bell.title": "What is new",
   "ui.bell.none": "Nothing new since you last looked.",
   "ui.bell.done": "Job finished",
-  "ui.bell.new": "New job for you"
+  "ui.bell.new": "New job for you",
+  "ui.mark.sent": "sent",
+  "ui.mark.rejected": "not accepted",
+  "ui.refused.title": "Why it was not accepted",
+  "ui.refused.none": "The server's answer for this record is no longer here. The record is still on the phone."
 }

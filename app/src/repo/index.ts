@@ -1,3 +1,4 @@
+import { recordMarks, type Mark } from '../sync/marks';
 // THE write path. Every record the user creates or changes goes through put(): the row and its outbox entry are written in ONE
 // transaction (both or neither). The Demo farm never gets an outbox entry. Append-only tables accept inserts only: a correction
 // is a NEW row that points at the old one (`amends_id`). Nothing outside src/repo and src/db may write to Dexie (ESLint W01).
@@ -89,12 +90,15 @@ export const pendingCount = (db: AppDB): Promise<number> => db.outbox.where('sta
 /** What the screens show: how many records have not reached the server yet, and which ones (the unsynced dot). */
 export const pendingOps = signal(0);
 export const unsyncedIds = signal<ReadonlySet<string>>(new Set());
+/** One mark per record from the outbox (E3): on the phone / sent / refused. */
+export const syncMarks = signal<ReadonlyMap<string, Mark>>(new Map());
 /** Records the server REFUSED: they stay on the phone and on the screen until the owner has seen them (never silently dropped). */
 export const rejectedOps = signal<readonly OutboxRow[]>([]);
 export async function refreshPending(db: AppDB): Promise<void> {
   const rows = await db.outbox.where('status').equals('pending').toArray();
   pendingOps.value = rows.length;
   unsyncedIds.value = new Set(rows.map((r) => r.row_id));
+  syncMarks.value = recordMarks(await db.outbox.toArray());
   rejectedOps.value = await db.outbox.where('status').equals('rejected').toArray();
 }
 

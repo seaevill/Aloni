@@ -110,5 +110,9 @@
   "ui.bell.title": "Yeni olanlar",
   "ui.bell.none": "Son baktığınızdan beri yeni bir şey yok.",
   "ui.bell.done": "İş tamamlandı",
-  "ui.bell.new": "Sizin için yeni iş"
+  "ui.bell.new": "Sizin için yeni iş",
+  "ui.mark.sent": "gönderildi",
+  "ui.mark.rejected": "kabul edilmedi",
+  "ui.refused.title": "Neden kabul edilmedi",
+  "ui.refused.none": "Bu kayıt için sunucunun cevabı artık yok. Kayıt telefonda duruyor."
 }

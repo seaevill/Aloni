@@ -164,3 +164,6 @@ button.tasks-counts { display:block; width:100%; text-align:start; border:0; bac
 .worker-head { display:flex; align-items:center; justify-content:space-between; gap:var(--sp-12); }
 .worker-head h1 { margin:0; }
 .worker-head .bell-btn { position:static; flex:none; background:var(--green); }
+.synced { display:inline-flex; align-items:center; gap:var(--sp-4); color:var(--green); font-size:var(--fs-14); font-weight:700; }
+.synced svg { width:var(--sp-14); height:var(--sp-14); }
+button.refused-mark { min-height:var(--tap); padding:0 var(--sp-12); border:0; border-radius:var(--r-pill); background:var(--blocked-bg, var(--lime-soft)); color:var(--fg); font:inherit; font-size:var(--fs-14); font-weight:800; cursor:pointer; }

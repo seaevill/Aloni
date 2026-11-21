@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'preact/hooks';
 import { SYNC_CONNECTED } from '../config';
 import { db } from '../db';
-import { pendingOps, rejectedOps, unsyncedIds } from '../repo';
+import { pendingOps, rejectedOps, syncMarks } from '../repo';
+import { Icon } from './icons/Icon';
+import { openSheet } from './nav';
+import './RefusedSheet';
 import { EmptyArtImage, type EmptyArt } from './illustrations/empty/EmptyArt';
 import { t, tn, type I18nKey } from '../i18n';
 import { lastSyncOk, syncError } from '../sync/run';
@@ -36,9 +39,13 @@ export function SyncChip() {
 /** The wording under a saved worker record: with a live sync «saved, will be sent when there is signal»; without it the older, calmer line. */
 export function queuedKey(live: boolean): I18nKey { if (live) return 'sync.queuedSignal'; return 'worker.queued'; }
 
-/** The marker on a record that has not reached the server yet: a dot AND a word (colour is never the only signal). */
+/** The marker on a record (E3): «on the phone» (a dot AND a word), «sent» (a tick AND a word), «refused» (a button that opens the plain explanation). Colour is never the only signal; a record the outbox does not hold has no mark. */
 export function UnsyncedMark({ id }: { id: string }) {
-  return SYNC_CONNECTED && unsyncedIds.value.has(id) ? <small class="unsynced"><span class="dot" aria-hidden="true" />{t('sync.unsynced')}</small> : null;
+  const m = SYNC_CONNECTED ? syncMarks.value.get(id) : undefined;
+  if (m === undefined) return null;
+  if (m === 'phone') return <small class="unsynced" data-testid="mark-phone"><span class="dot" aria-hidden="true" />{t('sync.unsynced')}</small>;
+  if (m === 'sent') return <small class="synced" data-testid="mark-sent"><Icon name="check" />{t('ui.mark.sent')}</small>;
+  return <button type="button" class="unsynced refused-mark" data-testid="mark-rejected" onClick={() => openSheet('refused', id)}><span class="dot" aria-hidden="true" />{t('ui.mark.rejected')}</button>;
 }
 
 /** An empty list: ONE main action, and optionally a second, weaker one (e.g. «load the demo» after «add a field»). With `art` it shows the 160 px drawing, and with `headline` a 20/800 title above the sentence (design sprint §1.9). */
