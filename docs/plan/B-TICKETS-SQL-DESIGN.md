@@ -24,3 +24,9 @@ Every ticket touches the **sync machinery**, not only a table: `sync_table()` (w
 
 ## Phone side (separate PRs after each migration is applied)
 Contract regeneration, Dexie stores, outbox ops, the screens: harvest destination step (worker flow), stock view (Codex), job board and tomorrow notes (Claude), season target field.
+
+## Update 2026-11-21 (night): B1 first slice built = 0036 `job_harvest.destination`
+- **0036** (`supabase/migrations/0036_harvest_destination.sql`, tests `supabase/tests/m16_destination.sql` written first): `destination text` with `check (destination is null or in ('store','direct'))`. **Deviation from the design above, on purpose:** the column is NULLABLE and has NO default. Empty = unknown (old records, old phones); a default of 'store' would invent a fact about every old harvest and would make the stock count wrong. A later file may require it for signed-in writers once the phone sends it (the same two-step as 0031).
+- **Not in 0036 (next slices):** `harvest_receivers` (owner-only buyer name/phone, personal data → also needs `sync_table()` and the owner-only pull) and the append-only stock movement table. Codex's local stock accounting (X13) works from `job_harvest` + `destination` once the phone has the field.
+- **Phone side after 0036 is applied:** add `destination` to the phone contract file, the harvest form step (worker flow, big «Στο μαγαζί» / «Απευθείας» buttons), the unknown shown as «άγνωστο». Numbering: 0037 = receivers; B2–B5 follow (the earlier 0037–0040 numbers shift by one).
+
