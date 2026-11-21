@@ -8,6 +8,7 @@ test('gallery sheet: look, facts with their reasons, and every way to close it',
   await page.getByTestId('sheet-open').click();
   const sheet = page.locator('.ds-sheet');
   await expect(sheet).toBeVisible();
+  await page.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished)));     // measure after the slide-up: sizes taken mid-slide are off by a hair
   const look = await sheet.evaluate((e) => { const cs = getComputedStyle(e); return { tl: cs.borderTopLeftRadius, tr: cs.borderTopRightRadius, bl: cs.borderBottomLeftRadius, shadow: cs.boxShadow !== 'none' }; });
   expect(look).toEqual({ tl: '24px', tr: '24px', bl: '0px', shadow: true });
   expect(await sheet.locator('.ds-sheet-handle').evaluate((e) => [Math.round(e.getBoundingClientRect().width), Math.round(e.getBoundingClientRect().height)])).toEqual([40, 4]);
@@ -38,6 +39,7 @@ test('the sheet slides up once; under reduced motion nothing moves', async ({ pa
   const slide = run.find((a) => a.name === 'ds-sheet');
   expect(slide?.ms).toBe(280); expect(slide?.loops).toBe(1);
   await page.keyboard.press('Escape');
+  await expect(page.getByTestId('sheet-scrim')).toHaveCount(0);      // closing goes through the history stack: wait until it is really gone before opening again
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.getByTestId('sheet-open').click();
   const reduced = await page.evaluate(() => document.getAnimations().map((a) => ({ transform: (a.effect as KeyframeEffect).getKeyframes().some((k) => 'transform' in k), ms: Number(a.effect?.getComputedTiming().duration) })));
