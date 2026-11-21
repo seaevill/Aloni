@@ -1,3 +1,5 @@
+import { shiftWeather } from './demo-weather';
+import { athensToday } from '../plantings/planting';
 import { DEMO_FARM_ID, DEMO_NAMESPACE } from '../config';
 import { AppDB, FARM_TABLES, type FarmTable, type Row, type WeatherRow } from './schema';
 import { demoExtraRows } from './demo-extra';
@@ -63,7 +65,7 @@ export async function importDemo(db: AppDB, data: PrototypeData): Promise<void> 
   };
   const tables = [db.farms, db.weather, ...FARM_TABLES.map((t) => db[t])];
   const weather: WeatherRow[] = await Promise.all(Object.entries(data.weather.by_parcel).map(async ([p, days]) =>
-    ({ id: await uuidv5(`weather:${p}`, DEMO_NAMESPACE), farm_id: DEMO_FARM_ID, parcel_id: ref('parcels', p) as string, days })));
+    ({ id: await uuidv5(`weather:${p}`, DEMO_NAMESPACE), farm_id: DEMO_FARM_ID, parcel_id: ref('parcels', p) as string, days: shiftWeather(days as Array<{ date?: unknown }>, typeof data.meta.today === 'string' ? data.meta.today : '', athensToday(new Date()) ?? '') })));   // fictional weather, moved so the prototype's today is the real today
 
   const extra = await demoExtraRows(data, (t, legacy) => ref(t, legacy) as string); // fictional spray / harvest / stock / label / soil records, built before the transaction (it may not await anything else)
   await db.transaction('rw', tables, async () => {
