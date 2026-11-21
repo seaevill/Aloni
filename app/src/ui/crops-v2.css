@@ -1,0 +1,54 @@
+.crop-card {
+  border: 1px solid var(--line);
+}
+.crop-card .crop-open {
+  align-items: center;
+  color: var(--fg);
+  gap: .75rem;
+  min-height: 56px;
+  text-align: start;
+}
+.crop-open strong,
+.crop-open small {
+  display: block;
+}
+.crop-open small {
+  color: var(--muted);
+}
+.crop-card .line {
+  border-top: 1px solid var(--line);
+  padding-top: .625rem;
+}
+.crop-planting summary {
+  align-content: center;
+  color: var(--fg);
+  cursor: pointer;
+  min-height: 56px;
+  overflow-wrap: anywhere;
+}
+.crop-planting summary small {
+  color: var(--muted);
+  display: block;
+  margin-top: .25rem;
+}
+.crop-weather-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  gap: .5rem;
+  list-style: none;
+  margin: .5rem 0 0;
+  padding: 0;
+}
+.crop-weather-grid li {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: .5rem;
+  color: var(--fg);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding: .5rem;
+}
+.crop-weather-grid span,
+.crop-weather-grid time {
+  display: block;
+}
