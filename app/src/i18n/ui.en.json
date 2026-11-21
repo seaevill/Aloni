@@ -5,5 +5,14 @@
   "ui.week.even": "= covers exactly",
   "ui.week.unknown": "unknown (not counted)",
   "ui.week.nodata": "No data",
-  "ui.tab.crops": "Crops"
+  "ui.tab.crops": "Crops",
+  "ui.onb.1.head": "Your Aloni",
+  "ui.onb.1.body": "One place for your fields, crops and crates. It works without signal.",
+  "ui.onb.2.head": "Demo farm = made-up data",
+  "ui.onb.2.body": "Try everything in the demo farm. It never touches your real data.",
+  "ui.onb.3.head": "The app suggests; you decide",
+  "ui.onb.3.body": "It never picks a product or a dose and never shortens a waiting period. The product label is the law.",
+  "ui.onb.next": "Next",
+  "ui.onb.start": "Let's start",
+  "ui.onb.skip": "Skip"
 }
