@@ -19,6 +19,7 @@ import { UNIT_KEYS } from './LabelUseForm';
 import { BackBar } from './BackBar';
 import { nameOf } from './screens';
 import { useRows } from './useRows';
+import './spray-v2.css';
 
 export const FLAG_KEYS: Record<Flag, I18nKey> = {
   label_none: 'spray.flag.label_none', label_blocked: 'spray.flag.label_blocked', label_unsigned: 'spray.flag.label_unsigned', label_changed: 'spray.flag.label_changed',
@@ -98,7 +99,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const needs = live(plantings).length === 0 || live(products).length === 0 || live(workers).length === 0;
 
   return (
-    <section class="detail">
+    <section class="detail spray-v2">
       <header class="band">
         <BackBar onBack={() => onDone(false)} testId="spray-back" />
         <h1 tabIndex={-1}>{t('spray.add')}</h1>
@@ -106,10 +107,10 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
       {inMix > 0 && <p class="msg" role="status" data-testid="spray-mix-note">{t('spray.mix.note', { n: inMix })}</p>}
       {needs && <p class="msg error" role="alert" tabIndex={-1} data-testid="spray-needs">{t('spray.needs')}</p>}
       <h2 class="step" data-done={sel.length > 0 ? 'yes' : 'no'}>{t('spray.plantings')}</h2>
-      <div class="seg two">{live(plantings).map((p) => <button key={p.id} aria-pressed={sel.includes(p.id)} disabled={chosen.length > 0 && !sel.includes(p.id) && p.crop_id !== chosen[0]?.crop_id} onClick={() => toggle(p.id)}>{plantingName(p)}</button>)}</div>
+      <div class="seg two spray-choices" role="group" aria-label={t('spray.plantings')}>{live(plantings).map((p) => <button key={p.id} aria-pressed={sel.includes(p.id)} disabled={chosen.length > 0 && !sel.includes(p.id) && p.crop_id !== chosen[0]?.crop_id} onClick={() => toggle(p.id)}>{plantingName(p)}</button>)}</div>
       {chosen.length > 0 && <p class="muted" data-testid="spray-onecrop">{t('spray.oneCrop')}</p>}
       <h2 class="step" data-done={productId !== '' ? 'yes' : 'no'}>{t('spray.product')}</h2>
-      <div class="seg two">{live(products).map((p) => <button key={p.id} aria-pressed={productId === p.id} onClick={() => { setProductId(p.id); setLotKey(undefined); setQty(''); setQtyUnknown(false); pickLabelDefaults(chosen.length ? live(labels).find((l) => l.product_id === p.id && l.crop_id === chosen[0].crop_id) : undefined); }}>{nameOf(p)}</button>)}</div>
+      <div class="seg two spray-choices" role="group" aria-label={t('spray.product')}>{live(products).map((p) => <button key={p.id} aria-pressed={productId === p.id} onClick={() => { setProductId(p.id); setLotKey(undefined); setQty(''); setQtyUnknown(false); pickLabelDefaults(chosen.length ? live(labels).find((l) => l.product_id === p.id && l.crop_id === chosen[0].crop_id) : undefined); }}>{nameOf(p)}</button>)}</div>
       {product && !text(product.reg_no) && <p class="badge warn bi" role="note" data-testid="spray-noreg">{t('product.noreg')}</p>}
       {productId && chosen.length > 0 && (
         <div class="card" data-testid="spray-label"><strong>{t('spray.label.title')}</strong>
@@ -117,7 +118,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
         </div>
       )}
       <h2 class="step" data-done={workerId !== '' ? 'yes' : 'no'}>{t('spray.worker')}</h2>
-      <div class="seg two">{live(workers).map((w) => <button key={w.id} aria-pressed={workerId === w.id} onClick={() => setWorkerId(w.id)}>{String(w.name)}</button>)}</div>
+      <div class="seg two spray-choices" role="group" aria-label={t('spray.worker')}>{live(workers).map((w) => <button key={w.id} aria-pressed={workerId === w.id} onClick={() => setWorkerId(w.id)}>{String(w.name)}</button>)}</div>
       <label class="field">{t('spray.start')}
         <input class="input" type="datetime-local" value={startWhen} data-testid="spray-start" onInput={(e) => setStartWhen((e.target as HTMLInputElement).value)} />
       </label>
@@ -149,7 +150,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
       </label>
       {totalHint && <p class="muted" data-testid="spray-total-hint">{t('spray.hint.total', { area: formatQty(totalHint.area), dose: formatQty(totalHint.dose), u: totalHint.u, total: formatQty(totalHint.total) })}</p>}
       <h2 class="step" data-done={unit !== undefined && dose.trim() !== '' ? 'yes' : 'no'}>{t('spray.unit')}</h2>
-      <div class="seg two">{DOSE_UNITS.map((u) => <button key={u} aria-pressed={unit === u} onClick={() => setUnit(u)}>{t(UNIT_KEYS[u])}</button>)}</div>
+      <div class="seg two spray-choices" role="group" aria-label={t('spray.unit')}>{DOSE_UNITS.map((u) => <button key={u} aria-pressed={unit === u} onClick={() => setUnit(u)}>{t(UNIT_KEYS[u])}</button>)}</div>
       {productId && myLots.length > 0 && (
         <>
           <h2>{t('spray.lot')}</h2>
