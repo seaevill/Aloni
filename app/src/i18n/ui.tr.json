@@ -196,5 +196,9 @@
   "ui.install.step3": "Aşağı kaydırıp «Ana Ekrana Ekle»ye basın.",
   "ui.install.step4": "Sağ üstteki «Ekle»ye basın.",
   "ui.install.step5": "Bundan sonra Aloni'yi ana ekrandaki simgeden açın.",
-  "ui.install.warning": "Dikkat: Safari ile ana ekrandaki uygulama verileri AYRI tutar. Kurulumu veri kaydetmeden ÖNCE yapın. Safari'de zaten kayıt yaptıysanız önce veri yedeği alın (Άλλα → Veri yedeği) ve ana ekran uygulamasında geri yükleyin."
+  "ui.install.warning": "Dikkat: Safari ile ana ekrandaki uygulama verileri AYRI tutar. Kurulumu veri kaydetmeden ÖNCE yapın. Safari'de zaten kayıt yaptıysanız önce veri yedeği alın (Άλλα → Veri yedeği) ve ana ekran uygulamasında geri yükleyin.",
+  "ui.news.title": "Yenilikler",
+  "ui.news.r1.a": "Σήμερα'da yeni olanları gösteren zil, hızlı kayıt için «＋» düğmesi ve her sayının kaynağını gösteren sayfa var.",
+  "ui.news.r1.b": "Her kayıt, yalnızca telefonda mı, gönderildi mi, yoksa sunucu kabul etmedi mi ve nedenini gösterir.",
+  "ui.news.r1.c": "QR ve bağlantı ile işçi daveti, iPhone ana ekran rehberi ve telefonda kalan hata raporu."
 }

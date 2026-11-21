@@ -9,6 +9,7 @@ import { RejectedList } from './Rejected';
 import { SyncChip } from './states';
 import { hashOf, sheet, tab, workerView, type FarmKey, type Tab } from './nav';
 import { SheetHost } from './ds/SheetHost';
+import './WhatsNewSheet';
 import { WorkerApp } from './WorkerApp';
 import { DemoRibbon } from './DemoRibbon';
 import { UpdateBar } from './UpdateBar';
