@@ -1,0 +1,8 @@
+{
+  "active": "Active substance",
+  "missingLabel": "unknown – missing from the label",
+  "missingCrop": "unknown – crop record missing",
+  "missingStock": "unknown – stock movements missing or unreadable",
+  "missingRegistry": "An official label link has not been verified.",
+  "signed": "Signed by an agronomist"
+}
