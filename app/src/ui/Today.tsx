@@ -19,6 +19,8 @@ import { useRows, type Rows } from './useRows';
 import { dayOf, farmDay, parseDays, provenance, type Day } from '../weather/strip';
 import { todaySummary, cutCrates, cratesLogged, cratesPerDay } from '../summary/today';
 import { BigNum, Sparkline } from './ds';
+import { Icon } from './icons/Icon';
+import { ShareCard } from './ShareCard';
 import { cutToday, type CutLine, type CutToday } from '../summary/cutlist';
 import { loadOrders } from '../orders/store';
 import { supplyByCrop } from '../orders/available';
@@ -206,10 +208,11 @@ export function Today() {
   const [recorded, setRecorded] = useState(false);
   const [harvesting, setHarvesting] = useState(false);
   const [harvested, setHarvested] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const [planning, setPlanning] = useState(false);
   const [planned, setPlanned] = useState(false);
   const [history, setHistory] = useState(false);
-  useBack(spraying || harvesting || planning || history, () => { setSpraying(false); setHarvesting(false); setPlanning(false); setHistory(false); }, spraying || harvesting || planning);
+  useBack(spraying || harvesting || planning || history || sharing, () => { setSpraying(false); setHarvesting(false); setPlanning(false); setHistory(false); setSharing(false); }, spraying || harvesting || planning);
   const rows = [useRows('parcels'), useRows('plantings'), useRows('products'), useRows('stock_lots'), useRows('crops')];
   const [parcels, plantings, products, lots, crops] = rows;
   const labelRows = useRows('label_uses'); const jobs = useRows('jobs'); const workers = useRows('workers'); const links = useRows('job_plantings'); const sprays = useRows('job_spray');
@@ -225,6 +228,7 @@ export function Today() {
   const cropsInUse = demo ? live(crops).length : new Set(live(plantings).map((p) => p.crop_id)).size;
   const loaded = rows.every((q) => q.rows);
   const has = live(parcels).length + live(plantings).length + live(products).length + live(lots).length + (demo ? live(crops).length : 0) > 0;
+  if (sharing) return <ShareCard onClose={() => setSharing(false)} />;
   if (planning) return <JobForm onDone={(saved) => { setPlanning(false); setPlanned(saved); }} />;
   if (harvesting) return <HarvestForm onDone={(saved) => { setHarvesting(false); setHarvested(saved); }} />;
   if (spraying) return <SprayForm onDone={(saved) => { setSpraying(false); setRecorded(saved); }} />;
@@ -246,6 +250,7 @@ export function Today() {
         <p class="date" data-testid="today-date">{today ? formatDate(today) : ''}</p>
         <Title k="today.title" />
         <p class="farm" data-testid="today-farm">{farmLabel(activeFarm.value)}</p>
+        {loaded && has && <button type="button" class="share-btn" data-testid="share-open" aria-label={t('ui.share.button')} onClick={() => setSharing(true)}><Icon name="share" /></button>}
       </header>
       {rows.some((q) => q.failed) && <ErrorState onRetry={retry} />}
       {loaded && !has && <Welcome />}
