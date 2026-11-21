@@ -6,7 +6,7 @@ import { harvestGate, type Source } from '../spray/harvest';
 const GROWING = new Set(['growing', 'harvesting']);
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 
-export interface CutLine { id: string; parcelId: string; parcel: string; crop: string; state: 'free' | 'from' | 'unknown'; at: string; source: Source; late: boolean }
+export interface CutLine { id: string; parcelId: string; parcel: string; crop: string; cropId: string; state: 'free' | 'from' | 'unknown'; at: string; source: Source; late: boolean }
 export interface CutToday {
   lines: CutLine[];
   /** Parcels with no growing planting: they say «Χωρίς φύτευση» and never count as «χωρίς αναμονή». */
@@ -26,7 +26,7 @@ export function cutToday(parcels: readonly Row[], plantings: readonly Row[], lin
     let held = false;
     for (const pl of mine) {
       const g = harvestGate(String(pl.id), now, links, sprays, plantings, labels);
-      const base = { id: String(pl.id), parcelId: String(p.id), parcel: text(p.name), crop: cropName(pl.crop_id) };
+      const base = { id: String(pl.id), parcelId: String(p.id), parcel: text(p.name), crop: cropName(pl.crop_id), cropId: text(pl.crop_id) };
       if (g.ok) { if (GROWING.has(text(pl.status))) lines.push({ ...base, state: 'free', at: '', source: 'label', late: false }); continue; }
       held = true;      // EVERY planting is gated, whatever its status: a sprayed planting that is «planned» or «finished» but not yet cut is never hidden
       if (g.reason === 'running' && g.until) lines.push({ ...base, state: 'from', at: g.until, source: g.source ?? 'label', late: g.late === true });

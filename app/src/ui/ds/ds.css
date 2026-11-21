@@ -121,3 +121,8 @@ body.ds-sheet-open { overflow:hidden; }
 .ds-fact-value { font-weight:700; text-align:end; overflow-wrap:anywhere; }
 .ds-fact[data-known="no"] .ds-fact-value { color:var(--muted); font-weight:600; }
 @media (prefers-reduced-motion:reduce) { .ds-sheet-close { transition:none; } }
+
+/* Σήμερα: tappable numbers and cards (they open a detail sheet) */
+.today-num { display:block; text-align:start; padding:0; border:0; background:none; font:inherit; color:inherit; min-width:0; }
+.kpi { border:0; font:inherit; color:inherit; text-align:start; }
+button.card.cutline { display:block; width:100%; text-align:start; border:0; font:inherit; color:inherit; }
