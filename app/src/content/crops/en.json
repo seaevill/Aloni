@@ -1,0 +1,257 @@
+{
+  "spinach": {
+    "history": "Spinach spread west from Asia. Its tender leaves became a familiar spring and autumn crop.",
+    "facts": [
+      "Young leaves are often smoother.",
+      "Some varieties have crinkled leaves.",
+      "The stalk can lengthen as flowering begins."
+    ],
+    "tips": "Thin crowded seedlings and check soil moisture before watering.",
+    "strength": "Tender leaves",
+    "weakness": "Tends to flower in heat",
+    "problems": [
+      "Downy mildew",
+      "Leaf miners"
+    ]
+  },
+  "rocket": {
+    "history": "Rocket has long been grown around the Mediterranean. The leaves are used both fresh and cooked.",
+    "facts": [
+      "The leaves can be deeply lobed.",
+      "The flavour is often peppery.",
+      "The pale flowers have dark veins."
+    ],
+    "tips": "Keep the bed evenly moist and cut tender leaves without pulling the crown.",
+    "strength": "Quick leaf growth",
+    "weakness": "Coarser leaves in heat",
+    "problems": [
+      "Flea beetles",
+      "Flowering"
+    ]
+  },
+  "parsley": {
+    "history": "Parsley has a long history in Mediterranean cooking. Flat and curly forms are both cultivated.",
+    "facts": [
+      "Flat leaves have broad lobes.",
+      "Curly leaves have ruffled edges.",
+      "New leaves emerge from the centre."
+    ],
+    "tips": "Keep the seedbed moist while seedlings establish and cut outer leaves first.",
+    "strength": "Repeated leaf harvests",
+    "weakness": "Slow emergence",
+    "problems": [
+      "Leaf spots",
+      "Aphids"
+    ]
+  },
+  "dill": {
+    "history": "Dill has long been grown as an aromatic herb. Both the foliage and the dried fruits are used in cooking.",
+    "facts": [
+      "Its leaves are finely divided.",
+      "Flowers cluster at the stem tips.",
+      "The hollow stalk is easily crushed."
+    ],
+    "tips": "Sow where it will grow and handle the stems gently at harvest.",
+    "strength": "Aromatic leaves",
+    "weakness": "Easily bruised stems",
+    "problems": [
+      "Aphids",
+      "Flowering"
+    ]
+  },
+  "coriander": {
+    "history": "Coriander has been grown since antiquity. Its fresh leaves and dry fruits serve different roles in cooking.",
+    "facts": [
+      "Lower leaves are broad and lobed.",
+      "Upper leaves are finer.",
+      "The dried fruits are round."
+    ],
+    "tips": "Sow in cool conditions and separate flowering stems from leaf bunches.",
+    "strength": "Edible leaves and fruits",
+    "weakness": "Flowers readily in heat",
+    "problems": [
+      "Aphids",
+      "Flowering"
+    ]
+  },
+  "chicory": {
+    "history": "Chicory has long been gathered and cultivated in Europe. Leaf forms are still used in cooked greens and salads.",
+    "facts": [
+      "Basal leaves form a rosette.",
+      "Many forms have bitter leaves.",
+      "Open flowers are often blue."
+    ],
+    "tips": "Pick the outer leaves of the recorded crop and leave the centre intact.",
+    "strength": "Persistent rosette",
+    "weakness": "Bitterness varies",
+    "problems": [
+      "Slugs",
+      "Leaf spots"
+    ]
+  },
+  "endive": {
+    "history": "Endive is a long-established salad green. Broad-leaved and curly forms are grown for different dishes.",
+    "facts": [
+      "Curly forms have narrow fringed leaves.",
+      "Broad forms have wider leaves.",
+      "The centre may be paler than the outside."
+    ],
+    "tips": "Handle the loose head gently and remove damaged outer leaves.",
+    "strength": "Distinct leaf textures",
+    "weakness": "Outer leaves bruise",
+    "problems": [
+      "Slugs",
+      "Tipburn"
+    ]
+  },
+  "chard": {
+    "history": "Chard belongs to the same species as beet. Growers selected it for leaves and stalks instead of the swollen root.",
+    "facts": [
+      "Stalks can be pale or coloured.",
+      "Leaf blades can be smooth or puckered.",
+      "New leaves emerge from the crown."
+    ],
+    "tips": "Cut mature outer leaves without damaging the inner growth.",
+    "strength": "Repeated leaf harvests",
+    "weakness": "Large leaves can tear",
+    "problems": [
+      "Leaf spots",
+      "Leaf miners"
+    ]
+  },
+  "onion": {
+    "history": "Onions have a long cultivation history. Green onions are gathered for their leaves and immature base.",
+    "facts": [
+      "The leaves are hollow.",
+      "The white base is formed by overlapping sheaths.",
+      "Bruised leaves lose their shape quickly."
+    ],
+    "tips": "Lift gently and keep the leaves aligned in clean bunches.",
+    "strength": "Leaves and bases are usable",
+    "weakness": "Hollow leaves crush easily",
+    "problems": [
+      "Thrips",
+      "Downy mildew"
+    ]
+  },
+  "leek": {
+    "history": "Leeks have long been cultivated in European gardens. The pale stem is valued for its mild flavour.",
+    "facts": [
+      "The leaves are flat.",
+      "Overlapping leaf sheaths form the pale shaft.",
+      "The leaf tips spread into a fan."
+    ],
+    "tips": "Lift the whole plant with care and keep soil out of the leaf folds.",
+    "strength": "Firm edible shaft",
+    "weakness": "Soil lodges between leaves",
+    "problems": [
+      "Rust",
+      "Thrips"
+    ]
+  },
+  "vlita": {
+    "history": "Amaranths have been used as leafy vegetables in many regions. In Greece the cooked greens are often called vlita.",
+    "facts": [
+      "The leaves grow along upright stems.",
+      "Tender tips are used in cooked greens.",
+      "Mature stalks become fibrous."
+    ],
+    "tips": "Pick tender growth from the recorded crop and keep it shaded after cutting.",
+    "strength": "Tender growing tips",
+    "weakness": "Older stems become tough",
+    "problems": [
+      "Leaf chewing",
+      "Wilting"
+    ]
+  },
+  "kaukalithra": {
+    "history": "Kaukalithra is a Greek name used for aromatic greens in traditional cooking. Local names alone do not establish the identity of a plant.",
+    "facts": [
+      "Farm records tie a name to a harvest.",
+      "Tender stems are easily crushed.",
+      "Aromatic greens are often mixed after sorting."
+    ],
+    "tips": "Handle only the grower's recorded crop and keep batches separate.",
+    "strength": "Aromatic foliage",
+    "weakness": "Local names can be ambiguous",
+    "problems": [
+      "Bruising",
+      "Wilting"
+    ]
+  },
+  "cabbage": {
+    "history": "Leaf cabbages belong to a crop group cultivated for many generations. Different forms have been grown for leaves and heads.",
+    "facts": [
+      "Leaf surfaces can look waxy.",
+      "Midribs are often prominent.",
+      "Outer leaves surround new growth."
+    ],
+    "tips": "Support broad leaves during cutting and keep damaged leaves separate.",
+    "strength": "Sturdy leaf blades",
+    "weakness": "Outer leaves can split",
+    "problems": [
+      "Caterpillars",
+      "Flea beetles"
+    ]
+  },
+  "myroni": {
+    "history": "Myroni is a Greek name used for fragrant greens in traditional kitchens. Its identity should come from the farm record.",
+    "facts": [
+      "Local names can differ.",
+      "Finely cut leaves bruise readily.",
+      "Small bunches are easier to sort."
+    ],
+    "tips": "Handle only the recorded crop and place it loosely in a clean crate.",
+    "strength": "Fragrant foliage",
+    "weakness": "Fragile stems",
+    "problems": [
+      "Bruising",
+      "Wilting"
+    ]
+  },
+  "beet": {
+    "history": "Beet crops with edible leaves predate many modern root varieties. Root beets and chard belong to the same species.",
+    "facts": [
+      "The leaves grow from a rosette.",
+      "Some stalks have red veins.",
+      "The root can be round or elongated."
+    ],
+    "tips": "Lift roots gently and avoid damaging the leaves if they will be used.",
+    "strength": "Edible roots and leaves",
+    "weakness": "Roots can be bruised",
+    "problems": [
+      "Leaf spots",
+      "Root cracking"
+    ]
+  },
+  "radish": {
+    "history": "Radish has long been cultivated for its pungent root. Growers selected many shapes and colours.",
+    "facts": [
+      "Leaves often feel rough.",
+      "Roots vary in shape and colour.",
+      "The root can become spongy as it ages."
+    ],
+    "tips": "Check roots regularly and lift them gently when well formed.",
+    "strength": "Quick growth",
+    "weakness": "Mature roots can become spongy",
+    "problems": [
+      "Flea beetles",
+      "Root splitting"
+    ]
+  },
+  "celery": {
+    "history": "Celery was grown as an aromatic plant before thick-stalked forms became widespread. Leaf celery is valued for its scented foliage.",
+    "facts": [
+      "Leaf stalks are ribbed.",
+      "Leaves have divided leaflets.",
+      "The aroma is released when leaves are bruised."
+    ],
+    "tips": "Handle the stalks gently and keep sorted bunches in the shade.",
+    "strength": "Aromatic foliage",
+    "weakness": "Stalks can bend and bruise",
+    "problems": [
+      "Leaf spots",
+      "Wilting"
+    ]
+  }
+}

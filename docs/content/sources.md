@@ -11,3 +11,29 @@ Bora onayı bekliyor
 ## X10+ effects on leafy vegetables
 
 - General effects only. FAO chapter 2 explains how dissolved salts reduce the water available to roots. Chapter 7 explains that pH can affect nutrient availability. The glossary gives no crop-specific range and infers no condition from a measurement.
+
+## Z2 crop library
+
+Bora onayı bekliyor
+
+The references cover crop history, appearance and general growing or harvest notes. The two local herb names follow the farm catalogue and are not identification guides. No agronomic thresholds, products or doses are recorded.
+
+| Crop | References |
+| --- | --- |
+| spinach | [Domestication and breeding review](https://link.springer.com/article/10.1007/s10681-020-02585-y), [NC State Extension](https://plants.ces.ncsu.edu/plants/spinacia-oleracea/) |
+| rocket | [NC State Extension](https://plants.ces.ncsu.edu/plants/eruca-vesicaria/) |
+| parsley | [NC State Extension](https://plants.ces.ncsu.edu/plants/petroselinum-crispum/) |
+| dill | [NC State Extension](https://plants.ces.ncsu.edu/plants/anethum-graveolens/) |
+| coriander | [NC State Extension](https://plants.ces.ncsu.edu/plants/coriandrum-sativum/) |
+| chicory | [NC State Extension](https://plants.ces.ncsu.edu/plants/cichorium-intybus/) |
+| endive | [NC State Extension](https://plants.ces.ncsu.edu/plants/cichorium-endivia/) |
+| chard | [NC State Extension leaf beet group](https://plants.ces.ncsu.edu/plants/beta-vulgaris-leaf-beet-group/) |
+| onion | [NC State Extension](https://plants.ces.ncsu.edu/plants/allium-cepa/) |
+| leek | [NC State Extension](https://plants.ces.ncsu.edu/plants/allium-ampeloprasum/) |
+| vlita | [NC State Extension on leafy amaranths](https://plants.ces.ncsu.edu/plants/amaranthus-tricolor/), [Cretan greens heritage](https://igcat.org/wp-content/uploads/2024/06/Crete-ERG-candidate-2026.pdf) |
+| kaukalithra | [Cretan greens heritage](https://igcat.org/wp-content/uploads/2024/06/Crete-ERG-candidate-2026.pdf), [Ikaria ethnobotanical study](https://iris.unive.it/retrieve/f356ac28-dbe4-4902-b091-3dddbbccabe5/nutrients-15-03242%20%283%29.pdf) |
+| cabbage | [NC State Extension](https://plants.ces.ncsu.edu/plants/brassica-oleracea/) |
+| myroni | [Cretan greens heritage](https://igcat.org/wp-content/uploads/2024/06/Crete-ERG-candidate-2026.pdf), [Greek regional ethnobotany](https://pmc.ncbi.nlm.nih.gov/articles/PMC12608919/) |
+| beet | [NC State Extension](https://plants.ces.ncsu.edu/plants/beta-vulgaris/) |
+| radish | [NC State Extension](https://plants.ces.ncsu.edu/plants/raphanus-sativus/) |
+| celery | [Breeding history of celery](https://onlinelibrary.wiley.com/doi/10.1111/pbi.14551), [NC State Extension](https://plants.ces.ncsu.edu/plants/apium-graveolens/) |
