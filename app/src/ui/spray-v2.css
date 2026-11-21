@@ -1,0 +1,17 @@
+.spray-v2 .step {
+  border-top: 1px solid var(--line);
+  margin-top: 1.25rem;
+  padding-top: .75rem;
+}
+.spray-v2 .spray-choices > button {
+  min-height: 56px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding: .5rem;
+  text-align: start;
+}
+.spray-v2 .spray-choices > button[aria-pressed="true"] {
+  background: var(--forest-2);
+  border-color: var(--forest-2);
+  color: var(--white);
+}
