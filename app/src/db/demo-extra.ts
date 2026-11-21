@@ -29,20 +29,26 @@ export async function demoExtraRows(data: Record<string, unknown>, idOf: (table:
     push('workers', { id, farm_id: DEMO_FARM_ID, name, created_at: NOW, updated_at: NOW, deleted_at: null });
   }
 
-  // label uses (from `registered[]`): signed / unsigned / incomplete in turn
+  // label uses (from `registered[]`, fictional values, Demo farm only): ALL complete and signed EXCEPT five deliberate examples (about 90 % signed), so Σήμερα, Φυτά and Χωράφια look alive and filled:
+  //  - UNSIGNED  PR07|rocket, PR03|spinach and PR01|chard (PR01 is the copper product: its five labels must show all three states, the demo-screens spec checks it): an unsigned label means an UNKNOWN re-entry/waiting period for the sprays that used it. The sprays of PR07 on rocket sit on the fields of the worker's open jobs
+  //    (PR01 on parsley and PR02 on rocket), so those jobs show the closed «Έγινε» example. (PR14 on leek has NO label at all in the prototype: that spray is the «άγνωστη αναμονή» example and also closes the PR01-on-spinach job.)
+  //  - INCOMPLETE PR08|leek and PR01|endive: no maximum number of applications, so the label stays blocked (the third state).
+  // The worker-screen specs (job-lines, worker-ux, worker-view, worker-hi) and the isolation test depend on these examples: change this list only together with them.
   const labels = new Map<string, Row>();
+  const OPEN_JOBS = ['PR01|parsley', 'PR01|spinach', 'PR02|rocket'];      // the worker's open jobs: their fields carry the sprays with an unknown re-entry period
+  const UNSIGNED = new Set(['PR07|rocket', 'PR03|spinach', 'PR01|chard']); const INCOMPLETE = new Set(['PR08|leek', 'PR01|endive']);
   let n = 0;
   for (const p of arr('products')) {
     for (const reg of (p.registered as Proto[] | undefined) ?? []) {
       const pid = idOf('products', String(p.id)); const cid = idOf('crops', String(reg.crop_id));
       const input: LabelUseInput = {
         productId: pid, cropId: cid, target: '', source: 'ΕΠΙΔΕΙΞΗ', kind: 'single', unit: p.unit === 'kg' ? 'kg/str' : 'l/str',
-        doseMin: field(String(reg.dose_per_str)), doseMax: field(''), phi: field(String(reg.phi_days)), rei: field(String(reg.rei_h)), maxApps: field(n % 3 === 2 ? '' : '3'),
+        doseMin: field(String(reg.dose_per_str)), doseMax: field(''), phi: field(String(reg.phi_days)), rei: field(String(reg.rei_h)), maxApps: field(INCOMPLETE.has(`${String(p.id)}|${String(reg.crop_id)}`) ? '' : '3'),
       };
       const built = buildLabelUse(input, DEMO_FARM_ID, NOW, await u(`label_use:${p.id}:${reg.crop_id}`));
       if (!built.ok) continue;
       let row = built.row;
-      if (n % 3 === 0) row = withSignOff(row, DEMO_SIGNER, '2026-11-01', NOW) ?? row;
+      if (!UNSIGNED.has(`${String(p.id)}|${String(reg.crop_id)}`)) row = withSignOff(row, DEMO_SIGNER, '2026-11-01', NOW) ?? row;
       labels.set(`${p.id}|${reg.crop_id}`, row);
       push('label_uses', row);
       n += 1;
@@ -89,10 +95,11 @@ export async function demoExtraRows(data: Record<string, unknown>, idOf: (table:
     const a = buildAnalysis({ parcelId: idOf('parcels', String(p.id)), sampledOn: String(s.date), lab: '', ph: String(s.pH), ec: String(s.EC_dS_m), ecUnit: 'dS/m', notes: `OM ${String(s.OM_pct)} % · N ${String(s.N_ppm)} · P ${String(s.P_ppm)} · K ${String(s.K_ppm)} · CaCO3 ${String(s.CaCO3_pct)} %`, photoId: undefined }, DEMO_FARM_ID, NOW, await u(`soil:${p.id}`));
     if (a.ok) push('soil_tests', a.row);
   }
-  // open spray jobs for the worker view: the first signed label uses (they carry a known waiting period) on a planting of that crop, one worker each in turn
+  // open spray jobs for the worker view: three fixed signed label uses (they carry a known waiting period) on a planting of that crop, one worker each in turn
   let k = 0;
-  for (const [key, label] of labels) {
-    if (!label.sign_off || k >= 3) continue;
+  for (const key of OPEN_JOBS) {      // fixed, not «the first three signed»: with most labels signed that rule would pick other jobs, and the closed-«Έγινε» example (see the label list above) would be lost
+    const label = labels.get(key);
+    if (!label?.sign_off || k >= 3) continue;
     const [pid, crop] = key.split('|');
     const planting = arr('plantings').find((x) => x.crop_id === crop);
     if (!planting) continue;
