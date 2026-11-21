@@ -3,11 +3,15 @@
 \set ON_ERROR_STOP on
 reset role; set test.uid = ''; set test.jwt = '';
 
--- H1: a non-partial index led by farm_id on weather_daily
+-- H1: a valid, non-partial btree on public.weather_daily whose keys are exactly (farm_id, day) in that order
 do $$ begin
-  if not exists (select 1 from pg_index i join pg_class c on c.oid = i.indrelid join pg_attribute a on a.attrelid = i.indrelid and a.attnum = i.indkey[0]
-                 where c.relname = 'weather_daily' and a.attname = 'farm_id' and i.indpred is null and i.indisvalid) then
-    raise exception '(H1) weather_daily has no index led by farm_id';
+  if not exists (select 1 from pg_index i
+                 join pg_attribute a1 on a1.attrelid = i.indrelid and a1.attnum = i.indkey[0]
+                 join pg_attribute a2 on a2.attrelid = i.indrelid and a2.attnum = i.indkey[1]
+                 join pg_class ic on ic.oid = i.indexrelid join pg_am am on am.oid = ic.relam
+                 where i.indrelid = 'public.weather_daily'::regclass and i.indnkeyatts = 2 and a1.attname = 'farm_id' and a2.attname = 'day'
+                   and i.indpred is null and i.indisvalid and am.amname = 'btree') then
+    raise exception '(H1) public.weather_daily has no btree index on (farm_id, day)';
   end if;
 end $$;
 

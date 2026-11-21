@@ -56,3 +56,4 @@ Bu dosya benim iş listem. Bitirdiğimi `[x]` ile işaretlerim. `docs/reviews/te
 - [x] STATUS.md «(d)» bölümünde sade dille, varsayılan önerimle: EPPO onayı, OpenFreeMap şartları, Hintçe kontrolü, logo, veri sorumlusu bilgileri, LIVE. *Bitti:* bölüm güncel.
 
 - 2026-11-21 (0035 leftovers): index on weather_hourly (farm_id, at) after a workload measurement; remaining 30 SECURITY DEFINER functions to pg_catalog, pg_temp one by one with grant checks; farm_id indexes for applied_ops, audit_log, job_fertilise/irrigate/sow after caller + volume check; `supabase db lint` in CI (sql job has no Supabase CLI).
+- 2026-11-21 (Codex final review of 0033/0034, SHOULD): before the ledger counts as the COMPLETE history of approvals, reconcile the older phone approval path with the ledger and add a direct-write guard on the label approval columns. Until then the older phone path stays and the ledger is the signed record for the gate only.
