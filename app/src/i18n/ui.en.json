@@ -179,5 +179,13 @@
   "ui.job.harvests": "Harvests on the same plantings since then",
   "ui.job.harvests.none": "No harvest has been logged since the job's day.",
   "ui.job.crates": "{n} crates",
-  "ui.job.crates.unknown": "unknown: the number cannot be read"
+  "ui.job.crates.unknown": "unknown: the number cannot be read",
+  "ui.diag.title": "Error report",
+  "ui.diag.note": "If the app has an error it keeps it only on this phone. Nothing is sent automatically. You can copy the report and send it yourself.",
+  "ui.diag.none": "No error has been recorded.",
+  "ui.diag.count": "{n} errors were recorded on this phone.",
+  "ui.diag.copy": "Copy the report",
+  "ui.diag.copied": "The report was copied. It contains nothing about the farm.",
+  "ui.diag.copy.failed": "Not copied. Press and hold the text and choose «Copy».",
+  "ui.diag.clear": "Delete the errors"
 }
