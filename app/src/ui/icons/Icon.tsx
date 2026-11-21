@@ -8,6 +8,12 @@ export const ICON_PATHS = {
   sickle: 'M5 19C5 10 10 5 19 5c-1 7-5 12-12 12M5 19l-1 2',
   question: 'M12 3a9 9 0 100 18 9 9 0 000-18zM9.5 9.5a2.5 2.5 0 114 2c-1 .6-1.5 1.2-1.5 2M12 17h.01',
   info: 'M12 3a9 9 0 100 18 9 9 0 000-18zM12 11v6M12 7.5h.01',
+  chevron: 'M9 6l6 6-6 6',
+  back: 'M15 6l-6 6 6 6',
+  today: 'M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4M12 8a4 4 0 100 8 4 4 0 000-8z',
+  crops: 'M5 19C5 10 11 5 19 5c0 8-5 14-14 14zM5 19l8-8',
+  parcels: 'M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14',
+  stock: 'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10',
 } as const;
 export type IconName = keyof typeof ICON_PATHS;
 
