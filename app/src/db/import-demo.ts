@@ -1,4 +1,4 @@
-import { dateAfterDays, isCalendarDate } from '@aloni/rules-core';
+import { dateAfterDays } from '@aloni/rules-core';
 import { mondayOf, type KlouvesOrders } from '../orders/klouves';
 import { mapKey, ordersKey } from '../orders/store';
 import { athensToday } from '../plantings/planting';
@@ -51,19 +51,21 @@ const legacyId = (table: FarmTable, r: Record<string, unknown>, i: number): stri
   typeof r.id === 'string' ? r.id : table === 'orders_weekly' && typeof r.crop_id === 'string' ? r.crop_id : String(i);
 
 /** The Demo source gives weekly baselines only. Client orders and seasonal multipliers are not inferred. */
-function weeklyOrders(data: PrototypeData, asOf: Date | undefined): { orders: KlouvesOrders; map: Record<string, string> } | undefined {
-  const sourceDay = asOf === undefined ? data.meta.today : athensToday(asOf);
-  if (typeof sourceDay !== 'string' || !isCalendarDate(sourceDay)) return;
+export function demoWeeklyOrders(crops: readonly Row[], targets: readonly Row[], asOf: Date): { orders: KlouvesOrders; map: Record<string, string> } | undefined {
+  const sourceDay = athensToday(asOf);
+  if (sourceDay === undefined) return;
   const first = mondayOf(sourceDay);
   if (first === undefined) return;
   const weekly = new Map<string, number>();
   const products: KlouvesOrders['products'] = [];
-  const cropRows = (data.crops as Array<Record<string, unknown>> | undefined) ?? [];
-  for (const row of (data.orders_weekly as Array<Record<string, unknown>> | undefined) ?? []) {
-    const { crop_id: id, crates_per_week: crates } = row;
-    if (typeof id !== 'string' || typeof crates !== 'number' || !Number.isFinite(crates) || crates < 0 || weekly.has(id)) continue;
-    const name = cropRows.find((crop) => crop.id === id)?.name_el;
-    if (typeof name !== 'string' || !name) continue;
+  for (const row of targets) {
+    if (row.farm_id !== DEMO_FARM_ID || row.deleted_at) continue;
+    const crop = crops.find((item) => item.id === row.crop_id && item.farm_id === DEMO_FARM_ID && !item.deleted_at);
+    const id = crop?.slug;
+    const name = crop?.name_el;
+    const crates = row.crates_per_week;
+    if (typeof id !== 'string' || typeof name !== 'string' || !name || typeof crates !== 'number' ||
+      !Number.isFinite(crates) || crates < 0 || weekly.has(id)) continue;
     products.push({ id, name });
     weekly.set(id, crates);
   }
@@ -81,7 +83,7 @@ function weeklyOrders(data: PrototypeData, asOf: Date | undefined): { orders: Kl
  * Values are copied exactly: nothing is rounded, defaulted or invented (missing label data stays missing = unknown).
  * Re-running replaces the previous demo rows; the real farm is never touched.
  */
-export async function importDemo(db: AppDB, data: PrototypeData, asOf?: Date): Promise<void> {
+export async function importDemo(db: AppDB, data: PrototypeData): Promise<void> {
   const src = (t: FarmTable) => (data[t] as Array<Record<string, unknown>> | undefined) ?? [];
   const ids = {} as Record<FarmTable, Map<string, string>>;
   for (const t of FARM_TABLES) ids[t] = new Map(await Promise.all(src(t).map(async (r, i) => [legacyId(t, r, i), await uuidv5(`${t}:${legacyId(t, r, i)}`, DEMO_NAMESPACE)] as const)));
@@ -95,7 +97,6 @@ export async function importDemo(db: AppDB, data: PrototypeData, asOf?: Date): P
   const weather: WeatherRow[] = await Promise.all(Object.entries(data.weather.by_parcel).map(async ([p, days]) =>
     ({ id: await uuidv5(`weather:${p}`, DEMO_NAMESPACE), farm_id: DEMO_FARM_ID, parcel_id: ref('parcels', p) as string, days })));
 
-  const sample = weeklyOrders(data, asOf);
   const extra = await demoExtraRows(data, (t, legacy) => ref(t, legacy) as string); // fictional spray / harvest / stock / label / soil records, built before the transaction (it may not await anything else)
   await db.transaction('rw', tables, async () => {
     await removeFarmRows(db, DEMO_FARM_ID);
@@ -116,10 +117,7 @@ export async function importDemo(db: AppDB, data: PrototypeData, asOf?: Date): P
     }
     for (const [table, rows] of Object.entries(extra)) await db[table as FarmTable].bulkPut(rows ?? []);
     await db.weather.bulkPut(weather);
-    if (sample) await db.settings.bulkPut([
-      { key: ordersKey(DEMO_FARM_ID), value: sample.orders },
-      { key: mapKey(DEMO_FARM_ID), value: sample.map },
-    ]);
+
   });
 }
 
