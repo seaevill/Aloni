@@ -277,7 +277,7 @@ export function Today() {
       {loaded && has && openJobs.length === 0 && <p class="muted" data-testid="jobs-none">{t('today.jobs.none')}</p>}
       {JOB_GROUPS.map(([key, label]) => jobGroups[key].length > 0 && (
         <section key={key} data-testid={`jobs-${key}`}>
-          <h3 class={key === 'overdue' ? 'late' : undefined}>{t(label)}</h3>
+          <h3 class={key === 'overdue' ? 'late' : undefined}>{t(label)} <span class="count" data-testid={`jobs-count-${key}`}>{jobGroups[key].length}</span></h3>
           {jobGroups[key].map((j) => <div class="card" key={j.id} data-testid="job-planned">{jobLine(j)}</div>)}
         </section>
       ))}

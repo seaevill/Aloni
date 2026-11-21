@@ -144,7 +144,7 @@ export function WorkerApp() {
         <>
           <h2>{t('worker.jobs')}</h2>
           {open_.length === 0 && <p class="muted" data-testid="worker-nojobs">{t('worker.noJobs')}</p>}
-          {JOB_GROUPS.map(([gk, glabel]) => groups[gk].length > 0 && (<section key={gk}><h3 class={gk === 'overdue' ? 'late' : undefined} data-testid={`worker-group-${gk}`}>{t(glabel)}</h3>
+          {JOB_GROUPS.map(([gk, glabel]) => groups[gk].length > 0 && (<section key={gk}><h3 class={gk === 'overdue' ? 'late' : undefined} data-testid={`worker-group-${gk}`}>{t(glabel)} <span class="count">{groups[gk].length}</span></h3>
           {groups[gk].map((j) => (
             <div class={lockOf(j).state === 'none' ? 'card job' : 'card job locked'} key={j.id} data-testid="worker-job"><strong class="job-title">{nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {})}</strong>
               {typeof j.planned_for === 'string' && j.planned_for !== athensToday(new Date()) && <small class="late" data-testid="worker-job-date">{formatDate(j.planned_for)}</small>}
