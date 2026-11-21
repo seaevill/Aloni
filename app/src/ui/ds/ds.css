@@ -156,3 +156,6 @@ button.card.cutline { display:block; width:100%; text-align:start; border:0; fon
 .ds-pair { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--sp-8); margin:0 0 var(--sp-8); }
 .wx[role="button"] { cursor:pointer; }
 button.tasks-counts { display:block; width:100%; text-align:start; border:0; background:none; font:inherit; padding:var(--sp-8) 0; min-height:var(--tap); }
+
+/* Quick add: the round «＋» in the thumb zone */
+.quick-fab { position:fixed; right:var(--sp-16); bottom:calc(var(--nav-h) + var(--sp-16) + env(safe-area-inset-bottom)); z-index:6; width:var(--tap); height:var(--tap); display:inline-flex; align-items:center; justify-content:center; border:0; border-radius:var(--r-pill); background:var(--green); color:var(--white); box-shadow:var(--shadow-card); }

@@ -96,5 +96,13 @@
   "ui.jobs.none": "İş yok: ne açık iş ne de bugün yapılan.",
   "ui.jobs.worker.none": "işçi yok",
   "ui.jobs.where.none": "ekim yok",
-  "ui.jobs.day.none": "gün yok"
+  "ui.jobs.day.none": "gün yok",
+  "ui.quick.open": "Hızlı ekle",
+  "ui.quick.title": "Hızlı ekle",
+  "ui.quick.spray": "Yeni ilaçlama",
+  "ui.quick.harvest": "Hasat",
+  "ui.quick.observe": "Gözlem",
+  "ui.quick.job": "Yarın için iş",
+  "ui.quick.observe.error": "Tarlayı ve ne gördüğünüzü seçin.",
+  "ui.quick.saved": "Gözlem kaydedildi."
 }

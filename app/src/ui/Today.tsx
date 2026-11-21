@@ -12,6 +12,8 @@ import { instantOf } from '../spray/time';
 import { HarvestForm } from './HarvestForm';
 import { History } from './History';
 import { JobForm } from './JobForm';
+import { ObservationForm } from './ObservationForm';
+import { QuickAdd } from './QuickAdd';
 import { SprayForm } from './SprayForm';
 import { EmptyState, ErrorState } from './states';
 import { Title, nameOf, retry } from './screens';
@@ -219,10 +221,10 @@ export function Today() {
   const [sharing, setSharing] = useState(false);
   const [Share, setShare] = useState<((p: { onClose: () => void }) => preact.JSX.Element) | undefined>(undefined);   // the share card is loaded when it is first opened: it is not part of the first load (JS budget)
   const openShare = () => { void import('./ShareCard').then((m) => { setShare(() => m.ShareCard); setSharing(true); }); };
-  const [planning, setPlanning] = useState(false);
+  const [planning, setPlanning] = useState(false); const [plannedDay, setPlannedDay] = useState<string | undefined>(undefined); const [observing, setObserving] = useState(false); const [observed, setObserved] = useState(false);
   const [planned, setPlanned] = useState(false);
   const [history, setHistory] = useState(false);
-  useBack(spraying || harvesting || planning || history || sharing, () => { setSpraying(false); setHarvesting(false); setPlanning(false); setHistory(false); setSharing(false); }, spraying || harvesting || planning);
+  useBack(spraying || harvesting || planning || observing || history || sharing, () => { setSpraying(false); setHarvesting(false); setPlanning(false); setHistory(false); setSharing(false); setObserving(false); }, spraying || harvesting || planning);
   const rows = [useRows('parcels'), useRows('plantings'), useRows('products'), useRows('stock_lots'), useRows('crops')];
   const [parcels, plantings, products, lots, crops] = rows;
   const labelRows = useRows('label_uses'); const jobs = useRows('jobs'); const workers = useRows('workers'); const links = useRows('job_plantings'); const sprays = useRows('job_spray');
@@ -240,7 +242,8 @@ export function Today() {
   const loaded = rows.every((q) => q.rows);
   const has = live(parcels).length + live(plantings).length + live(products).length + live(lots).length + (demo ? live(crops).length : 0) > 0;
   if (sharing && Share) return <Share onClose={() => setSharing(false)} />;
-  if (planning) return <JobForm onDone={(saved) => { setPlanning(false); setPlanned(saved); }} />;
+  if (observing) return <ObservationForm onDone={(saved) => { setObserving(false); setObserved(saved); }} />;
+  if (planning) return <JobForm startDay={plannedDay} onDone={(saved) => { setPlanning(false); setPlannedDay(undefined); setPlanned(saved); }} />;
   if (harvesting) return <HarvestForm onDone={(saved) => { setHarvesting(false); setHarvested(saved); }} />;
   if (spraying) return <SprayForm onDone={(saved) => { setSpraying(false); setRecorded(saved); }} />;
   if (history) return <History readOnly={demo} onBack={() => setHistory(false)} />;
@@ -302,6 +305,8 @@ export function Today() {
       )}
       {loaded && has && <button class="btn" data-testid="job-open" onClick={() => setPlanning(true)}>{t('job.add.plus')}</button>}
       {loaded && has && <TomorrowSection rows={{ crops: crops.rows ?? [], plantings: plantings.rows ?? [], links: links.rows ?? [], sprays: sprays.rows ?? [], harvests: harvestRows.rows ?? [], labels: labelRows.rows ?? [] }} />}
+      {observed && <p class="msg" role="status" data-testid="observe-saved">{t('ui.quick.saved')}</p>}
+      {loaded && has && <QuickAdd onSpray={() => setSpraying(true)} onHarvest={() => setHarvesting(true)} onObserve={() => setObserving(true)} onJob={() => { setPlannedDay(nextDay(athensToday(new Date()) ?? '')); setPlanning(true); }} />}
       {planned && <p class="msg" role="status" data-testid="job-saved">{t('job.saved')}</p>}
       {harvested && <p class="msg" role="status" data-testid="harvest-saved">{t('harvest.saved')}</p>}
       {recorded && <p class="msg" role="status" data-testid="spray-saved">{t('spray.saved')}</p>}

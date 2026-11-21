@@ -16,13 +16,13 @@ import { nameOf } from './screens';
 import { useRows } from './useRows';
 
 /** The owner plans a spray for a worker: plantings, product (and its label use), dose, unit, worker, day. Saved as a PLANNED job the worker sees; the worker cannot change any of it. */
-export function JobForm({ onDone }: { onDone: (saved: boolean) => void }) {
+export function JobForm({ onDone, startDay }: { onDone: (saved: boolean) => void; startDay?: string }) {
   const { busy, submit } = useSubmit();
   const plantings = useRows('plantings'); const crops = useRows('crops'); const parcels = useRows('parcels'); const products = useRows('products'); const labels = useRows('label_uses'); const workers = useRows('workers');
   const live = (q: { rows: Row[] | null }) => q.rows?.filter((r) => !r.deleted_at) ?? [];
   const [sel, setSel] = useState<string[]>([]); const [productId, setProductId] = useState(''); const [workerId, setWorkerId] = useState('');
   const [dose, setDose] = useState(''); const [unit, setUnit] = useState<(typeof DOSE_UNITS)[number] | undefined>(undefined);
-  const [day, setDay] = useState(athensToday(new Date()) ?? ''); const [failed, setFailed] = useState(false);
+  const [day, setDay] = useState(startDay ?? athensToday(new Date()) ?? ''); const [failed, setFailed] = useState(false);
   const chosen = live(plantings).filter((p) => sel.includes(p.id));
   const label = productId && chosen.length ? live(labels).find((l) => l.product_id === productId && l.crop_id === chosen[0]?.crop_id) : undefined;
   const r = buildJob({ plantingIds: sel, productId, workerId, dose, doseUnit: unit, plannedFor: day }, { label, plantings: chosen }, activeFarm.value, new Date().toISOString(), { job: crypto.randomUUID(), plantingLinks: sel.map(() => crypto.randomUUID()) });
