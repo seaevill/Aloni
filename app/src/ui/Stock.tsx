@@ -17,6 +17,7 @@ import { nameOf, Status, Title } from './screens';
 import { UnsyncedMark } from './states';
 import { showUndo } from './Toast';
 import { useRows } from './useRows';
+import './stock-v2.css';
 
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 const dot = (...xs: string[]): string => xs.filter(Boolean).join(' · ');
@@ -54,7 +55,7 @@ export function Stock() {
     showUndo(t('product.archived'), async () => { await put(db, 'products', restored(r, new Date().toISOString())); dataVersion.value++; });
   };
   return (
-    <section>
+    <section class="stock-v2">
       <header class="today-head band"><Title k="stock.title" /></header>
       {demo ? <p class="muted" data-testid="product-demo-note">{t('product.demoActive')}</p> : live.length > 0 && <button class="btn" data-testid="product-add" onClick={() => setAdding(true)}>{t('product.add')}</button>}
       <Status q={{ ...q, rows: q.rows && live.length === 0 ? [] : q.rows }} message={t('list.empty')} action={demo ? undefined : { label: t('product.add'), run: () => setAdding(true) }} />
@@ -66,9 +67,14 @@ export function Stock() {
       )}
       {shown.map((r) => {
         const exp = expiryOf(r.id); const phi = phiLine(r.id);
+        const system = text(r.group_system);
+        const code = text(r.group_code);
+        const group = system && system !== '-' && code && code !== '-' ? `${system} ${code}` : '';
+        const active = text(r.active);
         return (
           <div class="card product-card" key={r.id} data-testid="product"><strong>{nameOf(r)}</strong>
-            <div class="tags">{typeText(r.type) && <span class="tag">{typeText(r.type)}</span>}{text(r.reg_no) && <span class="tag">{text(r.reg_no)}</span>}</div>
+            {active && <small class="product-identity" lang={demo ? 'en' : undefined} data-testid="stock-active">{active}</small>}
+            <div class="tags">{group && <span class="tag" data-testid="stock-group">{group}</span>}{typeText(r.type) && <span class="tag">{typeText(r.type)}</span>}{text(r.reg_no) && <span class="tag">{text(r.reg_no)}</span>}</div>
             {!text(r.reg_no) && <span class="badge warn" data-testid="product-noreg">{t('product.noreg')}</span>}
             <small>{dot(r.qty == null ? '' : `${formatQty(r.qty as number | string)} ${text(r.unit)}`)}</small>
             {moves.rows && <small data-testid="product-stock">{t('stock.balance', { qty: stockText(r, moves.rows) })}</small>}
