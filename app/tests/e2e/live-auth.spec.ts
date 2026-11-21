@@ -46,7 +46,7 @@ test('a wrong code is refused with a calm message and nothing is stored', async 
   await page.getByTestId('signin-send').click();
   await page.getByTestId('sign-in').locator('input').nth(1).fill('000000');
   await page.getByTestId('signin-verify').click();
-  await expect(page.getByRole('alert')).toContainText('Η σύνδεση δεν πέτυχε');
+  await expect(page.getByRole('alert')).toContainText('Λάθος κωδικός');
   await expect(page.getByTestId('signed-in')).toHaveCount(0);
 });
 
@@ -73,4 +73,70 @@ test('inviting a worker: closed until the data controller details are entered, t
   expect(seen.invitations).toHaveLength(1);
   expect(seen.invitations[0]).toMatchObject({ email: 'worker@example.org' });
   expect(Object.keys(seen.invitations[0] as object).sort()).toEqual(['email', 'farm_id', 'worker_id']);
+});
+
+// Sign-in code (login hardening): six digits only, plain Greek reasons, «Νέος κωδικός» after 60 s. No link anywhere.
+const emailBox = (page: Page) => page.getByTestId('sign-in').locator('input').first();
+async function sendCode(page: Page) {
+  await tab(page, 'more');
+  await emailBox(page).scrollIntoViewIfNeeded();
+  await emailBox(page).fill('bora@example.org');
+  await page.getByTestId('signin-send').click();
+}
+
+test('the code screen: says where the code went, accepts only six digits, never mentions a link', async ({ page }) => {
+  await mockBackend(page);
+  await page.goto('/');
+  await sendCode(page);
+  const card = page.getByTestId('sign-in');
+  await expect(card).toContainText('κωδικό 6 ψηφίων');
+  await expect(card).toContainText('bora@example.org');
+  await expect(card).not.toContainText(/σύνδεσμ|link/i);
+  const code = card.locator('input').nth(1);
+  await code.fill('12ab');
+  await expect(code).toHaveValue('12');                                           // letters are not accepted at all
+  await expect(page.getByTestId('signin-verify')).toBeDisabled();
+  await code.fill('123 456');
+  await expect(code).toHaveValue('123456');
+  await expect(page.getByTestId('signin-verify')).toBeEnabled();
+});
+
+test('each reason has its own plain message: wrong code, expired code, too many e-mails, no connection', async ({ page }) => {
+  await mockBackend(page);
+  await page.goto('/');
+  await sendCode(page);
+  const card = page.getByTestId('sign-in');
+  const reasons: Array<[number, string]> = [[401, 'Λάθος κωδικός'], [403, 'έληξε'], [429, 'Πολλά μηνύματα'], [500, 'Ο διακομιστής']];
+  for (const [status, text] of reasons) {
+    await page.unroute('**/mock/auth/v1/verify');
+    await page.route('**/mock/auth/v1/verify', (r) => r.fulfill({ status, contentType: 'application/json', body: '{}' }));
+    await card.locator('input').nth(1).fill('123456');
+    await page.getByTestId('signin-verify').click();
+    await expect(page.getByTestId('signin-error')).toContainText(text);
+  }
+  await page.unroute('**/mock/auth/v1/verify');
+  await page.route('**/mock/auth/v1/verify', (r) => r.abort('internetdisconnected'));
+  await page.getByTestId('signin-verify').click();
+  await expect(page.getByTestId('signin-error')).toContainText('σύνδεση');
+  await expect(page.getByTestId('signed-in')).toHaveCount(0);
+});
+
+test('«Νέος κωδικός» waits 60 seconds after a send, then sends another code', async ({ page }) => {
+  await page.clock.install();
+  let sent = 0;
+  await mockBackend(page);
+  await page.unroute('**/mock/auth/v1/otp');
+  await page.route('**/mock/auth/v1/otp', (r) => { sent++; return r.fulfill({ status: 200, contentType: 'application/json', body: '{}' }); });
+  await page.goto('/');
+  await sendCode(page);
+  const again = page.getByTestId('signin-resend');
+  await expect(again).toBeDisabled();
+  await expect(again).toContainText('60');
+  await page.clock.runFor(30_000);
+  await expect(again).toContainText('30');
+  await page.clock.runFor(31_000);
+  await expect(again).toBeEnabled();
+  await again.click();
+  await expect.poll(() => sent).toBe(2);
+  await expect(again).toBeDisabled();
 });

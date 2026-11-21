@@ -169,9 +169,9 @@ Her adımda: **Nerede** (ekran adı) → **Ne yap** → **Doğru sonuç**. Sonu�
  Ne yap: eksik satırları tamamla (çiftlik adı burada; veri sorumlusu → adım 3; ΑΦΜ → Άλλα → Μητρώο ψεκασμών; migration ve Advisor için «Επιβεβαιώνω» düğmeleri).
  Doğru sonuç: beş satırın hepsi yeşil «Έτοιμο»; altta «Όλα είναι έτοιμα…». (Kart hiçbir şeyi açmaz.)
 
-**1. Auth ayarları** — Supabase → **Authentication → Sign In / Providers**, sonra **URL Configuration**.
- Ne yap: yalnızca **Email** açık; **Confirm email** açık; Google/Apple vb. kapalı; **Site URL** = uygulamanın adresi.
- Doğru sonuç: başka sağlayıcı açık değil; Site URL doğru.
+**1. Auth ayarları (yalnızca 6 haneli kod; bağlantı YOK)** — Supabase → **Authentication**.
+ Ne yap: (a) **Sign In / Providers → Email**: açık; **Confirm email** açık; **Email OTP Length = 6**; Google/Apple vb. kapalı. (b) **URL Configuration**: **Site URL** = uygulamanın adresi (https://…); **Redirect URLs** listesine yalnızca aynı adres. (c) **Emails → Templates**: hem **Magic Link** hem **Confirm signup** şablonunda `{{ .ConfirmationURL }}` bağlantısını SİL ve yerine şunu yaz: `Giriş kodunuz: {{ .Token }}` (Yunanca: `Ο κωδικός σύνδεσης: {{ .Token }}`). (d) Menü adları değişmişse Supabase docs'ta «Email OTP» ara; Claude yalnızca `search_docs` ile bakar.
+ Doğru sonuç: başka sağlayıcı açık değil; e-postada tıklanacak bağlantı yok, yalnızca 6 haneli kod var. Uygulamada kod ekranı «Στείλαμε κωδικό 6 ψηφίων…» der; «Νέος κωδικός» 60 sn sonra açılır.
 
 **2. Sahip hesabı** — Uygulama → **Άλλα → Σύνδεση** → e-posta → «Αποστολή κωδικού» → e-postadaki kod → «Σύνδεση».
  Ne yap: girince kartta **«Κωδικός κτήματος: …»** çıkar, kopyala. Supabase → **SQL Editor**'da (bir kez): `insert into farms(id, name) values ('<çiftlik kodu>', 'Bora''nın çiftliği'); insert into farm_members(farm_id, user_id, role) values ('<çiftlik kodu>', '<senin User UID>', 'owner');` (User UID: Authentication → Users). Telefonun çiftlik kodu ile sunucudaki aynı olmak zorunda.
