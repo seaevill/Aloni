@@ -46,3 +46,41 @@
 - **Accessibility.** #284 found no serious or critical axe violations on the three Hindi demo worker tabs at 375 px. Existing owner and demo worker checks remain in place. Both live-build sign-in steps passed using the mock endpoint. The invite and signed-in worker variants still need explicit scanner coverage.
 - **Performance.** #285 gates the shipped entry script and HTML module preloads at baseline plus 10%. The PR reports emitted gzip chunk sizes and the largest Rollup modules before final chunk minification. Runtime-triggered imports remain outside the CI budget.
 - **Κλούβες.** #286 covers the import edge cases. Claude Code follow-up: a duplicate client ID is retained in client metadata, although the parser counts its order once. Decide how to report or resolve duplicate metadata. A persisted nonempty unknown crop slug currently passes through `cratesByCrop`. Validate persisted mappings against the crop catalog before counting them.
+
+## 2026-11-21 Sprint 2 (X16)
+
+- X1 blocked: the existing branches need new heads to rebase. No published branch was rewritten. #301 has merged; #298 still needs a replacement on that base. Check #333 before integrating.
+- X2: #326 adds the four-language source primitives. TODO(ds): replace SourcePage after DetailSheet #324 lands.
+- X3 blocked: #294 remains in flight and the existing edit/plantings specs require planting rows on the list. CC-REQ: coordinate the test ownership change when moving those rows to detail.
+- X4 blocked: the crop-detail base in #294 and planting sketch X8 are pending.
+- X5 blocked: needs the crop-detail base and a linked harvest breakdown that accepts a crop, parcel and dated period.
+- X6 blocked: needs the crop-detail entry point and the source document after #330 clears. No unsourced crop copy was added.
+- X7 blocked: the parcel extraction #308 and the old parcel work #296 are still open. TODO(ds): WeatherSheet remains with #327.
+- X8 blocked: needs B2 planting geometry. CC-REQ: expose the nullable recorded polygon and its provenance to the parcel screen.
+- X9: #329 validates the local preview and rejects outside/crossing edges. TODO(B2): persistence and editable vertex handles remain open.
+- X10: #330 adds neutral pH and EC explanations. The form has no OM field. TODO(ds): DetailSheet #324.
+- X11 blocked: the registry search page returned HTTP 200, but the source file is in #330 and recorded sprays have no maximum-application or label-photo snapshot. CC-REQ: confirm the immutable source for those historical fields.
+- X12: #331 opens a single logged harvest's source. Aggregated bars remain open. TODO(ds): DetailSheet #324. TODO(B1): recorded destination.
+- X13: #332 adds the pure stock calculation. TODO(B1): connect authoritative movements before showing balances, destination or receiver details. CC-REQ: provide the movement ordering and scope for the tomorrow board.
+- X14 blocked: needs the C3 four-week eligible/held series and the in-flight orders screen #292.
+- X15 blocked: needs the parcel detail base from X7/#296 and an authoritative observation/job-to-parcel photo linkage. CC-REQ: confirm the local/read-only photo linkage for both types.
+- X16 baseline: eight Greek Demo screens captured from `7dc3142` in WebKit. At 320 and 375 px, no page overflow or visible control below 56 px. All 281 first-viewport text samples on flat or alpha-composited backgrounds passed 7:1 and 14 px. The scan left 80 tab captions on the shared blurred bar unmeasured. Repeat on the integrated sprint build after the pending PRs land.
+
+### Έλεγχος στο iPhone
+
+1. Άνοιξε το κτήμα επίδειξης και έλεγξε ότι η σήμανση επίδειξης παραμένει ορατή.
+2. Άνοιξε τα Φυτά και διάλεξε Σπανάκι. Δες τις φυτεύσεις και τον καιρό.
+3. Άνοιξε ένα χωράφι και πάτησε την εγγραφή ανάλυσης.
+4. Πάτησε pH και ηλεκτρική αγωγιμότητα. Έλεγξε ότι η μονάδα μένει ίδια.
+5. Στο Ιστορικό πάτησε μια συγκομιδή. Έλεγξε χωράφι, εργάτη, ώρα και προορισμό.
+6. Στην Αποθήκη και στο Μητρώο έλεγξε ότι τα κουμπιά πατιούνται χωρίς πλάγια κύλιση.
+7. Άνοιξε τον νέο ψεκασμό και έλεγξε ότι η δόση μένει κενή.
+8. Γύρισε στο κτήμα σου και έλεγξε ότι δεν εμφανίζονται δεδομένα επίδειξης.
+
+### Bora için beş satır
+
+Kaynak satırları ve bilinmeyen değer açıklamaları dört dilde hazır.
+Ekim çizimi cihazda önizleniyor ve kayıt altyapısı B2’yi bekliyor.
+Analizlerde pH ve EC açıklamaları, hasat geçmişinde kayıt ayrıntısı var.
+Stok hesabı hazır; gerçek hareketlerin ekran bağlantısı B1’i bekliyor.
+320 ve 375 px temel ekran taraması tamamlandı; birleşik sprint kontrolü bekliyor.
