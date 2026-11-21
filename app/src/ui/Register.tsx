@@ -2,7 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { activeFarm, db, realFarmId } from '../db';
 import { loadController } from '../legal/controller';
 import { putSetting } from '../repo';
-import { FILL_IN, MACHINE_COLUMNS, machineLines, toMachineCsv, warningLines } from '../export/machine';
+import { FILL_IN, MACHINE_COLUMNS, machineLines, toMachineCsv, toMachineJson, warningLines } from '../export/machine';
 import { DEMO_FARM_ID } from '../config';
 import { downloadText } from '../backup/download';
 import { COLUMNS, registerLines, toCsv, type Column, type Fmt } from '../export/register';
@@ -30,22 +30,23 @@ const FMT: Fmt = {
 const SCREEN: Fmt = { ...FMT, when: formatDateTimeYear };
 
 /** The spray register for an inspection: a DRAFT, printable and downloadable as CSV. The app prepares it; a person checks and signs it. */
-const FILL_KEYS: Record<(typeof FILL_IN)[number], I18nKey> = { missing_authorisation_number: 'register.fill.auth', missing_start_time: 'register.fill.start', missing_iacs_parcel_id: 'register.fill.iacs', missing_eppo_code: 'register.fill.eppo', missing_bbch_stage: 'register.fill.bbch', dose_not_per_area: 'register.fill.dose' };
+const FILL_KEYS: Record<(typeof FILL_IN)[number], I18nKey> = { missing_product_name: 'register.fill.name', missing_treated_area: 'register.fill.area', missing_authorisation_number: 'register.fill.auth', missing_start_time: 'register.fill.start', missing_iacs_parcel_id: 'register.fill.iacs', missing_eppo_code: 'register.fill.eppo', missing_bbch_stage: 'register.fill.bbch', dose_not_per_area: 'register.fill.dose' };
 
 export function Register({ onBack }: { onBack: () => void }) {
   const [sprays, links, plantings, parcels, crops, products, workers] = [useRows('job_spray'), useRows('job_plantings'), useRows('plantings'), useRows('parcels'), useRows('crops'), useRows('products'), useRows('workers')]; const lots = useRows('stock_lots');
   const demo = activeFarm.value === DEMO_FARM_ID;
-  const lines = registerLines({ sprays: sprays.rows ?? [], links: links.rows ?? [], plantings: plantings.rows ?? [], parcels: parcels.rows ?? [], crops: crops.rows ?? [], products: products.rows ?? [], workers: workers.rows ?? [], lots: lots.rows ?? [] }, SCREEN);
+  const lines = registerLines({ sprays: sprays.rows ?? [], links: links.rows ?? [], plantings: plantings.rows ?? [], parcels: parcels.rows ?? [], crops: crops.rows ?? [], products: products.rows ?? [], workers: workers.rows ?? [], lots: lots.rows ?? [] }, { ...SCREEN, missing: t('register.missing') });
   const [holder, setHolder] = useState(''); const [vat, setVat] = useState(''); const [vatSaved, setVatSaved] = useState(false);
   useEffect(() => { void loadController(db).then((c) => setHolder(c?.name ?? '')); void db.settings.get('business').then((r) => setVat(String((r?.value as { vat_id?: string } | undefined)?.vat_id ?? ''))); }, []);
   const data = { sprays: sprays.rows ?? [], links: links.rows ?? [], plantings: plantings.rows ?? [], parcels: parcels.rows ?? [], crops: crops.rows ?? [], products: products.rows ?? [], workers: workers.rows ?? [], lots: lots.rows ?? [] };
-  const csvLines = registerLines(data, FMT);
+  const csvLines = registerLines(data, { ...FMT, missing: t('register.missing') });
   const fillIn = FILL_IN.filter((c) => warningLines(data).some((w) => w.warning_code === c));
   const fillText = t('register.fillin', { list: fillIn.map((c) => t(FILL_KEYS[c])).join(', ') });
   const stamp = formatLocalIso(new Date().toISOString());
   const day = stamp.split(' ')[0];
   const holderLine = t('register.holder', { name: holder || t('register.holder.none'), vat: vat || t('register.holder.none') });
   const machine = () => { const m = machineLines(data, { name: holder, vatId: vat }); downloadText(`aloni-${demo ? 'demo-' : ''}register-machine-${day}.csv`, toMachineCsv(MACHINE_COLUMNS, m.map((l) => MACHINE_COLUMNS.map((c) => l[c]))), 'text/csv;charset=utf-8'); };
+  const json = () => downloadText(`aloni-${demo ? 'demo-' : ''}register-machine-${day}.json`, toMachineJson(data, { name: holder, vatId: vat }, new Date().toISOString()), 'application/json;charset=utf-8');
   const warnings = () => downloadText(`aloni-${demo ? 'demo-' : ''}register-warnings-${day}.csv`, toMachineCsv(['record_id', 'warning_code'], warningLines(data).map((w) => [w.record_id, w.warning_code])), 'text/csv;charset=utf-8');
   const csv = () => downloadText(`aloni-${demo ? 'demo-' : ''}psekasmoi-prosxedio-${stamp.split(' ')[0]}.csv`, toCsv(`${t('register.draft')} — ${holderLine}`, COLUMNS.map((c) => t(COL_KEYS[c])), csvLines), 'text/csv;charset=utf-8');
   return (
@@ -68,6 +69,7 @@ export function Register({ onBack }: { onBack: () => void }) {
       <div class="noprint">
         <button class="btn" data-testid="register-csv" onClick={csv}>{t('register.csv')}</button>
         <button class="btn" data-testid="register-csv-machine" onClick={machine}>{t('register.csv.machine')}</button>
+        <button class="btn" data-testid="register-json" onClick={json}>{t('register.json')}</button>
         <button class="btn" data-testid="register-csv-warnings" onClick={warnings}>{t('register.csv.warnings')}</button>
         <button class="btn" data-testid="register-print" onClick={() => window.print()}>{t('register.print')}</button>
       </div>

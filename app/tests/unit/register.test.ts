@@ -70,4 +70,11 @@ describe('the spray register', () => {
     const noLot = base({ lots: [{ id: 'k9', farm_id: 'f', batch: 'ZZ-1' }] });
     expect(registerLines(noLot, fmt)[0].lot).toBe('');
   });
+
+  it('a product without an authorisation number is marked «λείπει» on its lines (human file only); a present number is printed untouched', () => {
+    const noNumber = base({ products: base().products.map((p) => ({ ...p, reg_no: undefined })) });
+    expect(registerLines(noNumber, { ...fmt, missing: 'λείπει' }).every((l) => l.reg_no === 'λείπει')).toBe(true);
+    expect(registerLines(noNumber, fmt).every((l) => l.reg_no === '')).toBe(true);               // no marker text unless the screen asks for it
+    expect(registerLines(base(), { ...fmt, missing: 'λείπει' }).every((l) => l.reg_no !== 'λείπει' && l.reg_no !== '')).toBe(true);
+  });
 });

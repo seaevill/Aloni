@@ -9,7 +9,7 @@ export const COLUMNS = ['start', 'when', 'parcel', 'crop', 'area', 'product', 'r
 export type Column = (typeof COLUMNS)[number];
 export type RegisterLine = Record<Column, string>;
 export interface RegisterData { sprays: readonly Row[]; links: readonly Row[]; plantings: readonly Row[]; parcels: readonly Row[]; crops: readonly Row[]; products: readonly Row[]; workers: readonly Row[]; lots?: readonly Row[] }
-export interface Fmt { when: (iso: string) => string; num: (s: string) => string; name: (row: Row) => string; flag: (f: string) => string; label: (state: string) => string; unit: (u: string) => string }
+export interface Fmt { when: (iso: string) => string; num: (s: string) => string; name: (row: Row) => string; flag: (f: string) => string; label: (state: string) => string; unit: (u: string) => string; missing?: string }
 
 const text = (v: unknown): string => (typeof v === 'string' ? v : typeof v === 'number' ? String(v) : '');
 
@@ -28,7 +28,7 @@ export function registerLines(d: RegisterData, f: Fmt): RegisterLine[] {
       const lot = key === '' ? undefined : (d.lots ?? []).filter((x) => x.lot_key === key && typeof x.batch === 'string').sort((a, b) => text(a.created_at).localeCompare(text(b.created_at))).pop(); // the newest row of that lot; no lot on the spray = nothing printed
       lines.push({
         start: s.started_at ? f.when(text(s.started_at)) : '', lot: lot ? text(lot.batch) : '', when: f.when(text(s.sprayed_at)), parcel: parcel ? text(parcel.name) : '', crop: crop ? f.name(crop) : '', area: l ? f.num(text(l.area_str_treated)) : '',
-        product: product ? f.name(product) : '', reg_no: text(product?.reg_no), dose: f.num(text(s.dose_str)), unit: f.unit(text(s.dose_unit)), qty: f.num(text(s.qty_str)), water: f.num(text(s.water_l)),
+        product: product ? f.name(product) : '', reg_no: text(product?.reg_no) !== '' ? text(product?.reg_no) : product ? (f.missing ?? '') : '', dose: f.num(text(s.dose_str)), unit: f.unit(text(s.dose_unit)), qty: f.num(text(s.qty_str)), water: f.num(text(s.water_l)),
         applicator: text(worker?.name), label: f.label(text(s.label_state)),
         phi_until: s.phi_until ? f.when(text(s.phi_until)) : '', rei_until: s.rei_until ? f.when(text(s.rei_until)) : '',
         flags: (Array.isArray(s.flags) ? (s.flags as string[]) : []).map(f.flag).join(' | '), note: text(s.note), late_reason: text(s.late_reason), record: text(s.id), amends: text(s.amends_id),

@@ -61,10 +61,12 @@ export function machineLines(d: RegisterData, holder: Holder): MachineLine[] {
 }
 
 /** What a person must still fill in, per record: a field the Annex asks for that the app does not hold (empty in the machine file). */
-export const FILL_IN = ['missing_authorisation_number', 'missing_start_time', 'missing_iacs_parcel_id', 'missing_eppo_code', 'missing_bbch_stage', 'dose_not_per_area'] as const;
+export const FILL_IN = ['missing_product_name', 'missing_treated_area', 'missing_authorisation_number', 'missing_start_time', 'missing_iacs_parcel_id', 'missing_eppo_code', 'missing_bbch_stage', 'dose_not_per_area'] as const;
 export type FillIn = (typeof FILL_IN)[number];
 export function fillInOf(line: MachineLine): FillIn[] {
   const out: FillIn[] = [];
+  if (!line.product_trade_name) out.push('missing_product_name');
+  if (!line.treated_area_ha) out.push('missing_treated_area');
   if (!line.authorisation_number) out.push('missing_authorisation_number');
   if (!line.application_start) out.push('missing_start_time');
   if (!line.iacs_parcel_id) out.push('missing_iacs_parcel_id');
@@ -86,4 +88,9 @@ const cell = (v: string): string => (/[",\r\n]/.test(v) ? `"${v.split('"').join(
 /** RFC 4180: comma, CRLF, a header row; no spreadsheet-formula guarding here (a machine reads it; the human file keeps its guard). */
 export function toMachineCsv(head: readonly string[], rows: ReadonlyArray<readonly string[]>): string {
   return `${[head, ...rows].map((r) => r.map(cell).join(',')).join('\r\n')}\r\n`;
+}
+
+/** The same lines and warnings as the CSV files, as one machine-readable JSON document. Nothing is added or computed here beyond what the CSV holds. */
+export function toMachineJson(d: RegisterData, holder: Holder, generatedAt: string): string {
+  return `${JSON.stringify({ regulation: 'Regulation (EU) 2023/564', format_version: 1, generated_at: generatedAt, holder: { name: holder.name, vat_id: holder.vatId }, records: machineLines(d, holder), warnings: warningLines(d) }, undefined, 2)}\n`;
 }
