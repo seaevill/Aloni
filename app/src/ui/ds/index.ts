@@ -2,3 +2,4 @@
 import './ds.css';
 export { Chip, TONES, TONE_ICON, type Tone } from './Chip';
 export { Tag } from './Tag';
+export { Card, HeroCard, ListRow, IconTile, PageHead, SectionHead } from './Surfaces';
