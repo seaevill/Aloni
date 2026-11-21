@@ -1,5 +1,7 @@
 # DURUM – Aloni (Bora'nın sayfası)
 
+**Bitti:** 15 PR hazır (aşağıda), SQL 0035 Codex'te. **Sıradaki:** CI yeşil olunca otomatik merge; sonra UX1 adım 2-4 artığı. **Bora'dan beklenen:** LIVE adımları (SABAH RAPORU madde 4) + #252 onayı.
+
 ## Eklentiler (2026-11-20)
 - **Superpowers ve Task Observer bu oturumda YÜKLÜ GÖRÜNMÜYOR.** Beceri listesinde ve eklenti listesinde yoklar (yalnızca pre-landing-review, karpathy-guidelines vb. var). Büyük olasılıkla eklentiler oturum açıldıktan sonra açıldı: yeni bir oturum başlatınca tekrar kontrol edeceğim. Yüklenene kadar kuralları elle uyguluyorum (önce kırmızı test, bitirmeden önce doğrulama, kök neden aramadan yama yok).
 - **Kullanım kuralları (Bora, 2026-11-20):** test-driven-development, verification-before-completion, systematic-debugging kullan. subagent-driven-development ve dispatching-parallel-agents KULLANMA (kota). brainstorming yalnızca büyük yeni özelliklerde. Task Observer'ın öğrendiği kurallar CLAUDE.md'ye doğrudan yazılmaz: ayrı PR, açıklamada «Bora onaylayacak».
@@ -9,17 +11,18 @@
 2. Etiketleri imzalamaya ne zaman gelebilir? (İmzasız taslak etiket artık «bilinmiyor = kapalı» sayılır.)
 3. **(m9 S-NEW-3, şimdilik DEĞİŞTİRİLMEDİ)** İşçinin «Έγινε» kilidi giriş yasağını ilaçlamanın **bitişinde** kontrol ediyor, **başlangıcında** değil: eski bir giriş yasağı sürerken işçi 20 dakika tarlada çalışmış olabilir ve kayıt «rei_conflict» işaretsiz geçiyor. Koruyucu donanımlı uygulayıcı için istisna var mı? Yoksa kapıyı başlangıç saatine de bakacak şekilde sıkılaştırırız.
 
-## SABAH RAPORU (2026-11-21, gece çalışması)
-1. **Production 0001–0034**, main yeşil. Giriş ve çiftlik sihirbazı açık (Cloudflare değişkenlerin); senkron hâlâ kapalı.
-2. **Biten PR'lar:** WebKit kurulumuna zaman aşımı + 1 yeniden deneme (#249); T10 günlük sevkiyat, T11 işçi ilk gün, T16b marka/ikon; UX1 adım 1-3 (#251 ilaçlama adımları, #254 Σήμερα'da katlama, #255 tarla zaman çizgisi); Codex'in 6 PR'ı (#240–#245); #247 LESSONS.
-3. **LIVE için senden tek adım:** kod PR'ı gerekmedi. §12a'nın 1–6. adımı başarılıysa **Άλλα → Άνοιγμα συγχρονισμού** (RUNBOOK §13). Hava için RUNBOOK §14a (token ÖNCE, hepsi senin tıklaman).
-4. **Telefonda deneyeceğin 5 şey:** (a) ilaçlama formu: başlıklar 1–4 numaralı, seçince ✓ (Σήμερα → ψεκασμός); (b) Σήμερα'da (demo) kesime hazır çok satır tek «N φυτεύσεις ελεύθερες για κοπή (πατήστε)» satırında; (c) bir tarlayı aç → en altta **Χρονολόγιο** (ekim, ilaçlama, hasat); (d) Άλλα → Διαθέσιμες κλούβες: müşteri başına günlük sevkiyat + kopyalanacak metin (T10); (e) işçi telefonunda ilk açılış: dil seçimi ve «Ενημέρωση εργαζομένων» (T11).
-5. **Yapılmayan:** UX1 adım 4 («Εργασίες» merkezi), T8b («Αύριο φεύγουν»), T12/T14 kalan parçalar; sıradalar.
-6. **Bekleyen onay:** #252 (CLAUDE.md dil tablosu, «Bora onaylayacak»).
+## SABAH RAPORU (2026-11-21, gece çalışması 2)
+1. **Production 0001–0034.** Giriş + çiftlik sihirbazı açık; senkron kapalı (senin adımın).
+2. **Açık PR'lar (kodu hazır, CI/merge kuyruğunda, sırayla otomatik merge):** #258 «Αύριο φεύγουν» · #259 Hintçe (işçi ekranları) · #260 demo her akışı deneme + «Επαναφορά επίδειξης» · #261 «Έγκριση γεωπόνου» kartı (imzasız → neden kapalı) · #262/#263 senkron durum çipi + «Αντίγραφο τώρα» · #264 reddedilen kayıtlar ekranı · #265 hazırlık sabiti 0034 · #266 işçi daveti uçtan uca test · #267 RUNBOOK §12c/§13 · #268 «Εργασίες» merkezi · #269 Καλλιέργειες/Χωράφια kartlarında son ilaçlama + bekleme · #270 Actions SHA sabitleme + Dependabot · #272 gizlilik/mağaza tasarımı (yalnız belge) · #273 3G ölçümü (belge) · #274 yazı boyutu rem + %200 testi.
+3. **SQL PR'ı Codex'te (MERGE YOK):** #271 = 0035 (weather_daily indeksi + `has_role` search_path). Kanıt: `docs/reviews/team/2026-11-21-0035-evidence.md`.
+4. **LIVE için senden sırayla:** (1) Cloudflare'de son build yeşil mi bak (§12b). (2) §12a 1–6. adım (giriş, «Δημιουργία κτήματος»). (3) **Άλλα → Άνοιγμα συγχρονισμού**: önce «Αντίγραφο τώρα», sonra aç (§13). (4) Bir işçiyi §12c'deki 8 satırla dene.
+5. **Telefonda 5 şey:** (a) Σήμερα → «Αύριο φεύγουν»; (b) Άλλα → επίδειξη → «Επαναφορά επίδειξης»; (c) Καλλιέργειες ve Χωράφια kartında «Τελευταίος ψεκασμός» / «Χωρίς ψεκασμό» / «Κοπή από … άγνωστο»; (d) telefonda yazı boyutunu en büyüğe al: hiçbir ekran yana kaymamalı; (e) çip: uçak modu → «Εκτός σύνδεσης», geri aç → «Συγχρονισμένο».
+6. **Bilerek yapılmayanlar:** CI'da `supabase db lint` (sql işinde Supabase CLI yok → BACKLOG); harita offline önbellekte KALDI (ölçüm: ilk açılış yavaş 3G'de 154 kB, 4,3 sn, harita yüklenmiyor); #252 senin onayını bekliyor. **CodeQL (senin ayarın, 3 tık):** GitHub repo → Settings → Code security → «Code scanning» → «Set up» → «Default».
+7. **Hesap silme/işçi takma-adlaştırma tasarımı:** `docs/plan/PRIVACY-STORE-PREP.md` (avukata 3 soru, madde 5).
 
 ## Sabah soruları
 1. #252'yi (dil tablosu) onaylıyor musun?
-2. «Dış UX araştırması»nın metni repoda yok: planı 4 başlıktan çıkardım. Metni `docs/` altına koyar mısın, planı ona göre düzelteyim.
+2. «Dış UX araştırması»nın metni repoda yok; `docs/` altına koyar mısın?
 
 ## Önceki durum (2026-11-20, gece)
 - **Bitti:** Production **0001–0034** (run 44799478194, commit ee1dd3a). 0033 = «Έγκριση γεωπόνου» defteri, 0034 = uygulamanın kendi «Δημιουργία κτήματος» yolu.
