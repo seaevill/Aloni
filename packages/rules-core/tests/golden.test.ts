@@ -8,7 +8,7 @@ import { fingerprint, known, makeDose, parseDecimal, parseMaxApps, parsePhiDays,
 type J = Record<string, any>;
 const DIR = new URL('../fixtures/golden/', import.meta.url);
 const cases: J[] = readdirSync(DIR).filter((f) => f.endsWith('.json')).sort().map((f) => JSON.parse(readFileSync(new URL(f, DIR), 'utf8')) as J);
-export const LANDED = ['A06-stock-low-mandipropamid', 'A07-stock-expired-acetamiprid', 'A08-stock-expiring-spinosad', 'A01-frost-low-plain', 'A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-end-time-blocks', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'R05-frost-cover-herbs', 'REI-after-r01-spray', 'A10-salt-pachi-well', 'R06-chicory-harvest-after-thaw'];
+export const LANDED = ['A05-gap-spinach', 'NEG-P0-2-phi-lot-not-supply', 'A06-stock-low-mandipropamid', 'A07-stock-expired-acetamiprid', 'A08-stock-expiring-spinosad', 'A01-frost-low-plain', 'A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-end-time-blocks', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'R05-frost-cover-herbs', 'REI-after-r01-spray', 'A10-salt-pachi-well', 'R06-chicory-harvest-after-thaw'];
 
 const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[+-]\d{2}:\d{2}|Z)$/;
 const ms = (v: unknown): unknown => (typeof v === 'string' && ISO.test(v) ? Date.parse(v) : v); // times compare as instants, whatever their offset
@@ -80,6 +80,25 @@ function salinityOf(c: J): Pick<Snapshot, 'salinity'> {
   } };
 }
 
+function gapOf(c: J): Pick<Snapshot, 'gap'> {
+  if (c.rule_id !== 'GAP') return {};
+  const jobs = c.inputs.jobs as J[];
+  const params = c.rule_state.params;
+  return { gap: {
+    params: { weeks: params.horizon_weeks.value, minPct: params.gap_min_pct_of_orders.value, minCrates: params.gap_min_crates.value },
+    orders: (c.inputs.orders_weekly as J[]).map((o) => ({
+      cropId: o.crop_id, cratesPerWeek: o.crates_per_week, sowingLeadDays: c.inputs.sowing_lead_time_days?.[o.crop_id]?.[0],
+      multipliers: (o.multipliers ?? []).map((m: J) => ({ weekStart: m.week_start, factor: Number(m.factor) })),
+    })),
+    plantings: (c.inputs.plantings as J[]).map((p) => ({
+      id: p.id, cropId: p.crop_id, estCrates: p.est_crates, harvestFrom: p.harvest_from, harvestTo: p.harvest_to,
+      loggedCrates: jobs.filter((j) => j.kind === 'harvest' && j.planting_id === p.id).reduce((total, j) => total + j.crates, 0),
+      // These two fixtures provide the PHI clearance (or a complete history with no spray).
+      eligibility: p.safe_from ? { state: 'held', until: utc(p.safe_from) } : { state: 'clear' },
+    })),
+  } };
+}
+
 function snapshot(c: J): Snapshot {
   const syn: J = c.synthetic_inputs ?? {};
   const uses: UseFact[] = ((c.inputs.label_uses ?? []) as J[]).map((l) => {
@@ -90,17 +109,18 @@ function snapshot(c: J): Snapshot {
   return {
     asOf: utc(c.as_of), uses, parcelsForInfo: ((c.inputs.parcels ?? []) as J[]).map((p) => p.id),
     plantings: ((c.inputs.plantings ?? []) as J[]).map((p) => ({ id: p.id, parcelId: p.parcel_id, cropId: p.crop_id })),
-    jobs: jobs.map((j) => ({ id: j.id, kind: j.kind, status: j.status ?? 'done', plantingIds: j.planting_ids, productId: j.product_id, startedAt: utc(j.started_at), endedAt: j.ended_at ? utc(j.ended_at) : undefined /* never invented: a case with no end time expects «blocked» */ })),
+    jobs: jobs.filter((j) => j.kind === 'spray').map((j) => ({ id: j.id, kind: j.kind, status: j.status ?? 'done', plantingIds: j.planting_ids, productId: j.product_id, startedAt: utc(j.started_at), endedAt: j.ended_at ? utc(j.ended_at) : undefined /* never invented: a case with no end time expects «blocked» */ })),
     tasks: ((syn.worker_tasks ?? []) as J[]).map((t) => ({ id: t.id, plantingIds: t.planting_ids, at: utc(t.at) })),
     draftJobs: ([...(syn.draft_job ? [syn.draft_job] : []), ...(syn.draft_jobs ?? [])] as J[]).map((j) => ({ id: j.id, kind: j.kind, plantingIds: j.planting_ids, productId: j.product_id })),
     products: ((c.inputs.products ?? []) as J[]).map((p) => ({ id: p.id, groupCode: p.group_code ?? undefined })),
-    ...weatherOf(c), ...frostOf(c), ...stockOf(c), ...salinityOf(c),
+    ...weatherOf(c), ...frostOf(c), ...stockOf(c), ...gapOf(c), ...salinityOf(c),
     ruleStatus: { [c.rule_id]: c.rule_state.status === 'unsigned' ? 'unsigned' : 'signed' },
   };
 }
 
 /** Partial deep match with the README's operators; a scalar pattern against an array means «contains». */
-function matches(actual: unknown, pat: unknown): boolean {
+function matches(actual: unknown, pat: unknown, tolerance?: number): boolean {
+  if (typeof actual === 'number' && typeof pat === 'number' && tolerance !== undefined) return Math.abs(actual - pat) <= tolerance;
   if (pat && typeof pat === 'object' && !Array.isArray(pat)) {
     const p = pat as J;
     if (Object.keys(p).some((k) => k.startsWith('$'))) {
@@ -115,9 +135,9 @@ function matches(actual: unknown, pat: unknown): boolean {
         return (a as number) <= (b as number); // $lte
       });
     }
-    return actual !== null && typeof actual === 'object' && Object.entries(p).every(([k, v]) => matches((actual as J)[k], v));
+    return actual !== null && typeof actual === 'object' && Object.entries(p).every(([k, v]) => matches((actual as J)[k], v, tolerance));
   }
-  if (Array.isArray(pat)) return Array.isArray(actual) && pat.every((v, i) => matches(actual[i], v));
+  if (Array.isArray(pat)) return Array.isArray(actual) && pat.every((v, i) => matches(actual[i], v, tolerance));
   return Array.isArray(actual) ? actual.map(ms).includes(ms(pat)) : ms(actual) === ms(pat);
 }
 const sameSet = (a: readonly string[], b: readonly string[]) => [...a].sort().join('|') === [...b].sort().join('|');
@@ -139,7 +159,11 @@ function check(c: J, outs: Output[]): void {
     const r = (o.values.leaf_range_c as J[])[i][pid] as number[]; expect(r[0], `${pid} lo`).toBeCloseTo((t as number) - 3, 9); expect(r[1], `${pid} hi`).toBeCloseTo((t as number) - 1, 9);
   }
   if (e.values?.cover_gain_c) expect(o.values.cover_gain_range_c).toEqual([1, 2]);
-  for (const [k, v] of Object.entries((e.values ?? {}) as J).filter(([k]) => !PROSE.includes(k))) expect(matches(o.values[k], v), `values.${k}: ${JSON.stringify(o.values[k])} vs ${JSON.stringify(v)}`).toBe(true);
+  const crateKeys = ['supply', 'supply_by_planting', 'gap', 'gap_week1'];
+  for (const [k, v] of Object.entries((e.values ?? {}) as J).filter(([k]) => !PROSE.includes(k))) {
+    const tolerance = c.rule_id === 'GAP' && crateKeys.includes(k) ? e.tolerance?.crates : undefined;
+    expect(matches(o.values[k], v, tolerance), `values.${k}: ${JSON.stringify(o.values[k])} vs ${JSON.stringify(v)}`).toBe(true);
+  }
   for (const a of (e.also ?? []) as J[]) expect(outs.some((x) => matches(x, a)), `also ${JSON.stringify(a)}`).toBe(true);
   for (const v of (e.vetoes ?? []) as J[]) expect(outs.some((x) => x.vetoes.some((y) => matches(y, v))), `veto ${JSON.stringify(v)}`).toBe(true);
   for (const m of (e.must_not ?? []) as J[]) expect(outs.filter((x) => matches(x, m.match)), `must_not ${m.id}`).toEqual([]);
@@ -196,6 +220,35 @@ describe('golden cases', () => {
     for (const input of casesToBlock) {
       expect(runRules(input).filter((o) => o.rule_id === 'FROST' && o.category === 'no_harvest_before_thaw')).toEqual([]);
     }
+  });
+  it('GAP renders unsigned data and excludes unknown PHI without deciding', () => {
+    const c = cases.find((fixture) => fixture.id === 'NEG-P0-2-phi-lot-not-supply')!;
+    const s = snapshot(c);
+    const states: Snapshot['ruleStatus'][] = [{ GAP: 'unsigned' }, {}];
+    const expected = {
+      rule_id: 'GAP', kind: 'info', category: 'supply_gap_inputs', notify: false,
+      crop_ids: ['parsley'], parcel_ids: [], planting_ids: [], product_ids: [], vetoes: [],
+    };
+    const weeks = ['2026-11-16', '2026-11-23', '2026-11-30', '2026-12-07'];
+    const clearSupply = weeks.map(() => 1680 / 77);
+    const heldSupply = [0, 39, 39, 39];
+    const orders = [45, 45, 45, 45];
+    const supply = clearSupply.map((crates, i) => crates + heldSupply[i]);
+    for (const ruleStatus of states) {
+      const outputs = runRules({ ...s, ruleStatus }).filter((out) => out.rule_id === 'GAP');
+      expect(outputs).toEqual([{ ...expected, values: {
+        badge: 'not_signed_off', weeks, orders, supply,
+        supply_by_planting: { PL07: clearSupply, PL12: heldSupply }, gap: orders.map((crates, i) => crates - supply[i]),
+        excluded: [{ planting_id: 'PL12', until: '2026-11-23T08:30:00Z', reason: 'phi' }], unknown_planting_ids: [],
+      } }]);
+    }
+    const gap = s.gap!;
+    const [clear, held] = gap.plantings;
+    const outputs = runRules({ ...s, gap: { ...gap, plantings: [clear, { ...held, eligibility: { state: 'unknown' } }] } }).filter((out) => out.rule_id === 'GAP');
+    expect(outputs).toEqual([{ ...expected, values: {
+      badge: 'inputs_unknown', weeks, orders, supply: clearSupply, supply_by_planting: { PL07: clearSupply },
+      gap: orders.map((crates, i) => crates - clearSupply[i]), excluded: [], unknown_planting_ids: ['PL12'],
+    } }]);
   });
   it('the matcher itself goes red: an output that breaks a must_not is caught, a time in another offset still matches', () => {
     expect(matches({ rule_id: 'FROST', kind: 'alert' }, { rule_id: 'FROST', kind: { $in: ['alert', 'block'] } })).toBe(true);
