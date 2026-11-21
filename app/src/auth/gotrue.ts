@@ -7,9 +7,13 @@ export interface Session { access_token: string; refresh_token: string; expires_
 type Fetch = typeof fetch;
 
 const headers = (e: Endpoint, token?: string) => ({ 'content-type': 'application/json', apikey: e.apiKey, ...(token ? { authorization: `Bearer ${token}` } : {}) });
+/** The auth server answered with an HTTP error (its status says why: wrong code, expired, too many e-mails). */
+export class AuthHttp extends Error {
+  constructor(readonly status: number) { super(`sign-in: HTTP ${status}`); }
+}
 async function post(e: Endpoint, path: string, body: unknown, f: Fetch): Promise<Record<string, unknown>> {
   const res = await f(`${e.url}/auth/v1/${path}`, { method: 'POST', headers: headers(e), body: JSON.stringify(body) });
-  if (!res.ok) throw new Error(`sign-in: HTTP ${res.status}`);
+  if (!res.ok) throw new AuthHttp(res.status);
   return (await res.json()) as Record<string, unknown>;
 }
 

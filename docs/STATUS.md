@@ -18,7 +18,7 @@
 6. **Bekleyen onay:** #252 (CLAUDE.md dil tablosu, «Bora onaylayacak»).
 
 ## Sabah soruları
-1. #252'yi (dil tablosu) onaylıyor musun?
+1. **E-posta gönderimi (para = sana soru):** Supabase'in kendi e-postası saatte çok az kod gönderir (sınır düşük; sınıra gelince uygulama «Πολλά μηνύματα email» der). Sürekli kullanım için kendi SMTP'imizi bağlamak gerekir. Önerim: AB'de sunucusu olan ücretsiz/ucuz bir servis (ör. Brevo, AB merkezli, ücretsiz katman günde 300 e-posta; ya da Scaleway TEM, AB, çok ucuz). Hesabı sen açarsın, ben yalnızca ayar adımlarını yazarım. Hangisini istersin, ya da şimdilik Supabase'in kendi e-postası yeter mi? (Fiyat/katman bilgisini açmadan önce kendin doğrula.)
 2. «Dış UX araştırması»nın metni repoda yok: planı 4 başlıktan çıkardım. Metni `docs/` altına koyar mısın, planı ona göre düzelteyim.
 
 ## Önceki durum (2026-11-20, gece)
