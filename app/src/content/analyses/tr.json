@@ -1,0 +1,13 @@
+{
+  "heading": "Ölçüm neyi gösteriyor?",
+  "ph": {
+    "what": "pH, örneğin ne kadar asitli veya bazik olduğunu gösterir.",
+    "meaning": "Düşük pH daha asitli, yüksek pH daha bazik bir örnek demektir."
+  },
+  "ec": {
+    "what": "Elektriksel iletkenlik, örneğin elektriği ne kadar kolay ilettiğini gösterir.",
+    "meaning": "Aynı birim ve yöntemle daha yüksek değer genellikle daha fazla çözünmüş tuz anlamına gelir."
+  },
+  "range": "Kayıtlı değer aralığı",
+  "noRange": "Karşılaştırmak için aynı birimde iki farklı değer yok."
+}
