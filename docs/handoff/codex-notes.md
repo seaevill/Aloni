@@ -9,3 +9,14 @@
 - **Database review.** #240 records authenticated `EXPLAIN` results and definer search paths, with proposed SQL for the integrator to number separately.
 - **Hindi.** Deferred until the worker language work is merged and `app/src/i18n/hi.json` is clear of open PR changes. #202 still changes that file.
 - **Spray export.** #241 adds tests only. Its PR body maps the Annex fields and records the gaps, including the missing alternative location method and warnings for absent treated area or product name.
+
+## 2026-11-21 queue update
+
+- **SQL review.** No open PR for 0036 or 0037 at the time of the check. The review of 0035 is in #279. Migration 0035 still owns the shared SQL runner in #271.
+- **Golden rules.** #281 merged and main now runs 17 of 27 golden cases. #289 enables NEG-P0-1 for REG, leaving nine skipped cases, and currently owns the engine and golden runner. Update STATUS after the remaining cases land. #275 currently owns STATUS.
+- **Planting gate.** The shared SQL test entry point is already changed by #271. Wire the shared fixture into the SQL and phone suites after coordinating the runner change. Preserve separate checks for PHI and REI, signed and unknown labels, crop-specific gates, corrections, and Athens midnight.
+- **Clock.** #283 covers the timeline at both Athens boundary times and with a UTC phone, and migrates the focused harvest and timezone scenarios. The same PR also fixes dates in worker flows, order and dispatch fixtures, and the demo supply unit test. The go-live clock remains live because #264 changes that test.
+- **Hindi.** #282 merged. The worker views and shared components scanned by the coverage test have no missing keys. The pre-session SignIn component falls back for nine keys: `signin.as`, `signin.code`, `signin.email`, `signin.error`, `signin.farmId`, `signin.out`, `signin.send`, `signin.title`, and `signin.verify`. The dictionary is changed by #264; apply copy after that PR clears.
+- **Accessibility.** #284 found no serious or critical axe violations on the three Hindi demo worker tabs at 375 px. Existing owner and demo worker checks remain in place. The live sign-in, invite, and worker panels still need explicit inventory and scanner coverage.
+- **Performance.** #285 gates the shipped entry script and HTML module preloads at baseline plus 10%. It reports emitted gzip chunk sizes in the PR. Source-module attribution and runtime-triggered imports are outside the reported measurement.
+- **Κλούβες.** #286 covers the import edge cases. Claude Code follow-up: a duplicate client ID is retained in client metadata, although the parser counts its order once. Decide how to report or resolve duplicate metadata. A persisted nonempty unknown crop slug currently passes through `cratesByCrop`. Validate persisted mappings against the crop catalog before counting them.
