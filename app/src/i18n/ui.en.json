@@ -187,5 +187,14 @@
   "ui.diag.copy": "Copy the report",
   "ui.diag.copied": "The report was copied. It contains nothing about the farm.",
   "ui.diag.copy.failed": "Not copied. Press and hold the text and choose «Copy».",
-  "ui.diag.clear": "Delete the errors"
+  "ui.diag.clear": "Delete the errors",
+  "ui.install.card": "Put Aloni on the Home Screen",
+  "ui.install.card.meta": "5 simple steps, with pictures",
+  "ui.install.title": "Add to the Home Screen",
+  "ui.install.step1": "Open Aloni in Safari (not inside another app).",
+  "ui.install.step2": "Tap the «Share» button at the bottom of Safari.",
+  "ui.install.step3": "Scroll and tap «Add to Home Screen».",
+  "ui.install.step4": "Tap «Add» at the top right.",
+  "ui.install.step5": "From now on open Aloni from the icon on the Home Screen.",
+  "ui.install.warning": "Careful: Safari and the Home Screen app keep SEPARATE data. Install BEFORE you record data. If you already recorded in Safari, first make a data copy (Άλλα → Data copy) and restore it inside the Home Screen app."
 }

@@ -187,5 +187,14 @@
   "ui.diag.copy": "Raporu kopyala",
   "ui.diag.copied": "Rapor kopyalandı. Çiftliğe ait bilgi içermez.",
   "ui.diag.copy.failed": "Kopyalanamadı. Metne uzun basıp «Kopyala»yı seçin.",
-  "ui.diag.clear": "Hataları sil"
+  "ui.diag.clear": "Hataları sil",
+  "ui.install.card": "Aloni'yi ana ekrana ekleyin",
+  "ui.install.card.meta": "5 basit adım, resimli",
+  "ui.install.title": "Ana ekrana ekleme",
+  "ui.install.step1": "Aloni'yi Safari'de açın (başka bir uygulamanın içinde değil).",
+  "ui.install.step2": "Safari'nin altındaki «Paylaş» düğmesine basın.",
+  "ui.install.step3": "Aşağı kaydırıp «Ana Ekrana Ekle»ye basın.",
+  "ui.install.step4": "Sağ üstteki «Ekle»ye basın.",
+  "ui.install.step5": "Bundan sonra Aloni'yi ana ekrandaki simgeden açın.",
+  "ui.install.warning": "Dikkat: Safari ile ana ekrandaki uygulama verileri AYRI tutar. Kurulumu veri kaydetmeden ÖNCE yapın. Safari'de zaten kayıt yaptıysanız önce veri yedeği alın (Άλλα → Veri yedeği) ve ana ekran uygulamasında geri yükleyin."
 }
