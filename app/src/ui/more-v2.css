@@ -1,0 +1,23 @@
+.more-v2 .menu .row {
+  align-items: center;
+  color: var(--fg);
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+  min-height: 56px;
+  overflow-wrap: anywhere;
+  text-align: start;
+}
+.more-menu-icon {
+  align-items: center;
+  background: var(--bg);
+  border-radius: .625rem;
+  color: var(--green);
+  display: inline-flex;
+  height: 2rem;
+  justify-content: center;
+  width: 2rem;
+}
+.more-menu-icon svg {
+  height: 1.25rem;
+  width: 1.25rem;
+}
