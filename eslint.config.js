@@ -47,6 +47,7 @@ export default [
   { files: RULES_CORE, ...typed, ...syntax([...ROUND, ...DEFAULTS, ...CLOCK], { ...dose, ...clock }) },
   { files: ['packages/rules-core/src/**/*.test.ts'], rules: { 'no-restricted-imports': 'off' } },
   { files: ['app/src/db/uuid.ts', 'app/src/db/sha256.ts'], ...typed, ...syntax([...ROUND.filter(NO_TYPED_ARRAYS), ...DEFAULTS], dose) }, // hash ids and files with typed arrays; no dose touches them
+  { files: ['app/src/auth/qr.ts', 'app/tests/unit/qr.test.ts'], ...typed, ...syntax([...ROUND.filter((b) => b.id !== 'R06' && b.id !== 'R09'), ...DEFAULTS], dose) }, // the QR code's bit arithmetic (shifts, XOR, byte parsing); no dose, money or quantity touches these files
   { files: FORMAT_FILE, ...typed, ...syntax([...ROUND.filter(NO_INTL), ...DEFAULTS], dose) },
   { files: ['app/src/repo/**/*.ts', 'app/src/db/**/*.ts'], rules: { 'aloni/no-direct-dexie-write': 'off' } }, // the write path itself and the database setup/import/migration
 ];

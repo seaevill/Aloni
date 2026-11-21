@@ -114,5 +114,21 @@
   "ui.mark.sent": "gönderildi",
   "ui.mark.rejected": "kabul edilmedi",
   "ui.refused.title": "Neden kabul edilmedi",
-  "ui.refused.none": "Bu kayıt için sunucunun cevabı artık yok. Kayıt telefonda duruyor."
+  "ui.refused.none": "Bu kayıt için sunucunun cevabı artık yok. Kayıt telefonda duruyor.",
+  "ui.invite.open": "QR veya bağlantı ile davet",
+  "ui.invite.title": "İşçi daveti",
+  "ui.invite.for": "Kime: {name}",
+  "ui.invite.lang": "İşçinin dili",
+  "ui.invite.qr.alt": "Davet bağlantısını içeren QR kodu",
+  "ui.invite.qr.none": "Bağlantı QR kodu için çok uzun. Bağlantıyı kullanın.",
+  "ui.invite.link": "Bağlantı",
+  "ui.invite.copy": "Bağlantıyı kopyala",
+  "ui.invite.copied": "Bağlantı kopyalandı.",
+  "ui.invite.copy.failed": "Kopyalanamadı. Bağlantıya uzun basıp «Kopyala»yı seçin.",
+  "ui.invite.share": "Paylaş",
+  "ui.invite.steps": "İşçi ne yapar",
+  "ui.invite.step1": "Bağlantıyı açar veya telefonunun kamerasıyla QR kodunu okutur.",
+  "ui.invite.step2": "Davet gönderdiğiniz e-posta adresini yazar.",
+  "ui.invite.step3": "E-postaya gelen 6 haneli kodu yazar.",
+  "ui.invite.note": "Bağlantı tek başına erişim vermez: önce işçinin e-postasına davet göndermeniz gerekir (yukarıda). Bağlantıda yalnızca dil bilgisi vardır."
 }
