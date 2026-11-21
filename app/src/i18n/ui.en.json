@@ -92,5 +92,9 @@
   "ui.weather.hourly": "Hourly forecast",
   "ui.weather.hourly.why": "not on the phone: the server keeps daily values only here",
   "ui.weather.none.chip": "No data",
-  "ui.weather.none.why": "No stored weather: no field has a location or the forecast has not been fetched yet. Give a field a location."
+  "ui.weather.none.why": "No stored weather: no field has a location or the forecast has not been fetched yet. Give a field a location.",
+  "ui.jobs.none": "No jobs: neither open nor done today.",
+  "ui.jobs.worker.none": "no worker",
+  "ui.jobs.where.none": "no planting",
+  "ui.jobs.day.none": "no day"
 }
