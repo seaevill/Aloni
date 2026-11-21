@@ -69,10 +69,7 @@ export function Register({ onBack }: { onBack: () => void }) {
       )}
       <div class="noprint register-actions">
         <button class="btn" data-testid="register-csv" onClick={csv}>{t('register.csv')}</button>
-        <button class="btn" data-testid="register-csv-machine" onClick={machine}>{t('register.csv.machine')}</button>
         <button class="btn" data-testid="register-json" onClick={json}>{t('register.json')}</button>
-        <button class="btn" data-testid="register-csv-warnings" onClick={warnings}>{t('register.csv.warnings')}</button>
-        <button class="btn" data-testid="register-print" onClick={() => window.print()}>{t('register.print')}</button>
         <button class="btn secondary" data-testid="register-csv-machine" onClick={machine}>{t('register.csv.machine')}</button>
         <button class="btn secondary" data-testid="register-csv-warnings" onClick={warnings}>{t('register.csv.warnings')}</button>
         <button class="btn secondary" data-testid="register-print" onClick={() => window.print()}>{t('register.print')}</button>
