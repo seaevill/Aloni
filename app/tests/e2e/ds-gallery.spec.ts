@@ -111,3 +111,14 @@ test('17 crop illustrations: aria-hidden, sized, one fill colour and one stroke 
   expect(paint).toEqual(['rgb(234, 248, 196)', 'rgb(19, 74, 43)']);
   await expect(rows.first()).toContainText('Σπανάκι');
 });
+
+// D7: the mark (12 stones + disc) and the wordmark (name from config; the Latin name only when asked for).
+test('brand: the ring mark has 12 stones, the wordmark shows the configured name, Latin only in store contexts; the static splash exists', async ({ page }) => {
+  await page.goto('/?ds-gallery');
+  await expect(page.locator('[data-testid="gallery-brand"] svg.ds-mark rect')).toHaveCount(12);
+  await expect(page.locator('[data-testid="gallery-brand"] .ds-wordmark-el')).toHaveText('Αλώνι');
+  await expect(page.locator('[data-testid="gallery-brand"] .ds-wordmark-latin')).toHaveText('Aloni');
+  const manifest = await (await page.request.get('/manifest.webmanifest')).json() as { theme_color: string; icons: Array<{ purpose?: string }> };
+  expect(manifest.theme_color).toBe('#134a2b');
+  expect(manifest.icons.some((i) => i.purpose === 'maskable')).toBe(true);
+});

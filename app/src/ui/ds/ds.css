@@ -80,3 +80,10 @@
 .ds-crop-fill { fill:var(--lime-soft); stroke:var(--green); stroke-width:var(--bw-2); stroke-linecap:round; stroke-linejoin:round; }
 .ds-crop-line { fill:none; stroke:var(--green); stroke-width:var(--bw-2); stroke-linecap:round; stroke-linejoin:round; }
 .gallery-crop { display:flex; align-items:center; gap:var(--sp-12); margin:0 0 var(--sp-8); font-size:var(--fs-row); font-weight:800; }
+
+/* Brand (D7): provisional mark and wordmark */
+.ds-mark-stone { fill:var(--lime); stroke:var(--green); stroke-width:var(--bw-1); }
+.ds-mark-disc { fill:var(--green); }
+.ds-wordmark { display:inline-flex; flex-direction:column; color:var(--green); }
+.ds-wordmark-el { font-size:var(--fs-title); font-weight:800; letter-spacing:-.03em; line-height:1; }
+.ds-wordmark-latin { font-size:var(--fs-meta); font-weight:600; margin-top:var(--sp-2); }
