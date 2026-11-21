@@ -55,12 +55,12 @@ export const WORKER_LANG_KEY = 'worker_lang';
 export function workerLang(): Lang | undefined {
   try { const s = localStorage.getItem(WORKER_LANG_KEY); return isLang(s) ? s : undefined; } catch { return undefined; }
 }
-export function setWorkerLang(l: Lang) { try { localStorage.setItem(WORKER_LANG_KEY, l); } catch { /* ignore */ } void ensureLang(l).then(() => { lang.value = l; }); }
+export function setWorkerLang(l: Lang) { try { localStorage.setItem(WORKER_LANG_KEY, l); } catch { /* ignore */ } void ensureLang(l).then(() => { lang.value = l; }).catch(() => undefined); }
 /** Back to the owner's language (the saved one, or the phone's default). */
 export function restoreOwnerLang() {
   let l: Lang = 'el';
   try { const s = localStorage.getItem('lang'); l = isLang(s) ? s : pickLang(navigator.languages ?? []); } catch { l = 'el'; }
-  void ensureLang(l).then(() => { lang.value = l; });
+  void ensureLang(l).then(() => { lang.value = l; }).catch(() => undefined);
 }
 
 export const lang = signal<Lang>(initialLang());
@@ -68,7 +68,7 @@ try { document.documentElement.lang = lang.value; } catch { /* no document (unit
 
 export function setLang(l: Lang) {
   try { localStorage.setItem('lang', l); } catch { /* ignore */ }
-  void ensureLang(l).then(() => { lang.value = l; document.documentElement.lang = l; });
+  void ensureLang(l).then(() => { lang.value = l; document.documentElement.lang = l; }).catch(() => undefined);      // a chunk that cannot be loaded (offline and not cached yet) leaves the language as it is: no error
 }
 
 /** Every translation key, typed from the Greek file: a typo or a missing key is a compile error. */
