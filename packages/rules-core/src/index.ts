@@ -9,3 +9,4 @@ export * from './sprayWindow';
 export * from './frost';
 export * from './supply';
 export * from './harvestForecast';
+export * from './weeklySupply';
