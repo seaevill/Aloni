@@ -73,7 +73,3 @@ Lint is a safety net, not a proof. The real guarantee comes from types (`Known<T
 
 ## Unknown values (rule of 2026-11-19)
 - `NaN`, `0`, `''` are never stand-ins for «unknown»: use `Known<T>` or `null`/`undefined` and show «—» / «άγνωστο». The lint rule D05 (numeric default) also catches NaN; do not work around it, change the type.
-
-## Tests that fail again (2026-11-21, Bora)
-- A test that fails in different PRs, or again on the retry, is NOT flaky. Stop, find the root cause (trace/video), fix it; never re-run in a loop. Only after the cause is known and unfixable tonight may it get `@quarantine` plus a BACKLOG line.
-- A test that uses dates or the clock fixes the time (`page.clock` / injected `now`) and states the zone (Europe/Athens). Never depend on the real clock: the timeline test broke every night after Athens midnight (UTC and Athens day differ).

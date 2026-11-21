@@ -17,17 +17,6 @@ Phase 1 = Bora (owner/admin) + his workers, his own farm only. Later: pilot with
 - Anything that costs money or can't be undone (paid plan, deleting data, changing DNS, publishing to stores): explain and ask first.
 - The app's UI is **Greek first**, then Turkish and English (`el/tr/en.json`). Units: στρέμματα (1 στρ = 0.1 ha), crates, km/h with gusts, Europe/Athens time, Greek date/number formats (0,6 στρ., Δευ 16 Νοε).
 
-## Language table (Bora approves this PR, 2026-11-20)
-
-| What | Language |
-|---|---|
-| Everything written to Bora (chat, STATUS, RUNBOOK, morning reports, instructions) | **Turkish**, short and plain |
-| Code, comments, commit messages, PR titles and bodies, `docs/DECISIONS.md`, `docs/reviews/`, `docs/handoff/` | **English** |
-| The app's screens | **Greek first**, then Turkish and English (`el/tr/en`); Hindi only on the worker screens (`hi`) |
-| Greek screen names quoted to Bora | the Greek exactly as on screen (e.g. «Άλλα → Σύνδεση»), explained in Turkish |
-
-A drift to another language (it happened twice) is a bug: fix it in the same turn.
-
 ## Decided (2026-11-17)
 
 - Stack: installable **PWA** – TypeScript + **Preact** (signals) + plain CSS, built with Vite; **Dexie** (IndexedDB) + **Workbox**; **MapLibre GL** + Terra Draw + turf for parcels. Backend **Supabase in Frankfurt (eu-central-1)**: Postgres + PostGIS, Auth, RLS, Edge Functions, pg_cron. Deploy **GitHub → Cloudflare Pages** (not Netlify: free plan too few deploys). Weather **Open-Meteo**, fetched server-side on a schedule, cached per parcel. Web Push. Capacitor later.

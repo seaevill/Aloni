@@ -17,17 +17,3 @@ export function groupJobs(jobs: readonly Row[], today: string): JobGroups {
   }
   return g;
 }
-
-export interface JobHub { open: JobGroups; doneToday: Row[]; counts: { overdue: number; today: number; upcoming: number; doneToday: number } }
-const athensDay = (instant: string): string | undefined => {
-  const ms = Date.parse(instant);
-  return Number.isFinite(ms) ? new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Athens', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(ms)) : undefined;
-};
-
-/** The «Εργασίες» summary of Σήμερα: the open sprayings in their groups plus the ones DONE today (the Athens day), oldest first. Removed jobs and jobs that are not sprayings never count. Counting only: nothing is decided here. */
-export function jobHub(jobs: readonly Row[], today: string): JobHub {
-  const live = jobs.filter((j) => !j.deleted_at && j.kind === 'spray');
-  const open = groupJobs(live.filter((j) => j.status === 'planned'), today);
-  const doneToday = live.filter((j) => j.status === 'done' && typeof j.done_at === 'string' && athensDay(j.done_at) === today).sort((a, b) => String(a.done_at).localeCompare(String(b.done_at)));
-  return { open, doneToday, counts: { overdue: open.overdue.length, today: open.today.length, upcoming: open.tomorrow.length + open.later.length, doneToday: doneToday.length } };
-}
