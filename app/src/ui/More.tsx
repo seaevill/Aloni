@@ -18,6 +18,8 @@ import { Notifications } from './Notifications';
 import { Readiness } from './Readiness';
 import { SignIn } from './SignIn';
 import { showUndo } from './Toast';
+import { weeklyCopy } from '../content/weekly-report';
+import { WeeklyReport } from './cx/WeeklyReport';
 import './more-v2.css';
 
 const MENU_ICONS = {
@@ -36,13 +38,14 @@ function MenuIcon({ name }: { name: keyof typeof MENU_ICONS }) {
 
 export function More() {
   const [msg, setMsg] = useState('');
-  const [view, setView] = useState<'main' | 'info' | 'photos' | 'workers' | 'register' | 'orders'>('main');
+  const [view, setView] = useState<'main' | 'info' | 'photos' | 'workers' | 'register' | 'orders' | 'weekly'>('main');
   const standalone = matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true;
   const openedFrom = [t(standalone ? 'more.openedFrom.home' : 'more.openedFrom.safari'), t('more.openedFrom.note')].join(' ');
   const demoLabel = t(hasDemo.value ? 'more.resetDemo' : 'more.loadDemo');
   useBack(view !== 'main', () => setView('main'));
   const pick = (id: string) => { activeFarm.value = id; dataVersion.value++; };
   if (view === 'info') return <Info onBack={() => setView('main')} />;
+  if (view === 'weekly') return <WeeklyReport onBack={() => setView('main')} />;
   if (view === 'orders') return <Orders onBack={() => setView('main')} />;
   if (view === 'register') return <Register onBack={() => setView('main')} />;
   if (view === 'workers') return <Workers onBack={() => setView('main')} />;
@@ -57,6 +60,7 @@ export function More() {
         <button class="row" data-testid="open-workers" onClick={() => setView('workers')}><MenuIcon name="workers" /><span>{t('workers.open')}</span><span aria-hidden="true" class="chev" /></button>
         <button class="row" data-testid="open-photos" onClick={() => setView('photos')}><MenuIcon name="photos" /><span>{t('photos.title')}</span><span aria-hidden="true" class="chev" /></button>
         <button class="row" data-testid="open-info" onClick={() => setView('info')}><MenuIcon name="info" /><span>{t('more.info')}</span><span aria-hidden="true" class="chev" /></button>
+        <button class="row" data-testid="open-weekly-report" onClick={() => setView('weekly')}><MenuIcon name="register" /><span>{weeklyCopy[lang.value].title}</span><span aria-hidden="true" class="chev" /></button>
       </nav>
 
       <h2>{t('more.settings')}</h2>
