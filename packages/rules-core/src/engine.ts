@@ -1,6 +1,7 @@
 import { registrationDose, type DoseCheck } from './registrationDose';
 import { gapOutputs, type GapFacts } from './gap';
 import { frostNights, thawMornings, type FrostFacts, type FrostHit } from './frost';
+import { harvestGuard, type HarvestGuardFact } from './harvestGuard';
 import { known, type Known } from './known';
 import { salinityReading, type SalinityFacts } from './salinity';
 import { stockHits, type StockFacts } from './stock';
@@ -37,6 +38,7 @@ export interface Snapshot {
   stock?: StockFacts;
   salinity?: SalinityFacts;
   gap?: GapFacts;
+  harvestGuard?: readonly HarvestGuardFact[];
   doseChecks?: readonly DoseCheck[];
 }
 
@@ -246,5 +248,5 @@ export function runRules(s: Snapshot): Output[] {
   if (!parseInstant(s.asOf).known) return [blank({ rule_id: 'ENGINE', kind: 'block', category: 'now_unreadable', severity: 'high', vetoes: [{ by: 'ENGINE', vetoed: 'everything', reason: 'unreadable_now' }] })];
   const gaps = s.gap ? gapOutputs(s.gap, s.asOf, s.ruleStatus.GAP === 'signed') : [];
   const doses = s.doseChecks ? registrationDose(s, s.doseChecks).map((result) => blank({ rule_id: 'REG', ...result })) : [];
-  return [...doses, ...phi(s), ...rei(s), ...reg(s), ...rot(s), ...sprayWindowClosed(s), ...frost(s), ...salinity(s), ...stock(s), ...gaps.map((gap) => blank({ rule_id: 'GAP', ...gap })), ...infoOnly(s)];
+  return [...doses, ...phi(s), ...harvestGuard(s).map(blank), ...rei(s), ...reg(s), ...rot(s), ...sprayWindowClosed(s), ...frost(s), ...salinity(s), ...stock(s), ...gaps.map((gap) => blank({ rule_id: 'GAP', ...gap })), ...infoOnly(s)];
 }

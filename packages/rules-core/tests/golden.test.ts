@@ -8,7 +8,7 @@ import { fingerprint, known, makeDose, parseDecimal, parseMaxApps, parsePhiDays,
 type J = Record<string, any>;
 const DIR = new URL('../fixtures/golden/', import.meta.url);
 const cases: J[] = readdirSync(DIR).filter((f) => f.endsWith('.json')).sort().map((f) => JSON.parse(readFileSync(new URL(f, DIR), 'utf8')) as J);
-export const LANDED = ['NEG-P0-1-dose-never-rounded', 'A05-gap-spinach', 'NEG-P0-2-phi-lot-not-supply', 'A06-stock-low-mandipropamid', 'A07-stock-expired-acetamiprid', 'A08-stock-expiring-spinosad', 'A01-frost-low-plain', 'A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-end-time-blocks', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'R05-frost-cover-herbs', 'REI-after-r01-spray', 'A10-salt-pachi-well', 'R06-chicory-harvest-after-thaw'];
+export const LANDED = ['A03-phi-guard-harvesting-spinach', 'R02-harvest-not-spray', 'NEG-P0-1-dose-never-rounded', 'A05-gap-spinach', 'NEG-P0-2-phi-lot-not-supply', 'A06-stock-low-mandipropamid', 'A07-stock-expired-acetamiprid', 'A08-stock-expiring-spinosad', 'A01-frost-low-plain', 'A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-end-time-blocks', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'R05-frost-cover-herbs', 'REI-after-r01-spray', 'A10-salt-pachi-well', 'R06-chicory-harvest-after-thaw'];
 
 const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[+-]\d{2}:\d{2}|Z)$/;
 const ms = (v: unknown): unknown => (typeof v === 'string' && ISO.test(v) ? Date.parse(v) : v); // times compare as instants, whatever their offset
@@ -119,9 +119,14 @@ function snapshot(c: J): Snapshot {
     const use: LabelUse = { scope: '', dose: makeDose(known('single'), known(UNIT[l.dose_unit]), parseDecimal(l.dose_min_per_str), parseDecimal('')), phiDays: parsePhiDays(String(l.phi_days)), reiHours: parseReiHours(String(l.rei_h)), maxApps: parseMaxApps('9') /* TEST-ONLY: the fixture has no value */ };
     return { productId: l.product_id, cropId: l.crop_id, target: l.target, ...(l.max_apps === null ? {} : { maxApps: l.max_apps as number }), ...(l.min_interval_days === null ? {} : { minIntervalDays: l.min_interval_days as number }), signed: requireSignOff(use, { by: 'test', on: '2026-11-01', fingerprint: fingerprint(use) }) };
   });
+  const harvestGuard = c.rule_id === 'PHI-GUARD' ? (c.inputs.plantings as J[]).map((p) => ({
+    plantingId: p.id, status: p.status, harvestFrom: p.harvest_from, harvestTo: p.harvest_to, estimatedCrates: p.est_crates,
+    loggedCrates: (c.inputs.jobs as J[]).filter((j) => j.kind === 'harvest' && j.planting_id === p.id).map((j) => j.crates),
+    scoutingCondition: (c.inputs.upstream_outputs as J[]).some((o) => o.rule_id === 'DM-SPIN' && o.planting_ids.includes(p.id) && (o.risk === 'medium' || o.risk === 'high')),
+  })) : undefined;
   const jobs = [...(c.inputs.jobs ?? []), ...(syn.jobs ?? [])] as J[];
   return {
-    asOf: utc(c.as_of), uses, parcelsForInfo: ((c.inputs.parcels ?? []) as J[]).map((p) => p.id),
+    asOf: utc(c.as_of), uses, harvestGuard, parcelsForInfo: ((c.inputs.parcels ?? []) as J[]).map((p) => p.id),
     plantings: ((c.inputs.plantings ?? []) as J[]).map((p) => ({ id: p.id, parcelId: p.parcel_id, cropId: p.crop_id })),
     jobs: jobs.filter((j) => j.kind === 'spray').map((j) => ({ id: j.id, kind: j.kind, status: j.status ?? 'done', plantingIds: j.planting_ids, productId: j.product_id, startedAt: utc(j.started_at), endedAt: j.ended_at ? utc(j.ended_at) : undefined /* never invented: a case with no end time expects «blocked» */ })),
     tasks: ((syn.worker_tasks ?? []) as J[]).map((t) => ({ id: t.id, plantingIds: t.planting_ids, at: utc(t.at) })),
@@ -160,13 +165,14 @@ function check(c: J, outs: Output[]): void {
   const e = c.expected as J;
   const own = outs.filter((o) => o.rule_id === c.rule_id && o.category === e.category);
   expect(own.length, `an output ${c.rule_id}/${e.category}`).toBeGreaterThan(0);
-  const o = own.find((x) => !e.targets?.planting_ids || sameSet(x.planting_ids, e.targets.planting_ids)) ?? own[0];
+  const o = own.find((x) => x.kind === e.kind && (!e.targets?.planting_ids || sameSet(x.planting_ids, e.targets.planting_ids))) ?? own[0];
   expect(o.kind).toBe(e.kind);
   if (e.mode === 'decide') expect(o.notify).toBe(false); // M3 sends nothing yet
   if (e.severity !== undefined && e.severity !== null) expect(o.severity).toBe(e.severity);
   if (e.confidence) expect(o.confidence).toBe(e.confidence);
   for (const k of ['parcel_ids', 'planting_ids', 'product_ids', 'crop_ids'] as const) if (e.targets?.[k]) expect(sameSet(o[k], e.targets[k]), `${k}: ${o[k]}`).toBe(true);
-  if (e.window) { expect(ms(o.window?.start)).toBe(ms(e.window.start)); if (e.window.end !== undefined) expect(ms(o.window?.end)).toBe(ms(e.window.end)); }
+  if (e.window?.start !== undefined) expect(ms(o.window?.start)).toBe(ms(e.window.start));
+  if (e.window?.end !== undefined) expect(ms(o.window?.end)).toBe(ms(e.window.end));
   // These two expected values are prose in the fixture («range = tmin − 3 … tmin − 1», «1–2 (EST)»): the structured values are checked instead.
   const PROSE = ['leaf_surface_estimate_c', 'cover_gain_c'];
   if (e.values?.leaf_surface_estimate_c) for (const [i, n] of (o.values.nights as J[]).entries()) for (const [pid, t] of Object.entries(n).filter(([k]) => k !== 'night')) {
@@ -193,6 +199,22 @@ describe('golden cases', () => {
     const landed = LANDED.includes(c.id as string);
     (landed ? it : it.skip)(`${c.id}${landed ? '' : ' (pending: its rule is not built yet)'}`, () => check(c, runRules(snapshot(c))));
   }
+  it('PHI-GUARD never decides without a signature or recommends harvest with a missing spray end', () => {
+    const s = snapshot(cases.find((x) => x.id === 'R02-harvest-not-spray')!);
+    const statuses: Snapshot['ruleStatus'][] = [{ 'PHI-GUARD': 'unsigned' }, {}];
+    for (const ruleStatus of statuses) {
+      const outs = runRules({ ...s, ruleStatus }).filter((o) => o.rule_id === 'PHI-GUARD');
+      expect(outs).toHaveLength(1);
+      expect(outs[0]).toMatchObject({ kind: 'info', notify: false, vetoes: [], values: { badge: 'not_signed_off' } });
+      expect(outs[0].severity).toBeUndefined();
+    }
+    const jobs = s.jobs.map((j) => ({ ...j, endedAt: undefined }));
+    const outs = runRules({ ...s, jobs }).filter((o) => o.rule_id === 'PHI-GUARD');
+    expect(outs.some((o) => o.kind === 'recommendation')).toBe(false);
+    expect(outs).toContainEqual(expect.objectContaining({ category: 'harvest_spray_conflict' }));
+    const held = runRules({ ...s, asOf: '2026-11-08T09:00:00Z' }).filter((o) => o.rule_id === 'PHI-GUARD');
+    expect(held.map((o) => o.kind)).toEqual(['block']);
+  });
   it('SALT shows the sample without a verdict or notification until signed', () => {
     const c = cases.find((x) => x.id === 'A10-salt-pachi-well')!;
     const s = snapshot(c);
