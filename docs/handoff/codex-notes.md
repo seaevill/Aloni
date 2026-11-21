@@ -55,14 +55,14 @@
 - X4 blocked: the crop-detail base in #294 and planting sketch X8 are pending.
 - X5 blocked: needs the crop-detail base and a linked harvest breakdown that accepts a crop, parcel and dated period.
 - X6 blocked: needs the crop-detail entry point and the source document after #330 clears. No unsourced crop copy was added.
-- X7 blocked: the parcel extraction #308 and the old parcel work #296 are still open. TODO(ds): WeatherSheet remains with #327.
+- X7 blocked: the parcel extraction #308 and the old parcel work #296 are still open. TODO(ds): WeatherSheet remains with #336.
 - X8 blocked: needs B2 planting geometry. CC-REQ: expose the nullable recorded polygon and its provenance to the parcel screen.
 - X9: #329 validates the local preview and rejects outside/crossing edges. TODO(B2): persistence and editable vertex handles remain open.
 - X10: #330 adds neutral pH and EC explanations. The form has no OM field. TODO(ds): DetailSheet #324.
 - X11 blocked: the registry search page returned HTTP 200, but the source file is in #330 and recorded sprays have no maximum-application or label-photo snapshot. CC-REQ: confirm the immutable source for those historical fields.
 - X12: #331 opens a single logged harvest's source. Aggregated bars remain open. TODO(ds): DetailSheet #324. TODO(B1): recorded destination.
 - X13: #332 adds the pure stock calculation. TODO(B1): connect authoritative movements before showing balances, destination or receiver details. CC-REQ: provide the movement ordering and scope for the tomorrow board.
-- X14 blocked: needs the C3 four-week eligible/held series and the in-flight orders screen #292.
+- X14: #339 adds the C3 four-week series and v2 spinach checks. The chart, source rows and unsigned chip still depend on the in-flight orders screen #292.
 - X15 blocked: needs the parcel detail base from X7/#296 and an authoritative observation/job-to-parcel photo linkage. CC-REQ: confirm the local/read-only photo linkage for both types.
 - X16 baseline: eight Greek Demo screens captured from `7dc3142` in WebKit. At 320 and 375 px, no page overflow or visible control below 56 px. All 281 first-viewport text samples on flat or alpha-composited backgrounds passed 7:1 and 14 px. A separate pixel scan hid the glyphs and sampled the rendered backing across 80 tab labels. Twenty-five labels had a sample below 7:1; the minimum was 5.58:1 on Άλλα and other screens. Tab text was at least 14 px. CC-REQ: increase the shared tab backing opacity or contrast in the Claude-owned theme, then repeat the integrated scan.
 
@@ -82,5 +82,5 @@
 Kaynak satırları ve bilinmeyen değer açıklamaları dört dilde hazır.
 Ekim çizimi cihazda önizleniyor ve kayıt altyapısı B2’yi bekliyor.
 Analizlerde pH ve EC açıklamaları, hasat geçmişinde kayıt ayrıntısı var.
-Stok hesabı hazır; gerçek hareketlerin ekran bağlantısı B1’i bekliyor.
+Stok ve dört haftalık arz hesapları hazır; ekran bağlantıları B1 ve #292’yi bekliyor.
 320 ve 375 px temel ekran taraması tamamlandı; birleşik sprint kontrolü bekliyor.
