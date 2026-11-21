@@ -3,6 +3,10 @@ import el from './el.json';
 import tr from './tr.json';
 import en from './en.json';
 import hi from './hi.json';
+import uiEl from './ui.el.json';
+import uiTr from './ui.tr.json';
+import uiEn from './ui.en.json';
+import uiHi from './ui.hi.json';
 import { TZ } from '../config';
 import { fill, pluralKey, type Params } from './plural';
 
@@ -13,7 +17,9 @@ export const LANGS: Lang[] = ['el', 'tr', 'en', 'hi'];
  * Albanian); a key it does not have falls back to Greek. Adding Punjabi (Gurmukhi) = `pa.json`, an entry here, a font block in ui/fonts.css and a `--font-pa` token.
  */
 export const LANG_META: Record<Lang, { locale: string; label: string }> = { el: { locale: 'el-GR', label: 'EL' }, tr: { locale: 'tr-TR', label: 'TR' }, en: { locale: 'en-GB', label: 'EN' }, hi: { locale: 'hi-IN', label: 'हिन्दी' } };
-export const dictionaries: Record<Lang, Record<string, string>> = { el, tr, en, hi };
+/** The design system's own texts live in `ui.<lang>.json` (every key starts with `ui.`) and are merged here, so two people never edit the same file (design sprint §2). */
+export const withUi = (base: Record<string, string>, ui: Record<string, string>): Record<string, string> => ({ ...base, ...ui });
+export const dictionaries: Record<Lang, Record<string, string>> = { el: withUi(el, uiEl), tr: withUi(tr, uiTr), en: withUi(en, uiEn), hi: withUi(hi, uiHi) };
 const LOCALES: Record<Lang, string> = { el: LANG_META.el.locale, tr: LANG_META.tr.locale, en: LANG_META.en.locale, hi: LANG_META.hi.locale };
 
 /** The first of the phone's languages we have a text for (hi, tr, en); nothing else matches: Greek stays the default. */
@@ -55,7 +61,7 @@ export function setLang(l: Lang) {
 }
 
 /** Every translation key, typed from the Greek file: a typo or a missing key is a compile error. */
-export type I18nKey = keyof typeof el;
+export type I18nKey = keyof typeof el | keyof typeof uiEl;
 
 const lookup = (key: string) => dictionaries[lang.value][key] ?? dictionaries.el[key] ?? key;
 
