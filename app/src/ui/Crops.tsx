@@ -2,7 +2,7 @@ import { useState } from 'preact/hooks';
 import { useBack } from './backstack';
 import { activeFarm, dataVersion, db, loadDemo, realFarmId } from '../db';
 import { t } from '../i18n';
-import { formatArea } from '../i18n/format';
+import { formatArea, formatQty } from '../i18n/format';
 import { formatDate } from '../i18n';
 import { plantingWait } from '../summary/wait';
 import { waitLine } from './waitLine';
@@ -19,6 +19,7 @@ import { nameOf, Status, Title } from './screens';
 import { EmptyState, UnsyncedMark } from './states';
 import { showUndo } from './Toast';
 import { useRows } from './useRows';
+import './crops-v2.css';
 
 const dot = (...xs: string[]): string => xs.filter(Boolean).join(' · ');
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
@@ -68,10 +69,11 @@ export function Crops() {
       {canAdd && live.length > 0 && <button class="btn" data-testid="planting-add" onClick={() => setAdding(true)}>{t('planting.add')}</button>}
       <Status q={{ ...crops, rows: shown && shown.length === 0 ? [] : shown ?? null }} message={t('list.empty')}
         action={canAdd ? { label: t('planting.add'), run: () => setAdding(true) } : undefined} />
-      {shown?.map((c) => (
-        <div class="card" key={c.id}>
-          <button class="row" data-testid="crop-open" onClick={() => setShownId(String(c.id))}><span>{nameOf(c)}{typeof c.latin === 'string' && <small>{c.latin}</small>}</span><span aria-hidden="true" class="chev" /></button><UnsyncedMark id={c.id} />
-          {live.filter((p) => p.crop_id === c.id).map((p) => (
+      {shown?.map((c) => {
+        const cropPlantings = live.filter((p) => p.crop_id === c.id);
+        return <div class="card crop-card" key={c.id}>
+          <button class="row crop-open" data-testid="crop-open" onClick={() => setShownId(String(c.id))}><span><strong>{nameOf(c)}</strong>{typeof c.latin === 'string' && <small>{c.latin}</small>}<small data-testid="crop-planting-count">{dot(t('detail.plantings'), formatQty(cropPlantings.length))}</small></span><span aria-hidden="true" class="chev" /></button><UnsyncedMark id={c.id} />
+          {cropPlantings.map((p) => (
             <div class="line" key={p.id} data-testid="planting">
               <span>{dot(parcelName(p.parcel_id), formatArea(p.area_str as string | number))}</span>
               <small>{dot(sown(p), statusText(p.status), text(p.variety), text(p.lot_label))}</small>
@@ -82,8 +84,8 @@ export function Crops() {
               {!demo && <button class="btn quiet" onClick={() => void archive(p)}>{t('planting.archive')}</button>}
             </div>
           ))}
-        </div>
-      ))}
+        </div>;
+      })}
     </section>
   );
 }

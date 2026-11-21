@@ -1,6 +1,7 @@
+import { dateAfterDays } from '@aloni/rules-core';
 import { formatDate, formatDateTime, t, type I18nKey } from '../i18n';
-import { formatArea } from '../i18n/format';
-import { validDate } from '../plantings/planting';
+import { formatArea, formatQty } from '../i18n/format';
+import { athensToday, validDate } from '../plantings/planting';
 import { effectiveSprays } from '../spray/spray';
 import type { Row } from '../db/schema';
 import { BackBar } from './BackBar';
@@ -8,12 +9,17 @@ import { STATUS_KEYS } from './PlantingForm';
 import { waitLine } from './Sprays';
 import { nameOf } from './screens';
 import { useRows } from './useRows';
+import { useWeather } from './useWeather';
+import { dayOf, parseDays } from '../weather/strip';
 
 const text = (v: unknown): string => (typeof v === 'string' ? v : typeof v === 'number' ? String(v) : '');
+const DASH = '—';
 
 /** Tapped from the crops list (prototype «Crop detail»): the crop, its plantings per parcel, and the LAST spraying on it with the waiting period read from the record. Information only. */
 export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) {
   const plantings = useRows('plantings'); const parcels = useRows('parcels'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const products = useRows('products');
+  const weather = useWeather();
+  const today = athensToday(new Date());
   const mine = (plantings.rows ?? []).filter((p) => p.crop_id === crop.id && !p.deleted_at);
   const jobIds = new Set((links.rows ?? []).filter((l) => mine.some((p) => p.id === l.planting_id)).map((l) => l.job_id));
   const last = effectiveSprays((sprays.rows ?? []).filter((s) => jobIds.has(s.job_id))).sort((a, b) => text(b.sprayed_at).localeCompare(text(a.sprayed_at)))[0];
@@ -28,7 +34,30 @@ export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) 
       </header>
       <h2>{t('detail.plantings')}</h2>
       {mine.length === 0 && <p class="muted">{t('list.empty')}</p>}
-      {mine.map((p) => <div class="card" key={p.id} data-testid="detail-planting">{parcelName(p)}<small>{line(p)}</small></div>)}
+      {mine.map((p, i) => {
+        const days = parseDays(weather.find((record) => record.parcel_id === p.parcel_id)?.days);
+        const dates = today ? Array.from({ length: 14 }, (_, offset) => dateAfterDays(today, offset)) : [];
+        return (
+          <details class="card crop-planting" key={p.id} open={i === 0} data-testid="detail-planting">
+            <summary><strong>{parcelName(p)}</strong><small>{line(p)}</small></summary>
+            <section data-testid="crop-weather">
+              <h3>{t('today.weather')}</h3>
+              {days.length === 0 && <p class="muted">{t('today.weather.none')}</p>}
+              <ul class="crop-weather-grid">
+                {dates.map((date) => {
+                  if (!date.known) return null;
+                  const day = dayOf(days, date.value);
+                  const temperature = day?.tmin !== undefined && day.tmax !== undefined
+                    ? t('wx.temp', { min: formatQty(day.tmin), max: formatQty(day.tmax) }) : DASH;
+                  const rain = day?.rain !== undefined ? t('wx.rain', { mm: formatQty(day.rain) }) : undefined;
+                  const dateLabel = formatDate(date.value);
+                  return <li key={date.value} data-testid="crop-weather-day"><time dateTime={date.value}>{dateLabel}</time><span>{temperature}</span>{rain && <span>{rain}</span>}</li>;
+                })}
+              </ul>
+            </section>
+          </details>
+        );
+      })}
       <h2>{t('detail.lastspray')}</h2>
       {!last && <p class="muted" data-testid="detail-nospray">{t('spray.empty')}</p>}
       {last && (
