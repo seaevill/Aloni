@@ -21,10 +21,10 @@ export function ParcelMap({ initial, typedArea, onDone, onCancel }: { initial: B
     let dead = false;
     void (async () => {
       try {
-        const [{ default: maplibregl }, td, { TerraDrawMapLibreGLAdapter }] = await Promise.all([import('maplibre-gl'), import('terra-draw'), import('terra-draw-maplibre-gl-adapter'), import('maplibre-gl/dist/maplibre-gl.css')]);
+        const [{ Map: MapLibreMap }, td, { TerraDrawMapLibreGLAdapter }] = await Promise.all([import('maplibre-gl'), import('terra-draw'), import('terra-draw-maplibre-gl-adapter'), import('maplibre-gl/dist/maplibre-gl.css')]);
         if (dead || !box.current) return;
         const center = initial?.coordinates[0]?.[0] ?? MAP.center;
-        const map = new maplibregl.Map({ container: box.current, style: MAP.styleUrl, center: center as [number, number], zoom: initial ? 16 : MAP.zoom, attributionControl: { compact: true } });
+        const map = new MapLibreMap({ container: box.current, style: MAP.styleUrl, center: center as [number, number], zoom: initial ? 16 : MAP.zoom, attributionControl: { compact: true } });
         mapRef.current = map;
         map.on('load', () => {
           const draw = new td.TerraDraw({ adapter: new TerraDrawMapLibreGLAdapter({ map }), modes: [new td.TerraDrawPolygonMode(), new td.TerraDrawSelectMode({ flags: { polygon: { feature: { draggable: true, coordinates: { draggable: true, midpoints: true, deletable: true } } } } })] }) as unknown as Draw;
