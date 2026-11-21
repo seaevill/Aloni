@@ -6,7 +6,8 @@ import { Stock } from './Stock';
 import { BackupBanner } from './Backup';
 import { More } from './More';
 import { RejectedList, SyncChip } from './states';
-import { hashOf, tab, workerView, type FarmKey, type Tab } from './nav';
+import { hashOf, sheet, tab, workerView, type FarmKey, type Tab } from './nav';
+import { SheetHost } from './ds/SheetHost';
 import { WorkerApp } from './WorkerApp';
 import { DemoRibbon } from './DemoRibbon';
 import { UpdateBar } from './UpdateBar';
@@ -39,9 +40,9 @@ export function App() {
   useEffect(() => { void putLocal(db, 'worker_view', workerView.value === undefined ? null : { id: workerView.value, farm: activeFarm.value }); }, [workerView.value]);
   useEffect(() => {      // the address and the device-only «ui_state» follow the farm and the tab (T7)
     const farm: FarmKey = activeFarm.value === DEMO_FARM_ID ? 'demo' : 'own';
-    history.replaceState(history.state, '', hashOf(farm, tab.value));
+    history.replaceState(history.state, '', hashOf(farm, tab.value, sheet.value));
     void putLocal(db, 'ui_state', { farm, tab: tab.value });
-  }, [activeFarm.value, tab.value]);
+  }, [activeFarm.value, tab.value, sheet.value]);
   /** A tab tap with something typed asks first, like the Back gesture: nothing typed is lost silently. */
   const goTab = (id: typeof tab.value) => {
     const go = () => { leaveAsk.value = undefined; if (tab.value === id) tabReset.value++; else tab.value = id; };
@@ -57,6 +58,7 @@ export function App() {
     <>
       <main><UpdateBar /><LeaveBar /><DemoRibbon /><SyncChip /><RejectedList /><BackupBanner /><Screen /></main>
       <Toast />
+      <SheetHost />
       <nav class="tabs" aria-label={t('nav.main')}>
         {TABS.map(({ id, icon, label }) => (
           <button key={id} data-tab={id} aria-current={tab.value === id ? 'page' : undefined} onClick={() => goTab(id)}>
