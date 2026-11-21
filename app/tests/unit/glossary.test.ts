@@ -20,8 +20,8 @@ describe('Greek glossary', () => {
       for (const k of keys) expect(fold(dictionaries.el[k] ?? ''), `${k}: ${r.reason}`).not.toMatch(r.re);
     });
   }
-  it('the crops tab says «Καλλιέργειες»', () => {
-    expect(dictionaries.el['tab.crops'].replace(/\u00ad/g, '')).toBe('Καλλιέργειες');
+  it('the crops TAB says «Φυτά» (Bora 2026-11-21: «Καλλιέρ-γειες» broke in the 75 px column); the screen title keeps «Καλλιέργειες»', () => {
+    expect(dictionaries.el['ui.tab.crops']).toBe('Φυτά');
     expect(dictionaries.el['crops.title']).toBe('Καλλιέργειες');
   });
 });

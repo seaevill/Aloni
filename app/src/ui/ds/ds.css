@@ -67,3 +67,11 @@
 .ds-weather th, .ds-weather td { padding:var(--sp-6) var(--sp-4); border-bottom:var(--bw-1) solid var(--line); text-align:start; }
 .ds-weather th { font-weight:700; }
 .ds-weather td.ds-unknown { color:var(--muted); font-weight:700; }
+
+/* SVG sizes by class (see size.ts) */
+.ds-size-sm { width:var(--icon-sm); height:var(--icon-sm); }
+.ds-size-md { width:var(--icon-md); height:var(--icon-md); }
+.ds-size-tile { width:var(--tile); height:var(--tile); }
+.ds-size-inner { width:calc(var(--tile) - var(--sp-16)); height:calc(var(--tile) - var(--sp-16)); }
+.ds-size-thumb { width:var(--thumb); height:var(--thumb); }
+.ds-size-art { width:var(--empty-art); height:var(--empty-art); }
