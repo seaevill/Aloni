@@ -1,12 +1,12 @@
-# TARGET LAYOUT – «FieldWise · Megara example» (Bora, 2026-11-21)
+# SECONDARY REFERENCE – «FieldWise · Megara example» canvas (Bora, 2026-11-21)
 
-On 2026-11-21 Bora said the app does not match the design he wanted: **this canvas** (4 phone screens, sample data, made 2026-11-16). It is now the **layout target** for Phase 1 and supersedes "prototype likeness" scores. Colours/font stay **theme B** (Commissioner, forest/lime, `tokens.css`); only the layout, navigation and content follow this canvas. The four `.dc.html` files here are the original artboards (390×844, fictional sample data, reference only – not app code).
+**Correction, 2026-11-21 10:53 (Bora):** the layout target stays the **v2 prototype** (`reference/prototype/`). Bora is fine with v2, but says the app is still **far from it**. This 2026-11-16 canvas is a *secondary* reference for two things he misses most, both of which v2 also implies:
+1. **Visible separation of fields/parcels** – see parcels as distinct shapes and tap one (Field.dc.html header).
+2. **One place for total produce vs orders** – Plan.dc.html ("Orders → sowing"); in v2 this is the «demand» / harvest-next-7-days content.
 
-Bora's two concrete complaints:
-1. **No visible separation of fields/parcels** – he expects to *see* his parcels as distinct shapes (Field.dc.html header) and tap one.
-2. **No tab where he sees total produce vs orders** – Plan.dc.html ("Orders → sowing").
+Colours/font stay **theme B**. The sections below are ideas to borrow where v2 is silent; where v2 and this canvas differ, **v2 wins**.
 
-## Navigation (target)
+## Navigation (idea, only if v2 is silent)
 Bottom tabs: **Σήμερα · Χωράφια · Ψεκασμοί · Πλάνο** (+ **Άλλα** as 5th tab or header menu). Καλλιέργειες merge into Χωράφια (field detail lists its plantings). Αποθήκη moves under Άλλα (or a header shortcut).
 
 ## Screen mapping
