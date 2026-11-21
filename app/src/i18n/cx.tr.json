@@ -1,0 +1,11 @@
+{
+  "cx.source.count.one": "{n} kayıttan",
+  "cx.source.count.other": "{n} kayıttan",
+  "cx.source.last": "son kayıt {date}",
+  "cx.source.none": "kayıt yok",
+  "cx.unknown.label": "bilinmiyor",
+  "cx.unknown.missingLabel": "etiket eksik",
+  "cx.unknown.missingHarvest": "hasat kaydı yok",
+  "cx.unknown.missingArea": "alan kaydı yok",
+  "cx.unknown.missingDate": "tarih kaydı yok"
+}

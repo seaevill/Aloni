@@ -1,0 +1,11 @@
+{
+  "cx.source.count.one": "from {n} record",
+  "cx.source.count.other": "from {n} records",
+  "cx.source.last": "last recorded {date}",
+  "cx.source.none": "no records",
+  "cx.unknown.label": "unknown",
+  "cx.unknown.missingLabel": "the label is missing",
+  "cx.unknown.missingHarvest": "no harvest has been recorded",
+  "cx.unknown.missingArea": "no area has been recorded",
+  "cx.unknown.missingDate": "no date has been recorded"
+}
