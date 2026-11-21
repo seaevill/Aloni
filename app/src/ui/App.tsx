@@ -14,6 +14,7 @@ import { LeaveBar } from './LeaveBar';
 import { guarding, leaveAsk, tabReset } from './backstack';
 import { typed } from '../pwa/update';
 import { Toast } from './Toast';
+import { Onboarding, useOnboarding } from './Onboarding';
 import { AUTH_ENABLED, DEMO_FARM_ID } from '../config';
 import { session } from '../auth/gotrue';
 import { useRows } from './useRows';
@@ -47,9 +48,11 @@ export function App() {
     if (typed.value && guarding.value > 0) { leaveAsk.value = { stay: () => { leaveAsk.value = undefined; }, go }; return; }
     go();
   };
+  const [onboarding, endOnboarding] = useOnboarding();
   const roster = useRows('workers');
   const isWorkerAccount = AUTH_ENABLED && !!session.value && !!roster.rows?.some((w) => !w.deleted_at && w.user_id === session.value?.user_id); // a roster worker's own account: no owner screens
   if (isWorkerAccount || workerView.value !== undefined) return <><UpdateBar /><WorkerApp /><Toast /></>;
+  if (onboarding) return <main><Onboarding done={endOnboarding} /></main>;   // owner first run only: never reached by the worker route above
   return (
     <>
       <main><UpdateBar /><LeaveBar /><DemoBanner /><SyncChip /><RejectedList /><BackupBanner /><Screen /></main>

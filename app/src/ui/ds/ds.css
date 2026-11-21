@@ -92,3 +92,9 @@
 .ds-empty-stone { fill:var(--lime-soft); stroke:var(--line); stroke-width:var(--bw-1); }
 .ds-empty-art { display:block; margin:0 auto var(--sp-12); }
 .ds-empty-headline { margin:0 0 var(--sp-6); font-size:var(--fs-20); font-weight:800; line-height:1.2; }
+
+/* Onboarding (D9) */
+.ds-onboarding { display:flex; flex-direction:column; align-items:stretch; text-align:center; padding:var(--sp-24) var(--sp-8); gap:var(--sp-10); }
+.ds-onboarding .ds-mark { margin:0 auto var(--sp-12); }
+.ds-onboarding-head { margin:0; font-size:var(--fs-title); font-weight:800; line-height:1.1; letter-spacing:var(--ls-title); }
+.ds-onboarding-body { margin:0 0 var(--sp-12); font-size:var(--fs-body); color:var(--muted); }

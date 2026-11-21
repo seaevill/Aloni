@@ -5,5 +5,14 @@
   "ui.week.even": "= tam karşılıyor",
   "ui.week.unknown": "bilinmiyor (sayılmaz)",
   "ui.week.nodata": "Veri yok",
-  "ui.tab.crops": "Ürünler"
+  "ui.tab.crops": "Ürünler",
+  "ui.onb.1.head": "Senin Aloni'n",
+  "ui.onb.1.body": "Tarlaların, ürünlerin ve kasaların için tek yer. Sinyal olmadan da çalışır.",
+  "ui.onb.2.head": "Deneme çiftliği = hayali veriler",
+  "ui.onb.2.body": "Her şeyi deneme çiftliğinde dene. Gerçek verilerine dokunmaz.",
+  "ui.onb.3.head": "Uygulama önerir; karar senin",
+  "ui.onb.3.body": "İlaç ya da doz seçmez ve bir bekleme süresini asla kısaltmaz. Ürün etiketi esastır.",
+  "ui.onb.next": "İleri",
+  "ui.onb.start": "Başlayalım",
+  "ui.onb.skip": "Geç"
 }

@@ -9,6 +9,9 @@ const browserName = (process.env.PW_BROWSER as 'webkit' | 'chromium' | undefined
 const launch = browserName === 'chromium' && process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {};
 const device = { browserName, launchOptions: launch, viewport: { width: 375, height: 667 }, hasTouch: true };
 
+// every existing test starts as a phone that has already seen the owner onboarding (design sprint D9); onboarding.spec.ts overrides this
+const SEEN = (port: number) => ({ cookies: [], origins: [{ origin: `http://localhost:${port}`, localStorage: [{ name: 'onboarding_seen', value: '1' }] }] });
+
 export default defineConfig({
   testDir: 'tests/e2e',
   reporter: 'list',
@@ -19,9 +22,9 @@ export default defineConfig({
   expect: { timeout: 10_000 },
   projects: [
     // the real build: the live features are OFF
-    { name: 'app', testIgnore: /live-.*\.spec\.ts/, use: { ...device, locale: 'el-GR', baseURL: 'http://localhost:4173' } },
+    { name: 'app', testIgnore: /live-.*\.spec\.ts/, use: { ...device, locale: 'el-GR', baseURL: 'http://localhost:4173', storageState: SEEN(4173) } },
     // the e2e build (--mode e2e): sign-in, invitations, the worker's real screens and the sync are ON, against a MOCK backend answered by the tests themselves
-    { name: 'live', testMatch: /live-.*\.spec\.ts/, use: { ...device, locale: 'el-GR', baseURL: 'http://localhost:4174', serviceWorkers: 'block' } }, // no service worker: the tests answer the mock backend themselves (WebKit does not route a request a service worker handled)
+    { name: 'live', testMatch: /live-.*\.spec\.ts/, use: { ...device, locale: 'el-GR', baseURL: 'http://localhost:4174', serviceWorkers: 'block', storageState: SEEN(4174) } }, // no service worker: the tests answer the mock backend themselves (WebKit does not route a request a service worker handled)
   ],
   webServer: [
     { command: 'VITE_DS_GALLERY=true npm run build && npm run preview', url: 'http://localhost:4173', reuseExistingServer: !process.env.CI, timeout: 120000 },
