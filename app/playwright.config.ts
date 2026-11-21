@@ -24,7 +24,7 @@ export default defineConfig({
     { name: 'live', testMatch: /live-.*\.spec\.ts/, use: { ...device, locale: 'el-GR', baseURL: 'http://localhost:4174', serviceWorkers: 'block' } }, // no service worker: the tests answer the mock backend themselves (WebKit does not route a request a service worker handled)
   ],
   webServer: [
-    { command: 'npm run build && npm run preview', url: 'http://localhost:4173', reuseExistingServer: !process.env.CI, timeout: 120000 },
+    { command: 'VITE_DS_GALLERY=true npm run build && npm run preview', url: 'http://localhost:4173', reuseExistingServer: !process.env.CI, timeout: 120000 },
     { command: 'npx vite build --mode e2e --outDir dist-e2e && npx vite preview --outDir dist-e2e --port 4174', url: 'http://localhost:4174', reuseExistingServer: !process.env.CI, timeout: 120000 },
   ],
 });

@@ -1,1 +1,16 @@
 /* Design system v2 (design sprint 2026-11-21): the shared components of src/ui/ds. Colours, sizes and motion come from tokens.css ONLY: no raw px, no raw colour in this file. */
+
+/* Chip (D2): 32 px, 14/700, pill, icon + word + fill all differ per tone. Not interactive. */
+.ds-chip { display:inline-flex; align-items:center; gap:var(--sp-6); min-height:var(--chip-h); padding:0 var(--sp-10); border-radius:var(--r-pill); font-size:var(--fs-meta); font-weight:700; line-height:1.15; max-width:100%; box-sizing:border-box; border:var(--bw-1) solid transparent; }
+.ds-chip > svg { flex:none; }
+.ds-chip > span { min-width:0; overflow-wrap:anywhere; }
+.ds-chip[data-tone="hold"] { background:var(--hold-bg); color:var(--hold-fg); }
+.ds-chip[data-tone="blocked"] { background:var(--blocked-bg); color:var(--blocked-fg); }
+.ds-chip[data-tone="warn"], .ds-chip[data-tone="unsigned"] { background:var(--amber-bg); color:var(--amber-fg); }
+.ds-chip[data-tone="frost"] { background:var(--frost-bg); color:var(--frost-fg); }
+.ds-chip[data-tone="ready"] { background:var(--lime-soft); color:var(--lime-soft-fg); }
+.ds-chip[data-tone="unknown"] { background:var(--card); color:var(--unknown-fg); border:var(--bw-2) dashed var(--unknown-border); }
+.ds-chip[data-tone="info"] { background:var(--card); color:var(--unknown-fg); border-color:var(--line); }
+
+/* Tag (D2): neutral metadata, 28 px, 14/600, border only. */
+.ds-tag { display:inline-flex; align-items:center; min-height:var(--tag-h); padding:0 var(--sp-8); border:var(--bw-1) solid var(--line); border-radius:var(--r-pill); font-size:var(--fs-meta); font-weight:600; color:var(--unknown-fg); background:transparent; box-sizing:border-box; }
