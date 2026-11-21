@@ -1,0 +1,24 @@
+.cx-tapnum {
+  align-items: center;
+  background: var(--card);
+  border: var(--bw-1) solid var(--line);
+  border-radius: var(--r-md);
+  color: var(--fg);
+  display: flex;
+  font: inherit;
+  gap: var(--sp-8);
+  justify-content: space-between;
+  min-height: var(--tap);
+  min-width: 0;
+  padding: var(--sp-8);
+  text-align: start;
+}
+.cx-tapnum-body {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.cx-source-line {
+  color: var(--muted);
+  display: block;
+  font-size: var(--fs-meta);
+}

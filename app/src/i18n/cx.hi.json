@@ -1,0 +1,11 @@
+{
+  "cx.source.count.one": "{n} रिकॉर्ड से",
+  "cx.source.count.other": "{n} रिकॉर्ड से",
+  "cx.source.last": "आखिरी रिकॉर्ड {date}",
+  "cx.source.none": "कोई रिकॉर्ड नहीं है",
+  "cx.unknown.label": "मालूम नहीं",
+  "cx.unknown.missingLabel": "लेबल नहीं है",
+  "cx.unknown.missingHarvest": "कटाई दर्ज नहीं हुई है",
+  "cx.unknown.missingArea": "क्षेत्रफल दर्ज नहीं हुआ है",
+  "cx.unknown.missingDate": "तारीख दर्ज नहीं हुई है"
+}

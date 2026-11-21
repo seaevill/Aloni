@@ -1,0 +1,11 @@
+{
+  "cx.source.count.one": "από {n} καταγραφή",
+  "cx.source.count.other": "από {n} καταγραφές",
+  "cx.source.last": "τελευταία {date}",
+  "cx.source.none": "δεν υπάρχουν καταγραφές",
+  "cx.unknown.label": "άγνωστο",
+  "cx.unknown.missingLabel": "λείπει η ετικέτα",
+  "cx.unknown.missingHarvest": "δεν έχει καταγραφεί συγκομιδή",
+  "cx.unknown.missingArea": "δεν έχει καταγραφεί εμβαδόν",
+  "cx.unknown.missingDate": "δεν έχει καταγραφεί ημερομηνία"
+}
