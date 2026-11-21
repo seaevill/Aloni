@@ -1,4 +1,4 @@
-import { BigNum, Card, CropIcon, Chip, HeroCard, IconTile, ListRow, PageHead, SectionHead, Sparkline, Tag, TONES, WeatherStrip, WeekBars, type Tone, type WeatherDay, type WeekBar } from './index';
+import { BigNum, Card, CropIcon, Mark, Wordmark, Chip, HeroCard, IconTile, ListRow, PageHead, SectionHead, Sparkline, Tag, TONES, WeatherStrip, WeekBars, type Tone, type WeatherDay, type WeekBar } from './index';
 import { Icon } from '../icons/Icon';
 import { CATALOG } from '../../crops/catalog';
 
@@ -42,6 +42,7 @@ export function Gallery() {
         <WeekBars weeks={WEEKS} />
         <WeatherStrip days={DAYS} />
       </section>
+      <section data-testid="gallery-brand"><Mark size="var(--thumb)" /><Wordmark latin /></section>
       <section data-testid="gallery-crops">
         {CATALOG.map((c) => <div class="gallery-crop" key={c.slug}><span class="ds-tile"><CropIcon slug={c.slug} size="calc(var(--tile) - var(--sp-16))" /></span><CropIcon slug={c.slug} size="var(--thumb)" /><span>{c.el}</span></div>)}
       </section>

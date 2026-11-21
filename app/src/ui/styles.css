@@ -205,3 +205,6 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 /* UX1: many «free to cut» rows fold into one line; the summary is a full-size tap target */
 details.fold > summary { min-height:var(--tap); display:flex; align-items:center; padding:0 var(--sp-16); margin:0 0 var(--sp-8); background:var(--card); border:var(--bw-1) solid var(--line); border-radius:var(--r-md); font-weight:700; cursor:pointer; }
 details.fold[open] > summary { margin-bottom:var(--sp-12); }
+
+/* the static splash in index.html (the ring mark) until the app mounts: no animation, nothing pulses (design sprint D7) */
+.splash { display:block; margin:var(--sp-48) auto 0; }
