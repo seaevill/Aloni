@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Row } from '../../src/db/schema';
-import { athensIso, MACHINE_COLUMNS, machineLines, toMachineCsv, warningLines } from '../../src/export/machine';
+import { athensIso, MACHINE_COLUMNS, machineLines, toMachineCsv, toMachineJson, warningLines } from '../../src/export/machine';
 
 const F = 'f';
 const data = {
@@ -61,5 +61,38 @@ describe('the machine-readable register', () => {
     expect(w).toContain('missing_start_time');                                                 // «fill in»: the start time and the BBCH stage are not held yet
     expect(w).toContain('missing_bbch_stage'); expect(w).toContain('missing_iacs_parcel_id');
     expect(w).not.toContain('missing_eppo_code'); expect(w).not.toContain('missing_authorisation_number'); // spinach has a code, the product a number
+  });
+
+  it('Codex #241 gaps: a product with no name and a spray with no treated area are listed as «fill in», never guessed', () => {
+    const noName = { ...data, products: [{ id: 'pr1', farm_id: F, reg_no: '123/45' }] as Row[] };
+    expect(warningLines(noName).filter((w) => w.record_id === 's1').map((w) => w.warning_code)).toContain('missing_product_name');
+    expect(machineLines(noName, { name: '', vatId: '' })[1]!.product_trade_name).toBe('');
+    const unlinked = { ...data, links: [] as Row[] };
+    expect(warningLines(unlinked).map((w) => w.warning_code)).toContain('missing_treated_area');
+    expect(machineLines(unlinked, { name: '', vatId: '' })[1]!.treated_area_ha).toBe('');
+    const noArea = { ...data, links: [{ id: 'l1', farm_id: F, job_id: 'j1', planting_id: 'pl1' }] as Row[] };
+    expect(warningLines(noArea).map((w) => w.warning_code)).toContain('missing_treated_area');
+    expect(warningLines(data).filter((w) => w.record_id === 's1').map((w) => w.warning_code)).not.toContain('missing_treated_area');   // s1 has its area (s2 has no link at all and IS flagged)
+    expect(warningLines(data).filter((w) => w.record_id === 's2').map((w) => w.warning_code)).toContain('missing_treated_area');
+  });
+
+  it('an empty authorisation number stays EMPTY in the machine file and is flagged on every line of that product', () => {
+    const noNumber = { ...data, products: [{ id: 'pr1', farm_id: F, name: 'Kocide' }] as Row[] };
+    const lines = machineLines(noNumber, { name: '', vatId: '' });
+    expect(lines.every((l) => l.authorisation_number === '')).toBe(true);
+    const codes = warningLines(noNumber).filter((w) => w.warning_code === 'missing_authorisation_number').map((w) => w.record_id);
+    expect(codes.sort()).toEqual(['s1', 's2']);
+  });
+
+  it('the JSON export holds the same lines and the same warnings as the CSV files, with the regulation named and nothing added', () => {
+    const holder = { name: 'Bora Farm', vatId: '123456789' };
+    const json = JSON.parse(toMachineJson(data, holder, '2026-11-21T10:00:00+02:00')) as { regulation: string; format_version: number; generated_at: string; holder: { name: string; vat_id: string }; records: Array<Record<string, string>>; warnings: Array<{ record_id: string; warning_code: string }> };
+    expect(json.regulation).toBe('Regulation (EU) 2023/564');
+    expect(json.format_version).toBe(1);
+    expect(json.generated_at).toBe('2026-11-21T10:00:00+02:00');
+    expect(json.holder).toEqual({ name: 'Bora Farm', vat_id: '123456789' });
+    expect(json.records).toEqual(machineLines(data, holder));
+    expect(json.warnings).toEqual(warningLines(data));
+    expect(Object.keys(json.records[0]!)).toEqual([...MACHINE_COLUMNS]);
   });
 });

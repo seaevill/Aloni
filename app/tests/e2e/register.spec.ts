@@ -39,6 +39,14 @@ test('the spray register (demo): marked «ΠΡΟΣΧΕΔΙΟ», every field, CSV
   await page.getByTestId('register-csv-warnings').click();
   const w = await dw; const wpath = test.info().outputPath('warnings.csv'); await w.saveAs(wpath);
   expect(readFileSync(wpath, 'utf8').split('\r\n')[0]).toBe('record_id,warning_code');
+  const dj = page.waitForEvent('download');
+  await page.getByTestId('register-json').click();
+  const j = await dj; expect(j.suggestedFilename()).toMatch(/^aloni-demo-register-machine-\d{4}-\d{2}-\d{2}\.json$/);
+  const jpath = test.info().outputPath('machine.json'); await j.saveAs(jpath);
+  const doc = JSON.parse(readFileSync(jpath, 'utf8')) as { regulation: string; records: unknown[]; warnings: unknown[] };
+  expect(doc.regulation).toBe('Regulation (EU) 2023/564');
+  expect(doc.records.length).toBe(mrows.length - 2);                  // the same lines as the machine CSV (header and trailing line excluded)
+  expect(Array.isArray(doc.warnings)).toBe(true);
   await page.emulateMedia({ media: 'print' }); // the print view hides the buttons and the tab bar
   await expect(page.getByTestId('register-csv')).toBeHidden();
   await expect(page.locator('nav.tabs')).toBeHidden();
