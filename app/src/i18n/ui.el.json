@@ -29,5 +29,8 @@
   "ui.share.send": "Κοινοποίηση",
   "ui.share.close": "Κλείσιμο",
   "ui.share.failed": "Δεν δημιουργήθηκε η εικόνα σε αυτό το τηλέφωνο.",
-  "ui.share.button": "Κοινοποίηση εικόνας"
+  "ui.share.button": "Κοινοποίηση εικόνας",
+  "ui.sheet.close": "Κλείσιμο",
+  "ui.sheet.notfound.head": "Δεν βρέθηκε",
+  "ui.sheet.notfound.body": "Αυτή η σελίδα δεν υπάρχει πια ή λείπουν τα δεδομένα της."
 }
