@@ -8,7 +8,7 @@ import { fingerprint, known, makeDose, parseDecimal, parseMaxApps, parsePhiDays,
 type J = Record<string, any>;
 const DIR = new URL('../fixtures/golden/', import.meta.url);
 const cases: J[] = readdirSync(DIR).filter((f) => f.endsWith('.json')).sort().map((f) => JSON.parse(readFileSync(new URL(f, DIR), 'utf8')) as J);
-export const LANDED = ['A05-gap-spinach', 'NEG-P0-2-phi-lot-not-supply', 'A06-stock-low-mandipropamid', 'A07-stock-expired-acetamiprid', 'A08-stock-expiring-spinosad', 'A01-frost-low-plain', 'A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-end-time-blocks', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'R05-frost-cover-herbs', 'REI-after-r01-spray', 'A10-salt-pachi-well', 'R06-chicory-harvest-after-thaw'];
+export const LANDED = ['NEG-P0-1-dose-never-rounded', 'A05-gap-spinach', 'NEG-P0-2-phi-lot-not-supply', 'A06-stock-low-mandipropamid', 'A07-stock-expired-acetamiprid', 'A08-stock-expiring-spinosad', 'A01-frost-low-plain', 'A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-end-time-blocks', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'R05-frost-cover-herbs', 'REI-after-r01-spray', 'A10-salt-pachi-well', 'R06-chicory-harvest-after-thaw'];
 
 const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[+-]\d{2}:\d{2}|Z)$/;
 const ms = (v: unknown): unknown => (typeof v === 'string' && ISO.test(v) ? Date.parse(v) : v); // times compare as instants, whatever their offset
@@ -99,11 +99,25 @@ function gapOf(c: J): Pick<Snapshot, 'gap'> {
   } };
 }
 
+function dosesOf(c: J, jobs: J[]): Pick<Snapshot, 'doseChecks'> {
+  if (c.id !== 'NEG-P0-1-dose-never-rounded') return {};
+  const uses = c.inputs.label_uses as J[];
+  const plantings = c.inputs.plantings as J[];
+  return { doseChecks: [...jobs, ...c.synthetic_inputs.draft_jobs].map((job: J) => {
+    const planting = plantings.find((p) => p.id === job.planting_ids[0]);
+    const use = uses.find((l) => l.product_id === job.product_id && l.crop_id === planting?.crop_id);
+    const dose = parseDecimal(job.dose_per_str);
+    const area = parseDecimal(job.area_str ?? planting?.area_str);
+    return { jobId: job.id, target: job.target ?? null, unit: use ? UNIT[use.dose_unit] : undefined,
+      dose: dose.known ? dose.value : undefined, treatedAreaStr: area.known ? area.value : undefined };
+  }) };
+}
+
 function snapshot(c: J): Snapshot {
   const syn: J = c.synthetic_inputs ?? {};
   const uses: UseFact[] = ((c.inputs.label_uses ?? []) as J[]).map((l) => {
     const use: LabelUse = { scope: '', dose: makeDose(known('single'), known(UNIT[l.dose_unit]), parseDecimal(l.dose_min_per_str), parseDecimal('')), phiDays: parsePhiDays(String(l.phi_days)), reiHours: parseReiHours(String(l.rei_h)), maxApps: parseMaxApps('9') /* TEST-ONLY: the fixture has no value */ };
-    return { productId: l.product_id, cropId: l.crop_id, ...(l.max_apps === null ? {} : { maxApps: l.max_apps as number }), ...(l.min_interval_days === null ? {} : { minIntervalDays: l.min_interval_days as number }), signed: requireSignOff(use, { by: 'test', on: '2026-11-01', fingerprint: fingerprint(use) }) };
+    return { productId: l.product_id, cropId: l.crop_id, target: l.target, ...(l.max_apps === null ? {} : { maxApps: l.max_apps as number }), ...(l.min_interval_days === null ? {} : { minIntervalDays: l.min_interval_days as number }), signed: requireSignOff(use, { by: 'test', on: '2026-11-01', fingerprint: fingerprint(use) }) };
   });
   const jobs = [...(c.inputs.jobs ?? []), ...(syn.jobs ?? [])] as J[];
   return {
@@ -113,7 +127,7 @@ function snapshot(c: J): Snapshot {
     tasks: ((syn.worker_tasks ?? []) as J[]).map((t) => ({ id: t.id, plantingIds: t.planting_ids, at: utc(t.at) })),
     draftJobs: ([...(syn.draft_job ? [syn.draft_job] : []), ...(syn.draft_jobs ?? [])] as J[]).map((j) => ({ id: j.id, kind: j.kind, plantingIds: j.planting_ids, productId: j.product_id })),
     products: ((c.inputs.products ?? []) as J[]).map((p) => ({ id: p.id, groupCode: p.group_code ?? undefined })),
-    ...weatherOf(c), ...frostOf(c), ...stockOf(c), ...gapOf(c), ...salinityOf(c),
+    ...weatherOf(c), ...frostOf(c), ...stockOf(c), ...gapOf(c), ...dosesOf(c, jobs), ...salinityOf(c),
     ruleStatus: { [c.rule_id]: c.rule_state.status === 'unsigned' ? 'unsigned' : 'signed' },
   };
 }
@@ -249,6 +263,20 @@ describe('golden cases', () => {
       badge: 'inputs_unknown', weeks, orders, supply: clearSupply, supply_by_planting: { PL07: clearSupply },
       gap: orders.map((crates, i) => crates - clearSupply[i]), excluded: [], unknown_planting_ids: ['PL12'],
     } }]);
+  });
+  it('REG never clears a draft with a different target or a mismatched unit', () => {
+    const fixture = cases.find((c) => c.id === 'NEG-P0-1-dose-never-rounded')!;
+    const input = snapshot(fixture);
+    const draft = input.doseChecks!.find((check) => check.jobId === 'DJ-D1')!;
+    for (const check of [{ ...draft, target: 'Different target' }, { ...draft, unit: 'ml/str' as const }]) {
+      const results = runRules({ ...input, doseChecks: [check] });
+      expect(results.find((out) => out.category === 'label_dose')?.values.dose_in_range).toEqual({ 'DJ-D1': null });
+      expect(results.filter((out) => out.category === 'dose_check_unknown')).toEqual([{
+        rule_id: 'REG', kind: 'block', category: 'dose_check_unknown', severity: 'high', notify: false,
+        parcel_ids: [], planting_ids: ['PL04'], product_ids: ['PR11'], crop_ids: [], values: { job_id: 'DJ-D1' },
+        vetoes: [{ by: 'REG', vetoed: 'spray', job_id: 'DJ-D1', reason: 'dose_unknown' }],
+      }]);
+    }
   });
   it('the matcher itself goes red: an output that breaks a must_not is caught, a time in another offset still matches', () => {
     expect(matches({ rule_id: 'FROST', kind: 'alert' }, { rule_id: 'FROST', kind: { $in: ['alert', 'block'] } })).toBe(true);
