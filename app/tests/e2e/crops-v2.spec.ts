@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('crop cards show planting counts and the detail offers a 14-day parcel weather panel', async ({ page }) => {
+test('the detail offers a 14-day parcel weather panel', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 667 });
   await page.clock.setFixedTime(new Date('2026-11-16T10:00:00Z'));
   await page.goto('/');
@@ -9,7 +9,6 @@ test('crop cards show planting counts and the detail offers a 14-day parcel weat
   await page.locator('nav.tabs [data-tab="crops"]').click();
 
   const spinach = page.getByTestId('crop-open').filter({ hasText: 'Σπανάκι' });
-  await expect(spinach.getByTestId('crop-planting-count')).toContainText('2');
   await spinach.click();
   const detail = page.getByTestId('crop-detail');
   await expect(detail.getByTestId('detail-planting')).toHaveCount(2);

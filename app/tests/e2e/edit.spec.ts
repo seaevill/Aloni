@@ -33,6 +33,7 @@ test('edit a parcel and a planting append-only: a reason is required, the new va
   await page.getByRole('button', { name: 'Σπανάκι' }).click();
   await page.locator('input.input').nth(0).fill('0,25');
   await page.getByTestId('planting-save').click();
+  await page.getByTestId('crop-open').first().click();
   await page.getByTestId('planting-edit').click();
   await expect(page.getByRole('button', { name: 'Σπανάκι' })).toHaveCount(0);           // the crop and the parcel do not change: a different one is a new planting
   await page.locator('input.input').nth(0).fill('0,3');
