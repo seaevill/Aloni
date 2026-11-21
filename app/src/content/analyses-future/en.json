@@ -1,0 +1,57 @@
+{
+  "om": {
+    "what": "Organic matter comes from plants, animals and soil organisms.",
+    "changes": "Its amount affects how soil holds water and nutrients.",
+    "effect": "Soil structure and moisture affect leafy vegetable roots."
+  },
+  "n": {
+    "what": "Nitrogen is a nutrient, and the report identifies which form was measured.",
+    "changes": "A higher reading means more of the measured form. The test method and sampling time matter.",
+    "effect": "Nitrogen is involved in leaf growth."
+  },
+  "p": {
+    "what": "Phosphorus is a nutrient involved in moving energy within plants.",
+    "changes": "A higher or lower reading reflects phosphorus measured by the stated method.",
+    "effect": "Root and new leaf growth depend on phosphorus."
+  },
+  "k": {
+    "what": "Potassium is a nutrient plants use to regulate water.",
+    "changes": "A higher reading shows more measured potassium. Availability also depends on the soil.",
+    "effect": "Potassium helps regulate water within leaves."
+  },
+  "caco3": {
+    "what": "Calcium carbonate is a mineral found in calcareous soils.",
+    "changes": "More carbonate often makes soil resist changes in acidity.",
+    "effect": "In calcareous soil some nutrients may be less available to roots."
+  },
+  "sodium": {
+    "what": "Sodium is one of the dissolved elements measured in water and soil.",
+    "changes": "A higher reading shows more sodium in the form measured.",
+    "effect": "Sodium buildup can affect how water reaches the roots."
+  },
+  "sar": {
+    "what": "The sodium adsorption ratio compares sodium with calcium and magnesium in water.",
+    "changes": "A higher ratio means more sodium relative to those other elements.",
+    "effect": "In some soils the ratio affects how readily water moves toward the roots."
+  },
+  "cl": {
+    "what": "Chloride is a dissolved ion found in water and soil.",
+    "changes": "A higher reading means more chloride in the sample.",
+    "effect": "Buildup can affect the leaves of some crops."
+  },
+  "no3": {
+    "what": "Nitrate is a dissolved form of nitrogen.",
+    "changes": "The reading varies with water, soil and the time of sampling.",
+    "effect": "Leafy crops use nitrate for growth. A soil or water result cannot show nitrate in the leaves."
+  },
+  "ec": {
+    "what": "Electrical conductivity shows how readily water conducts electricity.",
+    "changes": "With the same method, a higher reading generally indicates more dissolved salts.",
+    "effect": "More salts around the roots can make it harder for plants to take up water."
+  },
+  "ph": {
+    "what": "pH indicates how acidic or alkaline the water is.",
+    "changes": "Lower readings are more acidic. Higher readings are more alkaline.",
+    "effect": "Acidity around roots affects how available nutrients are."
+  }
+}
