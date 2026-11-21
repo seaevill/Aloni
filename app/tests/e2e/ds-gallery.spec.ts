@@ -162,3 +162,13 @@ test('reduced motion: no transform animation, every fade at most 120 ms, no pres
   for (const a of running) expect(a.ms).toBeLessThanOrEqual(120);
   expect(await page.getByTestId('motion-commit').evaluate((e) => getComputedStyle(e).transitionDuration)).toBe('0s');
 });
+
+// WebKit refuses a CSS var() inside an SVG width/height ATTRIBUTE and logs an error that fails every console check: sizes go by class (ds/size.ts).
+test('no SVG anywhere carries a width or height attribute with var()', async ({ page }) => {
+  await page.goto('/?ds-gallery');
+  expect(await page.evaluate(() => [...document.querySelectorAll('svg')].filter((s) => /var\(/.test(`${s.getAttribute('width')} ${s.getAttribute('height')}`)).length)).toBe(0);
+  await page.goto('/');
+  await page.getByTestId('empty-state').locator('button').nth(1).click();
+  await expect(page.getByTestId('today-counts')).toBeVisible();
+  expect(await page.evaluate(() => [...document.querySelectorAll('svg')].filter((s) => /var\(/.test(`${s.getAttribute('width')} ${s.getAttribute('height')}`)).length)).toBe(0);
+});

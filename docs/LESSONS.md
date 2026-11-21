@@ -72,3 +72,4 @@ Kime: Bora ve bir sonraki projede çalışacak her yapay zeka (Claude Code, Code
 - Kurulacaklar: Superpowers (TDD, verification, debugging becerileri; alt ajanlı geliştirme kapalı), Task Observer (öğrenilen kurallar PR ile CLAUDE.md'ye), Security Guidance, Supabase eklentisi (yalnızca best-practices becerisi; MCP salt okunur ya da kapalı).
 - Kurulmayacaklar: find-skills (onaysız dış kod), claude-mem (bulutta kalıcı değil, kota yer), her PR'ı inceleyen çoklu ajan eklentileri, GitHub'da ikinci bir Claude.
 - Codex iyi bir ikinci yardımcı: bağımsız SQL incelemesi, zor test hatası avı, saf kütüphane işleri (Aloni'de kural motoru). Claude kotasını harcamaz.
+- 2026-11-21 — Never put a CSS var() in an SVG width/height ATTRIBUTE: WebKit logs an error (Chromium does not) and every console check in e2e fails. Size SVGs by class.

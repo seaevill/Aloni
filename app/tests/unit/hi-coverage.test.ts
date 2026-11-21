@@ -5,7 +5,7 @@ import el from '../../src/i18n/el.json';
 
 // T12: everything a worker can reach has a Hindi text (no Greek fallback on the worker's own screens).
 // every file that draws something on the worker's own screens: the screen itself, the harvest form, the update bar, the sync chip and the “queued” line (states), the back bar and the demo banner
-const FILES = ['src/ui/WorkerApp.tsx', 'src/ui/HarvestForm.tsx', 'src/ui/useSubmit.ts', 'src/worker/held.ts', 'src/ui/UpdateBar.tsx', 'src/ui/states.tsx', 'src/ui/BackBar.tsx', 'src/ui/DemoBanner.tsx', 'src/ui/Toast.tsx'];
+const FILES = ['src/ui/WorkerApp.tsx', 'src/ui/HarvestForm.tsx', 'src/ui/useSubmit.ts', 'src/worker/held.ts', 'src/ui/UpdateBar.tsx', 'src/ui/states.tsx', 'src/ui/BackBar.tsx', 'src/ui/DemoRibbon.tsx', 'src/ui/Toast.tsx'];
 const keysIn = (file: string): string[] => [...readFileSync(file, 'utf8').matchAll(/\b(?:t|ts|tn)\(\s*'([a-z0-9_.]+)'/g)].map((m) => m[1]);
 const constKeys = (file: string): string[] => [...readFileSync(file, 'utf8').matchAll(/'((?:worker|harvest|spray|labeluse|unit|obs|observe|skip|job|queue|sync|value|product)\.[a-z0-9_.]+)'/g)].map((m) => m[1]);
 
