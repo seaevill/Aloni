@@ -36,8 +36,11 @@ test('worker view (demo only): assigned sprays «Έγινε / Δεν έγινε�
   await page.getByTestId('worker-start').fill(await athensInput(page, -3_600_000));
   await page.getByTestId('job-confirm').click();
   await expect(page.getByTestId('toast')).toContainText('10″');
+  await expect(page.getByTestId('check-draw')).toHaveCount(0);                           // nothing is drawn while the record is only held
   await page.clock.fastForward(10500); // the 10 seconds pass
   await expect(page.getByTestId('worker-finished')).toHaveCount(1);
+  expect(await count(page, 'job_spray')).toBe(sprays + 1);                               // the record is saved ...
+  await expect(page.getByTestId('worker-finished').getByTestId('check-draw')).toBeVisible();   // ... and only then the check is drawn (D12)
   await expect(page.getByTestId('worker-status')).toContainText('Αποθηκεύτηκε στο τηλέφωνο. Θα σταλεί όταν συνδεθεί λογαριασμός.'); // under «Έγινε»
   expect(await count(page, 'job_spray')).toBe(sprays + 1);
 
@@ -132,4 +135,41 @@ test('worker view: the big crate counter (72 px buttons, a number of at least 40
   await expect(page.getByTestId('worker-tab-harvest')).toHaveAttribute('aria-pressed', 'true'); // stays on Harvest after a save
   await expect(page.getByTestId('harvest-saved-line')).toContainText('Καταγράφηκαν 2 κλούβες');
   await expect(page.getByTestId('worker-status-harvest')).toContainText('Αποθηκεύτηκε στο τηλέφωνο. Θα σταλεί όταν συνδεθεί λογαριασμός.');
+});
+
+// D12: the worker's photo of what she saw. A 72 px shutter, a 96 px thumbnail with a time chip; the photo is re-encoded on the phone, so EVERY EXIF tag (GPS included) is gone before it is stored.
+test('observation photo: 72 px shutter, thumbnail with a time chip, EXIF (GPS) stripped, the photo stays attached to the observation', async ({ page }) => {
+  await page.clock.install();
+  const errors = await iphone(page);
+  await page.getByTestId('empty-state').locator('button').nth(1).click();
+  await expect(page.getByTestId('today-counts')).toBeVisible();
+  await page.locator('nav.tabs [data-tab="more"]').click();
+  await page.getByTestId('open-worker-view').click();
+  await page.getByTestId('worker-tab-observe').click();
+  expect((await page.getByTestId('observe-photo').boundingBox())!.height).toBeGreaterThanOrEqual(72);
+  // a real JPEG with an EXIF segment holding GPS text, built in the page
+  const withExif = await page.evaluate(async () => {
+    const c = document.createElement('canvas'); c.width = 64; c.height = 48; c.getContext('2d')!.fillRect(0, 0, 64, 48);
+    const jpg = new Uint8Array(await (await new Promise<Blob>((ok) => c.toBlob((b) => ok(b!), 'image/jpeg')!)).arrayBuffer());
+    const exif = new TextEncoder().encode('Exif\0\0GPSLatitude=37.99;GPSLongitude=23.35');
+    const seg = new Uint8Array([0xff, 0xe1, (exif.length + 2) >> 8, (exif.length + 2) & 255, ...exif]);
+    return Array.from(new Uint8Array([...jpg.slice(0, 2), ...seg, ...jpg.slice(2)]));
+  });
+  await page.getByTestId('observe-photo-input').setInputFiles({ name: 'leaf.jpg', mimeType: 'image/jpeg', buffer: Buffer.from(withExif) });
+  const thumb = page.getByTestId('observe-thumb');
+  await expect(thumb).toBeVisible();
+  expect(await thumb.locator('img').evaluate((e) => e.getBoundingClientRect().height)).toBe(96);
+  await expect(thumb.locator('.ds-chip')).toContainText(/\d{1,2}:\d{2}/);              // the time chip
+  const stored = await page.evaluate(() => new Promise<string>((res) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const q = r.result.transaction('media').objectStore('media').getAll(); q.onsuccess = () => res(q.result.map((m: { data: ArrayBuffer }) => new TextDecoder('latin1').decode(m.data)).join('|')); }; }));
+  expect(stored.length).toBeGreaterThan(100);
+  expect(stored).not.toContain('Exif'); expect(stored).not.toContain('GPS');             // re-encoded: no EXIF, no GPS
+  await page.getByRole('button', { name: 'Κάτω Κάμπος' }).click();
+  await page.getByTestId('kind-pest').click();
+  await page.getByTestId('observe-save').click();
+  await expect(page.getByTestId('observe-thumb')).toHaveCount(0);                        // cleared after saving
+  await expect(page.getByTestId('toast')).toBeVisible();                                 // the action is kept first, then the 10 seconds start
+  await page.clock.fastForward(10500);                                                   // the 10 seconds to take it back pass
+  const photoOn = () => page.evaluate(() => new Promise<boolean>((res) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const q = r.result.transaction('observations').objectStore('observations').getAll(); q.onsuccess = () => res(q.result.some((o: { photo?: string }) => typeof o.photo === 'string')); }; }));
+  await expect.poll(photoOn).toBe(true);
+  expect(errors).toEqual([]);
 });
