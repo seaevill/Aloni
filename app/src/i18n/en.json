@@ -189,6 +189,7 @@
   "labeluse.hours.other": "{n} hours",
   "labeluse.status.blocked": "BLOCKED: label details missing, cannot be used",
   "labeluse.status.unsigned": "No agronomist's signature",
+  "labeluse.why.closed": "Without a signature the waiting period is unknown: harvest stays closed.",
   "labeluse.status.changed": "Changed after signing: no agronomist's signature",
   "signoff.record": "Record the agronomist's signature",
   "signoff.note": "Record only a signature you really have from an agronomist. The app does not check it; if you change any value, the signature is removed.",

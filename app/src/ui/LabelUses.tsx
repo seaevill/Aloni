@@ -79,6 +79,7 @@ export function LabelUses({ product, onBack, readOnly = false }: { product: Row;
           <div class={st === 'blocked' ? 'card blocked' : 'card'} key={r.id} data-testid="labeluse">{crop ? nameOf(crop) : t('value.unknown')}
             <span class={`badge ${st}`} data-testid="labeluse-status">{badgeText(r, st)}</span>
             <Lines row={r} />
+            {(st === 'unsigned' || st === 'changed') && <small class="muted" data-testid="labeluse-why">{t('labeluse.why.closed')}</small>}
             {st === 'signed' && readNote(r).note && <small data-testid="signoff-shown-note">{readNote(r).note}</small>}
             {st === 'signed' && readNote(r).photoId && <div class="photos"><MediaThumb id={String(readNote(r).photoId)} /></div>}
             <UnsyncedMark id={r.id} />

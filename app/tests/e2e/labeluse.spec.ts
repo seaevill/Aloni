@@ -137,6 +137,7 @@ test('approval: only a complete label can be signed (name + real date); editing 
   await inputs(page).nth(3).fill('3');
   await page.getByTestId('labeluse-save').click();
   await expect(card.getByTestId('labeluse-status')).toHaveText('Χωρίς υπογραφή γεωπόνου');
+  await expect(card.getByTestId('labeluse-why')).toContainText('η συγκομιδή μένει κλειστή');   // unsigned: the card says WHY harvest is closed
   await page.getByTestId('signoff-open').click();
   await page.getByTestId('signoff-save').click(); // no name
   await expect(page.locator('main .msg.error')).toHaveCount(1);
@@ -151,6 +152,7 @@ test('approval: only a complete label can be signed (name + real date); editing 
   await page.getByTestId('signoff-save').click();
   await expect(card.getByTestId('labeluse-status')).toContainText('Υπογραφή γεωπόνου: Test Agronomist');
   await expect(card.getByTestId('signoff-shown-note')).toHaveText('seen at the shop');
+  await expect(card.getByTestId('labeluse-why')).toHaveCount(0);                                     // signed: no «closed» reason any more
   await expect(card.locator('.photos')).toBeVisible();
   await expect(page.getByTestId('signoff-open')).toHaveCount(0);
 
