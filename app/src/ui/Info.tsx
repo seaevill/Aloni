@@ -1,3 +1,5 @@
+import { openSheet } from './nav';
+import './AccountSheet';
 import { useEffect, useState } from 'preact/hooks';
 import { db, realFarmId } from '../db';
 import { t } from '../i18n';
@@ -37,6 +39,9 @@ export function Info({ onBack }: { onBack: () => void }) {
 
       <h2>{t('info.privacy.title')}</h2>
       <p class="card" data-testid="info-privacy">{t('info.privacy.body', { controller_name: shown(saved?.name), controller_address: shown(saved?.address), controller_phone: shown(saved?.phone) })}</p>
+
+      <p class="card" data-testid="info-photos">{t('ui.info.privacy.photos')}</p>
+      <button type="button" class="btn secondary" data-testid="account-open" onClick={() => openSheet('account', 'all')}>{t('ui.account.open')}</button>
 
       <h2>{t('info.disclaimer.title')}</h2>
       <p class="card" data-testid="info-disclaimer">{t('info.disclaimer.body')}</p>
