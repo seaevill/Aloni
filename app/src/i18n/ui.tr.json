@@ -169,5 +169,15 @@
   "ui.account.why.backup": "Önce yedek alın (15 dakika geçerli).",
   "ui.account.why.unsent": "Sunucuya henüz gönderilmemiş {n} kayıt var. Gönderilmelerini bekleyin.",
   "ui.account.wipe": "Bu telefondan sil",
-  "ui.info.privacy.photos": "Fotoğraflar: her fotoğraf saklanmadan önce JPEG olarak yeniden yazılır; böylece konum (GPS) ve diğer kamera bilgileri gider. Okunamayan fotoğraf saklanmaz. Silinene kadar kayıtla birlikte tarlanın kanıtı olarak durur."
+  "ui.info.privacy.photos": "Fotoğraflar: her fotoğraf saklanmadan önce JPEG olarak yeniden yazılır; böylece konum (GPS) ve diğer kamera bilgileri gider. Okunamayan fotoğraf saklanmaz. Silinene kadar kayıtla birlikte tarlanın kanıtı olarak durur.",
+  "ui.job.day": "Tarih",
+  "ui.job.worker": "Atandığı kişi",
+  "ui.job.plantings": "Ürünler ve tarlalar",
+  "ui.job.spray": "İlaçlama kaydı",
+  "ui.job.spray.made": "Bu iş için kayıt yapıldı",
+  "ui.job.spray.none": "Bu iş için henüz ilaçlama kaydı yok.",
+  "ui.job.harvests": "Aynı ürünlerde o günden beri hasatlar",
+  "ui.job.harvests.none": "İşin tarihinden beri hasat kaydı yok.",
+  "ui.job.crates": "{n} kasa",
+  "ui.job.crates.unknown": "bilinmiyor: sayı okunamıyor"
 }

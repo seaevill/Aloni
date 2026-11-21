@@ -169,5 +169,15 @@
   "ui.account.why.backup": "Make a backup first (valid for 15 minutes).",
   "ui.account.why.unsent": "{n} records have not been sent to the server yet. Wait for them to be sent.",
   "ui.account.wipe": "Delete from this phone",
-  "ui.info.privacy.photos": "Photos: every photo is re-written as a JPEG before it is stored, so the location (GPS) and other camera details are lost. A photo that cannot be read is not stored. It stays with the record as evidence of the field until it is deleted."
+  "ui.info.privacy.photos": "Photos: every photo is re-written as a JPEG before it is stored, so the location (GPS) and other camera details are lost. A photo that cannot be read is not stored. It stays with the record as evidence of the field until it is deleted.",
+  "ui.job.day": "Date",
+  "ui.job.worker": "Assigned to",
+  "ui.job.plantings": "Crops and fields",
+  "ui.job.spray": "Spray record",
+  "ui.job.spray.made": "A record was made for this job",
+  "ui.job.spray.none": "There is no spray record for this job yet.",
+  "ui.job.harvests": "Harvests on the same plantings since then",
+  "ui.job.harvests.none": "No harvest has been logged since the job's day.",
+  "ui.job.crates": "{n} crates",
+  "ui.job.crates.unknown": "unknown: the number cannot be read"
 }
