@@ -1,3 +1,4 @@
+import { registrationDose, type DoseCheck } from './registrationDose';
 import { gapOutputs, type GapFacts } from './gap';
 import { frostNights, thawMornings, type FrostFacts, type FrostHit } from './frost';
 import { known, type Known } from './known';
@@ -14,13 +15,13 @@ import { isCalendarDate, parseInstant, phiEnd, reiEnd, waitOver } from './waits'
 export interface PlantingFact { id: string; parcelId: string; cropId: string }
 export interface JobFact { id: string; kind: string; status: string; plantingIds: readonly string[]; productId: string; startedAt: string; endedAt: string | undefined }
 /** `maxApps` / `minIntervalDays` are the label's own raw facts for ROT: undefined = the label does not give them = UNKNOWN (never a default). */
-export interface UseFact { productId: string; cropId: string; signed: Known<SignedLabelUse>; maxApps?: number; minIntervalDays?: number }
+export interface UseFact { productId: string; cropId: string; signed: Known<SignedLabelUse>; target?: string | null; maxApps?: number; minIntervalDays?: number }
 export interface ProductFact { id: string; groupCode: string | undefined }
 export interface DraftJob { id: string; kind: string; plantingIds: readonly string[]; productId: string }
 export interface TaskFact { id: string; plantingIds: readonly string[]; at: string }
-export interface Veto { by: string; vetoed: string; reason: string; planting_id?: string; task_id?: string; product_id?: string }
+export interface Veto { job_id?: string; by: string; vetoed: string; reason: string; planting_id?: string; task_id?: string; product_id?: string }
 export interface Output {
-  rule_id: string; kind: 'alert' | 'block' | 'info' | 'recommendation'; category: string; severity?: 'high' | 'medium' | 'low'; confidence?: 'high' | 'medium' | 'low'; notify: boolean;
+  rule_id: string; kind: 'alert' | 'block' | 'info' | 'recommendation' | 'check'; category: string; severity?: 'high' | 'medium' | 'low'; confidence?: 'high' | 'medium' | 'low'; notify: boolean;
   parcel_ids: string[]; planting_ids: string[]; product_ids: string[]; crop_ids: string[];
   window?: { start: string; end: string }; values: Record<string, unknown>; vetoes: Veto[];
 }
@@ -36,6 +37,7 @@ export interface Snapshot {
   stock?: StockFacts;
   salinity?: SalinityFacts;
   gap?: GapFacts;
+  doseChecks?: readonly DoseCheck[];
 }
 
 const blank = (o: Pick<Output, 'rule_id' | 'kind' | 'category'> & Partial<Output>): Output => ({ notify: false, parcel_ids: [], planting_ids: [], product_ids: [], crop_ids: [], values: {}, vetoes: [], ...o });
@@ -243,5 +245,6 @@ export function runRules(s: Snapshot): Output[] {
   // no readable «now»: everything is blocked, said out loud; never an empty list that reads as «all clear»
   if (!parseInstant(s.asOf).known) return [blank({ rule_id: 'ENGINE', kind: 'block', category: 'now_unreadable', severity: 'high', vetoes: [{ by: 'ENGINE', vetoed: 'everything', reason: 'unreadable_now' }] })];
   const gaps = s.gap ? gapOutputs(s.gap, s.asOf, s.ruleStatus.GAP === 'signed') : [];
-  return [...phi(s), ...rei(s), ...reg(s), ...rot(s), ...sprayWindowClosed(s), ...frost(s), ...salinity(s), ...stock(s), ...gaps.map((gap) => blank({ rule_id: 'GAP', ...gap })), ...infoOnly(s)];
+  const doses = s.doseChecks ? registrationDose(s, s.doseChecks).map((result) => blank({ rule_id: 'REG', ...result })) : [];
+  return [...doses, ...phi(s), ...rei(s), ...reg(s), ...rot(s), ...sprayWindowClosed(s), ...frost(s), ...salinity(s), ...stock(s), ...gaps.map((gap) => blank({ rule_id: 'GAP', ...gap })), ...infoOnly(s)];
 }
