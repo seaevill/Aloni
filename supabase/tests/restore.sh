@@ -6,7 +6,7 @@
 set -euo pipefail
 src=${1:?usage: restore.sh <source database>}; dst=aloni_restored; F=11111111-1111-1111-1111-111111111111
 Q() { psql -X -q -At -v ON_ERROR_STOP=1 "$@"; }
-TABLES="parcels crops plantings products label_uses soil_tests water_tests stock_lots stock_movements media workers jobs job_plantings job_spray job_harvest observations farm_settings"
+TABLES="parcels crops plantings products label_uses soil_tests water_tests stock_lots stock_movements media workers jobs job_plantings job_spray job_harvest observations farm_settings worker_cards customers customer_orders"
 count_sql=$(for t in $TABLES; do printf "select count(*) c from %s where farm_id = '%s' union all " "$t" "$F"; done; echo "select 0")
 owner() { # $1 database, $2 sql returning one value, run as the signed-in OWNER (stub auth)
   psql -X -q -At -v ON_ERROR_STOP=1 -d "$1" -c "set role authenticated" -c "select set_config('test.uid','00000000-0000-0000-0000-0000000000a1',false)" -c "$2" | tail -1; }
