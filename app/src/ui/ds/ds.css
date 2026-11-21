@@ -108,3 +108,8 @@
 .ds-chip-block .ds-chip { display:flex; width:100%; border-radius:var(--r-md); padding-top:var(--sp-6); padding-bottom:var(--sp-6); align-items:flex-start; white-space:pre-line; }
 .btn.shutter { display:flex; align-items:center; justify-content:center; gap:var(--sp-8); min-height:var(--tap-big); background:var(--card); color:var(--green); }
 .worker-finished-line { display:flex; align-items:center; gap:var(--sp-6); }
+
+/* Share (D13) */
+.today-head { position:relative; }
+.share-btn { position:absolute; top:var(--sp-8); right:var(--sp-8); width:var(--tap); height:var(--tap); display:inline-flex; align-items:center; justify-content:center; border:0; border-radius:var(--r-pill); background:var(--card-on-dark); color:var(--white); }
+.share-preview { display:block; width:100%; height:auto; border-radius:var(--r-card); box-shadow:var(--shadow-card); margin:0 0 var(--sp-12); }

@@ -20,5 +20,14 @@
   "ui.today.plantings.other": "plantings",
   "ui.today.holdUnknown": "+{n} waiting or unknown",
   "ui.today.cut7": "Crates, 7 days",
-  "ui.today.perDay": "per day, logged only"
+  "ui.today.perDay": "per day, logged only",
+  "ui.share.title": "Picture to share",
+  "ui.share.privacy": "The picture has no worker or field names, location, spraying, product or price. You tap share yourself.",
+  "ui.share.crates": "crates this week",
+  "ui.share.demo": "DEMO – made-up data",
+  "ui.share.handle": "Account name on the picture (optional)",
+  "ui.share.send": "Share",
+  "ui.share.close": "Close",
+  "ui.share.failed": "The picture could not be made on this phone.",
+  "ui.share.button": "Share a picture"
 }
