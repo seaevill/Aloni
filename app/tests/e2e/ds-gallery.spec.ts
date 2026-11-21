@@ -122,3 +122,19 @@ test('brand: the ring mark has 12 stones, the wordmark shows the configured name
   expect(manifest.theme_color).toBe('#134a2b');
   expect(manifest.icons.some((i) => i.purpose === 'maskable')).toBe(true);
 });
+
+// D8: eight empty states: a 160 px drawing, a 20/800 headline, one sentence and ONE 56 px action.
+test('eight empty states: 160 px art, 20/800 headline, one action of at least 56 px, art is decorative', async ({ page }) => {
+  await page.goto('/?ds-gallery');
+  const states = page.locator('[data-testid="gallery-empty"] .empty');
+  await expect(states).toHaveCount(8);
+  const arts = await page.locator('[data-testid="gallery-empty"] svg.ds-empty-art').evaluateAll((els) => els.map((e) => ({ art: e.getAttribute('data-art'), w: Math.round(e.getBoundingClientRect().width), hidden: e.getAttribute('aria-hidden') })));
+  expect(arts.map((a) => a.art)).toEqual(['parcels', 'plantings', 'stock', 'register', 'jobs', 'orders', 'offline', 'photos']);
+  for (const a of arts) { expect(a.w).toBe(160); expect(a.hidden).toBe('true'); }
+  for (let i = 0; i < 8; i++) {
+    const s = states.nth(i);
+    await expect(s.locator('button')).toHaveCount(1);                                      // one action only
+    expect((await s.locator('button').boundingBox())!.height).toBeGreaterThanOrEqual(56);
+    expect(await s.locator('h2').evaluate((e) => [parseFloat(getComputedStyle(e).fontSize), getComputedStyle(e).fontWeight])).toEqual([20, '800']);
+  }
+});

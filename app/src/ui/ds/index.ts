@@ -6,3 +6,4 @@ export { Card, HeroCard, ListRow, IconTile, PageHead, SectionHead } from './Surf
 export { BigNum, Sparkline, WeekBars, WeatherStrip, type WeekBar, type WeatherDay } from './DataViz';
 export { Mark, Wordmark } from '../brand/Brand';
 export { CropIcon } from '../illustrations/crops/CropIcon';
+export { EmptyArtImage, EMPTY_ARTS, type EmptyArt } from '../illustrations/empty/EmptyArt';

@@ -1,6 +1,8 @@
+import { EMPTY_ARTS } from './index';
 import { BigNum, Card, CropIcon, Mark, Wordmark, Chip, HeroCard, IconTile, ListRow, PageHead, SectionHead, Sparkline, Tag, TONES, WeatherStrip, WeekBars, type Tone, type WeatherDay, type WeekBar } from './index';
 import { Icon } from '../icons/Icon';
 import { CATALOG } from '../../crops/catalog';
+import { EmptyState } from '../states';
 
 // Every design-system component with fixed sample texts (Greek, Demo data only: nothing here is a record). Used for screenshots and for the gallery e2e. Reached by `?ds-gallery` in a build with VITE_DS_GALLERY=true.
 const SAMPLE: Record<Tone, string> = {
@@ -18,6 +20,10 @@ const WEEKS: WeekBar[] = [
 ];
 const DAYS: WeatherDay[] = [{ name: 'Δευ', tmax: '18°', tmin: '9°', rain: '0 mm', wind: '12 km/h' }, { name: 'Τρί' }, { name: 'Τετ', tmax: '17°', tmin: '8°' }];
 const CAP = ['Για κοπή σήμερα', 'Κλούβες 7 ημ.', 'Παραγγελίες εβδ.'];
+const EMPTY_HEAD = 'Δεν υπάρχει τίποτα ακόμα';
+const EMPTY_BODY = 'Μια πρόταση που λέει τι να κάνετε.';
+const EMPTY_ACTION = 'Η μία ενέργεια';
+const noop = (): void => undefined;
 const FILL = Array.from({ length: 30 }, (_, i) => `γραμμή ${i + 1}`);
 
 export function Gallery() {
@@ -43,6 +49,7 @@ export function Gallery() {
         <WeatherStrip days={DAYS} />
       </section>
       <section data-testid="gallery-brand"><Mark size="var(--thumb)" /><Wordmark latin /></section>
+      <section data-testid="gallery-empty">{EMPTY_ARTS.map((a) => <EmptyState key={a} art={a} headline={EMPTY_HEAD} message={EMPTY_BODY} actionLabel={EMPTY_ACTION} onAction={noop} />)}</section>
       <section data-testid="gallery-crops">
         {CATALOG.map((c) => <div class="gallery-crop" key={c.slug}><span class="ds-tile"><CropIcon slug={c.slug} size="calc(var(--tile) - var(--sp-16))" /></span><CropIcon slug={c.slug} size="var(--thumb)" /><span>{c.el}</span></div>)}
       </section>

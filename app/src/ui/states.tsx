@@ -3,6 +3,7 @@ import { SYNC_CONNECTED } from '../config';
 import { db } from '../db';
 import { pendingOps, rejectedOps, unsyncedIds } from '../repo';
 import { dismissRejected } from '../repo/sync-apply';
+import { EmptyArtImage, type EmptyArt } from './illustrations/empty/EmptyArt';
 import { t, tn, type I18nKey } from '../i18n';
 import { lastSyncOk, syncError } from '../sync/run';
 import { syncChip } from '../sync/chip';
@@ -58,10 +59,12 @@ export function UnsyncedMark({ id }: { id: string }) {
   return SYNC_CONNECTED && unsyncedIds.value.has(id) ? <small class="unsynced"><span class="dot" aria-hidden="true" />{t('sync.unsynced')}</small> : null;
 }
 
-/** An empty list: ONE main action, and optionally a second, weaker one (e.g. «load the demo» after «add a field»). */
-export function EmptyState({ message, actionLabel, onAction, secondLabel, onSecond }: { message: string; actionLabel: string; onAction: () => void; secondLabel?: string; onSecond?: () => void }) {
+/** An empty list: ONE main action, and optionally a second, weaker one (e.g. «load the demo» after «add a field»). With `art` it shows the 160 px drawing, and with `headline` a 20/800 title above the sentence (design sprint §1.9). */
+export function EmptyState({ message, actionLabel, onAction, secondLabel, onSecond, art, headline }: { message: string; actionLabel: string; onAction: () => void; secondLabel?: string; onSecond?: () => void; art?: EmptyArt; headline?: string }) {
   return (
     <div class="empty" data-testid="empty-state">
+      {art !== undefined && <EmptyArtImage art={art} />}
+      {headline !== undefined && <h2 class="ds-empty-headline">{headline}</h2>}
       <p>{message}</p>
       <button class="btn" onClick={onAction}>{actionLabel}</button>
       {secondLabel && onSecond && <button class="btn secondary" data-testid="empty-second" onClick={onSecond}>{secondLabel}</button>}
