@@ -2,6 +2,8 @@ import { useState } from 'preact/hooks';
 import { dataVersion, db, realFarmId } from '../db';
 import { CATALOG, cropRow, cropName } from '../crops/catalog';
 import { lang, t, type I18nKey } from '../i18n';
+import { validBoundary } from '../map/geo';
+import { PlantingSketchDraw } from './PlantingSketchDraw';
 import { formatArea } from '../i18n/format';
 import { archived } from '../parcels/parcel';
 import { athensToday, buildPlanting, exceedsParcel, STATUSES, type PlantingErrors, type Status } from '../plantings/planting';
@@ -57,6 +59,8 @@ export function PlantingForm({ parcels, onDone, existing }: { parcels: Row[]; on
   return (
     <section>
       <h1>{t(titleKey)}</h1>
+      {/* TODO(B2): Preview only until planting geometry is persisted. Never replaces typed area. */}
+      {import.meta.env.DEV && import.meta.env.VITE_DS_GALLERY === 'true' && validBoundary(parcel?.boundary) && <PlantingSketchDraw key={parcelId} parcel={parcel.boundary} />}
       {existing && <p class="muted">{t('edit.note')}</p>}
       {!existing && <>
       <h2>{t('planting.parcel')}</h2>

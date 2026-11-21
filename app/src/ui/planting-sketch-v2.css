@@ -1,0 +1,27 @@
+.planting-draw-pad {
+  aspect-ratio: 1;
+  background: var(--bg);
+  border: none;
+  color: var(--fg);
+  display: block;
+  min-height: var(--tap);
+  padding: 0;
+  width: 100%;
+}
+.planting-draw-pad svg {
+  display: block;
+  width: 100%;
+}
+.planting-draw-parcel {
+  fill: var(--card);
+  stroke: var(--green);
+  stroke-width: 1;
+}
+.planting-draw-line {
+  fill: var(--lime-soft);
+  stroke: var(--green);
+  stroke-width: 1;
+}
+polyline.planting-draw-line {
+  fill: none;
+}
