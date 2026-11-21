@@ -1,5 +1,5 @@
 import { langFromSearch } from '../auth/invite-link';
-import { signal } from '@preact/signals';
+import { effect, signal } from '@preact/signals';
 import el from './el.json';
 import uiEl from './ui.el.json';
 import { TZ } from '../config';
@@ -66,7 +66,8 @@ export function restoreOwnerLang() {
 }
 
 export const lang = signal<Lang>(initialLang());
-try { document.documentElement.lang = lang.value; } catch { /* no document (unit tests) */ }
+// the page language follows the language signal on EVERY path (owner's choice, a worker's own language on her phone, back to the owner's): the Hindi font rule is `:lang(hi)`, so without this a worker screen in Hindi never used the bundled font
+effect(() => { const l = lang.value; try { document.documentElement.lang = l; } catch { /* no document (unit tests) */ } });
 
 export function setLang(l: Lang) {
   try { localStorage.setItem('lang', l); } catch { /* ignore */ }
