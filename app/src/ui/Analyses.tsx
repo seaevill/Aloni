@@ -57,10 +57,10 @@ export function Analyses({ parcel, onBack, readOnly = false }: { parcel: Row; on
       {soil.rows && water.rows && cards.length === 0 && <p class="muted" data-testid="analysis-empty">{t('analysis.empty')}</p>}
       {cards.map((c) => (
         <div class="card" key={c.r.id} data-testid="analysis">{c.title}
-          {text(c.r.ph) && <ListRow testid="analysis-ph-source" heading={t('analysis.name.ph')} meta={formatQty(text(c.r.ph))}
+          {text(c.r.ph) && <ListRow testid="analysis-ph-source" heading={t('labeluse.line', { name: t('analysis.name.ph'), value: formatQty(text(c.r.ph)) })}
             onClick={() => setReading({ kind: c.kind, row: c.r, field: 'ph' })} />}
-          {text(c.r.ec) && <ListRow testid="analysis-ec-source" heading={t('analysis.name.ec')}
-            meta={t('labeluse.dosevalue', { v: formatQty(text(c.r.ec)), unit: unitText(c.r.ec_unit) })}
+          {text(c.r.ec) && <ListRow testid="analysis-ec-source" heading={t('labeluse.line', { name: t('analysis.name.ec'), value:
+              t('labeluse.dosevalue', { v: formatQty(text(c.r.ec)), unit: unitText(c.r.ec_unit) }) })}
             onClick={() => setReading({ kind: c.kind, row: c.r, field: 'ec' })} />}
           {c.lines.map((l) => <small key={l}>{l}</small>)}
           {text(c.r.photo_id) && <div class="photos"><MediaThumb id={text(c.r.photo_id)} /></div>}
