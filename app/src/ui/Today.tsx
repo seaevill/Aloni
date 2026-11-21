@@ -1,3 +1,6 @@
+import { isIos } from '../backup/warnings';
+import './InstallSheet';
+import { ListRow } from './ds/Surfaces';
 import { Bell } from './Bell';
 import { useEffect, useState } from 'preact/hooks';
 import { useBack } from './backstack';
@@ -259,6 +262,7 @@ export function Today() {
   const rings: Rings = new Map(ct.lines.filter((l) => l.state === 'from').map((l) => { const since = runningSince(l.id, now, links.rows ?? [], sprays.rows ?? [], plantings.rows ?? [], labelRows.rows ?? []); return [l.id, since === undefined ? undefined : waitRing(since, l.at, now)] as const; }));
   const urgent = cards.find((c) => c.state === 'unknown') ?? cards.filter((c) => c.state === 'from').sort((a, b) => a.at.localeCompare(b.at))[0];
   const today = athensToday(new Date()) ?? '';
+  const showInstall = isIos(navigator.userAgent, navigator.maxTouchPoints) && !(matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true);      // iPhone Safari that is not on the Home Screen yet
   return (
     <section class="today">
       <header class="today-head band">
@@ -269,6 +273,7 @@ export function Today() {
         {loaded && has && <Bell id="owner" />}
         {loaded && has && <button type="button" class="share-btn" data-testid="share-open" aria-label={t('ui.share.button')} onClick={openShare}><Icon name="share" /></button>}
       </header>
+      {showInstall && <ListRow icon={<Icon name="share" />} heading={t('ui.install.card')} meta={t('ui.install.card.meta')} onClick={() => openSheet('install', 'all')} testid="install-open" />}
       {rows.some((q) => q.failed) && <ErrorState onRetry={retry} />}
       {loaded && !has && <Welcome />}
       {loaded && !has && (

@@ -172,3 +172,6 @@ button.refused-mark { min-height:var(--tap); padding:0 var(--sp-12); border:0; b
 .invite-qr-ink { fill:var(--qr-ink); }
 .ds-steps { margin:0 0 var(--sp-12); padding-inline-start:var(--sp-24); }
 .ds-steps li { margin-bottom:var(--sp-6); }
+.install-steps { list-style:none; padding-inline-start:0; }
+.install-steps li { display:flex; align-items:center; gap:var(--sp-12); margin-bottom:var(--sp-12); }
+.install-pic { flex:none; width:var(--tile); height:var(--tile); display:inline-flex; align-items:center; justify-content:center; border-radius:var(--r-md); background:var(--lime-soft); color:var(--green); }
