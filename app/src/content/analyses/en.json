@@ -1,0 +1,13 @@
+{
+  "heading": "What the measurement shows",
+  "ph": {
+    "what": "pH describes how acidic or alkaline the sample is.",
+    "meaning": "Lower pH means a more acidic sample. Higher pH means a more alkaline sample."
+  },
+  "ec": {
+    "what": "Electrical conductivity describes how readily the sample conducts electricity.",
+    "meaning": "With the same unit and method, higher conductivity usually means more dissolved salts."
+  },
+  "range": "Range of recorded values",
+  "noRange": "There are fewer than two distinct values in the same unit to compare."
+}
