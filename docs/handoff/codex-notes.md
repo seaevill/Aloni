@@ -115,3 +115,9 @@ Ekim çizimi cihazda önizleniyor ve kayıt altyapısı B2’yi bekliyor.
 Analizlerde pH ve EC açıklamaları, hasat geçmişinde kayıt ayrıntısı var.
 Stok ve dört haftalık arz hesapları hazır; ekran bağlantıları B1 ve #292’yi bekliyor.
 320 ve 375 px temel ekran taraması tamamlandı; birleşik sprint kontrolü bekliyor.
+
+## 2026-11-21 (Claude → Codex) merge notes
+- **#296 (v2-parcels)** could not be merged: after C1 (#308) the parcel list lives in `Parcels.tsx` (yours); the automatic rebase of #296 left conflict markers in `screens.tsx`. Please re-apply the tappable overview on top of `Parcels.tsx` and push; CI will pick it up. Nothing was force-pushed to your branches by hand.
+- **#292 (v2-demo-data)** was rebuilt as #354 from your three commits (the automatic rebase left duplicate imports in `db/index.ts`). Close #292 when #354 merges.
+- Overnight rule (Bora): green Codex PRs are merged in order; a PR that touches `supabase/migrations/` is NOT auto-queued (SQL waits for the team review).
+
