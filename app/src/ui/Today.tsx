@@ -32,6 +32,7 @@ import { useWeather } from './useWeather';
 import { openCropSheet } from './TodaySheets';
 import './WaitSheet';
 import './WeatherSheet';
+import './JobsSheet';
 import { WaitRing } from './ds/WaitRing';
 import { runningSince, waitRing } from '../summary/wait';
 import type { Row } from '../db/schema';
@@ -284,7 +285,7 @@ export function Today() {
       )}
       {loaded && has && <CutTodaySection ct={ct} rings={rings} />}
       {loaded && has && <h2>{t('tasks.title')}</h2>}
-      {loaded && has && <p class="muted" data-testid="tasks-counts">{t('tasks.counts', { o: hub.counts.overdue, t: hub.counts.today, u: hub.counts.upcoming, d: hub.counts.doneToday })}</p>}
+      {loaded && has && <button type="button" class="muted tasks-counts" data-testid="tasks-counts" onClick={() => openSheet('jobs', 'all')}>{t('tasks.counts', { o: hub.counts.overdue, t: hub.counts.today, u: hub.counts.upcoming, d: hub.counts.doneToday })}</button>}
       {loaded && has && openJobs.length === 0 && <p class="muted" data-testid="jobs-none">{t('today.jobs.none')}</p>}
       {JOB_GROUPS.map(([key, label]) => jobGroups[key].length > 0 && (
         <section key={key} data-testid={`jobs-${key}`}>
