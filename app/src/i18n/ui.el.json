@@ -96,5 +96,13 @@
   "ui.jobs.none": "Δεν υπάρχουν εργασίες: ούτε ανοιχτές ούτε σημερινές που έγιναν.",
   "ui.jobs.worker.none": "χωρίς εργάτη",
   "ui.jobs.where.none": "χωρίς φύτευση",
-  "ui.jobs.day.none": "χωρίς ημέρα"
+  "ui.jobs.day.none": "χωρίς ημέρα",
+  "ui.quick.open": "Γρήγορη προσθήκη",
+  "ui.quick.title": "Γρήγορη προσθήκη",
+  "ui.quick.spray": "Νέος ψεκασμός",
+  "ui.quick.harvest": "Συγκομιδή",
+  "ui.quick.observe": "Παρατήρηση",
+  "ui.quick.job": "Εργασία για αύριο",
+  "ui.quick.observe.error": "Διαλέξτε χωράφι και τι είδατε.",
+  "ui.quick.saved": "Η παρατήρηση καταγράφηκε."
 }

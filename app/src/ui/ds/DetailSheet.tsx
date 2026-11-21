@@ -8,10 +8,10 @@ import { Icon } from '../icons/Icon';
  * The shared bottom sheet: a grab handle, a header (icon or drawing + heading + a 56 px close button) and a scrolling body. Back, Escape, the scrim and a pull down on the handle close it; the close button is always there
  * (workers do not swipe with gloves). It slides up once (no slide under reduced motion). Every sheet explains where a number comes from; an unknown value is written with its reason, never left blank.
  */
-export function DetailSheet({ heading, icon, onClose, children, testid }: { heading: string; icon?: ComponentChildren; onClose: () => void; children: ComponentChildren; testid?: string }) {
+export function DetailSheet({ heading, icon, onClose, children, testid, history = true }: { heading: string; icon?: ComponentChildren; onClose: () => void; children: ComponentChildren; testid?: string; history?: boolean }) {
   const head = useRef<HTMLHeadingElement>(null);
   const drag = useRef<number | undefined>(undefined);
-  useBack(true, onClose);
+  useBack(history, onClose);      // a transient menu that opens another screen passes history={false}: its own history entry would be taken back under the screen it opens
   useEffect(() => {
     head.current?.focus();
     document.body.classList.add('ds-sheet-open');
