@@ -99,6 +99,8 @@ test('without a fresh backup the wizard offers «Αντίγραφο τώρα»: 
   await expect(page.getByTestId('golive-backup')).toHaveAttribute('data-ok', 'yes');
   await expect(page.getByTestId('golive-start')).toBeEnabled();
   await expect(page.getByTestId('golive-backup-now')).toHaveCount(0);                         // nothing to offer once the backup is fresh
+});
+
 // B6: a record the server REFUSES is explained in plain Greek (what, why, what to do), stays on the phone, and «Το είδα» only removes the line.
 test('a refused record is explained, never lost; «Το είδα» removes the line but not the record', async ({ page }) => {
   await mock(page);
