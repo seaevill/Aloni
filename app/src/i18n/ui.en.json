@@ -196,5 +196,9 @@
   "ui.install.step3": "Scroll and tap «Add to Home Screen».",
   "ui.install.step4": "Tap «Add» at the top right.",
   "ui.install.step5": "From now on open Aloni from the icon on the Home Screen.",
-  "ui.install.warning": "Careful: Safari and the Home Screen app keep SEPARATE data. Install BEFORE you record data. If you already recorded in Safari, first make a data copy (Άλλα → Data copy) and restore it inside the Home Screen app."
+  "ui.install.warning": "Careful: Safari and the Home Screen app keep SEPARATE data. Install BEFORE you record data. If you already recorded in Safari, first make a data copy (Άλλα → Data copy) and restore it inside the Home Screen app.",
+  "ui.news.title": "What is new",
+  "ui.news.r1.a": "Σήμερα has a bell with what is new, a «＋» button for quick entry, and a page that shows where every number comes from.",
+  "ui.news.r1.b": "Every record shows whether it is only on the phone, was sent, or was not accepted by the server, and why.",
+  "ui.news.r1.c": "Worker invitation with a QR code and a link, an iPhone Home Screen guide, and an error report that stays on the phone."
 }
