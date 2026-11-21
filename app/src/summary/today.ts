@@ -5,7 +5,7 @@ import { effectiveSprays } from '../spray/spray';
 // «Who did what today» for the owner: the sprayings finished today (by whom), the crates cut today (exact sum, as typed), and the jobs that were planned for an earlier day and are still open.
 // Information only: nothing here decides or warns. «Today» is the Athens calendar day.
 const ATHENS_DAY = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Athens', year: 'numeric', month: '2-digit', day: '2-digit' });
-const dayOf = (iso: unknown): string => { if (typeof iso !== 'string') return ''; const ms = Date.parse(iso); return Number.isNaN(ms) ? '' : ATHENS_DAY.format(new Date(ms)); };
+export const dayOf = (iso: unknown): string => { if (typeof iso !== 'string') return ''; const ms = Date.parse(iso); return Number.isNaN(ms) ? '' : ATHENS_DAY.format(new Date(ms)); };
 
 export interface DoneLine { sprayId: string; worker: string; product: string; at: string }
 export interface TodaySummary { done: DoneLine[]; crates: string; harvests: number; overdue: Row[] }

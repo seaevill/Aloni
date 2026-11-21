@@ -3,7 +3,7 @@ import { useBack } from './backstack';
 import { APP_NAME_EL } from '../config';
 import { activeFarm, dataVersion, db, loadDemo, realFarmId, farmLabel } from '../db';
 import { jobHub } from '../summary/jobs';
-import { openParcelForm, tab } from './nav';
+import { openParcelForm, openSheet, tab } from './nav';
 import { formatDate, formatDateTime, lang, t, tn } from '../i18n';
 import { formatArea, formatQty } from '../i18n/format';
 import { athensToday } from '../plantings/planting';
@@ -29,6 +29,7 @@ import { cutTodayBySlug, nextDay, tomorrowBoard, type BoardRow } from '../orders
 import { CATALOG, cropName } from '../crops/catalog';
 import type { KlouvesOrders } from '../orders/klouves';
 import { useWeather } from './useWeather';
+import { openCropSheet } from './TodaySheets';
 import type { Row } from '../db/schema';
 
 // Σήμερα (Design 2): the date and the farm, ONE big card for the most urgent thing, the weather strip (empty until the data exists), a card per field with its cut counter,
@@ -121,12 +122,12 @@ const FOLD_FREE_FROM = 4;   // from this many «free to cut» rows on, they fold
 
 function CutRow({ l }: { l: CutToday['lines'][number] }) {
   return (
-    <div class="card cutline" data-testid="cut" data-state={l.state}>
+    <button type="button" class="card cutline" data-testid="cut" data-state={l.state} onClick={() => openCropSheet(l.cropId)}>
       <div class="field-head"><strong>{l.crop}</strong><span class="muted">{l.parcel}</span></div>
       <span class={LINE[l.state].cls} data-testid="cut-line">{lineText(l)}</span>
       {l.state === 'from' && <small data-testid="cut-source">{sourceText(l.source)}</small>}
       {l.late && <span class="badge warn" data-testid="cut-late">{t('cut.late')}</span>}
-    </div>
+    </button>
   );
 }
 
@@ -141,14 +142,14 @@ function TodayNumbers({ ct, harvests }: { ct: CutToday; harvests: readonly Row[]
   const held = others > 0 ? t('ui.today.holdUnknown', { n: formatQty(others) }) : '';
   return (
     <section class="today-numbers" data-testid="today-numbers">
-      <div>
+      <button type="button" class="today-num" data-testid="num-cut" onClick={() => openSheet('cut', 'today')}>
         <BigNum caption={t('ui.today.forCut')} value={formatQty(free)} unit={unit} />
         {held !== '' && <small class="ds-muted" data-testid="today-held">{held}</small>}
-      </div>
-      <div data-testid="today-cut7-big">
+      </button>
+      <button type="button" class="today-num" data-testid="today-cut7-big" onClick={() => openSheet('crates', '7')}>
         <BigNum caption={t('ui.today.cut7')} value={logged === undefined ? undefined : formatQty(logged)} />
         <Sparkline values={cratesPerDay(harvests, nowIso, 7)} caption={t('ui.today.perDay')} />
-      </div>
+      </button>
     </section>
   );
 }
@@ -296,11 +297,11 @@ export function Today() {
       {recorded && <p class="msg" role="status" data-testid="spray-saved">{t('spray.saved')}</p>}
       {loaded && has && (
         <section class="kpis" data-testid="today-kpis">
-          <div class="kpi"><small>{t('today.kpi.parcels')}</small><strong>{formatQty(live(parcels).length)}</strong></div>
-          <div class="kpi"><small>{t('today.kpi.crops')}</small><strong>{formatQty(cropsInUse)}</strong></div>
-          <div class="kpi" data-testid="today-cut7"><small>{t('today.kpi.cut7')}</small><strong>{formatQty(cutCrates(harvestRows.rows ?? [], new Date().toISOString(), 7))}</strong></div>
-          <div class="kpi" data-testid="today-cut28"><small>{t('today.kpi.cut28')}</small><strong>{formatQty(cutCrates(harvestRows.rows ?? [], new Date().toISOString(), 28))}</strong></div>
-          <div class="kpi wide" data-testid="today-canharvest"><small>{t('today.kpi.harvest')}</small><strong>{formatQty(ct.freeParcels)}</strong><small>{t('today.kpi.held', { n: ct.heldParcels })}</small></div>
+          <button type="button" class="kpi" data-testid="kpi-parcels" onClick={() => openSheet('parcels', 'all')}><small>{t('today.kpi.parcels')}</small><strong>{formatQty(live(parcels).length)}</strong></button>
+          <button type="button" class="kpi" data-testid="kpi-crops" onClick={() => openSheet('crops', 'all')}><small>{t('today.kpi.crops')}</small><strong>{formatQty(cropsInUse)}</strong></button>
+          <button type="button" class="kpi" data-testid="today-cut7" onClick={() => openSheet('crates', '7')}><small>{t('today.kpi.cut7')}</small><strong>{formatQty(cutCrates(harvestRows.rows ?? [], new Date().toISOString(), 7))}</strong></button>
+          <button type="button" class="kpi" data-testid="today-cut28" onClick={() => openSheet('crates', '28')}><small>{t('today.kpi.cut28')}</small><strong>{formatQty(cutCrates(harvestRows.rows ?? [], new Date().toISOString(), 28))}</strong></button>
+          <button type="button" class="kpi wide" data-testid="today-canharvest" onClick={() => openSheet('cut', 'today')}><small>{t('today.kpi.harvest')}</small><strong>{formatQty(ct.freeParcels)}</strong><small>{t('today.kpi.held', { n: ct.heldParcels })}</small></button>
         </section>
       )}
       {loaded && has && (
