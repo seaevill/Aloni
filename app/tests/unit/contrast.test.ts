@@ -41,3 +41,16 @@ describe('colour contrast', () => {
     expect(used.filter((c) => !listed.has(c))).toEqual([]);
   });
 });
+
+describe('translucent tab bar', () => {
+  // the bar is slightly see-through; the worst case is the darkest thing that can scroll beneath it (the dark band). Text on it must still be >= 7:1 (Codex Y9: 34 of 80 samples were below, minimum 5.58).
+  it('tab text stays >= 7:1 on the bar even over the darkest content', () => {
+    const m = /--bar:\s*rgba\((\d+),\s*(\d+),\s*(\d+),\s*([0-9.]+)\)/.exec(css);
+    expect(m, '--bar must be an rgba() colour').not.toBeNull();
+    const [r, g, b, a] = [Number(m![1]), Number(m![2]), Number(m![3]), Number(m![4])];
+    const under = FOREST2.replace('#', ''); const u = [0, 2, 4].map((i) => parseInt(under.slice(i, i + 2), 16));
+    const mix = [r, g, b].map((c, i) => Math.round(a * c + (1 - a) * u[i]!));
+    const hex = `#${mix.map((c) => c.toString(16).padStart(2, '0')).join('')}`;
+    expect(ratio(TAB, hex), `tab text ${TAB} on the bar over the dark band = ${hex}`).toBeGreaterThanOrEqual(7);
+  });
+});
