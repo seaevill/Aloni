@@ -207,3 +207,4 @@ details.fold[open] > summary { margin-bottom:var(--sp-12); }
 
 /* the static splash in index.html (the ring mark) until the app mounts: no animation, nothing pulses (design sprint D7) */
 .splash { display:block; margin:var(--sp-48) auto 0; }
+h3 .count { display:inline-block; min-width:var(--sp-24); padding:0 var(--sp-6); margin-inline-start:var(--sp-6); border-radius:var(--r-pill); background:var(--green); color:var(--white); font-size:var(--fs-14); text-align:center; }
