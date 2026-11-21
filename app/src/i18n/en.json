@@ -409,6 +409,7 @@
   "worker.observe.kind": "What did you see?",
   "worker.observe.note": "Note (optional)",
   "worker.observe.save": "Save observation",
+  "worker.observe.photo": "Photo",
   "worker.kind.dew": "Dew or wet leaves",
   "worker.kind.frost_damage": "Frost damage",
   "worker.kind.disease": "Disease",

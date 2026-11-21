@@ -31,7 +31,7 @@ export const OBSERVATION_KINDS = ['dew', 'frost_damage', 'disease', 'pest', 'oth
 export type ObservationKind = (typeof OBSERVATION_KINDS)[number];
 
 /** An observation by a worker: which parcel, what kind, an optional note. Append-only. */
-export function buildObservation(parcelId: string, kind: ObservationKind | undefined, note: string, worker: Row, farmId: string, nowIso: string, id: string): Row | undefined {
+export function buildObservation(parcelId: string, kind: ObservationKind | undefined, note: string, worker: Row, farmId: string, nowIso: string, id: string, photoId?: string): Row | undefined {
   if (!parcelId || !kind) return undefined;
-  return { id, farm_id: farmId, parcel_id: parcelId, kind, observed_at: nowIso, created_at: nowIso, actor_id: worker.id, ...(note.trim() ? { note: note.trim() } : {}) };
+  return { id, farm_id: farmId, parcel_id: parcelId, kind, observed_at: nowIso, created_at: nowIso, actor_id: worker.id, ...(note.trim() ? { note: note.trim() } : {}), ...(photoId ? { photo: photoId } : {}) };
 }

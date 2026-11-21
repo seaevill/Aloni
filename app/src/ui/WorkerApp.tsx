@@ -14,6 +14,11 @@ import { formatDose } from '../i18n/format';
 import { known, type Decimal } from '@aloni/rules-core';
 import { putLocal, putMany } from '../repo';
 import { isLate } from '../spray/spray';
+import { storePhoto } from '../media/photo';
+import { MediaThumb } from './Photos';
+import { Chip } from './ds/Chip';
+import { CheckDraw } from './ds/CheckDraw';
+import { Icon } from './icons/Icon';
 import { buildObservation, completeSprayJob, OBSERVATION_KINDS, SKIP_REASONS, skipSprayJob, type ObservationKind, type SkipReason } from '../worker/jobs';
 import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
 import { doneBlocked, reiLockJob, type Lock } from '../spray/harvest';
@@ -58,6 +63,7 @@ export function WorkerApp() {
   const [harvestSaved, setHarvestSaved] = useState(false); // the «saved on the phone» line after a harvest record
   const [open, setOpen] = useState<{ job: string; mode: 'done' | 'skip' } | undefined>(undefined);
   const [held, setHeld] = useState<string[]>([]);
+  const [photoId, setPhotoId] = useState<string | undefined>(undefined); const [photoAt, setPhotoAt] = useState(''); const [photoFailed, setPhotoFailed] = useState(false); const photoFile = useRef<HTMLInputElement>(null);
   const [lockMsg, setLockMsg] = useState<{ job: string; text: string } | undefined>(undefined); // what a press on a CLOSED «Έγινε» answers
   const [queued, setQueued] = useState<string[]>([]); // jobs whose «Έγινε» waits in the outbox for the signal
   useEffect(() => { void db.outbox.where('status').equals('pending').toArray().then((r) => setQueued(r.filter((o) => o.table === `${RPC_PREFIX}${COMPLETE}`).map((o) => o.row_id))); }, [pendingOps.value, dataVersion.value]);
@@ -89,6 +95,14 @@ export function WorkerApp() {
     showHeldUndo(t('worker.committed'), async () => { await cancelHeld(db, entry.id); holding.current.delete(job.id); setHeld((x) => x.filter((id) => id !== job.id)); },
       async () => { try { await commitHeld(db, entry.id); dataVersion.value++; } catch { /* the entry stays and is written at the next start */ } holding.current.delete(job.id); setHeld((x) => x.filter((id) => id !== job.id)); }, HOLD_MS);
   };
+  // the shutter: the photo is shrunk and re-encoded here, which drops every EXIF tag (including GPS) before anything is stored or sent
+  const pickPhoto = async (e: Event) => {
+    const el = e.target as HTMLInputElement; const f = el.files?.[0]; el.value = '';
+    if (!f) return;
+    const r = await storePhoto(db, farm, f, new Date().toISOString());
+    setPhotoFailed(r.result === 'error');
+    if (r.id) { setPhotoId(r.id); setPhotoAt(formatDateTime(new Date().toISOString())); }
+  };
   const confirmDone = (job: Row) => {
     const at = athensInstant(when); const start = athensInstant(startWhen);
     if (!at || !start || Date.parse(start) > Date.parse(at)) { setStartError(true); return undefined; }
@@ -103,10 +117,10 @@ export function WorkerApp() {
     if (row) return hold(job, { writes: [{ table: 'jobs', row }] });
   };
   const saveObservation = () => {
-    const row = buildObservation(parcel, kind, note, me, farm, new Date().toISOString(), crypto.randomUUID());
+    const row = buildObservation(parcel, kind, note, me, farm, new Date().toISOString(), crypto.randomUUID(), photoId);
     if (!row) return undefined;
     const entry: Held = { id: crypto.randomUUID(), at: new Date().toISOString(), writes: [{ table: 'observations', row, op: 'insert' }] };
-    setNote(''); setKind(undefined);           // the form is cleared AT ONCE: a second tap cannot save the same observation again
+    setNote(''); setKind(undefined); setPhotoId(undefined); setPhotoAt('');           // the form is cleared AT ONCE: a second tap cannot save the same observation again
     return holdAction(db, entry).then(() => showHeldUndo(t('worker.committed'), () => cancelHeld(db, entry.id), async () => { try { await commitHeld(db, entry.id); dataVersion.value++; } catch { /* written at the next start */ } }, HOLD_MS));
   };
   const TABS: Array<['jobs' | 'harvest' | 'observe', I18nKey]> = [['jobs', 'worker.tab.jobs'], ['harvest', 'worker.tab.harvest'], ['observe', 'worker.tab.observe']];
@@ -138,14 +152,14 @@ export function WorkerApp() {
               {plantingsOf(j).map((p) => <small key={p.id}>{plantingName(p)}</small>)}
               <small data-testid="worker-dose">{t('labeluse.line', { name: t('labeluse.dose'), value: doseText(j) })}</small>
               <small>{t('worker.fixed')}</small>
-              {lockOf(j).state !== 'none' && <p class="badge blocked bi" role="alert" data-testid="worker-lock"><span aria-hidden="true">{MARK.lock}</span> {lockText(lockOf(j))}</p>}
+              {lockOf(j).state !== 'none' && <div class="ds-chip-block" role="alert" data-testid="worker-lock"><Chip tone="blocked">{lockText(lockOf(j))}</Chip></div>}
               {open?.job !== j.id && (
                 <div class="seg two big">
                   <button class="go" data-testid="job-done" aria-disabled={doneBlocked(lockOf(j)) ? 'true' : undefined} onClick={() => { if (doneBlocked(lockOf(j))) { setLockMsg({ job: j.id, text: lockText(lockOf(j)) }); return; } setLockMsg(undefined); setOpen({ job: j.id, mode: 'done' }); }}><span aria-hidden="true">{MARK.ok}</span> {t('worker.done')}</button>
                   {!real && <button class="stop" data-testid="job-skip" onClick={() => setOpen({ job: j.id, mode: 'skip' })}><span aria-hidden="true">{MARK.no}</span> {t('worker.notdone')}</button>}
                 </div>
               )}
-              {lockMsg?.job === j.id && open?.job !== j.id && doneBlocked(lockOf(j)) && <p class="badge blocked bi" role="alert" data-testid="worker-lock-why"><span aria-hidden="true">{MARK.lock}</span> {lockMsg.text}</p>}
+              {lockMsg?.job === j.id && open?.job !== j.id && doneBlocked(lockOf(j)) && <div class="ds-chip-block" role="alert" data-testid="worker-lock-why"><Chip tone="blocked">{lockMsg.text}</Chip></div>}
               {open?.job === j.id && open.mode === 'done' && (
                 <>
                   <label class="field">{t('worker.start')}<input class="input" type="datetime-local" value={startWhen} data-testid="worker-start" onInput={(e) => setStartWhen((e.target as HTMLInputElement).value)} /></label>
@@ -176,7 +190,7 @@ export function WorkerApp() {
           ))}
           {finished.map((j) => (
             <div class="card" key={j.id} data-testid="worker-finished">{nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {})}
-              <small>{finishedLine(j)}</small>
+              <small class="worker-finished-line">{j.status === 'done' && <CheckDraw />}{finishedLine(j)}</small>
               {j.status === 'done' && <small class="status-line" data-testid="worker-status">{t(queuedKey(SYNC_CONNECTED))}</small>}
             </div>
           ))}
@@ -190,6 +204,10 @@ export function WorkerApp() {
           <h2>{t('worker.observe.kind')}</h2>
           <div class="seg two big">{OBSERVATION_KINDS.map((k) => <button key={k} aria-pressed={kind === k} data-testid={`kind-${k}`} onClick={() => setKind(k)}>{t(KIND_KEYS[k])}</button>)}</div>
           <label class="field">{t('worker.observe.note')}<input class="input" value={note} autoComplete="off" onInput={(e) => setNote((e.target as HTMLInputElement).value)} /></label>
+          <input ref={photoFile} type="file" accept="image/*" capture="environment" hidden aria-hidden="true" tabIndex={-1} data-testid="observe-photo-input" onChange={(e) => void pickPhoto(e)} />
+          <button class="btn shutter" data-testid="observe-photo" onClick={() => photoFile.current?.click()}><Icon name="camera" /><span>{t('worker.observe.photo')}</span></button>
+          {photoId && <div class="photos" data-testid="observe-thumb"><MediaThumb id={photoId} /><Chip tone="info">{photoAt}</Chip></div>}
+          {photoFailed && <p class="msg error" role="alert">{t('photos.error')}</p>}
           <button class="btn big" data-testid="observe-save" onClick={() => void submit(() => saveObservation())} disabled={busy}>{t('worker.observe.save')}</button>
         </>
       )}

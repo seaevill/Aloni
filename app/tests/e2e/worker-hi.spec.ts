@@ -16,7 +16,7 @@ test('worker screens in Hindi: translated, the lock in Hindi AND Greek, marked f
   const lock = page.getByTestId('worker-lock').first();                              // the demo's older sprays have unknown re-entry: the lock shows
   await expect(lock).toContainText('खेत');                                           // Hindi …
   await expect(lock).toContainText('Άγνωστο διάστημα επανεισόδου');                  // … and the Greek text next to it
-  await expect(lock).toContainText('🔒');
+  await expect(lock.locator('svg[data-icon="lock"]')).toBeVisible();                // the symbol is the shared lock icon (D12), next to the words
   await expect(page.getByTestId('job-done').first()).toContainText('✓');
   await expect(page.getByTestId('job-skip').first()).toContainText('✗');
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);

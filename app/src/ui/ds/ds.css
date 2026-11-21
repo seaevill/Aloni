@@ -102,3 +102,9 @@
 
 /* Σήμερα numbers (D11) */
 .today-numbers { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:var(--sp-12); margin:var(--sp-12) 0; }
+
+/* Worker screen (D12): the blocked chip is full width above the big buttons; the 72 px shutter; the done check */
+.ds-chip-block { margin:var(--sp-8) 0; }
+.ds-chip-block .ds-chip { display:flex; width:100%; border-radius:var(--r-md); padding-top:var(--sp-6); padding-bottom:var(--sp-6); align-items:flex-start; white-space:pre-line; }
+.btn.shutter { display:flex; align-items:center; justify-content:center; gap:var(--sp-8); min-height:var(--tap-big); background:var(--card); color:var(--green); }
+.worker-finished-line { display:flex; align-items:center; gap:var(--sp-6); }

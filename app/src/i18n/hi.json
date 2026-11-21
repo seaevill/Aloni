@@ -82,6 +82,8 @@
   "worker.observe.note": "टिप्पणी (वैकल्पिक)",
   "worker.observe.parcel": "खेत",
   "worker.observe.save": "जो देखा उसे सेव करें",
+  "worker.observe.photo": "फ़ोटो",
+  "photos.error": "फ़ोटो सेव नहीं हुई। फिर कोशिश करें।",
   "worker.queued": "फ़ोन में सेव हो गया। खाता जुड़ने पर भेजा जाएगा।",
   "worker.skip.no_product": "दवा नहीं है",
   "worker.skip.other": "अन्य",
