@@ -212,4 +212,5 @@ details.fold[open] > summary { margin-bottom:var(--sp-12); }
 
 /* a control never grows wider than its column, whatever its own intrinsic width (WebKit sizes inputs and buttons by their text at a large text size) */
 main :where(input, select, textarea, button, .btn, .field, .card, .seg) { max-width:100%; box-sizing:border-box; }
+main :where(h1, h2, h3, p, .card, .muted) { overflow-wrap:anywhere; }   /* 200 % text: one long Greek word in a 56 px title (Φωτογραφίες, Πληροφορίες) wraps instead of pushing the page sideways in WebKit */
 main :where(.field, .seg) { min-width:0; }
