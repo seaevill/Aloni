@@ -30,4 +30,7 @@
   "ui.share.close": "Close",
   "ui.share.failed": "The picture could not be made on this phone.",
   "ui.share.button": "Share a picture"
+  "ui.sheet.close": "Close",
+  "ui.sheet.notfound.head": "Not found",
+  "ui.sheet.notfound.body": "This page no longer exists or its data is missing."
 }

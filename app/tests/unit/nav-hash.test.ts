@@ -11,3 +11,18 @@ describe('the address says where you are (T7)', () => {
     for (const bad of [null, undefined, {}, { farm: 'demo' }, { farm: 'x', tab: 'today' }, { farm: 'own', tab: 'nope' }]) expect(savedState(bad)).toBeUndefined();
   });
 });
+
+describe('sheet addresses (#/<farm>/<tab>/sheet/<kind>/<id>)', () => {
+  it('a sheet rides on the tab address and comes back from it', () => {
+    expect(hashOf('own', 'today', { kind: 'crop', id: 'abc-123' })).toBe('#/own/today/sheet/crop/abc-123');
+    expect(parseHash('#/own/today/sheet/crop/abc-123')).toEqual({ farm: 'own', tab: 'today', sheet: { kind: 'crop', id: 'abc-123' } });
+    expect(parseHash('#/demo/parcels/sheet/weather/p_1')).toEqual({ farm: 'demo', tab: 'parcels', sheet: { kind: 'weather', id: 'p_1' } });
+  });
+  it('the old addresses still work and carry no sheet; a malformed sheet is dropped, never half-read', () => {
+    expect(parseHash('#/own/stock')).toEqual({ farm: 'own', tab: 'stock' });
+    expect(hashOf('own', 'stock')).toBe('#/own/stock');
+    expect(parseHash('#/own/today/sheet/crop')).toBeUndefined();
+    expect(parseHash('#/own/today/sheet/Crop/x y')).toBeUndefined();
+    expect(parseHash('#/own/today/sheet//x')).toBeUndefined();
+  });
+});

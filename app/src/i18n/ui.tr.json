@@ -30,4 +30,7 @@
   "ui.share.close": "Kapat",
   "ui.share.failed": "Görsel bu telefonda oluşturulamadı.",
   "ui.share.button": "Görseli paylaş"
+  "ui.sheet.close": "Kapat",
+  "ui.sheet.notfound.head": "Bulunamadı",
+  "ui.sheet.notfound.body": "Bu sayfa artık yok ya da verileri eksik."
 }
