@@ -20,7 +20,6 @@ import { dayOf, farmDay, parseDays, provenance, type Day } from '../weather/stri
 import { todaySummary, cutCrates, cratesLogged, cratesPerDay } from '../summary/today';
 import { BigNum, Sparkline } from './ds';
 import { Icon } from './icons/Icon';
-import { ShareCard } from './ShareCard';
 import { cutToday, type CutLine, type CutToday } from '../summary/cutlist';
 import { loadOrders } from '../orders/store';
 import { supplyByCrop } from '../orders/available';
@@ -209,6 +208,8 @@ export function Today() {
   const [harvesting, setHarvesting] = useState(false);
   const [harvested, setHarvested] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [Share, setShare] = useState<((p: { onClose: () => void }) => preact.JSX.Element) | undefined>(undefined);   // the share card is loaded when it is first opened: it is not part of the first load (JS budget)
+  const openShare = () => { void import('./ShareCard').then((m) => { setShare(() => m.ShareCard); setSharing(true); }); };
   const [planning, setPlanning] = useState(false);
   const [planned, setPlanned] = useState(false);
   const [history, setHistory] = useState(false);
@@ -228,7 +229,7 @@ export function Today() {
   const cropsInUse = demo ? live(crops).length : new Set(live(plantings).map((p) => p.crop_id)).size;
   const loaded = rows.every((q) => q.rows);
   const has = live(parcels).length + live(plantings).length + live(products).length + live(lots).length + (demo ? live(crops).length : 0) > 0;
-  if (sharing) return <ShareCard onClose={() => setSharing(false)} />;
+  if (sharing && Share) return <Share onClose={() => setSharing(false)} />;
   if (planning) return <JobForm onDone={(saved) => { setPlanning(false); setPlanned(saved); }} />;
   if (harvesting) return <HarvestForm onDone={(saved) => { setHarvesting(false); setHarvested(saved); }} />;
   if (spraying) return <SprayForm onDone={(saved) => { setSpraying(false); setRecorded(saved); }} />;
@@ -250,7 +251,7 @@ export function Today() {
         <p class="date" data-testid="today-date">{today ? formatDate(today) : ''}</p>
         <Title k="today.title" />
         <p class="farm" data-testid="today-farm">{farmLabel(activeFarm.value)}</p>
-        {loaded && has && <button type="button" class="share-btn" data-testid="share-open" aria-label={t('ui.share.button')} onClick={() => setSharing(true)}><Icon name="share" /></button>}
+        {loaded && has && <button type="button" class="share-btn" data-testid="share-open" aria-label={t('ui.share.button')} onClick={openShare}><Icon name="share" /></button>}
       </header>
       {rows.some((q) => q.failed) && <ErrorState onRetry={retry} />}
       {loaded && !has && <Welcome />}
