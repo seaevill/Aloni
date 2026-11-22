@@ -214,5 +214,17 @@
   "ui.crop.tips.handling": "Χειρισμός",
   "ui.crop.tips.strength": "Δυνατό σημείο",
   "ui.crop.tips.weakness": "Αδύνατο σημείο",
-  "ui.crop.tips.problems": "Συνήθη προβλήματα"
+  "ui.crop.tips.problems": "Συνήθη προβλήματα",
+  "ui.product.purpose": "Σκοπός στην ετικέτα",
+  "ui.product.purpose.none": "άγνωστο – δεν υπάρχει καταχωρισμένη χρήση ετικέτας",
+  "ui.product.general": "Γενικές πληροφορίες – όχι σύσταση",
+  "ui.product.general.fungicide": "Τα μυκητοκτόνα είναι προϊόντα που αφορούν μυκητολογικές ασθένειες των φυτών.",
+  "ui.product.general.insecticide": "Τα εντομοκτόνα είναι προϊόντα που αφορούν έντομα που προσβάλλουν τα φυτά.",
+  "ui.product.general.herbicide": "Τα ζιζανιοκτόνα είναι προϊόντα που αφορούν τα ζιζάνια.",
+  "ui.product.general.fertiliser": "Τα λιπάσματα είναι προϊόντα που προσθέτουν θρεπτικά στοιχεία στο έδαφος ή στο φυτό.",
+  "ui.product.general.other": "Για αυτό το είδος δεν υπάρχει γενική περιγραφή.",
+  "ui.product.general.none": "άγνωστο – δεν έχει οριστεί είδος προϊόντος",
+  "ui.product.general.note": "Ό,τι επιτρέπεται και πώς, ορίζει μόνο η ετικέτα του προϊόντος.",
+  "ui.product.link": "Επίσημη ετικέτα",
+  "ui.product.open": "Πληροφορίες προϊόντος"
 }

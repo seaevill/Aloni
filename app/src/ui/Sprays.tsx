@@ -8,6 +8,8 @@ import { buildWaitEntry, effectiveSprays, type Flag } from '../spray/spray';
 import type { Row } from '../db/schema';
 import { FLAG_KEYS } from './SprayForm';
 import { nameOf } from './screens';
+import './ProductSheet';
+import { openSheet } from './nav';
 import { UnsyncedMark } from './states';
 import { SprayCorrection } from './SprayCorrection';
 import { useRows } from './useRows';
@@ -96,6 +98,7 @@ export function Sprays({ readOnly = false }: { readOnly?: boolean }) {
       {sprays.rows && cards.length === 0 && <p class="muted" data-testid="spray-empty">{t('spray.empty')}</p>}
       {cards.map((c) => (
         <div class="card" key={c.r.id} data-testid="spray">{c.title}
+          {typeof c.r.product_id === 'string' && <button type="button" class="row" data-testid="spray-product-open" onClick={() => openSheet('product', String(c.r.product_id))}><span>{t('ui.product.open')}</span><span aria-hidden="true" class="chev" /></button>}
           <small>{c.crops}</small><small>{c.by}</small><small>{c.when}</small>
           {c.flags.map((f) => <span key={f} class={RED.includes(f) ? 'badge blocked' : 'badge warn'}>{t(FLAG_KEYS[f] as I18nKey)}</span>)}
           {c.phi ? <small data-testid="spray-phi">{c.phi}</small> : <span class="badge blocked" data-testid="spray-phi-unknown">{t('spray.phi.unknown')}</span>}
