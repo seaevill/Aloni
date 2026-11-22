@@ -333,5 +333,9 @@
   "ui.weather.hour": "{h}:00",
   "ui.cust.week": "Αυτή την εβδομάδα: {n} κλούβες",
   "ui.cust.week.none": "Αυτή την εβδομάδα: —",
-  "ui.cust.imported": "από Κλούβες"
+  "ui.cust.imported": "από Κλούβες",
+  "ui.out.loaded": "Φορτώθηκε",
+  "ui.out.done": "Φορτώθηκε ✓ · αναίρεση",
+  "ui.out.left": "{n} κλούβες · φορτώθηκαν {out}",
+  "ui.out.over": "άγνωστο – οι φορτώσεις ({out}) ξεπερνούν την αποθήκη"
 }

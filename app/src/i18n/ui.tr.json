@@ -333,5 +333,9 @@
   "ui.weather.hour": "{h}:00",
   "ui.cust.week": "Bu hafta: {n} kasa",
   "ui.cust.week.none": "Bu hafta: —",
-  "ui.cust.imported": "Κλούβες'ten"
+  "ui.cust.imported": "Κλούβες'ten",
+  "ui.out.loaded": "Yüklendi",
+  "ui.out.done": "Yüklendi ✓ · geri al",
+  "ui.out.left": "{n} kasa · yüklenen {out}",
+  "ui.out.over": "bilinmiyor – yüklemeler ({out}) depoyu aşıyor"
 }
