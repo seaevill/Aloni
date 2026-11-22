@@ -7,7 +7,7 @@ The deployed P0 baseline is `d17f739`. #421 contains R1–R30 captures and the a
 | P0 | READY | #421, merged. 30 captures, 5 criteria confirmed. |
 | P1 | BLOCKED | #387 and #395 overlap the standalone component tests, and #395 conflicts with its moving parent. In #387 the direct component invocation bypasses the hook context. #394's recorded failure was Today KPI 44 versus sheet 0, outside this lane. |
 | P2 | BLOCKED | #395 changes the literature sources file. Full pH, EC and OM collection and analysis wiring remain open. |
-| P3 | BLOCKED | #422 has four-locale product explanations and targeted local WebKit proof. The last GitHub attempt failed shard 1 and a retry was requested. The branch is also marked conflicting with current main. |
+| P3 | BLOCKED | #422 has four-locale product explanations and targeted local WebKit proof. The last GitHub attempt failed shard 1 and a retry was requested. Current main conflicts with the protected supabase/tests/phone-columns.json contract update. |
 | P4 | BLOCKED | The shared month ring and crop library files are held by #387 and #395. |
 | P5 | PARTIAL | #426 adds parcel-specific weather and planting-to-crop detail, with GitHub checks passing at the reported head. Recorded polygon rendering waits for the 0040 contract and geometry. |
 | P6 | PARTIAL | #443 groups crop history by recorded destination and leaves unknown destinations unsummed. Store visual polish and the receiver detail remain open. |
@@ -18,6 +18,7 @@ The deployed P0 baseline is `d17f739`. #421 contains R1–R30 captures and the a
 | P11 | PARTIAL | #440 records nine screens at 375 and 320 px. Zero serious or critical axe failures and zero horizontal overflow. Manual phone checks and composited backgrounds are outstanding. |
 | P12 | BLOCKED | Final live run requires the fix branches to merge and deploy. |
 
+- CC-REQ: Reconcile the protected phone-columns contract in #422 before the merge check.
 - CC-REQ: Coordinate the outstanding Today, weather, worker and tasks acceptance items listed in #421 and confirm the build SHA before the retest.
 - CC-REQ: Preserve parcel containment on parent and child edits in #430 before the phone draws a recorded planting boundary.
 - CC-REQ: Keep historical receiver details behind an owner action after the destination and privacy contracts are available.
