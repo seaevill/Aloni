@@ -67,3 +67,20 @@ Baseline: Aloni `bcb4991` and the checked-in [v2 prototype](../../reference/prot
 2. [SAFETY] Keep the worker's product and dose read-only, the exact re-entry hold and the bilingual Hindi safety messages.
 
 Bora onayı bekliyor
+
+## Live parity follow-up · 2026-11-22
+
+Greek Demo in WebKit at 375 × 812, with a fresh context, service workers blocked and a fixed 16 November Athens morning for the comparison. Each image shows the local v2 reference on the left and the live app on the right. Scores assess visible structure and information parity against v2. Product constraints and Bora's simpler list design take precedence over visual imitation.
+
+| Screen | Likeness | Remaining gaps and next correction |
+|---|---:|---|
+| [Crop list](compare/sprint3/p8/crops.png) | 6/10 | **1 [UI]** Use the approved Φυτά heading and sage header. **2 [UI]** Keep the app's illustration and single chip, with secondary facts behind the row. **3 [SAFETY]** Retain meaningful unknown and waiting statuses in place of prototype decision chips. |
+| [Crop detail](compare/sprint3/p8/crop-detail.png) | 5/10 | **1 [UI]** Surface source-linked planting facts, a visible tips affordance and the month ring. **2 [DATA]** Add recorded order and eligible harvest data where available. **3 [SAFETY]** Omit the prototype's product, dose and proposed action. |
+| [Parcel list](compare/sprint3/p8/parcels.png) | 6/10 | **1 [UI]** Make the combined sketch and name list work as one selection flow. **2 [DATA]** Only place shapes relative to one another when their polygon coordinates support it. The overview adds navigation beyond v2. |
+| [Parcel detail](compare/sprint3/p8/parcel-detail.png) | 6/10 | **1 [UI]** Make weather and crop rows open their source. See #426. **2 [DATA]** Distinguish indicative strips from recorded planting boundaries. Confirm the contract in #430 before recording or rendering those boundaries. **3 [DATA]** Surface analysis history and source-backed weather values where stored. |
+| [Stock](compare/sprint3/p8/stock.png) | 6/10 | **1 [UI]** Keep the added harvest section, then simplify product rows around name, status and details. **2 [UI]** Show product information via its dedicated action (#422). **3 [DATA]** Keep missing label facts explicit and take dispatch totals from the current order source under #423. |
+| [Register](compare/sprint3/p8/register.png) | 5/10 | **1 [UI]** Align the grouping with the chronological history while retaining the print/export entry points. **2 [SAFETY]** Keep the Demo and draft notices and the recorded label and dose values. |
+| [More](compare/sprint3/p8/more.png) | 6/10 | **1 [UI]** Group daily work links ahead of settings and backup without adding a second route. **2 [SAFETY]** Keep customer and worker details in owner-only screens. |
+| [Orders and supply](compare/sprint3/p8/demand.png) | 4/10 | **1 [UI]** Expose a per-crop four-week comparison next to dispatch. **2 [DATA]** Tie the figures to confirmed orders and forecast records, with held/unknown excluded. #423 modifies the dispatch path. **3 [SAFETY]** Keep unsigned results informational. |
+
+This PR records the audit and captures. P3 and P5 carry the first corrections. P2 source notes overlap #395, P4 depends on the pending month-ring component in #387, and P6 stock changes overlap #423.
