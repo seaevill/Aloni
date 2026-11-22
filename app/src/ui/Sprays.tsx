@@ -9,18 +9,21 @@ import type { Row } from '../db/schema';
 import { FLAG_KEYS } from './SprayForm';
 import { nameOf } from './screens';
 import './ProductSheet';
+import './SpraySheet';
 import { openSheet } from './nav';
-import { registerLazySheet } from './sheets';
 import { UnsyncedMark } from './states';
 import { SprayCorrection } from './SprayCorrection';
 import { useRows } from './useRows';
-import { waitLine } from './sprayWaitLine';
-export { waitLine };
-
-registerLazySheet('spray', () => import('./SpraySheet'));
 
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 const RED: readonly string[] = ['label_none', 'label_blocked'];
+/** The waiting period as a sentence, or undefined when it is unknown (the card then says so, in red). Recomputed from the stored days and time. */
+export const waitLine = (r: Row, days: 'phi_days' | 'rei_hours'): string | undefined => {
+  const v = text(r[days]);
+  if (!v || v === NOT_ON_LABEL) return undefined;
+  const end = days === 'phi_days' ? phiEnd(text(r.sprayed_at), parsePhiDays(v)) : reiEnd(text(r.sprayed_at), parseReiHours(v));
+  return end.known ? t(days === 'phi_days' ? 'spray.phi.until' : 'spray.rei.until', { d: formatDateTime(end.value) }) : undefined;
+};
 
 /** Bora types the label's waiting period for a spray whose PHI is unknown. It is saved as a NEW row (the original stays); it never lifts a block by itself: the harvest opens only once this period has run out. */
 function WaitEntry({ spray, onDone }: { spray: Row; onDone: () => void }) {
