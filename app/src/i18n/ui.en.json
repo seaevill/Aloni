@@ -333,5 +333,6 @@
   "ui.weather.hour": "{h}:00",
   "ui.cust.week": "This week: {n} crates",
   "ui.cust.week.none": "This week: —",
-  "ui.cust.imported": "from Κλούβες"
+  "ui.cust.imported": "from Κλούβες",
+  "ui.product.info.label": "Product information"
 }
