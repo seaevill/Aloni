@@ -54,6 +54,7 @@ psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m16_destination.sql || { echo "F
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m17_owner_records.sql || { echo "FAILED: supabase/tests/m17_owner_records.sql"; exit 1; }; echo "SQL m17-owner-records tests OK"
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m18_job_board.sql || { echo "FAILED: supabase/tests/m18_job_board.sql"; exit 1; }; echo "SQL m18-job-board tests OK"
 psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m19_day_notes.sql || { echo "FAILED: supabase/tests/m19_day_notes.sql"; exit 1; }; echo "SQL m19-day-notes tests OK"
+psql -X -q -v ON_ERROR_STOP=1 -f supabase/tests/m20_planting_boundary.sql || { echo "FAILED: supabase/tests/m20_planting_boundary.sql"; exit 1; }; echo "SQL m20-planting-boundary tests OK"
 bash supabase/tests/contract.sh
 out=$(psql -X -At -v ON_ERROR_STOP=1 -f supabase/tests/verify_applied.sql) || { echo "FAILED: verify_applied.sql"; exit 1; }; echo "$out"; echo "$out" | grep -q "^OK:" || { echo "verify_applied.sql found problems"; exit 1; }
 bash supabase/tests/concurrency.sh
