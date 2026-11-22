@@ -15,14 +15,14 @@ begin
   select id into crop from crops where farm_id = f limit 1;
   insert into worker_cards(id,farm_id,worker_id,surname,phone) values ('cccccccc-0000-0000-0000-0000000017a1',f,'bbbbbbbb-0000-0000-0000-0000000017a1','Papadopoulos','6900000000');
   begin insert into worker_cards(farm_id,worker_id,surname) values (f,'bbbbbbbb-0000-0000-0000-0000000017a1','Second'); raise exception '(0037) a second live card for one worker was accepted'; exception when unique_violation then null; end;
-  begin insert into worker_cards(farm_id,worker_id,surname) values (f,'bbbbbbbb-0000-0000-0000-0000000017a2','Foreign'); raise exception '(0037) a card for a worker of ANOTHER farm was accepted'; exception when check_violation then null; end;
+  begin insert into worker_cards(farm_id,worker_id,surname) values (f,'bbbbbbbb-0000-0000-0000-0000000017a2','Foreign'); raise exception '(0037) a card for a worker of ANOTHER farm was accepted'; exception when check_violation or foreign_key_violation then null; end;
   begin insert into worker_cards(farm_id,worker_id,surname) values (f,'bbbbbbbb-0000-0000-0000-0000000017a1',' '); raise exception '(0037) a blank surname was accepted'; exception when check_violation or unique_violation then if sqlerrm like '(0037)%' then raise; end if; end;
   insert into customers(id,farm_id,name,phone,note) values ('cccccccc-0000-0000-0000-0000000017b1',f,'Taverna Nikos','6911111111','pays Fridays');
-  begin insert into customers(farm_id,name) values (f,''); raise exception '(0037) a customer without a name was accepted'; exception when check_violation then null; end;
+  begin insert into customers(farm_id,name) values (f,''); raise exception '(0037) a customer without a name was accepted'; exception when check_violation or foreign_key_violation then null; end;
   insert into customer_orders(id,farm_id,customer_id,crop_id,crates_str,for_day,status) values ('cccccccc-0000-0000-0000-0000000017c1',f,'cccccccc-0000-0000-0000-0000000017b1',crop,'12','2026-11-23','open');
-  begin insert into customer_orders(farm_id,customer_id,crop_id,crates_str,for_day,status) values (f,'cccccccc-0000-0000-0000-0000000017b1',crop,'1,5','2026-11-23','open'); raise exception '(0037) a fractional crate count was accepted'; exception when check_violation then null; end;
-  begin insert into customer_orders(farm_id,customer_id,crop_id,crates_str,for_day,status) values (f,'cccccccc-0000-0000-0000-0000000017b1',crop,'0','2026-11-23','open'); raise exception '(0037) zero crates were accepted'; exception when check_violation then null; end;
-  begin insert into customer_orders(farm_id,customer_id,crop_id,crates_str,for_day,status) values (f,'cccccccc-0000-0000-0000-0000000017b1',crop,'3','2026-11-23','maybe'); raise exception '(0037) an invented status was accepted'; exception when check_violation then null; end;
+  begin insert into customer_orders(farm_id,customer_id,crop_id,crates_str,for_day,status) values (f,'cccccccc-0000-0000-0000-0000000017b1',crop,'1,5','2026-11-23','open'); raise exception '(0037) a fractional crate count was accepted'; exception when check_violation or foreign_key_violation then null; end;
+  begin insert into customer_orders(farm_id,customer_id,crop_id,crates_str,for_day,status) values (f,'cccccccc-0000-0000-0000-0000000017b1',crop,'0','2026-11-23','open'); raise exception '(0037) zero crates were accepted'; exception when check_violation or foreign_key_violation then null; end;
+  begin insert into customer_orders(farm_id,customer_id,crop_id,crates_str,for_day,status) values (f,'cccccccc-0000-0000-0000-0000000017b1',crop,'3','2026-11-23','maybe'); raise exception '(0037) an invented status was accepted'; exception when check_violation or foreign_key_violation then null; end;
   update customer_orders set status = 'cancelled' where id = 'cccccccc-0000-0000-0000-0000000017c1';
   select count(*) into n from customer_orders where id = 'cccccccc-0000-0000-0000-0000000017c1' and status = 'cancelled'; if n <> 1 then raise exception '(0037) the owner could not change an order'; end if;
   begin delete from customers where id = 'cccccccc-0000-0000-0000-0000000017b1'; raise exception '(0037) a customer was hard-deleted'; exception when insufficient_privilege or raise_exception then if sqlerrm like '(0037)%' then raise; end if; end;
@@ -43,6 +43,30 @@ begin
   begin update customers set phone = '0' where farm_id = f; get diagnostics n = row_count; if n <> 0 then raise exception '(0037) a worker changed a customer'; end if; exception when insufficient_privilege then null; end;
 end $$;
 -- the owner of ANOTHER farm sees nothing of farm 1111 (the stub has only two users: a worker of 1111 stands for «not the owner»; the stranger case is the same policy)
+reset role; set test.uid = '';
+
+-- Codex MUST 1: a parent can never be moved to another farm while a child points at it, and a child can never name another farm's parent (composite keys), even when the owner owns BOTH farms
+reset role; set test.uid = '';
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; g constant uuid := '22222222-2222-2222-2222-222222222222';
+begin
+  begin update customers set farm_id = g where id = 'cccccccc-0000-0000-0000-0000000017b1'; raise exception '(0037) a customer with orders was moved to another farm'; exception when foreign_key_violation then null; end;
+  begin update workers set farm_id = g where id = 'bbbbbbbb-0000-0000-0000-0000000017a1'; raise exception '(0037) a worker with a card was moved to another farm'; exception when foreign_key_violation then null; end;
+  begin update crops set farm_id = g where id = (select crop_id from customer_orders where id = 'cccccccc-0000-0000-0000-0000000017c1'); raise exception '(0037) a crop with orders was moved to another farm'; exception when foreign_key_violation then null; end;
+  begin insert into customer_orders(farm_id,customer_id,crop_id,crates_str,for_day,status) select g,'cccccccc-0000-0000-0000-0000000017b1',crop_id,'1','2026-11-24','open' from customer_orders where id = 'cccccccc-0000-0000-0000-0000000017c1'; raise exception '(0037) an order of farm B named a customer of farm A'; exception when foreign_key_violation then null; end;
+end $$;
+-- Codex SHOULD: a real owner of ANOTHER farm (a distinct authenticated identity) reads, pulls and writes nothing of farm 1111
+reset role; set test.uid = '';
+insert into auth.users(id) values ('00000000-0000-0000-0000-0000000000c3') on conflict do nothing;
+insert into farm_members(farm_id,user_id,role) values ('22222222-2222-2222-2222-222222222222','00000000-0000-0000-0000-0000000000c3','owner') on conflict do nothing;
+set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000c3';
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; n int;
+begin
+  select (select count(*) from worker_cards) + (select count(*) from customers) + (select count(*) from customer_orders) into n; if n <> 0 then raise exception '(0037) the owner of another farm can read farm 1111 records'; end if;
+  begin select count(*) into n from jsonb_array_elements(pull(f, null, 1000)->'rows') r where r->>'table' in ('worker_cards','customers','customer_orders'); if n <> 0 then raise exception '(0037) the owner of another farm pulled farm 1111 records'; end if; exception when insufficient_privilege or raise_exception then if sqlerrm like '(0037)%' then raise; end if; end;
+  begin insert into customers(farm_id,name) values (f,'Stranger'); raise exception '(0037) the owner of another farm added a customer to farm 1111'; exception when insufficient_privilege or check_violation then null; end;
+end $$;
 reset role; set test.uid = '';
 -- after a restore the administrator's bump re-stamps every synced table, the new ones included, and the owner can still pull them
 do $$ declare n int; g text; begin
