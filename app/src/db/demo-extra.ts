@@ -1,4 +1,6 @@
 import { DEMO_FARM_ID, DEMO_NAMESPACE } from '../config';
+import { shiftDay } from './demo-weather';
+import { athensToday } from '../plantings/planting';
 import { buildLabelUse, withSignOff, type LabelUseInput } from '../labels/label-use';
 import { buildSpray } from '../spray/spray';
 import { buildReceipt } from '../stock/stock';
@@ -98,6 +100,7 @@ export async function demoExtraRows(data: Record<string, unknown>, idOf: (table:
     const a = buildAnalysis({ parcelId: idOf('parcels', String(p.id)), sampledOn: String(s.date), lab: '', ph: String(s.pH), ec: String(s.EC_dS_m), ecUnit: 'dS/m', notes: `OM ${String(s.OM_pct)} % · N ${String(s.N_ppm)} · P ${String(s.P_ppm)} · K ${String(s.K_ppm)} · CaCO3 ${String(s.CaCO3_pct)} %`, photoId: undefined }, DEMO_FARM_ID, NOW, await u(`soil:${p.id}`));
     if (a.ok) push('soil_tests', a.row);
   }
+  const planDay = shiftDay('2026-11-18', typeof (data.meta as { today?: unknown } | undefined)?.today === 'string' ? String((data.meta as { today: string }).today) : '', athensToday(new Date()) ?? '');   // the fixed prototype day moves with the rest of the Demo
   // open spray jobs for the worker view: three fixed signed label uses (they carry a known waiting period) on a planting of that crop, one worker each in turn
   let k = 0;
   for (const key of OPEN_JOBS) {      // fixed, not «the first three signed»: with most labels signed that rule would pick other jobs, and the closed-«Έγινε» example (see the label list above) would be lost
@@ -108,9 +111,14 @@ export async function demoExtraRows(data: Record<string, unknown>, idOf: (table:
     if (!planting) continue;
     const worker = ['Γιώργος', 'Ahmet', 'Γιώργος'][k];
     const jobId = await u(`planned-job:${key}`);
-    push('jobs', { id: jobId, farm_id: DEMO_FARM_ID, kind: 'spray', status: 'planned', product_id: idOf('products', pid), label_use_id: label.id, worker_id: workerIds.get(worker), planned_for: '2026-11-18', dose_str: label.dose_min, dose_unit: label.dose_unit, created_at: NOW, updated_at: NOW, deleted_at: null });
+    push('jobs', { id: jobId, farm_id: DEMO_FARM_ID, kind: 'spray', status: 'planned', product_id: idOf('products', pid), label_use_id: label.id, worker_id: workerIds.get(worker), planned_for: planDay, dose_str: label.dose_min, dose_unit: label.dose_unit, created_at: NOW, updated_at: NOW, deleted_at: null });
     push('job_plantings', { id: await u(`planned-jp:${key}`), farm_id: DEMO_FARM_ID, job_id: jobId, planting_id: idOf('plantings', String(planting.id)), area_str_treated: planting.area_str, created_at: NOW });
     k += 1;
+    if (k === 1) {      // one OPEN job nobody has yet (the job board): same signed label, no worker; a worker can take it («Το αναλαμβάνω»)
+      const openId = await u(`open-job:${key}`);
+      push('jobs', { id: openId, farm_id: DEMO_FARM_ID, kind: 'spray', status: 'planned', product_id: idOf('products', pid), label_use_id: label.id, planned_for: planDay, dose_str: label.dose_min, dose_unit: label.dose_unit, created_at: NOW, updated_at: NOW, deleted_at: null });
+      push('job_plantings', { id: await u(`open-jp:${key}`), farm_id: DEMO_FARM_ID, job_id: openId, planting_id: idOf('plantings', String(planting.id)), area_str_treated: planting.area_str, created_at: NOW });
+    }
   }
   return out;
 }
