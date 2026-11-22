@@ -244,5 +244,7 @@
   "ui.range.line": "For {crop}: usually {low}–{high}",
   "ui.range.none": "For {crop}: no source",
   "ui.range.note": "Information only, not signed by an agronomist",
-  "ui.range.differ": "The sources differ; all are listed."
+  "ui.range.differ": "The sources differ; all are listed.",
+  "ui.sketch.note": "Illustration only – it does not show the exact place",
+  "ui.sketch.unknown": "unknown – the place is not drawn and the areas do not allow a drawing"
 }
