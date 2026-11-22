@@ -12,11 +12,11 @@ import { validDate } from '../plantings/planting';
 import { put } from '../repo';
 import type { Row } from '../db/schema';
 import { CropDetail } from './CropDetail';
-import { Chip, CropIcon, type Tone } from './ds';
+import { Chip, CropIcon, PageHead, type Tone } from './ds';
 import { EditTrail } from './EditTrail';
 import { PlantingForm, STATUS_KEYS } from './PlantingForm';
 import { tab } from './nav';
-import { nameOf, Status, Title } from './screens';
+import { nameOf, Status } from './screens';
 import { EmptyState, UnsyncedMark } from './states';
 import { showUndo } from './Toast';
 import { useRows } from './useRows';
@@ -91,14 +91,14 @@ export function Crops() {
   if (!demo && parcels.rows && crops.rows && liveParcels.length === 0) {
     return (
       <section>
-        <header class="today-head band"><Title k="crops.title" /></header>
+        <PageHead heading={t('ui.tab.crops')} />
         <EmptyState message={t('planting.noParcels')} actionLabel={t('parcel.add')} onAction={() => { tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
       </section>
     );
   }
   return (
     <section>
-      <header class="today-head band"><Title k="crops.title" /></header>
+      <PageHead heading={t('ui.tab.crops')} />
       {demo && <p class="muted" data-testid="planting-demo-note">{t('planting.demoActive')}</p>}
       {canAdd && live.length > 0 && <button class="btn" data-testid="planting-add" onClick={() => setAdding(true)}>{t('planting.add')}</button>}
       <Status q={{ ...crops, rows: shown && shown.length === 0 ? [] : shown ?? null }} message={t('list.empty')}
@@ -108,7 +108,7 @@ export function Crops() {
         const chip = chipOf(c);
         return <div class="card crop-card" key={c.id}>
           <button class="row crop-open crop-tile" data-testid="crop-open" onClick={() => setShownId(String(c.id))}>
-            <CropIcon slug={text(c.slug)} size="var(--tile)" />
+            <span class="crop-list-tile"><CropIcon slug={text(c.slug)} size="48px" /></span>
             <span class="crop-tile-name"><strong>{nameOf(c)}</strong><Chip tone={chip.tone}>{t(chip.key)}</Chip></span>
             <span aria-hidden="true" class="chev" />
           </button>
