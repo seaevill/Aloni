@@ -205,5 +205,14 @@
   "ui.crops.chip.unknown": "Άγνωστη αναμονή",
   "ui.crops.chip.wait": "Σε αναμονή",
   "ui.crops.chip.free": "Έτοιμο για κοπή",
-  "ui.crops.plantings": "Φυτεύσεις"
+  "ui.crops.plantings": "Φυτεύσεις",
+  "ui.crop.tips": "Συμβουλές",
+  "ui.crop.tips.note": "Γενικές πληροφορίες – όχι σύσταση",
+  "ui.crop.tips.none": "Δεν υπάρχουν πληροφορίες για αυτό το φυτό.",
+  "ui.crop.tips.history": "Ιστορία",
+  "ui.crop.tips.facts": "Γνωρίζατε ότι",
+  "ui.crop.tips.handling": "Χειρισμός",
+  "ui.crop.tips.strength": "Δυνατό σημείο",
+  "ui.crop.tips.weakness": "Αδύνατο σημείο",
+  "ui.crop.tips.problems": "Συνήθη προβλήματα"
 }
