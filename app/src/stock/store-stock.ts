@@ -1,9 +1,9 @@
 import { parseWhole } from '@aloni/rules-core';
 import type { Row } from '../db/schema';
 
-// «Συγκομιδή στην αποθήκη»: the crates cut, by where the record says they went (store / direct dispatch). A harvest without a destination is OLD or unknown: it is flagged separately and never added to the store.
+// «Συγκομιδή στην αποθήκη»: the crates cut, by where the record says they went (store / direct dispatch). A harvest without a destination is OLD or unknown: it is counted apart and never added to the store.
 // Whole crates only (as logged); an unreadable crate number is counted apart, never as 0. Nothing is estimated and nothing is decided here.
-export interface StoreLine { slug: string; store: number; dispatch: number; unknown: number; hasUnknownDestination: boolean; hasUncounted: boolean; unreadable: number; oldestStoreDay: string | undefined; ageDays: number | undefined }
+export interface StoreLine { slug: string; store: number; dispatch: number; unknown: number; unreadable: number; oldestStoreDay: string | undefined; ageDays: number | undefined }
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 const DAY_MS = 86_400_000;
 const dayOf = (iso: string): string => { const ms = Date.parse(iso); return Number.isFinite(ms) ? new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Athens', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(ms)) : ''; };
@@ -14,7 +14,7 @@ function ageOf(day: string | undefined, today: string): number | undefined {
 }
 
 /** `dest` is the phone's own answers (harvest id → where it went) for records whose row carries no `destination` yet; the row's own field wins. */
-export function storeStock(today: string, harvests: readonly Row[], plantings: readonly Row[], crops: readonly Row[], dest: Readonly<Record<string, { d: string }>> = {}, eligible?: ReadonlySet<string>): StoreLine[] {
+export function storeStock(today: string, harvests: readonly Row[], plantings: readonly Row[], crops: readonly Row[], dest: Readonly<Record<string, { d: string }>> = {}): StoreLine[] {
   const slugOfCrop = new Map(crops.map((c) => [text(c.id), text(c.slug)]));
   const slugOfPlanting = new Map(plantings.map((p) => [text(p.id), slugOfCrop.get(text(p.crop_id)) ?? '']));
   const by = new Map<string, StoreLine>();
@@ -22,15 +22,13 @@ export function storeStock(today: string, harvests: readonly Row[], plantings: r
     const day = dayOf(text(h.harvested_at)); const slug = slugOfPlanting.get(text(h.planting_id)) ?? '';
     if (h.deleted_at || slug === '' || day === '' || day > today) continue;
     let line = by.get(slug);
-    if (line === undefined) line = { slug, store: Number('0'), dispatch: Number('0'), unknown: 0, hasUnknownDestination: false, hasUncounted: false, unreadable: Number('0'), oldestStoreDay: undefined, ageDays: undefined };
+    if (line === undefined) line = { slug, store: Number('0'), dispatch: Number('0'), unknown: Number('0'), unreadable: Number('0'), oldestStoreDay: undefined, ageDays: undefined };
     const n = parseWhole<'Crates'>(text(h.crates_str));
-    const where = h.destination ?? dest[text(h.id)]?.d;
-    if (where !== 'store' && where !== 'direct' && where !== 'dispatch') line.hasUnknownDestination = true;
+    const where = h.destination === 'store' || h.destination === 'dispatch' ? h.destination : dest[text(h.id)]?.d;
     if (!n.known) line.unreadable += 1;
-    else if (eligible && !eligible.has(text(h.id))) line.hasUncounted = true;
     else if (where === 'store') { line.store += n.value; if (line.oldestStoreDay === undefined || day < line.oldestStoreDay) line.oldestStoreDay = day; }
-    else if (where === 'direct' || where === 'dispatch') line.dispatch += n.value;
-    else if (eligible === undefined) line.unknown += n.value; // Legacy summary consumer. Stock with a gate uses only the boolean flag.
+    else if (where === 'dispatch') line.dispatch += n.value;
+    else line.unknown += n.value;
     by.set(slug, line);
   }
   const out = [...by.values()].map((l) => ({ ...l, ageDays: ageOf(l.oldestStoreDay, today) }));
