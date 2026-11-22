@@ -6,7 +6,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { useBack } from './backstack';
 import { APP_NAME_EL } from '../config';
 import { activeFarm, dataVersion, db, loadDemo, realFarmId, farmLabel } from '../db';
-import { jobHub } from '../summary/jobs';
+import { daysLate, jobHub } from '../summary/jobs';
 import { openParcelForm, openSheet, tab } from './nav';
 import { formatDate, formatDateTime, lang, t, tn } from '../i18n';
 import { formatArea, formatQty } from '../i18n/format';
@@ -239,6 +239,7 @@ export function Today() {
   const jobLine = (j: Row): string => [...new Set(links.rows?.filter((l) => l.job_id === j.id).map((l) => plantings.rows?.find((p) => p.id === l.planting_id)).filter((p): p is Row => !!p).map((p) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) })) ?? [])].concat(text(workers.rows?.find((w) => w.id === j.worker_id)?.name), typeof j.planned_for === 'string' && j.planned_for !== '' ? formatDate(j.planned_for) : '').filter(Boolean).join(' · ');
   const hub = jobHub(jobs.rows ?? [], athensToday(new Date()) ?? '');
   const jobGroups = hub.open;
+  const lateLine = (j: Row): string => { const n = daysLate(text(j.planned_for), athensToday(new Date()) ?? ''); return n === undefined ? '' : t('ui.job.late', { n }); };
   const openJobs = [...jobGroups.overdue, ...jobGroups.today, ...jobGroups.tomorrow, ...jobGroups.later];
   const live = (q: Rows) => q.rows?.filter((r) => !r.deleted_at) ?? [];
   const demo = activeFarm.value !== realFarmId.value;
@@ -301,7 +302,7 @@ export function Today() {
       {JOB_GROUPS.map(([key, label]) => jobGroups[key].length > 0 && (
         <section key={key} data-testid={`jobs-${key}`}>
           <h3 class={key === 'overdue' ? 'late' : undefined}>{t(label)} <span class="count" data-testid={`jobs-count-${key}`}>{jobGroups[key].length}</span></h3>
-          {jobGroups[key].map((j) => <div class="card" key={j.id} data-testid="job-planned">{jobLine(j)}</div>)}
+          {jobGroups[key].map((j) => <div class="card" key={j.id} data-testid="job-planned">{jobLine(j)}{key === 'overdue' && <small class="late" data-testid="job-late">{lateLine(j)}</small>}</div>)}
         </section>
       ))}
       {hub.doneToday.length > 0 && (

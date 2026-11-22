@@ -226,5 +226,6 @@
   "ui.product.general.none": "bilinmiyor – ürün türü girilmemiş",
   "ui.product.general.note": "Neye ve nasıl izin verildiğini yalnızca ürünün etiketi belirler.",
   "ui.product.link": "Resmi etiket",
-  "ui.product.open": "Ürün bilgisi"
+  "ui.product.open": "Ürün bilgisi",
+  "ui.job.late": "{n} gün gecikmiş"
 }
