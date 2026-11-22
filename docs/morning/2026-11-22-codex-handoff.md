@@ -7,10 +7,10 @@ The deployed P0 baseline is `d17f739`. #421 contains R1–R30 captures and the a
 | P0 | READY | #421, merged. 30 captures, 5 criteria confirmed. |
 | P1 | BLOCKED | #387 and #395 overlap the standalone component tests, and #395 conflicts with its moving parent. In #387 the direct component invocation bypasses the hook context. #394's recorded failure was Today KPI 44 versus sheet 0, outside this lane. |
 | P2 | BLOCKED | #395 changes the literature sources file. Full pH, EC and OM collection and analysis wiring remain open. |
-| P3 | BLOCKED | #422 has four-locale product explanations and targeted local WebKit proof. GitHub shard 1 failed again on retry. Current main conflicts with the protected supabase/tests/phone-columns.json contract update. |
+| P3 | BLOCKED | #422 has four-locale product explanations and targeted local WebKit proof. GitHub shard 1 failed again on retry. Local replay identified the first-load budget test at 179,654 gzip bytes against 176,000. Optional product explanations were moved out of the first-load bundle, with the recorded label and balance kept in the screen bundle. Current main conflicts with the protected supabase/tests/phone-columns.json contract update. |
 | P4 | BLOCKED | The shared month ring and crop library files are held by #387 and #395. |
 | P5 | PARTIAL | #426 merged and the weather sheet was confirmed live under fcd799d. Recorded polygon rendering waits for the 0040 contract and geometry. |
-| P6 | PARTIAL | #443 groups crop history by recorded destination and leaves unknown destinations unsummed. Stock now uses larger figures and excludes held and unknown destination quantities. The owner receiver detail remains open. |
+| P6 | PARTIAL | #443 groups crop history by recorded destination and leaves unknown destinations unsummed. Stock now uses larger figures. A separate gated stock subtotal and the owner receiver detail remain open. The new history subtotals exclude held and unknown crates. |
 | P7 | REVIEWED | #428 records 0036 approved in local review and the 0037 restore harness blocker. #433 and #442 record the later SQL checks. 0038, 0039 and 0040 have MUST findings at the reviewed commits. |
 | P8 | PARTIAL | #434 compares eight screens. #441 implements the approved crop list. Remaining corrections are in the audit, and #292 touches Orders. |
 | P9 | PARTIAL | #437 covers the unsigned R03 inputs case. 21 of 27 original golden cases execute, with six original cases still skipped. |
