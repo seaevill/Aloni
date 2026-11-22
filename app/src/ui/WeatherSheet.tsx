@@ -6,6 +6,8 @@ import { BigNum, WeatherStrip, type WeatherDay } from './ds/DataViz';
 import { Chip } from './ds/Chip';
 import { DetailSheet, SheetFact } from './ds/DetailSheet';
 import { Icon } from './icons/Icon';
+import { activeFarm } from '../db';
+import { DEMO_FARM_ID } from '../config';
 import { registerSheet, type SheetProps } from './sheets';
 import { useWeather } from './useWeather';
 
@@ -13,6 +15,18 @@ import { useWeather } from './useWeather';
 const DAY_MS = 86_400_000;
 const DASH_FREE = (n: number | undefined, key: 'wx.kmh' | 'wx.pct'): string | undefined => (n === undefined ? undefined : t(key, { v: formatQty(n) }));
 const label = (iso: string): string => formatDate(iso).split(' ').slice(0, 2).join(' ');
+
+// Demo only: six fixed times of day with the day's lowest and highest temperature spread by a fixed shape (tenths of the range). It is a drawing of a day, labelled as demo data; the real farm never shows it.
+const SHAPE: ReadonlyArray<readonly [number, number]> = [[6, 0], [9, 3], [12, 8], [15, 10], [18, 6], [21, 2]];
+function DemoHourly({ tmin, tmax }: { tmin: number; tmax: number }) {
+  return (
+    <section data-testid="weather-hourly-demo">
+      <h3>{t('ui.weather.hourly')}</h3>
+      <p class="ds-muted">{t('ui.weather.hourly.demo')}</p>
+      {SHAPE.map(([h, tenth]) => <div class="card" key={h} data-testid="weather-hour"><strong>{t('ui.weather.hour', { h: String(h).padStart(2, '0') })}</strong><span>{t('ui.weather.deg', { v: formatQty(tmin + (tmax - tmin) * tenth / 10) })}</span></div>)}
+    </section>
+  );
+}
 
 function WeatherSheet({ close }: SheetProps) {
   const rows = useWeather();
@@ -50,7 +64,9 @@ function WeatherSheet({ close }: SheetProps) {
           {src?.stale && <Chip tone="warn">{t('ui.weather.stale')}</Chip>}
         </>
       )}
-      <SheetFact name={t('ui.weather.hourly')} unknown={t('ui.weather.hourly.why')} />
+      {activeFarm.value === DEMO_FARM_ID && now?.tmin !== undefined && now.tmax !== undefined
+        ? <DemoHourly tmin={now.tmin} tmax={now.tmax} />
+        : <SheetFact name={t('ui.weather.hourly')} unknown={t('ui.weather.hourly.why')} />}
     </DetailSheet>
   );
 }

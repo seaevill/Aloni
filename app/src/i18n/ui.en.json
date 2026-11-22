@@ -328,5 +328,7 @@
   "ui.tom.copied": "The text was copied.",
   "ui.tom.manual": "Select the text and copy it.",
   "ui.tom.old": "Old records without a destination: {n} (not added)",
-  "ui.info.privacy.contacts": "Contacts: if you record customers, worker cards or a receiver of a direct dispatch, the name, phone and notes are stored. Only the owner sees them, never the workers. Today they stay on this phone only; nothing is sent until sync is on and the matching server table exists. There is no date of birth. They are deleted when asked, unless the law requires keeping them. Spray and harvest records are kept at least 3 years."
+  "ui.info.privacy.contacts": "Contacts: if you record customers, worker cards or a receiver of a direct dispatch, the name, phone and notes are stored. Only the owner sees them, never the workers. Today they stay on this phone only; nothing is sent until sync is on and the matching server table exists. There is no date of birth. They are deleted when asked, unless the law requires keeping them. Spray and harvest records are kept at least 3 years.",
+  "ui.weather.hourly.demo": "Illustrative hours – demo data, not a real forecast",
+  "ui.weather.hour": "{h}:00"
 }
