@@ -8,6 +8,7 @@ import el from '../content/product-source/el.json';
 import en from '../content/product-source/en.json';
 import hi from '../content/product-source/hi.json';
 import tr from '../content/product-source/tr.json';
+import { productKnowledge } from '../content/products';
 import { Card, Chip, DetailSheet, ListRow, SheetFact } from './ds';
 import type { I18nKey } from '../i18n';
 import { registerSheet, type SheetProps } from './sheets';
@@ -36,6 +37,7 @@ export function ProductSheet({ product, onClose }: { product: Row; onClose: () =
     ? [formatQty(balance), unit].join('\u00a0')
     : undefined;
   const type = text(product.type);
+  const knowledge = productKnowledge(product.active, type, lang.value);
   const kind = type !== undefined && Object.hasOwn(GENERAL, type) ? GENERAL[type] : undefined;
   const last = effectiveSprays(ownRows(sprays.rows)).filter((row) => row.product_id === product.id)
     .sort((a, b) => (text(b.sprayed_at) ?? '').localeCompare(text(a.sprayed_at) ?? ''));
@@ -46,6 +48,7 @@ export function ProductSheet({ product, onClose }: { product: Row; onClose: () =
     <Card testid="product-general">
       <h4>{t('ui.product.general')}</h4>
       {kind === undefined ? <p>{t('ui.product.general.none')}</p> : <p>{t(kind)}</p>}
+      {knowledge && <p data-testid="product-knowledge">{knowledge}</p>}
       <p class="ds-muted">{t('ui.product.general.note')}</p>
     </Card>
     <Card>
