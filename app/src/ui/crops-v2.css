@@ -93,3 +93,8 @@
 /* R13: one flat row per crop (picture, name, ONE chip), about 72 px: five rows fit in the first screen */
 .crop-card { padding:0; margin:var(--sp-4) 0; }
 .crop-card .crop-tile { box-shadow:none; background:transparent; border:0; padding:var(--sp-4) var(--sp-12); min-height:var(--tile-row); margin:0; }
+
+.sow-ring { display:block; width:var(--tile); height:var(--tile); margin:0 0 var(--sp-12); }
+.sow-ring .sow-on { fill:var(--forest-2); }
+.sow-ring .sow-off { fill:var(--lime-soft); }
+.crop-tips-open { display:inline-flex; align-items:center; justify-content:center; gap:var(--sp-8); }
