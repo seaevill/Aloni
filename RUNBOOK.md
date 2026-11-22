@@ -141,7 +141,7 @@ Görünüm yalnızca iki dosyada: `app/src/ui/tokens.css` (renk, ölçü, gölge
 3. **Sahip:** Σήμερα → **+ Ανάθεση δουλειάς** → işçiye bir ilaçlama işi ata. Doğru: iş **yalnızca o işçide** görünür (başkasının işi görünmez).
 4. **İşçi:** **Δουλειές** → **Έγινε** → başlangıç saatini yaz → onayla (10 saniye geri alma süresi). Doğru: **«Αποθηκεύτηκε…»**.
 5. **İşçi:** **Συγκομιδή** → ekimi seç → **+** ile kasa → **Καταγραφή**. Doğru: kayıt «Ποιος έκοψε» olarak **kendi adını** taşır. (İlaçlamadan sonra bekleme süresi bitmediyse hasat **kapalı** kalır: bu doğrudur.)
-6. **Sahip:** Σήμερα → **Ποιος έκανε τι**: işi ve kasaları görürsün (en geç birkaç dakikada; çip «Ο συγχρονισμός δουλεύει»).
+6. **Sahip:** Σήμερα → **Σήμερα έγιναν**: işi ve kasaları görürsün (en geç birkaç dakikada; çip «Ο συγχρονισμός δουλεύει»).
 7. **İşçiyi uçak moduna al** → **Έγινε** → **«Αποθηκεύτηκε · θα σταλεί όταν έχει σήμα»** → bağlantıyı aç. Doğru: kendiliğinden gider, bir kez.
 8. **Ters giderse:** ekrandaki metni bana yaz (kırmızı kutu nedenini söyler); tahmin etmem. Denemeden sonra test işçisini Supabase → Authentication → Users'tan **sen** sil (gerçek işçiyse silme).
 
@@ -227,7 +227,7 @@ rollback;
  Doğru sonuç: Users listesinde test işçisi yok; `select count(*) from farms where name = 'Deneme 2';` → 0.
 
 ## 13. Senkronu açma – 8 satır (her adımı sen yaparsın; gizli anahtar yazma)
-1. **Yedek:** Άλλα → **Αντίγραφο** (ya da sihirbazda **Αντίγραφο τώρα**) → dosya telefona iner. Doğru: «Τελευταίο αντίγραφο: bugün».
+1. **Yedek:** Άλλα → **Αντίγραφο** (ya da sihirbazda **Αντίγραφο τώρα**) → dosya telefona iner. Doğru: «Αντίγραφο δεδομένων» satırında «τελευταίο αντίγραφο: …» bugünün saati.
 2. **Hazırlık kartı:** Άλλα → **Σύνδεση λογαριασμού: τι λείπει**. **«Επιβεβαιώνω: εφαρμόστηκαν οι αλλαγές έως 0034»** düğmesine bir kez bas; Advisor için Supabase → **Advisors → Security / Performance → Refresh** («RLS Disabled in Public» yok) sonra onayla. Doğru: bütün satırlar **«Έτοιμο»**.
 3. **Giriş:** Άλλα → **Σύνδεση** → «Συνδεδεμένος: …». (Giriş tek başına hiçbir şey göndermez.)
 4. **Aç:** Άλλα → **Άνοιγμα συγχρονισμού** (düğme yalnızca her satır yeşilken açılır) → bas. Doğru: «Ανεβαίνουν τα στοιχεία…», sonra **«Ο συγχρονισμός είναι ανοιχτός.»**

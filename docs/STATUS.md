@@ -13,7 +13,7 @@
 - Faz 1 durumu: `docs/milestones/PHASE1-DONE.md` (a–g, her madde kanıtlı).
 
 ## LIVE açma – 6 adım (senkron; ayrıntı RUNBOOK §13)
-1. **Yedek:** Άλλα → **Αντίγραφο** → «Τελευταίο αντίγραφο: bugün» yazmalı.
+1. **Yedek:** Άλλα → **Αντίγραφο δεδομένων** → **Εξαγωγή αντιγράφου** → dosya iner; satırda «τελευταίο αντίγραφο: …» bugünün saatini göstermeli.
 2. **Hazırlık kartı:** Άλλα → **Σύνδεση λογαριασμού: τι λείπει** → her satır yeşil olmalı (Supabase → Advisors'ı yenile, «RLS Disabled in Public» yok).
 3. **Giriş:** Άλλα → **Σύνδεση** → e-posta kodu → «Συνδεδεμένος: …».
 4. **Aç:** Άλλα → **Άνοιγμα συγχρονισμού** → «Ο συγχρονισμός είναι ανοιχτός.»
@@ -21,11 +21,11 @@
 6. **Kontrol:** Supabase → Table Editor → `parcels`, `job_spray`: sayılar telefonla aynı. Kırmızı kutu çıkarsa ekrandaki metni bana yaz.
 
 ## İşçiyi davet et – 5 adım (RUNBOOK §12c)
-1. Άλλα → **Εργάτες** → işçinin satırı → **Email του εργάτη** → **Αποθήκευση πρόσκλησης** (ya da QR/bağlantı).
+1. Άλλα → **Εργάτες** → işçinin satırı → **Email του εργάτη** → **Αποθήκευση πρόσκλησης** (ya da QR/bağlantı: işçinin satırında davet düğmesi).
 2. İşçi telefonunda: Safari → adres → **Ana Ekrana Ekle** → aç → **Άλλα → Σύνδεση** → e-posta kodu.
 3. Sen: Σήμερα → **+ Ανάθεση δουλειάς** → işçiye bir ilaçlama işi ata.
 4. İşçi: **Δουλειές → Έγινε** → başlangıç saati → onay; sonra **Συγκομιδή**: bitki, **+**, **Αποθήκη** ya da **Απευθείας φόρτωση**, **Καταγραφή**.
-5. Sen: Σήμερα → **Ποιος έκανε τι**: işi ve kasaları görürsün. (Hasat varış yeri ve müşteri/çalışan kartı senin telefonuna 0036/0037 yüklenince gelir.)
+5. Sen: Σήμερα → **Σήμερα έγιναν**: işi ve kasaları görürsün (satıra dokununca ayrıntı açılır). (Hasat varış yeri ve müşteri/çalışan kartı senin telefonuna 0036/0037 yüklenince gelir.)
 
 ## R1–R30 tablosu
 | R | İstek | Durum | Kanıt | Not |
