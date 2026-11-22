@@ -37,3 +37,8 @@ The references cover crop history, appearance and general growing or harvest not
 | beet | [NC State Extension](https://plants.ces.ncsu.edu/plants/beta-vulgaris/) |
 | radish | [NC State Extension](https://plants.ces.ncsu.edu/plants/raphanus-sativus/) |
 | celery | [Breeding history of celery](https://onlinelibrary.wiley.com/doi/10.1111/pbi.14551), [NC State Extension](https://plants.ces.ncsu.edu/plants/apium-graveolens/) |
+
+## R18 crop pH ranges (information only)
+- Spinach, soil pH: University of Minnesota Extension, [Growing spinach and Swiss chard in home gardens](https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-spinach-and-swiss-chard) (6.5–8) and UC IPM, [Cultural tips for growing spinach](https://ipm.ucanr.edu/home-and-landscape/cultural-tips-for-growing-spinach/) (6.0–6.5). The sources differ; both are shown. Values are copied as printed.
+- No sourced range was found for the other catalogue crops, for EC, or for organic matter: the screen says «δεν υπάρχει πηγή». Organic matter is not a stored analysis field yet.
+- Shown with «Πληροφοριακό, χωρίς υπογραφή γεωπόνου»; nothing is decided from these ranges.

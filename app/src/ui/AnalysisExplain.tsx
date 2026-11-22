@@ -8,6 +8,9 @@ import el from '../content/analyses/el.json';
 import tr from '../content/analyses/tr.json';
 import en from '../content/analyses/en.json';
 import hi from '../content/analyses/hi.json';
+import { rangesFor } from '../content/crop-ranges';
+import { useRows } from './useRows';
+import { nameOf } from './screens';
 import './analyses-v2.css';
 
 export const analysisCopy = () => ({ el, tr, en, hi })[lang.value] ?? el;
@@ -40,6 +43,8 @@ export function AnalysisExplain({ field, row, records, onBack }: { field: Measur
   const value = typeof raw === 'string' && reading(raw) !== undefined ? formatQty(raw) : undefined;
   const display = value !== undefined && field === 'ec' && ecUnit ? [value, t(EC_UNIT_KEYS[ecUnit])].join(' ') : value;
   const range = recordedRange(field, row, records);
+  const plantings = useRows('plantings'); const crops = useRows('crops');
+  const cropsHere = [...new Map((plantings.rows ?? []).filter((p) => p.parcel_id === row.parcel_id && !p.deleted_at).map((p) => (crops.rows ?? []).find((c) => c.id === p.crop_id)).filter((c): c is Row => c !== undefined).map((c) => [c.id, c])).values()];
   return <section data-testid="analysis-explain">
     <PageHead heading={field === 'ph' ? t('analysis.name.ph') : t('analysis.name.ec')} back={onBack} backText={t('info.back')} />
     <Card>
@@ -57,5 +62,16 @@ export function AnalysisExplain({ field, row, records, onBack }: { field: Measur
       </figure> : <small>{copy.noRange}</small>}
       <p>{copy.approvalNote}</p>
     </Card>
+    {field === 'ph' && cropsHere.length > 0 && <Card testid="analysis-crop-ranges">
+      <h3>{t('ui.range.title')}</h3>
+      {cropsHere.map((c) => <CropRanges key={String(c.id)} crop={c} />)}
+      <small>{t('ui.range.note')}</small>
+    </Card>}
   </section>;
+}
+
+function CropRanges({ crop }: { crop: Row }) {
+  const found = rangesFor(String(crop.slug), 'ph');
+  if (found.length === 0) return <p class="ds-muted" data-testid="analysis-crop-range">{t('ui.range.none', { crop: nameOf(crop) })}</p>;
+  return <>{found.map((r) => <p key={r.url} data-testid="analysis-crop-range">{t('ui.range.line', { crop: nameOf(crop), low: r.low, high: r.high })}<br /><a href={r.url} target="_blank" rel="noopener noreferrer">{r.source}</a></p>)}{found.length > 1 && <small>{t('ui.range.differ')}</small>}</>;
 }

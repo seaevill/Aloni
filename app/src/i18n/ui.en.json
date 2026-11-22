@@ -239,5 +239,10 @@
   "ui.spray.over": "The waiting period is over",
   "ui.spray.where": "Field and crop",
   "ui.spray.who": "Sprayed by",
-  "ui.spray.who.unknown": "unknown – no worker recorded"
+  "ui.spray.who.unknown": "unknown – no worker recorded",
+  "ui.range.title": "For the crops of this field",
+  "ui.range.line": "For {crop}: usually {low}–{high}",
+  "ui.range.none": "For {crop}: no source",
+  "ui.range.note": "Information only, not signed by an agronomist",
+  "ui.range.differ": "The sources differ; all are listed."
 }
