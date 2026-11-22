@@ -214,5 +214,17 @@
   "ui.crop.tips.handling": "Handling",
   "ui.crop.tips.strength": "Strength",
   "ui.crop.tips.weakness": "Weakness",
-  "ui.crop.tips.problems": "Common problems"
+  "ui.crop.tips.problems": "Common problems",
+  "ui.product.purpose": "Purpose on the label",
+  "ui.product.purpose.none": "unknown – no label use recorded",
+  "ui.product.general": "General information – not a recommendation",
+  "ui.product.general.fungicide": "Fungicides are products that relate to fungal diseases of plants.",
+  "ui.product.general.insecticide": "Insecticides are products that relate to insects that harm plants.",
+  "ui.product.general.herbicide": "Herbicides are products that relate to weeds.",
+  "ui.product.general.fertiliser": "Fertilisers are products that add nutrients to the soil or the plant.",
+  "ui.product.general.other": "There is no general description for this type.",
+  "ui.product.general.none": "unknown – no product type set",
+  "ui.product.general.note": "What is allowed, and how, is set only by the product label.",
+  "ui.product.link": "Official label",
+  "ui.product.open": "Product information"
 }

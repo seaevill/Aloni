@@ -214,5 +214,17 @@
   "ui.crop.tips.handling": "Elleçleme",
   "ui.crop.tips.strength": "Güçlü yanı",
   "ui.crop.tips.weakness": "Zayıf yanı",
-  "ui.crop.tips.problems": "Sık görülen sorunlar"
+  "ui.crop.tips.problems": "Sık görülen sorunlar",
+  "ui.product.purpose": "Etiketteki amaç",
+  "ui.product.purpose.none": "bilinmiyor – kayıtlı etiket kullanımı yok",
+  "ui.product.general": "Genel bilgi – öneri değildir",
+  "ui.product.general.fungicide": "Mantar ilaçları, bitkilerin mantar hastalıklarıyla ilgili ürünlerdir.",
+  "ui.product.general.insecticide": "Böcek ilaçları, bitkilere zarar veren böceklerle ilgili ürünlerdir.",
+  "ui.product.general.herbicide": "Ot ilaçları, yabani otlarla ilgili ürünlerdir.",
+  "ui.product.general.fertiliser": "Gübreler, toprağa ya da bitkiye besin ekleyen ürünlerdir.",
+  "ui.product.general.other": "Bu tür için genel açıklama yok.",
+  "ui.product.general.none": "bilinmiyor – ürün türü girilmemiş",
+  "ui.product.general.note": "Neye ve nasıl izin verildiğini yalnızca ürünün etiketi belirler.",
+  "ui.product.link": "Resmi etiket",
+  "ui.product.open": "Ürün bilgisi"
 }
