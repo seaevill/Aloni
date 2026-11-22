@@ -15,6 +15,7 @@ import type { Row } from '../db/schema';
 import { showUndo } from './Toast';
 import { useRows } from './useRows';
 import { BackBar } from './BackBar';
+import './WorkerCard';
 
 /** More → Εργάτες: the roster used to say who sprayed. A name only. Add, archive with 5 s undo; real farm only. */
 /** The invitation of one roster worker: only with a live sign-in AND the data controller's details entered (the same gate the server keeps). */
@@ -91,7 +92,7 @@ export function Workers({ onBack }: { onBack: () => void }) {
       )}
       {q.rows && live.length === 0 && <p class="muted" data-testid="workers-empty">{t('workers.empty')}</p>}
       {live.map((w) => (
-        <div class="card" key={w.id} data-testid="worker">{String(w.name)}
+        <div class="card" key={w.id} data-testid="worker"><button type="button" class="row" data-testid="worker-open" aria-label={t('ui.wcard.open')} onClick={() => openSheet('worker', String(w.id))}><strong>{String(w.name)}</strong><span aria-hidden="true" class="chev" /></button>
           {!demo && <Invite worker={w} controller={controller} />}
           {!demo && <button class="btn quiet" onClick={() => void archive(w)}>{t('product.archive')}</button>}
         </div>
