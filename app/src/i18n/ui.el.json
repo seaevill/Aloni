@@ -334,5 +334,8 @@
   "ui.cust.week": "Αυτή την εβδομάδα: {n} κλούβες",
   "ui.cust.week.none": "Αυτή την εβδομάδα: —",
   "ui.cust.imported": "από Κλούβες",
-  "ui.product.info.label": "Πληροφορίες προϊόντος"
+  "ui.product.info.label": "Πληροφορίες προϊόντος",
+  "ui.crop.ring.title": "Μήνες σποράς που έχουν καταγραφεί",
+  "ui.crop.ring.none": "δεν υπάρχει καταγραφή σποράς για αυτό το φυτό",
+  "ui.crop.ring.sr": "Μήνες σποράς: {months}"
 }
