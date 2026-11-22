@@ -205,5 +205,14 @@
   "ui.crops.chip.unknown": "Waiting unknown",
   "ui.crops.chip.wait": "In waiting period",
   "ui.crops.chip.free": "Ready to cut",
-  "ui.crops.plantings": "Plantings"
+  "ui.crops.plantings": "Plantings",
+  "ui.crop.tips": "Tips",
+  "ui.crop.tips.note": "General information – not a recommendation",
+  "ui.crop.tips.none": "No information for this crop.",
+  "ui.crop.tips.history": "History",
+  "ui.crop.tips.facts": "Facts",
+  "ui.crop.tips.handling": "Handling",
+  "ui.crop.tips.strength": "Strength",
+  "ui.crop.tips.weakness": "Weakness",
+  "ui.crop.tips.problems": "Common problems"
 }

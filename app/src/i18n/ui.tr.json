@@ -205,5 +205,14 @@
   "ui.crops.chip.unknown": "Bekleme bilinmiyor",
   "ui.crops.chip.wait": "Beklemede",
   "ui.crops.chip.free": "Kesime hazır",
-  "ui.crops.plantings": "Ekimler"
+  "ui.crops.plantings": "Ekimler",
+  "ui.crop.tips": "İpuçları",
+  "ui.crop.tips.note": "Genel bilgi – öneri değildir",
+  "ui.crop.tips.none": "Bu bitki için bilgi yok.",
+  "ui.crop.tips.history": "Tarihçe",
+  "ui.crop.tips.facts": "Bilgiler",
+  "ui.crop.tips.handling": "Elleçleme",
+  "ui.crop.tips.strength": "Güçlü yanı",
+  "ui.crop.tips.weakness": "Zayıf yanı",
+  "ui.crop.tips.problems": "Sık görülen sorunlar"
 }

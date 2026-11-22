@@ -8,6 +8,7 @@ import type { Row } from '../db/schema';
 import { BackBar } from './BackBar';
 import { CropIcon, DetailSheet, ListRow } from './ds';
 import { TapNum } from './cx/TapNum';
+import { CropTips } from './CropTips';
 import { STATUS_KEYS } from './PlantingForm';
 import { waitLine } from './Sprays';
 import { nameOf } from './screens';
@@ -23,6 +24,7 @@ export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) 
   const plantings = useRows('plantings'); const parcels = useRows('parcels'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const products = useRows('products');
   const weather = useWeather();
   const [showPlantingSource, setShowPlantingSource] = useState(false);
+  const [showTips, setShowTips] = useState(false);
   const today = athensToday(new Date());
   const mine = (plantings.rows ?? []).filter((p) => p.crop_id === crop.id && !p.deleted_at);
   const jobIds = new Set((links.rows ?? []).filter((l) => mine.some((p) => p.id === l.planting_id)).map((l) => l.job_id));
@@ -37,6 +39,8 @@ export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) 
         <h1 class="ds-title" tabIndex={-1}>{nameOf(crop)}</h1>
         {typeof crop.latin === 'string' && crop.latin !== '' && <p class="latin" lang="la">{crop.latin}</p>}
       </header>
+      <button type="button" class="btn secondary crop-tips-open" data-testid="crop-tips-open" onClick={() => setShowTips(true)}>{t('ui.crop.tips')}</button>
+      {showTips && <CropTips slug={text(crop.slug)} onClose={() => setShowTips(false)} />}
       {mine.length > 0 && <div class="crop-detail-source">
         <TapNum caption={t('detail.plantings')} source={{ value: formatQty(mine.length), count: mine.length }} onOpen={() => setShowPlantingSource(true)} />
       </div>}
