@@ -47,6 +47,6 @@ test('owner invites -> worker signs in and sees only her own job -> records a ha
   // 5. the owner's phone pulls it: «Ποιος έκανε τι» shows the crates
   await owner.evaluate(() => window.dispatchEvent(new Event('online')));
   await owner.locator('nav.tabs [data-tab="today"]').click();
-  await expect(owner.getByTestId('today-who-crates')).toBeVisible({ timeout: 30_000 });
+  await expect(owner.getByTestId('today-done-row').filter({ hasText: 'Συγκομιδή' })).toBeVisible({ timeout: 30_000 });
   await ownerCtx.close(); await workerCtx.close();
 });

@@ -632,8 +632,6 @@
   "golive.on": "Senkron açık.",
   "today.who": "Bugün yapılanlar",
   "today.who.none": "Bugün henüz kayıt yok.",
-  "today.who.done": "{worker}: {product} ilaçladı",
-  "today.who.crates": "Kesilen kasa: {n}",
   "today.who.overdue": "Önceki günlerden kalan açık işler: {n}",
   "map.title": "Tarla sınırları (harita)",
   "map.help": "Tarlanın köşelerine dokunun, şekli çift dokunuşla kapatın. Sonra köşeleri sürükleyebilirsiniz.",

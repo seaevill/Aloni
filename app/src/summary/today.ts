@@ -54,3 +54,30 @@ export function cratesLogged(harvests: readonly Row[], nowIso: string, days: num
   const known = cratesPerDay(harvests, nowIso, days).filter((v): v is number => v !== null);
   return known.length === 0 ? undefined : known.reduce((a, b) => a + b);
 }
+
+export interface DoneRecord {
+  kind: 'spray' | 'harvest'; id: string; at: string;
+  cropId: string; parcelId: string;
+  worker: string; product: string; productId: string;
+  /** exact crates as typed; undefined = not readable (the screen writes why) */ crates: string | undefined;
+  /** only what the record itself says; no `destination` on the record = unknown (old record) */ destination: 'store' | 'dispatch' | undefined;
+}
+
+/** Every record made today (Athens day), sprays and harvests together, oldest first: what it was, where, and (spray) the product or (harvest) the crates and where they went. Information only. */
+export function doneRecords(
+  today: string, sprays: readonly Row[], harvests: readonly Row[], jobs: readonly Row[], links: readonly Row[], plantings: readonly Row[],
+  workerName: (id: unknown) => string, productName: (id: unknown) => string,
+): DoneRecord[] {
+  const out: DoneRecord[] = [];
+  const planting = (id: unknown): Row | undefined => plantings.find((p) => p.id === id);
+  for (const s of effectiveSprays([...sprays]).filter((x) => dayOf(x.sprayed_at) === today)) {
+    const link = links.find((l) => l.job_id === s.job_id); const p = planting(link?.planting_id);
+    out.push({ kind: 'spray', id: String(s.id), at: String(s.sprayed_at), cropId: String(p?.crop_id ?? ''), parcelId: String(p?.parcel_id ?? ''), worker: workerName(s.applicator_id), product: productName(s.product_id), productId: String(s.product_id ?? ''), crates: undefined, destination: undefined });
+  }
+  for (const h of harvests.filter((x) => !x.deleted_at && dayOf(x.harvested_at) === today)) {
+    const p = planting(h.planting_id); const n = parseWhole<'Crates'>(typeof h.crates_str === 'string' ? h.crates_str : '');
+    const job = jobs.find((j) => j.id === h.job_id);
+    out.push({ kind: 'harvest', id: String(h.id), at: String(h.harvested_at), cropId: String(p?.crop_id ?? ''), parcelId: String(p?.parcel_id ?? ''), worker: workerName(h.cut_by ?? job?.worker_id), product: '', productId: '', crates: n.known ? String(n.value) : undefined, destination: h.destination === 'store' || h.destination === 'dispatch' ? h.destination : undefined });
+  }
+  return out.sort((a, b) => a.at.localeCompare(b.at));
+}

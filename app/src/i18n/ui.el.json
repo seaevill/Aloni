@@ -300,5 +300,20 @@
   "ui.notes.add": "＋ Σημείωση για αύριο",
   "ui.notes.placeholder": "Τι να γίνει αύριο;",
   "ui.notes.fromworker": "από εργάτη",
-  "ui.notes.err": "Γράψτε τη σημείωση."
+  "ui.notes.err": "Γράψτε τη σημείωση.",
+  "ui.done.spray": "Ψεκασμός",
+  "ui.done.harvest": "Συγκομιδή",
+  "ui.done.crates": "{n} κλούβες",
+  "ui.done.dest.store": "Αποθήκη",
+  "ui.done.dest.dispatch": "Απευθείας φόρτωση",
+  "ui.done.dest.unknown": "άγνωστο – παλιά καταγραφή",
+  "ui.done.dest": "Προορισμός",
+  "ui.done.who": "Ποιος",
+  "ui.done.when": "Πότε",
+  "ui.done.product": "Προϊόν",
+  "ui.done.crop": "Φυτό",
+  "ui.done.parcel": "Χωράφι",
+  "ui.done.worker.unknown": "άγνωστο – δεν έχει καταγραφεί εργάτης",
+  "ui.done.crates.unknown": "άγνωστο – ο αριθμός δεν διαβάζεται",
+  "ui.done.productpage": "Πληροφορίες προϊόντος"
 }

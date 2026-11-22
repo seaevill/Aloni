@@ -300,5 +300,20 @@
   "ui.notes.add": "＋ Note for tomorrow",
   "ui.notes.placeholder": "What should happen tomorrow?",
   "ui.notes.fromworker": "from a worker",
-  "ui.notes.err": "Write the note."
+  "ui.notes.err": "Write the note.",
+  "ui.done.spray": "Spraying",
+  "ui.done.harvest": "Harvest",
+  "ui.done.crates": "{n} crates",
+  "ui.done.dest.store": "Store",
+  "ui.done.dest.dispatch": "Direct dispatch",
+  "ui.done.dest.unknown": "unknown – old record",
+  "ui.done.dest": "Destination",
+  "ui.done.who": "Who",
+  "ui.done.when": "When",
+  "ui.done.product": "Product",
+  "ui.done.crop": "Crop",
+  "ui.done.parcel": "Field",
+  "ui.done.worker.unknown": "unknown – no worker recorded",
+  "ui.done.crates.unknown": "unknown – the number cannot be read",
+  "ui.done.productpage": "Product information"
 }
