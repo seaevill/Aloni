@@ -1,7 +1,7 @@
 import { formatDate, formatDateTime, t } from '../i18n';
 import { formatQty } from '../i18n/format';
 import { athensToday } from '../plantings/planting';
-import { jobDetail } from '../summary/jobs';
+import { daysLate, jobDetail } from '../summary/jobs';
 import { Chip } from './ds/Chip';
 import { DetailSheet, SheetFact } from './ds/DetailSheet';
 import { ListRow } from './ds/Surfaces';
@@ -18,6 +18,7 @@ function JobDetailSheet({ id, close }: SheetProps) {
   if (!jobs.rows) return null;
   const d = jobDetail(id, { jobs: jobs.rows, links: links.rows ?? [], plantings: plantings.rows ?? [], sprays: sprays.rows ?? [], harvests: harvests.rows ?? [] }, athensToday(new Date()) ?? '');
   if (!d) return <DetailSheet heading={t('ui.sheet.notfound.head')} onClose={close} testid="sheet-notfound"><p class="ds-muted">{t('ui.sheet.notfound.body')}</p></DetailSheet>;
+  const lateDays = d.late && d.plannedFor !== undefined ? daysLate(d.plannedFor, athensToday(new Date()) ?? '') : undefined;
   const crop = (cid: string) => nameOf((crops.rows ?? []).find((c) => c.id === cid) ?? {});
   const parcel = (pid: string) => nameOf((parcels.rows ?? []).find((p) => p.id === pid) ?? {});
   const product = nameOf((products.rows ?? []).find((p) => p.id === d.productId) ?? {});
@@ -25,6 +26,7 @@ function JobDetailSheet({ id, close }: SheetProps) {
   return (
     <DetailSheet heading={product || t('ui.unknown')} icon={<Icon name="calendar" />} onClose={close} testid="sheet-job">
       {d.late && <Chip tone="blocked">{t('jobs.group.overdue')}</Chip>}
+      {lateDays !== undefined && <p class="ds-muted" data-testid="job-late-days">{t('ui.job.late', { n: lateDays })}</p>}
       <SheetFact name={t('ui.job.day')} value={d.plannedFor === undefined ? undefined : formatDate(d.plannedFor)} unknown={t('ui.jobs.day.none')} />
       <SheetFact name={t('ui.job.worker')} value={worker || undefined} unknown={t('ui.jobs.worker.none')} />
       <h3>{t('ui.job.plantings')}</h3>

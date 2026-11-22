@@ -6,6 +6,13 @@ export interface JobGroups { overdue: Row[]; today: Row[]; tomorrow: Row[]; late
 const DAY_MS = 86_400_000;
 export const nextDay = (day: string): string => new Date(Date.parse(`${day}T12:00:00Z`) + DAY_MS).toISOString().slice(0, 10);
 
+/** Whole calendar days a job is late (planned day before `today`); undefined when it is not late or a day is unreadable (never 0, never a guess). Both are Athens calendar days (YYYY-MM-DD). */
+export function daysLate(plannedFor: string, today: string): number | undefined {
+  const a = Date.parse(`${plannedFor}T12:00:00Z`); const b = Date.parse(`${today}T12:00:00Z`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(plannedFor) || !/^\d{4}-\d{2}-\d{2}$/.test(today) || Number.isNaN(a) || Number.isNaN(b) || a >= b) return undefined;
+  return (b - a) / DAY_MS;
+}
+
 export function groupJobs(jobs: readonly Row[], today: string): JobGroups {
   const g: JobGroups = { overdue: [], today: [], tomorrow: [], later: [] };
   const tomorrow = nextDay(today);

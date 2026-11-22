@@ -32,6 +32,7 @@ test('a late job opens its detail with every fact or the reason it is missing', 
   const sheet = page.getByTestId('sheet-job');
   await expect(sheet).toContainText('Kocide 2000');                                              // the product is the heading
   await expect(sheet.locator('.ds-chip')).toContainText('Καθυστερημένες');                        // late
+  await expect(sheet.getByTestId('job-late-days')).toHaveText('Καθυστερεί 3 ημ.');            // R9: how many days
   await expect(sheet).toContainText('Σπανάκι');                                                  // crop and field
   await expect(sheet).toContainText('Κάτω Κάμπος');
   await expect(sheet).toContainText('χωρίς εργάτη');                                             // nobody was given the job: said, not blank

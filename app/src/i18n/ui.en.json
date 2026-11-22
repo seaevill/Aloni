@@ -226,5 +226,6 @@
   "ui.product.general.none": "unknown – no product type set",
   "ui.product.general.note": "What is allowed, and how, is set only by the product label.",
   "ui.product.link": "Official label",
-  "ui.product.open": "Product information"
+  "ui.product.open": "Product information",
+  "ui.job.late": "{n} days late"
 }
