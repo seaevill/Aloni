@@ -7,15 +7,23 @@
 do $$ begin
   if to_regclass('public.workers') is null or to_regclass('public.crops') is null then raise exception '0037 stopped: workers or crops is missing (nothing was changed)'; end if;
   if to_regclass('public.worker_cards') is not null or to_regclass('public.customers') is not null or to_regclass('public.customer_orders') is not null then raise exception '0037 stopped: one of the new tables already exists (nothing was changed)'; end if;
-  if pg_get_functiondef('public.pull(uuid,jsonb,integer)'::regprocedure) not like '%''farm_settings'']%' or pg_get_functiondef('public.bump_sync_generation()'::regprocedure) not like '%''farm_settings'']%' or pg_get_functiondef('public.sync_table(text)'::regprocedure) not like '%''observations'']%' then
-    raise exception '0037 stopped: pull / bump_sync_generation / sync_table do not look the way this file expects (nothing was changed)'; end if;
+  -- the three fixed lists are re-issued below: the file stops, changing nothing, unless each function is EXACTLY the one this file was written against (body text hash, security mode, volatility and search path), not just similar
+  if not exists (select 1 from pg_proc p where p.oid = 'public.pull(uuid,jsonb,integer)'::regprocedure and md5(p.prosrc) = '753901e2c4393294ee4ada5f8ce2eff8' and not p.prosecdef and p.provolatile = 's' and p.proconfig = array['search_path=public, private'])
+     or not exists (select 1 from pg_proc p where p.oid = 'public.bump_sync_generation()'::regprocedure and md5(p.prosrc) = '8c5d4b38085e517e35d39b9a6f6552a2' and p.prosecdef and p.provolatile = 'v' and p.proconfig = array['search_path=public, private, pg_temp'])
+     or not exists (select 1 from pg_proc p where p.oid = 'public.sync_table(text)'::regprocedure and md5(p.prosrc) = '82b3f67405a702f74fc27dd15098e8c9' and not p.prosecdef and p.provolatile = 'i' and p.proconfig = array['search_path=public, private']) then
+    raise exception '0037 stopped: pull / bump_sync_generation / sync_table are not exactly the definitions this file was written against (nothing was changed)'; end if;
+  if exists (select 1 from pg_constraint where conname in ('workers_id_farm_key', 'crops_id_farm_key')) then raise exception '0037 stopped: a constraint this file adds already exists (nothing was changed)'; end if;
 end $$;
 
 -- ---------------------------------------------------------------- the tables
+-- the parents get a (id, farm_id) key so a child can point at a parent OF ITS OWN FARM by the database's own rule: a parent can never be moved to another farm while a child points at it, and a child can never name another farm's parent
+alter table public.workers add constraint workers_id_farm_key unique (id, farm_id);
+alter table public.crops add constraint crops_id_farm_key unique (id, farm_id);
 create table worker_cards (
   id uuid primary key default gen_random_uuid(),
   farm_id uuid not null references farms(id) on delete cascade,
-  worker_id uuid not null references workers(id),
+  worker_id uuid not null,
+  foreign key (worker_id, farm_id) references workers(id, farm_id),
   surname text check (surname is null or btrim(surname) <> ''),
   phone text check (phone is null or btrim(phone) <> ''),
   device_id text, actor_id text,
@@ -34,14 +42,17 @@ create table customers (
   device_id text, actor_id text,
   created_at timestamptz not null default now(), created_by uuid default auth.uid(),
   updated_at timestamptz not null default now(), deleted_at timestamptz, server_seq bigint,
-  sync_xid xid8 not null default pg_current_xact_id()
+  sync_xid xid8 not null default pg_current_xact_id(),
+  unique (id, farm_id)
 );
 
 create table customer_orders (
   id uuid primary key default gen_random_uuid(),
   farm_id uuid not null references farms(id) on delete cascade,
-  customer_id uuid not null references customers(id),
-  crop_id uuid not null references crops(id),
+  customer_id uuid not null,
+  crop_id uuid not null,
+  foreign key (customer_id, farm_id) references customers(id, farm_id),
+  foreign key (crop_id, farm_id) references crops(id, farm_id),
   crates_str text not null check (crates_str ~ '^[1-9][0-9]{0,5}$'),                 -- a whole number of crates above 0, kept exactly as written (like job_harvest.crates_str)
   for_day date not null,
   status text not null check (status in ('open', 'sent', 'cancelled')),              -- no default: the phone says which
@@ -52,20 +63,6 @@ create table customer_orders (
   sync_xid xid8 not null default pg_current_xact_id()
 );
 create index customer_orders_day on customer_orders (farm_id, for_day) where deleted_at is null;
-
--- every row points at rows of ITS OWN farm (a foreign key alone would accept another farm's worker, customer or crop)
-create function check_owner_record_farm() returns trigger language plpgsql security definer set search_path = public, private, pg_temp as $$
-begin
-  if auth.uid() is null then return new; end if;          -- fixtures / maintenance by the database owner only; every signed-in writer is checked
-  if tg_table_name = 'worker_cards' then
-    if not exists (select 1 from workers w where w.id = new.worker_id and w.farm_id = new.farm_id) then raise exception 'the worker belongs to another farm' using errcode = 'check_violation'; end if;
-  elsif tg_table_name = 'customer_orders' then
-    if not exists (select 1 from customers c where c.id = new.customer_id and c.farm_id = new.farm_id) then raise exception 'the customer belongs to another farm' using errcode = 'check_violation'; end if;
-    if not exists (select 1 from crops c where c.id = new.crop_id and c.farm_id = new.farm_id) then raise exception 'the crop belongs to another farm' using errcode = 'check_violation'; end if;
-  end if;
-  return new;
-end $$;
-revoke execute on function check_owner_record_farm() from public, anon, authenticated;
 
 -- ---------------------------------------------------------------- triggers, row-level security (owner only), rights, indexes
 do $$
@@ -86,8 +83,6 @@ begin
     if exists (select 1 from pg_roles where rolname = 'anon') then execute format('revoke all on %I from anon', t); end if;
   end loop;
 end $$;
-create trigger worker_cards_farm_check before insert or update on worker_cards for each row execute function check_owner_record_farm();
-create trigger customer_orders_farm_check before insert or update on customer_orders for each row execute function check_owner_record_farm();
 
 -- ---------------------------------------------------------------- the three fixed table lists, with the three names added (definitions as the database holds them today)
 CREATE OR REPLACE FUNCTION public.sync_table(p text)
