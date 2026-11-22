@@ -36,3 +36,17 @@ export function addCustomerOrder(orders: KlouvesOrders, map: Record<string, stri
   bump(week, product, n.value);
   return { ok: true, orders: { ...orders, products, clients, days, weeks }, map: { ...map, [product]: input.slug } };
 }
+
+/** Crates ordered per client in the Monday–Sunday week of `day` (quarters kept exactly). A client with nothing that week is absent from the map: the screen says «—», never 0. */
+export function weekCratesByClient(orders: KlouvesOrders | undefined, day: string): Map<string, number> {
+  const sums: Record<string, number> = {};
+  const monday = mondayOf(day);
+  if (orders?.days === undefined || monday === undefined) return new Map();
+  const start = Date.parse(`${monday}T12:00:00Z`);
+  for (const [d, byClient] of Object.entries(orders.days)) {
+    const ms = Date.parse(`${d}T12:00:00Z`);
+    if (!(ms >= start && ms < start + 7 * 86_400_000)) continue;
+    for (const [client, items] of Object.entries(byClient)) for (const q of Object.values(items)) bump(sums, client, q);
+  }
+  return new Map(Object.entries(sums));
+}

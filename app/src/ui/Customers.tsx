@@ -2,7 +2,8 @@ import { useEffect, useState } from 'preact/hooks';
 import { activeFarm, dataVersion, db } from '../db';
 import { formatDate, t } from '../i18n';
 import { loadOrders, saveOrders } from '../orders/store';
-import { addCustomerOrder, clientIdOf } from '../orders/customers';
+import { addCustomerOrder, clientIdOf, weekCratesByClient } from '../orders/customers';
+import { fractionText } from '../orders/dispatch';
 import { nextDay } from '../orders/tomorrow';
 import { athensToday } from '../plantings/planting';
 import { CATALOG } from '../crops/catalog';
@@ -28,6 +29,9 @@ export function Customers({ onBack }: { onBack: () => void }) {
   const [open, setOpen] = useState<string | undefined>(undefined);
   const reload = async () => { setList(await loadCustomers(farm)); const o = await loadOrders(db, farm); setOrders(o.orders ?? EMPTY); setMap(o.map); };
   useEffect(() => { void reload(); }, [farm]);
+  const week = weekCratesByClient(orders, athensToday(new Date()) ?? '');
+  const weekLine = (client: string): string => { const n = week.get(client); return n === undefined ? t('ui.cust.week.none') : t('ui.cust.week', { n: fractionText(n) }); };
+  const imported = (orders.clients ?? []).filter((c) => !c.id.startsWith('own:'));
   const shown = (list ?? []).find((c) => c.id === open);
   if (shown) return <CustomerPage customer={shown} orders={orders} map={map} onBack={() => setOpen(undefined)} onSaved={async (o, m) => { await saveOrders(db, farm, o, m); dataVersion.value++; await reload(); }} />;
   if (adding) return <NewCustomer onBack={() => setAdding(false)} onSave={async (c) => { await putLocal(db, key(farm), [...(list ?? []), c]); await reload(); setAdding(false); }} />;
@@ -35,8 +39,9 @@ export function Customers({ onBack }: { onBack: () => void }) {
     <section data-testid="customers">
       <BackBar onBack={onBack} testId="customers-back" />
       <h1 tabIndex={-1}>{t('ui.cust.title')}</h1>
-      {list !== undefined && list.length === 0 && <p class="muted" data-testid="customers-none">{t('ui.cust.none')}</p>}
-      {(list ?? []).map((c) => <ListRow key={c.id} testid="customer" heading={c.name} meta={c.phone === '' ? t('ui.cust.phone.none') : c.phone} onClick={() => setOpen(c.id)} />)}
+      {list !== undefined && list.length === 0 && imported.length === 0 && <p class="muted" data-testid="customers-none">{t('ui.cust.none')}</p>}
+      {(list ?? []).map((c) => <ListRow key={c.id} testid="customer" heading={c.name} meta={[c.phone === '' ? t('ui.cust.phone.none') : c.phone, weekLine(clientIdOf(c.id))].join(' · ')} onClick={() => setOpen(c.id)} />)}
+      {imported.map((c) => <ListRow key={c.id} testid="customer-imported" heading={c.name} meta={[t('ui.cust.imported'), weekLine(c.id)].join(' · ')} />)}
       <button class="btn" data-testid="customer-add" onClick={() => setAdding(true)}>{t('ui.cust.add')}</button>
       <p class="muted">{t('ui.cust.local')}</p>
     </section>

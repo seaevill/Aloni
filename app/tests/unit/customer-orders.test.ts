@@ -31,3 +31,18 @@ describe('addCustomerOrder: an own order goes into the same shape the Κλούβ
     }
   });
 });
+
+import { weekCratesByClient } from '../../src/orders/customers';
+describe('weekCratesByClient: crates per client in the Monday–Sunday week of a day', () => {
+  const orders: KlouvesOrders = { products: [{ id: 'p', name: 'x' }], weeks: {}, skipped: 0, clients: [{ id: 'c1', name: 'A' }, { id: 'own:u', name: 'B' }],
+    days: { '2026-11-23': { c1: { p: 2.5 }, 'own:u': { p: 4 } }, '2026-11-25': { c1: { p: 1 } }, '2026-11-30': { c1: { p: 9 } }, '2026-11-22': { c1: { p: 7 } } } };
+  it('adds the days of that week only, quarters kept exactly', () => {
+    const w = weekCratesByClient(orders, '2026-11-24');
+    expect(w.get('c1')).toBe(3.5);
+    expect(w.get('own:u')).toBe(4);
+  });
+  it('a client with no order that week is absent (not 0)', () => {
+    expect(weekCratesByClient(orders, '2026-12-08').size).toBe(0);
+    expect(weekCratesByClient(undefined, '2026-11-24').size).toBe(0);
+  });
+});
