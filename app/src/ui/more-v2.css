@@ -21,3 +21,6 @@
   height: 1.25rem;
   width: 1.25rem;
 }
+
+.fw-grid { display:grid; gap:var(--sp-8); }
+.fw-row { display:grid; grid-template-columns:minmax(0,2fr) repeat(4, minmax(0,1fr)); gap:var(--sp-8); align-items:center; min-height:var(--tap); }
