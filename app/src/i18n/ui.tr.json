@@ -267,5 +267,11 @@
   "ui.cust.phone.none": "bilinmiyor – girilmemiş",
   "ui.cust.local": "Yalnızca bu telefonda saklanır. Müşteri bilgilerini yalnızca sahibi görür.",
   "ui.cust.line": "{day} · {crop} · {n} kasa",
-  "ui.cust.saved": "Sipariş kaydedildi."
+  "ui.cust.saved": "Sipariş kaydedildi.",
+  "ui.wcard.surname": "Soyad",
+  "ui.wcard.phone": "Telefon",
+  "ui.wcard.save": "Kaydet",
+  "ui.wcard.saved": "Kaydedildi.",
+  "ui.wcard.local": "Yalnızca bu telefonda saklanır. Yalnızca sahibi görür.",
+  "ui.wcard.open": "Kartı aç"
 }
