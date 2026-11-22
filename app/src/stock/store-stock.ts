@@ -13,7 +13,8 @@ function ageOf(day: string | undefined, today: string): number | undefined {
   return (Date.parse(`${today}T12:00:00Z`) - Date.parse(`${day}T12:00:00Z`)) / DAY_MS;
 }
 
-export function storeStock(today: string, harvests: readonly Row[], plantings: readonly Row[], crops: readonly Row[]): StoreLine[] {
+/** `dest` is the phone's own answers (harvest id → where it went) for records whose row carries no `destination` yet; the row's own field wins. */
+export function storeStock(today: string, harvests: readonly Row[], plantings: readonly Row[], crops: readonly Row[], dest: Readonly<Record<string, { d: string }>> = {}): StoreLine[] {
   const slugOfCrop = new Map(crops.map((c) => [text(c.id), text(c.slug)]));
   const slugOfPlanting = new Map(plantings.map((p) => [text(p.id), slugOfCrop.get(text(p.crop_id)) ?? '']));
   const by = new Map<string, StoreLine>();
@@ -23,9 +24,10 @@ export function storeStock(today: string, harvests: readonly Row[], plantings: r
     let line = by.get(slug);
     if (line === undefined) line = { slug, store: Number('0'), dispatch: Number('0'), unknown: Number('0'), unreadable: Number('0'), oldestStoreDay: undefined, ageDays: undefined };
     const n = parseWhole<'Crates'>(text(h.crates_str));
+    const where = h.destination === 'store' || h.destination === 'dispatch' ? h.destination : dest[text(h.id)]?.d;
     if (!n.known) line.unreadable += 1;
-    else if (h.destination === 'store') { line.store += n.value; if (line.oldestStoreDay === undefined || day < line.oldestStoreDay) line.oldestStoreDay = day; }
-    else if (h.destination === 'dispatch') line.dispatch += n.value;
+    else if (where === 'store') { line.store += n.value; if (line.oldestStoreDay === undefined || day < line.oldestStoreDay) line.oldestStoreDay = day; }
+    else if (where === 'dispatch') line.dispatch += n.value;
     else line.unknown += n.value;
     by.set(slug, line);
   }

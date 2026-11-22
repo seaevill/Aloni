@@ -8,6 +8,7 @@ import { fractionText } from '../orders/dispatch';
 import { cutTodayBySlug, nextDay, tomorrowBoard } from '../orders/tomorrow';
 import { athensToday } from '../plantings/planting';
 import { storeStock, type StoreLine } from '../stock/store-stock';
+import { loadDestinations } from '../stock/destination';
 import { Chip, CropIcon, DetailSheet, ListRow, SheetFact } from './ds';
 import { openSheet } from './nav';
 import { nameOf } from './screens';
@@ -19,7 +20,9 @@ import { useRows } from './useRows';
 function useHarvestData() {
   const harvests = useRows('job_harvest'); const plantings = useRows('plantings'); const crops = useRows('crops');
   const today = athensToday(new Date()) ?? '';
-  const lines = harvests.rows && plantings.rows && crops.rows ? storeStock(today, harvests.rows, plantings.rows, crops.rows) : undefined;
+  const [dest, setDest] = useState<Awaited<ReturnType<typeof loadDestinations>>>({});
+  useEffect(() => { void loadDestinations(db, activeFarm.value).then(setDest); }, [activeFarm.value, dataVersion.value]);
+  const lines = harvests.rows && plantings.rows && crops.rows ? storeStock(today, harvests.rows, plantings.rows, crops.rows, dest) : undefined;
   return { lines, crops: crops.rows ?? [], today };
 }
 

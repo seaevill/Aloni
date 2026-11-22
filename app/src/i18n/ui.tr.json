@@ -316,5 +316,16 @@
   "ui.done.worker.unknown": "bilinmiyor – işçi kaydedilmemiş",
   "ui.done.crates.unknown": "bilinmiyor – sayı okunamıyor",
   "ui.done.productpage": "Ürün bilgisi",
-  "ui.crop.tips.failed": "Bilgiler yüklenemedi. Bağlantı olunca yeniden deneyin."
+  "ui.crop.tips.failed": "Bilgiler yüklenemedi. Bağlantı olunca yeniden deneyin.",
+  "ui.tom.title": "Yarın çıkacaklar",
+  "ui.tom.customers": "Kim sipariş etti",
+  "ui.tom.store": "Depoda: {n}",
+  "ui.tom.store.none": "Depoda: bilinmiyor – depoya yazılmış kayıt yok",
+  "ui.tom.gap.short": "{n} kasa eksik",
+  "ui.tom.gap.enough": "Depodan karşılanıyor",
+  "ui.tom.gap.unknown": "Hesaplanamıyor: depo miktarı bilinmiyor",
+  "ui.tom.copy": "Metni kopyala",
+  "ui.tom.copied": "Metin kopyalandı.",
+  "ui.tom.manual": "Metni seçip kopyalayın.",
+  "ui.tom.old": "Gideceği yeri yazılmamış eski kayıtlar: {n} (eklenmedi)"
 }
