@@ -18,20 +18,22 @@ test('the worker says where the crates went: two big tiles, a direct dispatch ma
   await page.getByTestId('harvest-dest-dispatch').click();
   await page.getByTestId('harvest-recv-name').fill('Δημήτρης');
   await page.getByTestId('harvest-recv-phone').fill('6922222222');
-  await page.getByTestId('harvest-save').click();
-  await expect(page.getByTestId('harvest-saved-line')).toBeVisible();
-  const saved = await page.evaluate(() => new Promise<{ settings: unknown; rowHasField: boolean }>((res) => {
+  const read = () => page.evaluate(() => new Promise<{ settings: unknown; rowsWithField: number }>((res) => {
     const r = indexedDB.open('aloni');
     r.onsuccess = () => {
       const tx = r.result.transaction(['settings', 'job_harvest']);
       const s = tx.objectStore('settings').getAll(); const h = tx.objectStore('job_harvest').getAll();
       tx.oncomplete = () => res({
         settings: (s.result as Array<{ key?: string; id?: string; value: unknown }>).filter((x) => String(x.key ?? x.id).startsWith('harvest_dest:')).map((x) => x.value),
-        rowHasField: (h.result as Array<Record<string, unknown>>).some((x) => 'destination' in x || 'receiver_phone' in x),
+        rowsWithField: (h.result as Array<Record<string, unknown>>).filter((x) => 'destination' in x || 'receiver_phone' in x).length,
       });
     };
   }));
+  const before = (await read()).rowsWithField;       // the Demo's own fictional harvests already carry a destination
+  await page.getByTestId('harvest-save').click();
+  await expect(page.getByTestId('harvest-saved-line')).toBeVisible();
+  const saved = await read();
   expect(JSON.stringify(saved.settings)).toContain('6922222222');
   expect(JSON.stringify(saved.settings)).toContain('dispatch');
-  expect(saved.rowHasField).toBe(false);
+  expect(saved.rowsWithField).toBe(before);           // the new row carries no destination column
 });
