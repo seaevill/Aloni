@@ -22,13 +22,14 @@ begin
     if k not in ('type', 'coordinates') then raise exception 'the planting outline may hold only «type» and «coordinates» (found «%»)', k using errcode = 'check_violation'; end if;
   end loop;
   begin
-    execute 'select GeometryType(x) as kind, ST_XMin(x) as xmin, ST_XMax(x) as xmax, ST_YMin(x) as ymin, ST_YMax(x) as ymax, ST_IsValid(x) as ok, ST_IsEmpty(x) as empty, ST_Area(x::geography) as area from (select ST_SetSRID(ST_GeomFromGeoJSON($1), 4326) as x) q' into g using new.boundary::text;
+    execute 'select GeometryType(x) as kind, ST_XMin(x) as xmin, ST_XMax(x) as xmax, ST_YMin(x) as ymin, ST_YMax(x) as ymax, ST_IsValid(x) as ok, ST_IsEmpty(x) as empty, ST_Area(x::geography) as area, ST_NDims(x) as dims from (select ST_SetSRID(ST_GeomFromGeoJSON($1), 4326) as x) q' into g using new.boundary::text;
   exception when others then raise exception 'the planting outline is not a readable GeoJSON polygon' using errcode = 'check_violation'; end;
   if g.empty then raise exception 'the planting outline is empty' using errcode = 'check_violation'; end if;
   if g.kind <> 'POLYGON' then raise exception 'the planting outline must be one polygon' using errcode = 'check_violation'; end if;
   if g.xmin < -180 or g.xmax > 180 or g.ymin < -90 or g.ymax > 90 then raise exception 'the planting outline has coordinates out of range' using errcode = 'check_violation'; end if;
+  if g.dims <> 2 then raise exception 'the planting outline must be two-dimensional (longitude and latitude only)' using errcode = 'check_violation'; end if;
   if not g.ok then raise exception 'the planting outline is not a valid polygon (for example it crosses itself)' using errcode = 'check_violation'; end if;
-  select p.boundary into parcel_boundary from parcels p where p.id = new.parcel_id and p.farm_id = new.farm_id;
+  select p.boundary into parcel_boundary from parcels p where p.id = new.parcel_id and p.farm_id = new.farm_id for share;      -- waits for a parent edit in progress and sees its result: parent and child checks are serialised
   if parcel_boundary is not null then
     execute 'select ST_CoveredBy(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326), ST_SetSRID(ST_GeomFromGeoJSON($2), 4326))' into inside using new.boundary::text, parcel_boundary::text;
     if inside is not true then raise exception 'the planting outline is not inside its parcel' using errcode = 'check_violation'; end if;
@@ -38,3 +39,16 @@ begin
 end $$;
 create trigger plantings_boundary_check before insert or update on public.plantings for each row execute function public.check_planting_boundary();
 revoke execute on function public.check_planting_boundary() from public, anon, authenticated;
+
+-- the other direction (Codex MUST): a parcel edit may not leave a planting outline outside its parcel. The parcel row is locked by its own UPDATE, and a planting write takes `for share` on it, so the two checks never interleave.
+create function public.check_parcel_keeps_planting_outlines() returns trigger language plpgsql set search_path = public, extensions, private, pg_temp as $$
+declare bad uuid;
+begin
+  if new.boundary is null or new.boundary is not distinct from old.boundary then return new; end if;
+  execute 'select pl.id from plantings pl where pl.parcel_id = $1 and pl.farm_id = $2 and pl.deleted_at is null and pl.boundary is not null and not ST_CoveredBy(ST_SetSRID(ST_GeomFromGeoJSON(pl.boundary::text), 4326), ST_SetSRID(ST_GeomFromGeoJSON($3), 4326)) limit 1'
+    into bad using new.id, new.farm_id, new.boundary::text;
+  if bad is not null then raise exception 'the new parcel boundary would leave the outline of a planting outside it: redraw or clear that planting outline first' using errcode = 'check_violation'; end if;
+  return new;
+end $$;
+create trigger parcels_keep_planting_outlines before update of boundary on public.parcels for each row execute function public.check_parcel_keeps_planting_outlines();
+revoke execute on function public.check_parcel_keeps_planting_outlines() from public, anon, authenticated;
