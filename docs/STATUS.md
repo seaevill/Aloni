@@ -2,7 +2,7 @@
 
 **Sabah özeti (2026-11-22, Türkçe):**
 1. **Canlı site bu ortamdan açılamadı** (ağ izni yok): kanıtlar canlı değil, **yerel üretim derlemesi** ekran görüntüleridir; senin telefonundaki gerçek kontrol ayrıdır.
-2. **Merge'de/yapıldı:** Demo canlı (hava 5 gün, etiketler ~%90 imzalı + 5 bilinçli örnek, kilitli işçi işi), KPI tek kaynak, Φυτά listesi (resim+ad+tek çip), parsel krokisi genel bakışı, Μητρώο, hasat kaynağı, sekme kontrastı, işçi daveti QR, zil, kayıt işaretleri, sezon hedefi, hesap silme, iPhone kurulum rehberi, «Τι νέο», hata raporu.
+2. **Gündüz turunda eklenen (merge edildi):** R3, R8, R9–R12, R14–R25, R30 (kısmen) — ayrıntı aşağıdaki tabloda; geri tuşu hatası düzeltildi; açılış boyutu sınırı 160 KB'ye alındı (DECISIONS). **Gece merge edilenler:** Demo canlı (hava 5 gün, etiketler ~%90 imzalı + 5 bilinçli örnek, kilitli işçi işi), KPI tek kaynak, Φυτά listesi (resim+ad+tek çip), parsel krokisi genel bakışı, Μητρώο, hasat kaynağı, sekme kontrastı, işçi daveti QR, zil, kayıt işaretleri, sezon hedefi, hesap silme, iPhone kurulum rehberi, «Τι νέο», hata raporu.
 3. **Yapılmadı (R tablosunda FAIL):** R8, R10–R12, R14–R16, R18–R25, R30 — çoğu Codex içeriğine (bitki/ilaç bilgisi) veya SQL'e bağlı; bu gece yetişmedi.
 4. **Senden tek adımlar:** (a) hava için RUNBOOK §14a (yalnızca «tamam» deyince); (b) **0035 (#271)** main yeşil olunca yükle; ardından 0036 (#362) ve 0037 (#368) Codex incelemesi sonrası.
 5. **Açık PR'lar:** yalnızca SQL (#271, #362, #368) + Codex'in kuyrukta bekleyenleri (#381–#383, #386, #387) ve Dependabot #305/#306.
@@ -13,34 +13,34 @@
 |---|---|---|---|---|
 | R1 | Σήμερα → bitki sayfası (parseller, bugün/sezon kasası, hedef) | PASS (yerel) | docs/design/compare/sprint/cc-target-ring.png | Hedef yalnızca telefonda (SQL 0040 yok) |
 | R2 | Bekleme halkası (gün + %) | PASS (yerel) | docs/design/compare/sprint/cc-demo-today-after.png | Halka Σήμερα kesim kartında ve bekleme sayfasında; bitki/ilaçlama sayfasında yok |
-| R3 | Εργασίες + yarın notları | KISMEN | — | Εργασίες listesi ve ayrıntısı var (#337, #360); «yarın notu» yok (B4 SQL tasarımda) |
+| R3 | Εργασίες + yarın notları | PASS (yerel) | — | «＋ Σημείωση για αύριο» Εργασίες sayfasında ve işçi ekranında (Demo); «από εργάτη» etiketi; ayrı telefonlar arası paylaşım B3 SQL bekliyor (#418) |
 | R4 | Hava sayfaları tıklanır, değerli | PASS (yerel) | docs/design/compare/sprint/cc-demo-weather.png | Demo 5 gün dolu (#358); saatlik tahmin yok (sunucu yalnızca günlük) |
 | R5 | Χωράφια 5 / Καλλιέργειες → hangileri | PASS (yerel) | docs/design/compare/sprint/cc-bell-today.png | Σήμερα kutuları sayfa açar (#327); ayrı görüntü R5.png alınmadı |
 | R6 | Κλούβες 7/28 ημ. → tablo | PASS (yerel) | — | Kutu ile tablo artık tek pencere (#397, mülkiyet testi) |
 | R7 | Χωρίς αναμονή → hangileri | PASS (yerel) | — | Σήμερα sayfası (#327) |
-| R8 | «Σήμερα έγιναν» ayrıntılı | FAIL | — | Satır ayrıntısı (ilaçlama/hasat + ürün + depo/sevk) yapılmadı; yalnızca sayı |
-| R9 | Gecikmiş işler ayrıntılı | PASS (yerel) | — | Εργασίες satırı → iş ayrıntısı (#360); «ne zamandan beri gecikmiş» gün sayısı yok |
-| R10 | Ιστορικό → ilaç bilgisi | FAIL | — | Ürün sayfası (R16) yapılmadı |
-| R11 | Son ilaçlama süreci | FAIL | — | Yapılmadı |
-| R12 | Hasat geçmişi depo/sevk | FAIL | — | Codex #398 hasat kaynağı var; depo/sevk ayrımı B1 (SQL #362) bekliyor |
+| R8 | «Σήμερα έγιναν» ayrıntılı | PASS (yerel) | — | Satır: tür · bitki · ürün veya kasa → Αποθήκη/Απευθείας/άγνωστο; dokununca ayrıntı sayfası (#405) |
+| R9 | Gecikmiş işler ayrıntılı | PASS (yerel) | — | «Καθυστερεί N ημ.» eklendi (#407) |
+| R10 | Ιστορικό → ilaç bilgisi | PASS (yerel) | — | Ιστορικό'daki her ilaçlamadan ürün sayfası (#404) |
+| R11 | Son ilaçlama süreci | PASS (yerel) | — | İlaçlama ayrıntı sayfası: doz olduğu gibi, halka, «Κοπή από», «Επανείσοδος από» (#406) |
+| R12 | Hasat geçmişi depo/sevk | KISMEN | — | Αποθήκη satırı → Αποθήκη / Απευθείας / άγνωστο ayrımı (#410); gerçek çiftlikte sunucu alanı 0036 yüklenince |
 | R13 | Φυτά listesi: resim+ad+tek çip | PASS (yerel) | docs/morning/2026-11-22/R13.png | #401 CI/merge'de |
-| R14 | Bitki sayfası «Συμβουλές» | FAIL | — | Codex içerik PR'ları (#382/#383) kuyrukta; bağlanmadı |
-| R15 | Ekim krokide | FAIL | — | Yapılmadı (B2 polygon SQL tasarımda) |
-| R16 | İlaç/gübre sayfası | FAIL | — | Yapılmadı |
-| R17 | Χωράφια birleşik kroki + detay | KISMEN | — | Tıklanır kroki genel bakışı #400 (Codex #296 taşındı); birleşik tek çizim ve ekim satırı kartı yok |
-| R18 | Analiz ⓘ | FAIL | — | Codex #330 açıklama var (merge); bitki aralıkları (R30) yapılmadı |
-| R19 | Αποθήκη ⓘ | FAIL | — | Yapılmadı |
-| R20 | Αποθήκη'de depodaki hasat | FAIL | — | Yapılmadı (depo/sevk verisi B1 bekliyor) |
-| R21 | İşçi hasatta depo/sevk | FAIL | — | Yapılmadı; SQL 0036 #362 hazır, merge yok |
-| R22 | Müşteriler + sipariş girişi | FAIL | — | Yapılmadı; SQL 0037 #368 hazır, merge yok |
-| R23 | Çalışan kartı | FAIL | — | Yapılmadı; SQL 0037 #368 (worker_cards) hazır |
-| R24 | İşçi düğmeleri | FAIL | — | Yapılmadı |
-| R25 | İş panosu | FAIL | — | Yapılmadı (B3 SQL tasarımda) |
+| R14 | Bitki sayfası «Συμβουλές» | PASS (yerel) | — | Codex içeriği bağlandı (#403); metinler ayrı parça: ilk açılış internetsizse «yüklenemedi» der (#419) |
+| R15 | Ekim krokide | KISMEN | — | Şerit olarak, ALAN ORANINA göre, «Ενδεικτικό σχέδιο» etiketiyle (#408); gerçek konum çizimi yok |
+| R16 | İlaç/gübre sayfası | PASS (yerel) | — | Etiket amacı, etkin madde, PHI/REI, stok, genel bilgi kartı, resmî etiket satırı (#404); doz önerisi yok |
+| R17 | Χωράφια birleşik kroki + detay | KISMEN | — | Ekim satırı → bitki kartı + kroki şeritleri (#408); tek birleşik çizim yok |
+| R18 | Analiz ⓘ | PASS (yerel) | — | pH kartı bitki aralıklarıyla (#409); EC ve OM için kaynak bulunamadı → «δεν υπάρχει πηγή» |
+| R19 | Αποθήκη ⓘ | PASS (yerel) | — | Ürün kartı ürün sayfasını açar (#404) |
+| R20 | Αποθήκη'de depodaki hasat | PASS (yerel) | — | Αποθήκη üstünde bitki · kasa · yaş çipi · «Αύριο φεύγουν» (#410) |
+| R21 | İşçi hasatta depo/sevk | KISMEN | — | İki büyük düğme + alıcı adı/telefonu (#415); cevap yalnızca bu telefonda: sunucu 0036/0037 yüklenmeden eşzamanlanmaz |
+| R22 | Müşteriler + sipariş girişi | KISMEN | — | Άλλα → Πελάτες + «Νέα παραγγελία» → «Αύριο φεύγουν» (#411); yalnızca bu telefonda, sunucu 0037 bekliyor |
+| R23 | Çalışan kartı | KISMEN | — | Ad, soyad, telefon, doğum tarihi YOK (#414); yalnızca bu telefonda, sunucu 0037 bekliyor |
+| R24 | İşçi düğmeleri | PASS (yerel) | — | Simge + kısa yazı, ≥72 px, basma geri bildirimi (#417) |
+| R25 | İş panosu | KISMEN | — | «Το αναλαμβάνω» (ilk alan kazanır) yalnızca Demo uygulama görünümünde (#416); gerçek çiftlikte B3 SQL gerekir |
 | R26 | Hava verisi (Demo dolu, gerçek: MET) | PASS (yerel) | docs/design/compare/sprint/cc-demo-weather.png | Gerçek çiftlik: RUNBOOK §14a tek sayfa (#349); yayın senin «tamam»ınla |
 | R27 | İlaçlama kaydı ekranı (koru) | PASS | — | Değiştirilmedi |
 | R28 | Haftalık rapor (koru) | PASS | — | Değiştirilmedi |
 | R29 | Uygulama içi iş bildirimi | KISMEN | — | Zil (#346): biten/yeni iş; «ανέλαβε» B3'e bağlı |
-| R30 | OM %/pH/EC bitki aralıkları | FAIL | — | Yapılmadı |
+| R30 | OM %/pH/EC bitki aralıkları | KISMEN | — | pH: yalnızca ıspanak (2 kaynak, farklılar yazıldı); EC/OM kaynak yok; OM kayıtlı alan değil |
 
 **Bitti:** tasarım sprinti D1–D15 + ortak alt sayfa (DetailSheet) + Σήμερα'daki her sayının kaynak sayfası, bekleme halkası, hava ve Εργασίες sayfaları; E1 «＋» menüsü, E2 zil, E3 kayıt işaretleri, E4 işçi daveti (QR), E5 hava RUNBOOK tek sayfa, E6 sezon hedefi (telefonda), E7 hesap silme sayfası; E8 hız ölçümü (PR'da). SQL: production 0001–0034; 0035 (#271) Codex incelemesi temiz, en sona bırakıldı.
 **Sıradaki:** E8 + Codex ekran PR'larının merge'ü → #271'i en son merge et → kuyruğu durdur → «main yeşil (sha …), 0035 yüklemeye hazır» yaz → sen yüklersin. Sonra B1–B5 SQL (0036–0040, ayrı PR'lar; tasarım `docs/plan/B-TICKETS-SQL-DESIGN.md`).
