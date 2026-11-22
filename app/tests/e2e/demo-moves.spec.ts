@@ -15,3 +15,15 @@ test('the Demo moves with the real today: on another day it still has crates in 
   await page.getByTestId('open-worker-view').click();
   await expect(page.getByTestId('worker-free-job')).toHaveCount(1);
 });
+
+test('the 7-day tile and the table behind it agree at ANY time of day (Athens late evening: the calendar day, not 24 hours of the clock)', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-12-05T21:30:00Z'));          // 23:30 in Athens
+  await page.goto('/');
+  await page.getByTestId('empty-state').locator('button').nth(1).click();
+  await expect(page.getByTestId('today-counts')).toBeVisible();
+  const tile = (await page.getByTestId('today-cut7').locator('strong').innerText()).replace(/\D/g, '');
+  await page.getByTestId('today-cut7').click();
+  await expect(page.getByTestId('sheet-crates').locator('.ds-bignum-value')).toBeVisible();
+  await expect.poll(async () => (await page.getByTestId('sheet-crates').locator('.ds-bignum-value').innerText()).replace(/\D/g, '')).toBe(tile);
+});
+
