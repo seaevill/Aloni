@@ -1,6 +1,9 @@
 import type { AppDB } from '../db/schema';
 import { delLocal, putLocal } from '../repo';
 import type { KlouvesOrders } from './klouves';
+import { addCustomerOrder } from './customers';
+import { serverRecordsOn } from '../owner-records/mode';
+import { moveLocalOwnerRecords } from '../owner-records/migrate';
 import { athensDayOf, nextDay } from './tomorrow';
 
 // The Κλούβες import and the crop map belong to ONE farm (T5, 2026-11-19, safety rule 4): a real client list never shows up in the demo and a demo sample never in the real farm.
@@ -9,9 +12,24 @@ export const ordersKey = (farmId: string): string => `${ORDERS}:${farmId}`;
 export const mapKey = (farmId: string): string => `${MAP}:${farmId}`;
 
 export async function loadOrders(db: AppDB, farmId: string): Promise<{ orders: KlouvesOrders | undefined; map: Record<string, string> }> {
-  const o = (await db.settings.get(ordersKey(farmId)))?.value as KlouvesOrders | undefined;
-  const m = (await db.settings.get(mapKey(farmId)))?.value as Record<string, string> | undefined;
-  return { orders: o, map: m ?? {} };
+  const server = await serverRecordsOn(db);
+  if (server) await moveLocalOwnerRecords(db, farmId);              // once: what was typed on this phone goes to the server tables, and leaves the local order file
+  let o = (await db.settings.get(ordersKey(farmId)))?.value as KlouvesOrders | undefined;
+  let m = ((await db.settings.get(mapKey(farmId)))?.value as Record<string, string> | undefined) ?? {};
+  if (server) {                                                     // the owner's own orders come from the SERVER rows (synced between phones), added to the Κλούβες import in the same shape
+    const customers = await db.customers.where('farm_id').equals(farmId).toArray();
+    const crops = await db.crops.where('farm_id').equals(farmId).toArray();
+    const orders = (await db.customer_orders.where('farm_id').equals(farmId).toArray()).filter((r) => !r.deleted_at && r.status !== 'cancelled');
+    let merged: KlouvesOrders = o ?? { products: [], weeks: {}, skipped: 0, days: {}, clients: [] };
+    for (const r of orders) {
+      const c = customers.find((x) => x.id === r.customer_id); const crop = crops.find((x) => x.id === r.crop_id);
+      if (!c || c.deleted_at || !crop) continue;
+      const added = addCustomerOrder(merged, m, { customerId: String(c.id), customerName: String(c.name), slug: String(crop.slug), cropName: String(crop.name ?? crop.slug), day: String(r.for_day), crates: String(r.crates_str) });
+      if (added.ok) { merged = added.orders; m = added.map; }
+    }
+    o = merged;
+  }
+  return { orders: o, map: m };
 }
 export async function saveOrders(db: AppDB, farmId: string, orders: KlouvesOrders, map: Record<string, string>): Promise<void> { await putLocal(db, ordersKey(farmId), orders); await putLocal(db, mapKey(farmId), map); }
 export async function saveMap(db: AppDB, farmId: string, map: Record<string, string>): Promise<void> { await putLocal(db, mapKey(farmId), map); }
