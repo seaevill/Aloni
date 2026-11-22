@@ -36,6 +36,8 @@ reset role; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000
 do $$ begin
   if (select count(*) from jobs where id = 'eeeeeeee-0000-0000-0000-0000000018a1') <> 0 then raise exception '(0038) a stranger sees an open job'; end if;
   begin perform claim_job('eeeeeeee-0000-0000-0000-0000000018a1'); raise exception '(0038) a stranger claimed a job'; exception when insufficient_privilege then null; end;
+  if private.job_is_open('eeeeeeee-0000-0000-0000-0000000018a1', '11111111-1111-1111-1111-111111111111') then raise exception '(0038) the open-job helper answered a stranger'; end if;
+  if private.sync_visibility('11111111-1111-1111-1111-111111111111') <> md5('') then raise exception '(0038) the visibility hash of a stranger is not empty'; end if;
 end $$;
 -- a worker WITHOUT a roster entry cannot claim
 reset role; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000e6';
@@ -74,5 +76,23 @@ reset role; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000
 do $$ begin if (claim_job('eeeeeeee-0000-0000-0000-0000000018a1'))->>'status' <> 'claimed' then raise exception '(0038) the second worker could not take the returned job'; end if; end $$;
 reset role; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000b2';
 do $$ begin if (select h from vis18) = private.sync_visibility('11111111-1111-1111-1111-111111111111') then raise exception '(0038) the visibility hash of the loser did not change when the job was taken'; end if; end $$;
+
+-- the normal pull round trip (Codex SHOULD): the loser's phone had the open job; after another worker takes it her old cursor is reset and a fresh pull no longer carries the job
+reset role; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
+do $$ begin update jobs set worker_id = null where id = 'eeeeeeee-0000-0000-0000-0000000018a1'; end $$;                  -- the owner puts it back on the board
+reset role; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000b2';
+create temp table cur18 as select pull('11111111-1111-1111-1111-111111111111', null, 1000) as p;
+do $$ begin
+  if not exists (select 1 from jsonb_array_elements((select p from cur18)->'rows') r where r->>'table' = 'jobs' and r->'row'->>'id' = 'eeeeeeee-0000-0000-0000-0000000018a1') then raise exception '(0038) the loser''s first pull lacks the open job'; end if;
+end $$;
+reset role; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000c4';
+do $$ begin perform claim_job('eeeeeeee-0000-0000-0000-0000000018a1'); end $$;
+reset role; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000b2';
+do $$ declare again jsonb; fresh jsonb; begin
+  again := pull('11111111-1111-1111-1111-111111111111', (select p from cur18)->'cursor', 1000);
+  if (again->>'reset')::boolean is not true then raise exception '(0038) the old cursor was not reset after the job was taken'; end if;
+  fresh := pull('11111111-1111-1111-1111-111111111111', null, 1000);
+  if exists (select 1 from jsonb_array_elements(fresh->'rows') r where r->>'table' = 'jobs' and r->'row'->>'id' = 'eeeeeeee-0000-0000-0000-0000000018a1') then raise exception '(0038) a taken job is still in the loser''s fresh pull'; end if;
+end $$;
 reset role; set test.uid = '';
 do $$ begin raise notice 'm18-job-board tests passed'; end $$;
