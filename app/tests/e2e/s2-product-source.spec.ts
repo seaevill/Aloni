@@ -15,7 +15,8 @@ test('the Demo stock product opens recorded label and balance facts', async ({ p
 
   const sheet = page.getByTestId('product-source');
   await expect(sheet.getByRole('dialog')).toBeVisible();
-  await expect(sheet.getByTestId('product-knowledge')).toContainText('ανόργανη ένωση του χαλκού');
+  await expect(sheet.getByTestId('product-knowledge')).toContainText(/ανόργανη ένωση του χαλκού/i);
+  await page.context().setOffline(true);
   await expect(sheet).toContainText('άγνωστο – λείπει από την ετικέτα');
   await expect(sheet).toContainText(/4,5\s*kg/);
   await expect(sheet).toContainText('Σπανάκι');

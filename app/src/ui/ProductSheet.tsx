@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'preact/hooks';
 import type { Row } from '../db/schema';
 import { formatDateTime, lang, t } from '../i18n';
 import { formatQty } from '../i18n/format';
@@ -10,7 +11,7 @@ import hi from '../content/product-source/hi.json';
 import tr from '../content/product-source/tr.json';
 import { productKnowledge } from '../content/products';
 import { Card, Chip, DetailSheet, ListRow, SheetFact } from './ds';
-import type { I18nKey } from '../i18n';
+import type { I18nKey, Lang } from '../i18n';
 import { registerSheet, type SheetProps } from './sheets';
 import { nameOf } from './screens';
 import { useRows } from './useRows';
@@ -37,7 +38,19 @@ export function ProductSheet({ product, onClose }: { product: Row; onClose: () =
     ? [formatQty(balance), unit].join('\u00a0')
     : undefined;
   const type = text(product.type);
-  const knowledge = productKnowledge(product.active, type, lang.value);
+  const language = lang.value;
+  const active = text(product.active);
+  const key = JSON.stringify([active, type, language]);
+  const [translation, setTranslation] = useState<{ key: string; value?: string }>();
+  useEffect(() => {
+    if (!active || !type) return;
+    let current = true;
+    void productKnowledge(active, type, language).then((value) => {
+      if (current) setTranslation({ key, value });
+    }).catch(() => {});
+    return () => { current = false; };
+  }, [key]);
+  const knowledge = translation?.key === key ? translation.value : undefined;
   const kind = type !== undefined && Object.hasOwn(GENERAL, type) ? GENERAL[type] : undefined;
   const last = effectiveSprays(ownRows(sprays.rows)).filter((row) => row.product_id === product.id)
     .sort((a, b) => (text(b.sprayed_at) ?? '').localeCompare(text(a.sprayed_at) ?? ''));
