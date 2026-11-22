@@ -10,8 +10,8 @@ do $$ begin
   if not exists (select 1 from pg_constraint where conrelid = 'public.jobs'::regclass and conname = 'jobs_open_spray_complete') then raise exception '0038 stopped: jobs_open_spray_complete is missing (nothing was changed)'; end if;
   if to_regprocedure('public.claim_job(uuid)') is not null then raise exception '0038 stopped: claim_job already exists (nothing was changed)'; end if;
   -- the two functions re-issued below must be EXACTLY the ones this file was written against
-  if not exists (select 1 from pg_proc p where p.oid = 'public.jobs_worker_guard()'::regprocedure and md5(p.prosrc) = '404437ef0a4b966222cf3fd5d362aa24')
-     or not exists (select 1 from pg_proc p where p.oid = 'private.sync_visibility(uuid)'::regprocedure and md5(p.prosrc) = 'd15e78a2549eb2bce0e6ac25d5f102c9') then
+  if not exists (select 1 from pg_proc p where p.oid = 'public.jobs_worker_guard()'::regprocedure and md5(p.prosrc) = '404437ef0a4b966222cf3fd5d362aa24' and not p.prosecdef and p.provolatile = 'v' and p.proconfig = array['search_path=public, private'])
+     or not exists (select 1 from pg_proc p where p.oid = 'private.sync_visibility(uuid)'::regprocedure and md5(p.prosrc) = 'd15e78a2549eb2bce0e6ac25d5f102c9' and p.prosecdef and p.provolatile = 's' and p.proconfig = array['search_path=public, private, pg_temp']) then
     raise exception '0038 stopped: jobs_worker_guard / sync_visibility are not exactly the definitions this file was written against (nothing was changed)'; end if;
 end $$;
 
@@ -21,7 +21,7 @@ alter table public.jobs add constraint jobs_open_spray_complete check (kind <> '
 
 -- «open»: a planned spray job nobody has, not archived
 create function private.job_is_open(p_job uuid, p_farm uuid) returns boolean language sql stable security definer set search_path = public, private, pg_temp as $$
-  select exists (select 1 from jobs j where j.id = p_job and j.farm_id = p_farm and j.worker_id is null and j.assigned_to is null and j.status = 'planned' and j.kind = 'spray' and j.deleted_at is null) $$;
+  select has_role(p_farm, array['owner', 'worker']) and exists (select 1 from jobs j where j.id = p_job and j.farm_id = p_farm and j.worker_id is null and j.assigned_to is null and j.status = 'planned' and j.kind = 'spray' and j.deleted_at is null) $$;
 revoke execute on function private.job_is_open(uuid, uuid) from public, anon;
 grant execute on function private.job_is_open(uuid, uuid) to authenticated;
 
@@ -87,4 +87,4 @@ create or replace function private.sync_visibility(p_farm uuid) returns text lan
   select case when has_role(p_farm, array['owner']) then 'owner'
     else md5(coalesce((select string_agg(j.id::text || ':' || coalesce(j.product_id::text, '') || ':' || coalesce(j.label_use_id::text, '') || ':'
              || coalesce((select string_agg(jp.planting_id::text, ',' order by jp.planting_id) from job_plantings jp where jp.job_id = j.id and jp.farm_id = j.farm_id), ''), ';' order by j.id)
-           from jobs j where j.farm_id = p_farm and (j.assigned_to = auth.uid() or (j.worker_id is null and j.assigned_to is null and j.status = 'planned' and j.kind = 'spray')) and j.deleted_at is null), '')) end $$;
+           from jobs j where j.farm_id = p_farm and (j.assigned_to = auth.uid() or (has_role(p_farm, array['worker']) and j.worker_id is null and j.assigned_to is null and j.status = 'planned' and j.kind = 'spray')) and j.deleted_at is null), '')) end $$;
