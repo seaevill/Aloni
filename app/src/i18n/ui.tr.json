@@ -333,5 +333,6 @@
   "ui.weather.hour": "{h}:00",
   "ui.cust.week": "Bu hafta: {n} kasa",
   "ui.cust.week.none": "Bu hafta: —",
-  "ui.cust.imported": "Κλούβες'ten"
+  "ui.cust.imported": "Κλούβες'ten",
+  "ui.bell.claimed": "{worker} işi üstlendi"
 }
