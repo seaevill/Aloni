@@ -327,5 +327,6 @@
   "ui.tom.copy": "Metni kopyala",
   "ui.tom.copied": "Metin kopyalandı.",
   "ui.tom.manual": "Metni seçip kopyalayın.",
-  "ui.tom.old": "Gideceği yeri yazılmamış eski kayıtlar: {n} (eklenmedi)"
+  "ui.tom.old": "Gideceği yeri yazılmamış eski kayıtlar: {n} (eklenmedi)",
+  "ui.info.privacy.contacts": "Kişiler: müşteri, işçi kartı ya da doğrudan yüklemede alıcı kaydederseniz ad, telefon ve not saklanır. Bunları yalnızca sahip görür, işçiler asla. Bugün yalnızca bu telefonda kalır; eşitleme açılıp sunucuda ilgili tablo oluşana kadar hiçbir yere gönderilmez. Doğum tarihi yoktur. İstendiğinde silinir; yasa saklamayı gerektiriyorsa saklanır. İlaçlama ve hasat kayıtları en az 3 yıl tutulur."
 }

@@ -42,6 +42,7 @@ export function Info({ onBack }: { onBack: () => void }) {
       <p class="card" data-testid="info-privacy">{t('info.privacy.body', { controller_name: shown(saved?.name), controller_address: shown(saved?.address), controller_phone: shown(saved?.phone) })}</p>
 
       <p class="card" data-testid="info-photos">{t('ui.info.privacy.photos')}</p>
+      <p class="card" data-testid="info-contacts">{t('ui.info.privacy.contacts')}</p>
       <button type="button" class="btn secondary" data-testid="account-open" onClick={() => openSheet('account', 'all')}>{t('ui.account.open')}</button>
 
       <ErrorReport />

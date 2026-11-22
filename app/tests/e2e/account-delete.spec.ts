@@ -12,6 +12,7 @@ test('the sheet explains both flows and the 3-year records; the wipe button stay
   await page.locator('nav.tabs [data-tab="more"]').click();
   await page.getByTestId('open-info').click();
   await expect(page.getByTestId('info-photos')).toContainText('GPS');                                // the privacy text covers photos
+  await expect(page.getByTestId('info-contacts')).toContainText('3 χρόνια');                         // …and the contacts (customers, worker cards, receivers) and the retention time
   await page.getByTestId('account-open').click();
   const sheet = page.getByTestId('sheet-account');
   await expect(sheet.getByTestId('account-worker')).toContainText('Πρώην εργάτης');                  // the worker is pseudonymised
