@@ -1,4 +1,4 @@
-import { shiftWeather } from './demo-weather';
+import { shiftDemoDates, shiftWeather } from './demo-weather';
 import { athensToday } from '../plantings/planting';
 import { DEMO_FARM_ID, DEMO_NAMESPACE } from '../config';
 import { AppDB, FARM_TABLES, type FarmTable, type Row, type WeatherRow } from './schema';
@@ -53,7 +53,8 @@ const legacyId = (table: FarmTable, r: Record<string, unknown>, i: number): stri
  * Values are copied exactly: nothing is rounded, defaulted or invented (missing label data stays missing = unknown).
  * Re-running replaces the previous demo rows; the real farm is never touched.
  */
-export async function importDemo(db: AppDB, data: PrototypeData): Promise<void> {
+export async function importDemo(db: AppDB, raw: PrototypeData): Promise<void> {
+  const data: PrototypeData = shiftDemoDates(raw, typeof raw.meta.today === 'string' ? raw.meta.today : '', athensToday(new Date()) ?? '');   // the sample farm always has recent work around the real today
   const src = (t: FarmTable) => (data[t] as Array<Record<string, unknown>> | undefined) ?? [];
   const ids = {} as Record<FarmTable, Map<string, string>>;
   for (const t of FARM_TABLES) ids[t] = new Map(await Promise.all(src(t).map(async (r, i) => [legacyId(t, r, i), await uuidv5(`${t}:${legacyId(t, r, i)}`, DEMO_NAMESPACE)] as const)));

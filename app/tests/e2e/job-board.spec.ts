@@ -28,11 +28,11 @@ test('Demo worker view: an open job nobody has is listed with «Το αναλα�
   await page.locator('nav.tabs [data-tab="more"]').click();
   await page.getByTestId('open-worker-view').click();
   const free = page.getByTestId('worker-free-job');
-  await expect(free).toHaveCount(1);
-  const take = free.getByTestId('worker-take');
+  await expect(free).toHaveCount(2);                            // the Demo's own open job + the one this test made
+  const take = free.first().getByTestId('worker-take');
   expect((await take.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(56);
   const before = await page.getByTestId('worker-job').count();
   await take.click();
-  await expect(page.getByTestId('worker-free-job')).toHaveCount(0);
+  await expect(page.getByTestId('worker-free-job')).toHaveCount(1);
   await expect(page.getByTestId('worker-job')).toHaveCount(before + 1);
 });
