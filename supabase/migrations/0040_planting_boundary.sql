@@ -1,6 +1,7 @@
 -- 0040_planting_boundary.sql  (WRITTEN, NOT APPLIED ANYWHERE)  The planting's own outline drawn inside its parcel. A NEW file (0001–0035 are applied and frozen); the same pattern as 0027 (parcel boundary).
 --  plantings.boundary = a GeoJSON Polygon kept as jsonb (nothing but `type` and `coordinates`, one valid closed polygon in SRID 4326, coordinates in range) — and, when the parcel HAS a boundary, it must lie inside it (touching the edge is fine).
 --  plantings.area_m2 = the area of that outline in square metres, computed by the SERVER (geography) and stored beside the typed area. It NEVER replaces the typed στρέμματα (area_str): a difference is shown, never corrected.
+--  PHONE: apply_one writes a whole row and empties a nullable column the phone leaves out, so a phone that does not know `boundary` would wipe an outline when it edits another field. Ship the phone that carries `boundary` (and the contract file) BEFORE outlines are drawn.
 --  Who may write: the same as before (the owner; a worker has no write right on plantings). A change of an existing outline is a change of the planting: 0024's edit history asks for a reason, like any other field.
 do $$ begin
   if to_regclass('public.plantings') is null or to_regclass('public.parcels') is null then raise exception '0040 stopped: plantings or parcels is missing (nothing was changed)'; end if;
@@ -30,6 +31,7 @@ begin
   if g.dims <> 2 then raise exception 'the planting outline must be two-dimensional (longitude and latitude only)' using errcode = 'check_violation'; end if;
   if not g.ok then raise exception 'the planting outline is not a valid polygon (for example it crosses itself)' using errcode = 'check_violation'; end if;
   select p.boundary into parcel_boundary from parcels p where p.id = new.parcel_id and p.farm_id = new.farm_id for share;      -- waits for a parent edit in progress and sees its result: parent and child checks are serialised
+  if not found then raise exception 'the parcel of the planting is not visible to this writer' using errcode = 'check_violation'; end if;   -- never skip the containment check silently
   if parcel_boundary is not null then
     execute 'select ST_CoveredBy(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326), ST_SetSRID(ST_GeomFromGeoJSON($2), 4326))' into inside using new.boundary::text, parcel_boundary::text;
     if inside is not true then raise exception 'the planting outline is not inside its parcel' using errcode = 'check_violation'; end if;
