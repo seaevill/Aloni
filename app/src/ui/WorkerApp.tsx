@@ -134,6 +134,7 @@ export function WorkerApp() {
     return holdAction(db, entry).then(() => showHeldUndo(t('worker.committed'), () => cancelHeld(db, entry.id), async () => { try { await commitHeld(db, entry.id); dataVersion.value++; } catch { /* written at the next start */ } }, HOLD_MS));
   };
   const TABS: Array<['jobs' | 'harvest' | 'observe', I18nKey]> = [['jobs', 'worker.tab.jobs'], ['harvest', 'worker.tab.harvest'], ['observe', 'worker.tab.observe']];
+  const TAB_ICON = { jobs: 'calendar', harvest: 'crate', observe: 'camera' } as const;
 
   return (
     <main data-testid="worker-app">
@@ -226,7 +227,7 @@ export function WorkerApp() {
           <button class="btn big" data-testid="observe-save" onClick={() => void submit(() => saveObservation())} disabled={busy}>{t('worker.observe.save')}</button>
         </>
       )}
-      <div class="seg big worker-tray" data-testid="worker-tray">{TABS.map(([id, k]) => <button key={id} aria-pressed={tabId === id} data-testid={`worker-tab-${id}`} onClick={() => { setHarvestSaved(false); setTabId(id); }}>{t(k)}</button>)}</div>
+      <div class="seg big worker-tray" data-testid="worker-tray">{TABS.map(([id, k]) => <button key={id} aria-pressed={tabId === id} data-testid={`worker-tab-${id}`} onClick={() => { setHarvestSaved(false); setTabId(id); }}><Icon name={TAB_ICON[id]} /><span>{t(k)}</span></button>)}</div>
       <button class="btn secondary" data-testid="worker-exit" onClick={() => { workerView.value = undefined; }}>{t('worker.exit')}</button>
     </main>
   );

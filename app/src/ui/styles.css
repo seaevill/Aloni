@@ -214,3 +214,6 @@ main :where(input, select, textarea, button, .btn, .field, .card, .seg) { max-wi
 main :where(h1, h2, h3, p, .card, .muted) { overflow-wrap:anywhere; }   /* 200 % text: one long Greek word in a 56 px title (Φωτογραφίες, Πληροφορίες) wraps instead of pushing the page sideways in WebKit */
 main :where(.field, .seg) { min-width:0; }
 h3 .count { display:inline-block; min-width:var(--sp-24); padding:0 var(--sp-6); margin-inline-start:var(--sp-6); border-radius:var(--r-pill); background:var(--green); color:var(--white); font-size:var(--fs-14); text-align:center; }
+
+.worker-tray button { display:grid; justify-items:center; align-content:center; gap:var(--sp-4); min-height:var(--tile-row); }
+.worker-tray button:active { transform:scale(.96); }
