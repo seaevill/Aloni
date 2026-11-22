@@ -632,8 +632,6 @@
   "golive.on": "Sync is on.",
   "today.who": "Done today",
   "today.who.none": "Nothing recorded today yet.",
-  "today.who.done": "{worker}: sprayed {product}",
-  "today.who.crates": "Crates cut: {n}",
   "today.who.overdue": "Open jobs from earlier days: {n}",
   "map.title": "Parcel boundary on the map",
   "map.help": "Tap the corners of the field and close the shape with a double tap. You can drag the corners afterwards.",

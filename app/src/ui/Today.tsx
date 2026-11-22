@@ -23,7 +23,8 @@ import { EmptyState, ErrorState } from './states';
 import { Title, nameOf, retry } from './screens';
 import { useRows, type Rows } from './useRows';
 import { dayOf, farmDay, parseDays, provenance, type Day } from '../weather/strip';
-import { todaySummary, cutCrates, cratesLogged, cratesPerDay } from '../summary/today';
+import { todaySummary, cutCrates, cratesLogged, cratesPerDay, doneRecords } from '../summary/today';
+import { TodayDone } from './TodayDone';
 import { BigNum, Sparkline } from './ds';
 import { Icon } from './icons/Icon';
 import { cutToday, type CutLine, type CutToday } from '../summary/cutlist';
@@ -331,8 +332,7 @@ export function Today() {
         <section class="card" data-testid="today-who">
           <strong>{t('today.who')}</strong>
           {summary.done.length === 0 && summary.harvests === 0 && summary.overdue.length === 0 && <small data-testid="today-who-none">{t('today.who.none')}</small>}
-          {summary.done.map((d) => <small key={d.sprayId} data-testid="today-who-done">{t('today.who.done', { worker: d.worker || t('value.unknown'), product: d.product })}</small>)}
-          {summary.harvests > 0 && <small data-testid="today-who-crates">{t('today.who.crates', { n: formatQty(summary.crates) })}</small>}
+          <TodayDone records={doneRecords(athensToday(new Date()) ?? '', sprays.rows ?? [], harvestRows.rows ?? [], jobs.rows ?? [], links.rows ?? [], plantings.rows ?? [], (id) => nameOf(workers.rows?.find((w) => w.id === id) ?? {}), (id) => nameOf(products.rows?.find((p) => p.id === id) ?? {}))} />
           {summary.overdue.length > 0 && <small class="late" data-testid="today-who-overdue">{t('today.who.overdue', { n: summary.overdue.length })}</small>}
         </section>
       )}

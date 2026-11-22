@@ -300,5 +300,20 @@
   "ui.notes.add": "＋ Yarın için not",
   "ui.notes.placeholder": "Yarın ne yapılacak?",
   "ui.notes.fromworker": "işçiden",
-  "ui.notes.err": "Notu yazın."
+  "ui.notes.err": "Notu yazın.",
+  "ui.done.spray": "İlaçlama",
+  "ui.done.harvest": "Hasat",
+  "ui.done.crates": "{n} kasa",
+  "ui.done.dest.store": "Depo",
+  "ui.done.dest.dispatch": "Doğrudan yükleme",
+  "ui.done.dest.unknown": "bilinmiyor – eski kayıt",
+  "ui.done.dest": "Gittiği yer",
+  "ui.done.who": "Kim",
+  "ui.done.when": "Ne zaman",
+  "ui.done.product": "Ürün",
+  "ui.done.crop": "Bitki",
+  "ui.done.parcel": "Tarla",
+  "ui.done.worker.unknown": "bilinmiyor – işçi kaydedilmemiş",
+  "ui.done.crates.unknown": "bilinmiyor – sayı okunamıyor",
+  "ui.done.productpage": "Ürün bilgisi"
 }
