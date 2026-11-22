@@ -1,4 +1,5 @@
 -- 0041_crop_targets.sql  (WRITTEN, NOT APPLIED ANYWHERE)  The season target per crop, on the server (Bora's own numbers: «πόσες κλούβες θέλω φέτος»). A NEW file (0001–0035 are applied and frozen).
+--  ORDER: the newest row is the one with the highest server_seq (created_at is the phone's own clock and can be set freely): screens must order by server_seq.
 --  crop_targets(crop, season_start, target_crates > 0): OWNER ONLY (read and write; a worker gets nothing from select and nothing from pull()). INSERT-ONLY: a change is a NEW row, the newest row of a crop and season wins, the older ones stay as history.
 --  Until a row exists the screens say «δεν έχει οριστεί στόχος». The target is information for the owner: nothing is decided from it. The crop is referenced by (id, farm_id) so a target can never point at another farm's crop (needs the key of 0037).
 --  The three fixed table lists are re-issued with ONE name added; the file stops, changing nothing, unless each is exactly the definition 0039 leaves.
