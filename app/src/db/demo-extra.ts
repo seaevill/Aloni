@@ -17,6 +17,8 @@ const u = (name: string) => uuidv5(name, DEMO_NAMESPACE);
 const field = (text: string) => ({ notOnLabel: false, text });
 export const DEMO_SIGNER = 'Γεωπόνος επίδειξης (φανταστικός)';
 
+const DEMO_DESTINATIONS: ReadonlyArray<Record<string, string>> = [{ destination: 'store' }, { destination: 'dispatch' }, {}];
+
 export async function demoExtraRows(data: Record<string, unknown>, idOf: (table: FarmTable, legacy: string) => string): Promise<Partial<Record<FarmTable, Row[]>>> {
   const arr = (k: string) => (data[k] as Proto[] | undefined) ?? [];
   const out: Partial<Record<FarmTable, Row[]>> = { workers: [], label_uses: [], stock_lots: [], stock_movements: [], jobs: [], job_plantings: [], job_spray: [], job_harvest: [], soil_tests: [], observations: [] };
@@ -82,10 +84,11 @@ export async function demoExtraRows(data: Record<string, unknown>, idOf: (table:
   }
 
   // harvests: the prototype's harvest jobs («38 crates» in the note)
+  let harvestNo = 0;                                                                                           // FICTIONAL destinations for the Demo only: store, direct dispatch, and (every third) an OLD record without one
   for (const j of arr('jobs').filter((x) => x.kind === 'harvest')) {
     const crates = /(\d+)\s*crates/.exec(String(j.notes))?.[1];
     if (!crates) continue;
-    push('job_harvest', { id: await u(`harvest:${j.id}`), farm_id: DEMO_FARM_ID, planting_id: idOf('plantings', String(j.planting_id)), crates_str: crates, harvested_at: `${String(j.date)}T10:00:00Z`, created_at: NOW });
+    push('job_harvest', { id: await u(`harvest:${j.id}`), farm_id: DEMO_FARM_ID, planting_id: idOf('plantings', String(j.planting_id)), crates_str: crates, harvested_at: `${String(j.date)}T10:00:00Z`, ...DEMO_DESTINATIONS[harvestNo++ % 3], created_at: NOW });
   }
 
   // soil analyses from the parcels' own soil data (EC in dS/m as the prototype gives it)
