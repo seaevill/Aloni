@@ -245,7 +245,8 @@ describe('golden cases', () => {
     const reading = parcel.soil_test;
     const nitrogen = [{ parcelId: parcel.id, sampledOn: reading.date, nitrogenPpm: reading.N_ppm }];
     const rules = snapshot(fixture);
-    for (const ruleStatus of [{ N: 'unsigned' } as const, {}]) {
+    const statuses: Snapshot['ruleStatus'][] = [{ N: 'unsigned' }, {}];
+    for (const ruleStatus of statuses) {
       const output = runRules({ ...rules, ruleStatus, nitrogen }).filter((r) => r.rule_id === 'N');
       expect(output).toMatchObject([{
         kind: 'info', notify: false, vetoes: [], parcel_ids: [parcel.id],
