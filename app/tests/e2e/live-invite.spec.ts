@@ -19,7 +19,7 @@ test('the invitation sheet shows a QR code and a link that carries only the lang
   const modulesHi = await sheet.getByTestId('invite-qr').locator('path').getAttribute('d');
   await sheet.getByTestId('invite-lang').getByRole('button', { name: /EL/ }).click();
   await expect(sheet.getByTestId('invite-link')).toHaveValue(/\/\?lang=el$/);
-  expect(await sheet.getByTestId('invite-qr').locator('path').getAttribute('d')).not.toBe(modulesHi); // the code follows the link
+  await expect.poll(async () => sheet.getByTestId('invite-qr').locator('path').getAttribute('d')).not.toBe(modulesHi); // the code follows the link (the picture is redrawn a moment after the field)
   expect((await sheet.getByTestId('invite-copy').boundingBox())!.height).toBeGreaterThanOrEqual(56);
   await sheet.getByTestId('invite-copy').click();
   await expect(sheet.getByTestId('invite-copied').or(sheet.getByRole('alert'))).toBeVisible();          // copied, or (no permission) the plain «press and hold» help
