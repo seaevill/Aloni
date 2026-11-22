@@ -239,5 +239,10 @@
   "ui.spray.over": "Bekleme süresi bitti",
   "ui.spray.where": "Tarla ve bitki",
   "ui.spray.who": "İlaçlayan",
-  "ui.spray.who.unknown": "bilinmiyor – işçi kaydedilmemiş"
+  "ui.spray.who.unknown": "bilinmiyor – işçi kaydedilmemiş",
+  "ui.range.title": "Bu tarladaki bitkiler için",
+  "ui.range.line": "{crop} için: genellikle {low}–{high}",
+  "ui.range.none": "{crop} için: kaynak yok",
+  "ui.range.note": "Bilgi amaçlı, ziraat mühendisi imzası yok",
+  "ui.range.differ": "Kaynaklar farklı; hepsi yazılmıştır."
 }
