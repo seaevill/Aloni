@@ -11,14 +11,16 @@ export function CropTips({ slug, onClose }: { slug: string; onClose: () => void 
   // the texts are their own chunk (not in the first load): they are fetched when the card opens
   const [c, setC] = useState<CropContent | undefined>(undefined);
   const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
   useEffect(() => {
     let live = true;
-    void import('../content/crops').then((m) => { if (live) { setC(m.cropContent(slug, localeOf(lang.value))); setLoaded(true); } }).catch(() => { if (live) setLoaded(true); });
+    void import('../content/crops').then((m) => { if (live) { setC(m.cropContent(slug, localeOf(lang.value))); setLoaded(true); } }).catch(() => { if (live) setFailed(true); });
     return () => { live = false; };
   }, [slug, lang.value]);
   return (
     <DetailSheet heading={t('ui.crop.tips')} onClose={onClose} testid="crop-tips">
       <p class="muted" data-testid="crop-tips-note">{t('ui.crop.tips.note')}</p>
+      {failed && <p class="muted" role="alert" data-testid="crop-tips-failed">{t('ui.crop.tips.failed')}</p>}
       {loaded && c === undefined && <p class="muted">{t('ui.crop.tips.none')}</p>}
       {c !== undefined && <>
         <h3>{t('ui.crop.tips.history')}</h3>

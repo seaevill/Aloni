@@ -315,5 +315,6 @@
   "ui.done.parcel": "Field",
   "ui.done.worker.unknown": "unknown – no worker recorded",
   "ui.done.crates.unknown": "unknown – the number cannot be read",
-  "ui.done.productpage": "Product information"
+  "ui.done.productpage": "Product information",
+  "ui.crop.tips.failed": "The information did not load. Try again when there is a connection."
 }
