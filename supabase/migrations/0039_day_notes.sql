@@ -1,4 +1,4 @@
--- 0039_day_notes.sql  (WRITTEN, NOT APPLIED ANYWHERE)  Notes for the next days («＋ Σημείωση για αύριο»): the owner and the workers write them, the owner confirms or removes them, everybody of the farm reads them. A NEW file (0001–0035 are applied and frozen).
+-- 0039_day_notes.sql  (WRITTEN, NOT APPLIED ANYWHERE)  Notes for the next days (the day a note is for is stored as the writer sent it: a past day is allowed, nothing is replaced by the server date) («＋ Σημείωση για αύριο»): the owner and the workers write them, the owner confirms or removes them, everybody of the farm reads them. A NEW file (0001–0035 are applied and frozen).
 --  day_notes(for_day, text ≤280, from_worker, status open|confirmed|deleted). `from_worker` is set by the SERVER from the writer's role (a worker can never claim «not from a worker», the owner never shows as one); a worker's note always starts `open`.
 --  Workers insert and read; only the owner changes a note (confirm, remove = status 'deleted'); no hard delete. Same pattern as the other synced tables (server_seq + sync_xid, audit trigger, created_by forced).
 --  The three fixed table lists are re-issued with ONE name added; the file stops, changing nothing, unless each is exactly the definition 0037 leaves (body hash, security mode, volatility, search path).
@@ -33,6 +33,7 @@ begin
     if new.from_worker then new.status := 'open'; end if;
   else
     new.from_worker := old.from_worker;                                    -- never changed afterwards
+    if new.farm_id is distinct from old.farm_id then raise exception 'a day note never changes farm' using errcode = 'check_violation'; end if;   -- not even for an owner of both farms (a move would leave no tombstone in the first farm's pull)
   end if;
   return new;
 end $$;
