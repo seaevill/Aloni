@@ -23,7 +23,7 @@ import { EmptyState, ErrorState } from './states';
 import { Title, nameOf, retry } from './screens';
 import { useRows, type Rows } from './useRows';
 import { dayOf, farmDay, parseDays, provenance, type Day } from '../weather/strip';
-import { todaySummary, cutCrates, cratesLogged, cratesPerDay, doneRecords } from '../summary/today';
+import { todaySummary, cratesLogged, cratesPerDay, doneRecords } from '../summary/today';
 import { TodayDone } from './TodayDone';
 import './TomorrowSheet';
 import { BigNum, Sparkline } from './ds';
@@ -242,6 +242,7 @@ export function Today() {
   const hub = jobHub(jobs.rows ?? [], athensToday(new Date()) ?? '');
   const jobGroups = hub.open;
   const lateLine = (j: Row): string => { const n = daysLate(text(j.planned_for), athensToday(new Date()) ?? ''); return n === undefined ? '' : t('ui.job.late', { n }); };
+  const cratesText = (days: number): string => { const n = cratesLogged(harvestRows.rows ?? [], new Date().toISOString(), days); return n === undefined ? t('value.unknown') : formatQty(n); };   // the SAME Athens-calendar-day window as the table behind the tile
   const openJobs = [...jobGroups.overdue, ...jobGroups.today, ...jobGroups.tomorrow, ...jobGroups.later];
   const live = (q: Rows) => q.rows?.filter((r) => !r.deleted_at) ?? [];
   const demo = activeFarm.value !== realFarmId.value;
@@ -324,8 +325,8 @@ export function Today() {
         <section class="kpis" data-testid="today-kpis">
           <button type="button" class="kpi" data-testid="kpi-parcels" onClick={() => openSheet('parcels', 'all')}><small>{t('today.kpi.parcels')}</small><strong>{formatQty(live(parcels).length)}</strong></button>
           <button type="button" class="kpi" data-testid="kpi-crops" onClick={() => openSheet('crops', 'all')}><small>{t('today.kpi.crops')}</small><strong>{formatQty(cropsInUse)}</strong></button>
-          <button type="button" class="kpi" data-testid="today-cut7" onClick={() => openSheet('crates', '7')}><small>{t('today.kpi.cut7')}</small><strong>{formatQty(cutCrates(harvestRows.rows ?? [], new Date().toISOString(), 7))}</strong></button>
-          <button type="button" class="kpi" data-testid="today-cut28" onClick={() => openSheet('crates', '28')}><small>{t('today.kpi.cut28')}</small><strong>{formatQty(cutCrates(harvestRows.rows ?? [], new Date().toISOString(), 28))}</strong></button>
+          <button type="button" class="kpi" data-testid="today-cut7" onClick={() => openSheet('crates', '7')}><small>{t('today.kpi.cut7')}</small><strong>{cratesText(7)}</strong></button>
+          <button type="button" class="kpi" data-testid="today-cut28" onClick={() => openSheet('crates', '28')}><small>{t('today.kpi.cut28')}</small><strong>{cratesText(28)}</strong></button>
           <button type="button" class="kpi wide" data-testid="today-canharvest" onClick={() => openSheet('cut', 'today')}><small>{t('today.kpi.harvest')}</small><strong>{formatQty(ct.freeParcels)}</strong><small>{t('today.kpi.held', { n: ct.heldParcels })}</small></button>
         </section>
       )}

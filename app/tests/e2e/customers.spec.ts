@@ -9,7 +9,7 @@ test('Άλλα → Πελάτες: add a customer, type an order for tomorrow, s
   await expect(page.getByTestId('today-counts')).toBeVisible();
   await page.locator('nav.tabs [data-tab="more"]').click();
   await page.getByTestId('open-customers').click();
-  await expect(page.getByTestId('customers-none')).toBeVisible();
+  await expect(page.getByTestId('customers')).toBeVisible();                       // (the Demo already lists the Κλούβες clients under «από Κλούβες»)
   await page.getByTestId('customer-add').click();
   await page.getByTestId('customer-save').click();
   await expect(page.getByTestId('customer-name-error')).toBeVisible();
