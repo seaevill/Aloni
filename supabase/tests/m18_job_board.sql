@@ -56,6 +56,9 @@ do $$ declare r jsonb; begin
   r := claim_job('eeeeeeee-0000-0000-0000-0000000018a1');
   if r->>'status' <> 'taken' then raise exception '(0038) the second claim was not refused: %', r; end if;
 end $$;
+-- a retry by the winner (the answer was lost on the way) is «claimed» again, not «taken»
+reset role; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000b2';
+do $$ begin if (claim_job('eeeeeeee-0000-0000-0000-0000000018a1'))->>'status' <> 'claimed' then raise exception '(0038) a retry by the winner was told «taken»'; end if; end $$;
 -- the worker who has it cannot hand it on, change product or dose; only the owner reassigns
 reset role; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000b2';
 do $$ begin

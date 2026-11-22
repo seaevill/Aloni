@@ -76,7 +76,11 @@ begin
   if not found then raise exception 'you are not on the farm''s worker list' using errcode = 'insufficient_privilege'; end if;
   update jobs set worker_id = w.id where id = p_job and worker_id is null and assigned_to is null and status = 'planned' and kind = 'spray' and deleted_at is null;
   get diagnostics n = row_count;
-  if n = 0 then return jsonb_build_object('status', 'taken'); end if;
+  if n = 0 then
+    select * into j from jobs where id = p_job;                                                                            -- re-read: «mine already» (a retry after a lost answer) is not «taken»
+    if found and j.deleted_at is null and j.worker_id = w.id and j.assigned_to = me then return jsonb_build_object('status', 'claimed', 'job', p_job, 'worker', w.id); end if;
+    return jsonb_build_object('status', 'taken');
+  end if;
   return jsonb_build_object('status', 'claimed', 'job', p_job, 'worker', w.id);
 end $$;
 revoke execute on function public.claim_job(uuid) from public, anon;
