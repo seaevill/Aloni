@@ -39,6 +39,7 @@ test('owner invites -> worker signs in and sees only her own job -> records a ha
   await worker.getByTestId('worker-tab-harvest').click();
   await worker.getByTestId('harvest-chip').first().click();
   await worker.getByTestId('harvest-more').first().click();
+  await worker.getByTestId('harvest-dest-store').click();
   await worker.getByTestId('harvest-save').click();
   await expect.poll(() => srv.all('job_harvest').length, { timeout: 30_000 }).toBe(1);        // it reached the server
   expect(srv.all('job_harvest')[0]).toMatchObject({ planting_id: planting!.id, cut_by: george!.id, crates_str: '1' });   // her own roster entry is the cutter, one crate exactly

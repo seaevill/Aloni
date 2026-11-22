@@ -288,5 +288,12 @@
   "ui.store.note": "Yalnızca gideceği yer yazılı kayıtlar sayılır. Eski kayıtlar depoya eklenmez.",
   "ui.board.title": "Boş işler",
   "ui.board.take": "Ben alıyorum",
-  "ui.board.taken": "Bu işi başkası almış."
+  "ui.board.taken": "Bu işi başkası almış.",
+  "ui.dest.title": "Kasalar nereye gitti?",
+  "ui.dest.store": "Depo",
+  "ui.dest.dispatch": "Doğrudan yükleme",
+  "ui.dest.recv.name": "Alıcının adı (isteğe bağlı)",
+  "ui.dest.recv.phone": "Alıcının telefonu (isteğe bağlı)",
+  "ui.dest.recv.note": "Alıcının bilgilerini yalnızca sahibi görür.",
+  "ui.dest.error": "Depoya mı, doğrudan yüklemeye mi gittiğini seçin."
 }

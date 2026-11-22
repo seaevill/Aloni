@@ -8,5 +8,12 @@
   "ui.bell.new": "आपके लिए नया काम",
   "ui.board.title": "खाली काम",
   "ui.board.take": "मैं लेता हूँ",
-  "ui.board.taken": "इसे किसी और ने ले लिया है।"
+  "ui.board.taken": "इसे किसी और ने ले लिया है।",
+  "ui.dest.title": "कैरेट कहाँ गए?",
+  "ui.dest.store": "गोदाम",
+  "ui.dest.dispatch": "सीधे लोडिंग",
+  "ui.dest.recv.name": "लेने वाले का नाम (ज़रूरी नहीं)",
+  "ui.dest.recv.phone": "लेने वाले का फ़ोन (ज़रूरी नहीं)",
+  "ui.dest.recv.note": "लेने वाले की जानकारी सिर्फ़ मालिक देखता है।",
+  "ui.dest.error": "चुनें: गोदाम या सीधे लोडिंग।"
 }

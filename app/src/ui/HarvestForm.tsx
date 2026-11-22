@@ -4,6 +4,7 @@ import { dataVersion, db, activeFarm } from '../db';
 import { formatDate, formatDateTime, t, tn, ts } from '../i18n';
 import { formatArea } from '../i18n/format';
 import { put } from '../repo';
+import { saveDestination, type Destination } from '../stock/destination';
 import { buildHarvest, harvestGate } from '../spray/harvest';
 import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
 import { useSubmit } from './useSubmit';
@@ -31,6 +32,8 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
   const [crates, setCrates] = useState('');
   const [when, setWhen] = useState(athensLocalNow(new Date()) ?? '');
   const [note, setNote] = useState('');
+  const [dest, setDest] = useState<Destination | undefined>(undefined);
+  const [recvName, setRecvName] = useState(''); const [recvPhone, setRecvPhone] = useState('');
   const [failed, setFailed] = useState(0);        // how many times a save was refused: the first error is focused each time
   const [savedLine, setSavedLine] = useState('');
   const at = athensInstant(when) ?? '';
@@ -71,10 +74,11 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
   const step = (d: 1 | -1) => { const n = parseWhole<'Crates'>(crates); const cur = n.known ? n.value : 0; setCrates(cur + d < 1 ? '' : `${Math.min(cur + d, MAX_CRATES)}`); }; // the counter buttons: +1 / −1, never below 1
   const save = async () => {
     const r = buildHarvest({ plantingId: planting, crates, harvestedAt: at, note, cutBy }, links.rows ?? [], sprays.rows ?? [], farmId, new Date().toISOString(), crypto.randomUUID(), plantings.rows ?? [], labelRows.rows ?? []);
-    if (!r.ok) { setFailed((n) => n + 1); return; }
+    if (!r.ok || (big && dest === undefined)) { setFailed((n) => n + 1); return; }
     await put(db, 'job_harvest', actorId ? { ...r.row, actor_id: actorId } : r.row, 'insert');
+    if (dest !== undefined) await saveDestination(db, farmId, String(r.row.id), { d: dest, name: recvName, phone: recvPhone });
     dataVersion.value++;
-    if (big) { setSavedLine(cratesN.known ? tn('harvest.saved.line', cratesN.value, { crop: chosen ? cropOf(chosen) : '' }) : ''); setPlanting(''); setCrates(''); setNote(''); setWhen(athensLocalNow(new Date()) ?? ''); setFailed(0); }
+    if (big) { setSavedLine(cratesN.known ? tn('harvest.saved.line', cratesN.value, { crop: chosen ? cropOf(chosen) : '' }) : ''); setPlanting(''); setCrates(''); setNote(''); setDest(undefined); setRecvName(''); setRecvPhone(''); setWhen(athensLocalNow(new Date()) ?? ''); setFailed(0); }
     onDone(true);
   };
   const shown = parseWhole<'Crates'>(crates).known ? crates.trim() : '0'; // the counter shows 0 until a number is chosen
@@ -116,6 +120,19 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
           {roster.length === 0 && <p class="msg error" role="alert" data-testid="harvest-noroster">{t('harvest.cutby.none')}</p>}
           <div class="seg two" data-testid="harvest-cutby">{roster.map((w) => <button key={w.id} aria-pressed={cutBy === w.id} data-testid="harvest-cutby-option" onClick={() => setCutBy(w.id)}>{text(w.name)}</button>)}</div>
           {failed > 0 && cutBy === '' && <p class="msg error" role="alert" tabIndex={-1} data-error data-testid="harvest-cutby-error">{t('harvest.cutby.error')}</p>}
+        </>
+      )}
+      <h2>{t('ui.dest.title')}</h2>
+      <div class="seg two" role="group" aria-label={t('ui.dest.title')} data-testid="harvest-dest">
+        <button class={big ? 'big' : undefined} aria-pressed={dest === 'store'} data-testid="harvest-dest-store" onClick={() => setDest('store')}>{t('ui.dest.store')}</button>
+        <button class={big ? 'big' : undefined} aria-pressed={dest === 'dispatch'} data-testid="harvest-dest-dispatch" onClick={() => setDest('dispatch')}>{t('ui.dest.dispatch')}</button>
+      </div>
+      {big && failed > 0 && dest === undefined && <p class="msg error" role="alert" tabIndex={-1} data-error data-testid="harvest-dest-error">{t('ui.dest.error')}</p>}
+      {dest === 'dispatch' && (
+        <>
+          <label class="field">{t('ui.dest.recv.name')}<input class="input" value={recvName} autoComplete="off" data-testid="harvest-recv-name" onInput={(e) => setRecvName((e.target as HTMLInputElement).value)} /></label>
+          <label class="field">{t('ui.dest.recv.phone')}<input class="input" type="tel" value={recvPhone} autoComplete="off" data-testid="harvest-recv-phone" onInput={(e) => setRecvPhone((e.target as HTMLInputElement).value)} /></label>
+          <p class="muted">{t('ui.dest.recv.note')}</p>
         </>
       )}
       {cratesError && <p class="msg error" role="alert" tabIndex={-1} data-error data-testid="harvest-crates-error">{cratesError}</p>}
