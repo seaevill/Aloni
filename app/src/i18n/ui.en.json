@@ -227,5 +227,17 @@
   "ui.product.general.note": "What is allowed, and how, is set only by the product label.",
   "ui.product.link": "Official label",
   "ui.product.open": "Product information",
-  "ui.job.late": "{n} days late"
+  "ui.job.late": "{n} days late",
+  "ui.spray.detail": "Spray details",
+  "ui.spray.dose": "Dose as recorded",
+  "ui.spray.dose.none": "unknown – no dose recorded",
+  "ui.spray.when": "Sprayed",
+  "ui.spray.cutfrom": "Cut from",
+  "ui.spray.cutfrom.unknown": "unknown – the label waiting period is missing",
+  "ui.spray.reentry": "Re-entry from",
+  "ui.spray.reentry.unknown": "unknown – the label re-entry period is missing",
+  "ui.spray.over": "The waiting period is over",
+  "ui.spray.where": "Field and crop",
+  "ui.spray.who": "Sprayed by",
+  "ui.spray.who.unknown": "unknown – no worker recorded"
 }
