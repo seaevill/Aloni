@@ -315,5 +315,6 @@
   "ui.done.parcel": "Tarla",
   "ui.done.worker.unknown": "bilinmiyor – işçi kaydedilmemiş",
   "ui.done.crates.unknown": "bilinmiyor – sayı okunamıyor",
-  "ui.done.productpage": "Ürün bilgisi"
+  "ui.done.productpage": "Ürün bilgisi",
+  "ui.crop.tips.failed": "Bilgiler yüklenemedi. Bağlantı olunca yeniden deneyin."
 }
