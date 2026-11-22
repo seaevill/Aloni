@@ -25,6 +25,7 @@ import { useRows, type Rows } from './useRows';
 import { dayOf, farmDay, parseDays, provenance, type Day } from '../weather/strip';
 import { todaySummary, cutCrates, cratesLogged, cratesPerDay, doneRecords } from '../summary/today';
 import { TodayDone } from './TodayDone';
+import './TomorrowSheet';
 import { BigNum, Sparkline } from './ds';
 import { Icon } from './icons/Icon';
 import { cutToday, type CutLine, type CutToday } from '../summary/cutlist';
@@ -208,7 +209,7 @@ function TomorrowSection({ rows }: { rows: { crops: readonly Row[]; plantings: r
       {board.rows.length === 0 && <p class="muted" data-testid="tomorrow-none">{t('tomorrow.none')}</p>}
       {board.rows.map((r: BoardRow) => (
         <div class="card" key={r.slug} data-testid="tomorrow-row" data-state={r.state}>
-          <div class="field-head"><strong>{cropLabel(r.slug)}</strong><span class={CHIP[r.state].cls} data-testid="tomorrow-chip">{t(CHIP[r.state].key, { n: fractionText(Math.abs(r.gap)) })}</span></div>
+          <div class="field-head"><button type="button" class="row" data-testid="tomorrow-open" onClick={() => openSheet('tomorrow', r.slug)}><strong>{cropLabel(r.slug)}</strong></button><span class={CHIP[r.state].cls} data-testid="tomorrow-chip">{t(CHIP[r.state].key, { n: fractionText(Math.abs(r.gap)) })}</span></div>
           <small data-testid="tomorrow-ordered">{t('tomorrow.line', { o: fractionText(r.ordered), c: fractionText(r.cut) })}</small>
           <small data-testid="tomorrow-supply">{t('tomorrow.supply', { free: r.free, held: r.held, unknown: r.unknown })}</small>
         </div>

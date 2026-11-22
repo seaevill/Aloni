@@ -316,5 +316,16 @@
   "ui.done.worker.unknown": "unknown – no worker recorded",
   "ui.done.crates.unknown": "unknown – the number cannot be read",
   "ui.done.productpage": "Product information",
-  "ui.crop.tips.failed": "The information did not load. Try again when there is a connection."
+  "ui.crop.tips.failed": "The information did not load. Try again when there is a connection.",
+  "ui.tom.title": "Leaving tomorrow",
+  "ui.tom.customers": "Who ordered",
+  "ui.tom.store": "In store: {n}",
+  "ui.tom.store.none": "In store: unknown – no record with the store as destination",
+  "ui.tom.gap.short": "{n} crates short",
+  "ui.tom.gap.enough": "Covered by the store",
+  "ui.tom.gap.unknown": "Not calculated: the store quantity is unknown",
+  "ui.tom.copy": "Copy text",
+  "ui.tom.copied": "The text was copied.",
+  "ui.tom.manual": "Select the text and copy it.",
+  "ui.tom.old": "Old records without a destination: {n} (not added)"
 }
