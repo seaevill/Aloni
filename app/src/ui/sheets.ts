@@ -6,3 +6,8 @@ export interface SheetProps { id: string; close: () => void }
 const registry = new Map<string, ComponentType<SheetProps>>();
 export function registerSheet(kind: string, component: ComponentType<SheetProps>): void { registry.set(kind, component); }
 export const sheetComponent = (kind: string): ComponentType<SheetProps> | undefined => registry.get(kind);
+
+// A sheet whose code is big or rarely opened registers a LOADER instead: the module is fetched the first time its address is opened (it calls `registerSheet` itself), so it is not in the first load.
+const loaders = new Map<string, () => Promise<unknown>>();
+export function registerLazySheet(kind: string, loader: () => Promise<unknown>): void { loaders.set(kind, loader); }
+export const sheetLoader = (kind: string): (() => Promise<unknown>) | undefined => loaders.get(kind);

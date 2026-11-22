@@ -14,7 +14,7 @@ import { athensToday } from '../plantings/planting';
 import { cutFromParcel } from '../spray/harvest';
 import { instantOf } from '../spray/time';
 import { HarvestForm } from './HarvestForm';
-import { History } from './History';
+import { LazyHistory } from './LazyHistory';
 import { JobForm } from './JobForm';
 import { ObservationForm } from './ObservationForm';
 import { QuickAdd } from './QuickAdd';
@@ -251,7 +251,7 @@ export function Today() {
   if (planning) return <JobForm startDay={plannedDay} onDone={(saved) => { setPlanning(false); setPlannedDay(undefined); setPlanned(saved); }} />;
   if (harvesting) return <HarvestForm onDone={(saved) => { setHarvesting(false); setHarvested(saved); }} />;
   if (spraying) return <SprayForm onDone={(saved) => { setSpraying(false); setRecorded(saved); }} />;
-  if (history) return <History readOnly={demo} onBack={() => setHistory(false)} />;
+  if (history) return <LazyHistory readOnly={demo} onBack={() => setHistory(false)} />;
 
   const now = instantOf(new Date()) ?? '';
   const cards: FieldCard[] = live(parcels).map((p) => {

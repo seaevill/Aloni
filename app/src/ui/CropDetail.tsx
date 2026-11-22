@@ -10,7 +10,7 @@ import { CropIcon, DetailSheet, ListRow } from './ds';
 import { TapNum } from './cx/TapNum';
 import { CropTips } from './CropTips';
 import { STATUS_KEYS } from './PlantingForm';
-import { waitLine } from './Sprays';
+import { waitLine } from './sprayWaitLine';
 import { nameOf } from './screens';
 import { useRows } from './useRows';
 import { useWeather } from './useWeather';
