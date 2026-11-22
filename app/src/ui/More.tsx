@@ -9,6 +9,7 @@ import { Info } from './Info';
 import { Photos } from './Photos';
 import { SettingsBox } from './SettingsBox';
 import { Orders } from './Orders';
+import { LazyCustomers } from './LazyCustomers';
 import { Register } from './Register';
 import { Workers } from './Workers';
 import { workerView } from './nav';
@@ -38,7 +39,7 @@ function MenuIcon({ name }: { name: keyof typeof MENU_ICONS }) {
 
 export function More() {
   const [msg, setMsg] = useState('');
-  const [view, setView] = useState<'main' | 'info' | 'photos' | 'workers' | 'register' | 'orders' | 'weekly'>('main');
+  const [view, setView] = useState<'main' | 'info' | 'photos' | 'workers' | 'register' | 'orders' | 'weekly' | 'customers'>('main');
   const standalone = matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true;
   const openedFrom = [t(standalone ? 'more.openedFrom.home' : 'more.openedFrom.safari'), t('more.openedFrom.note')].join(' ');
   const demoLabel = t(hasDemo.value ? 'more.resetDemo' : 'more.loadDemo');
@@ -47,6 +48,7 @@ export function More() {
   if (view === 'info') return <Info onBack={() => setView('main')} />;
   if (view === 'weekly') return <WeeklyReport onBack={() => setView('main')} />;
   if (view === 'orders') return <Orders onBack={() => setView('main')} />;
+  if (view === 'customers') return <LazyCustomers onBack={() => setView('main')} />;
   if (view === 'register') return <Register onBack={() => setView('main')} />;
   if (view === 'workers') return <Workers onBack={() => setView('main')} />;
   if (view === 'photos') return <Photos onBack={() => setView('main')} />;
@@ -57,6 +59,7 @@ export function More() {
         <button class="row" data-testid="open-register" onClick={() => setView('register')}><MenuIcon name="register" /><span>{t('register.open')}</span><span aria-hidden="true" class="chev" /></button>
         <button class="row" data-testid="open-orders" onClick={() => setView('orders')}><MenuIcon name="orders" /><span>{t('orders.open')}</span><span aria-hidden="true" class="chev" /></button>
         {activeFarm.value === DEMO_FARM_ID && <button class="row" data-testid="open-worker-view" onClick={() => { workerView.value = ''; }}><MenuIcon name="worker" /><span>{t('more.workerView')}</span><span aria-hidden="true" class="chev" /></button>}
+        <button class="row" data-testid="open-customers" onClick={() => setView('customers')}><MenuIcon name="workers" /><span>{t('ui.cust.open')}</span><span aria-hidden="true" class="chev" /></button>
         <button class="row" data-testid="open-workers" onClick={() => setView('workers')}><MenuIcon name="workers" /><span>{t('workers.open')}</span><span aria-hidden="true" class="chev" /></button>
         <button class="row" data-testid="open-photos" onClick={() => setView('photos')}><MenuIcon name="photos" /><span>{t('photos.title')}</span><span aria-hidden="true" class="chev" /></button>
         <button class="row" data-testid="open-info" onClick={() => setView('info')}><MenuIcon name="info" /><span>{t('more.info')}</span><span aria-hidden="true" class="chev" /></button>
