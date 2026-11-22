@@ -45,7 +45,7 @@ export function ParcelSketch({ boundary, sample, decorative = false, marks = [],
 
 /** The plantings as strips inside the parcel outline (clipped to it). Illustrative: the caption under the sketch says so. */
 function SketchMarks({ points, rotation, marks, highlight, clipKey }: { points: string; rotation: number; marks: readonly PlantingMark[]; highlight?: string; clipKey: string }) {
-  const xy = points.split(' ').map((p) => p.split(',').map(parseFloat));
+  const xy = points.split(' ').map((p) => p.split(",").map((n) => Number.parseFloat(n)));
   const xs = xy.map(([x]) => x as number); const ys = xy.map(([, y]) => y as number);
   const x0 = Math.min(...xs); const y0 = Math.min(...ys); const w = Math.max(...xs) - x0; const h = Math.max(...ys) - y0;
   const rotate = `rotate(${rotation} 170 100)`;
