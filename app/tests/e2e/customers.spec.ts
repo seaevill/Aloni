@@ -28,6 +28,8 @@ test('Άλλα → Πελάτες: add a customer, type an order for tomorrow, s
   await page.getByTestId('order-save').click();
   await expect(page.getByTestId('order-saved')).toBeVisible();
   await expect(page.getByTestId('customer-order')).toContainText('12 κλούβες');
+  await page.getByTestId('customer-back').click();
+  await expect(page.getByTestId('customer').filter({ hasText: 'Μαρία Παπά' })).toContainText('Αυτή την εβδομάδα: 12 κλούβες');       // per customer, this week
   await page.locator('nav.tabs [data-tab="today"]').click();
   await expect(page.getByTestId('tomorrow-row').filter({ hasText: 'Μαϊντανός' })).toBeVisible();
 });

@@ -330,5 +330,8 @@
   "ui.tom.old": "Gideceği yeri yazılmamış eski kayıtlar: {n} (eklenmedi)",
   "ui.info.privacy.contacts": "Kişiler: müşteri, işçi kartı ya da doğrudan yüklemede alıcı kaydederseniz ad, telefon ve not saklanır. Bunları yalnızca sahip görür, işçiler asla. Bugün yalnızca bu telefonda kalır; eşitleme açılıp sunucuda ilgili tablo oluşana kadar hiçbir yere gönderilmez. Doğum tarihi yoktur. İstendiğinde silinir; yasa saklamayı gerektiriyorsa saklanır. İlaçlama ve hasat kayıtları en az 3 yıl tutulur.",
   "ui.weather.hourly.demo": "Gösterim saatleri – demo verisi, gerçek tahmin değil",
-  "ui.weather.hour": "{h}:00"
+  "ui.weather.hour": "{h}:00",
+  "ui.cust.week": "Bu hafta: {n} kasa",
+  "ui.cust.week.none": "Bu hafta: —",
+  "ui.cust.imported": "Κλούβες'ten"
 }
