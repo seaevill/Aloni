@@ -4,6 +4,7 @@ import { frostNights, thawMornings, type FrostFacts, type FrostHit } from './fro
 import { harvestGuard, type HarvestGuardFact } from './harvestGuard';
 import { known, type Known } from './known';
 import { salinityReading, type SalinityFacts } from './salinity';
+import { sowingWindow, type SowingFacts } from './sowingWindow';
 import { stockHits, type StockFacts } from './stock';
 import type { SignedLabelUse } from './label';
 import { paramsValid, summariseDays, type Hour, type SprayParams, type Sun } from './sprayWindow';
@@ -20,7 +21,7 @@ export interface UseFact { productId: string; cropId: string; signed: Known<Sign
 export interface ProductFact { id: string; groupCode: string | undefined }
 export interface DraftJob { id: string; kind: string; plantingIds: readonly string[]; productId: string }
 export interface TaskFact { id: string; plantingIds: readonly string[]; at: string }
-export interface Veto { job_id?: string; by: string; vetoed: string; reason: string; planting_id?: string; task_id?: string; product_id?: string }
+export interface Veto { job_id?: string; by: string; vetoed: string; reason: string; planting_id?: string; task_id?: string; product_id?: string; parcel_id?: string }
 export interface Output {
   rule_id: string; kind: 'alert' | 'block' | 'info' | 'recommendation' | 'check'; category: string; severity?: 'high' | 'medium' | 'low'; confidence?: 'high' | 'medium' | 'low'; notify: boolean;
   parcel_ids: string[]; planting_ids: string[]; product_ids: string[]; crop_ids: string[];
@@ -38,6 +39,7 @@ export interface Snapshot {
   stock?: StockFacts;
   salinity?: SalinityFacts;
   gap?: GapFacts;
+  sowing?: SowingFacts;
   harvestGuard?: readonly HarvestGuardFact[];
   doseChecks?: readonly DoseCheck[];
 }
@@ -248,5 +250,5 @@ export function runRules(s: Snapshot): Output[] {
   if (!parseInstant(s.asOf).known) return [blank({ rule_id: 'ENGINE', kind: 'block', category: 'now_unreadable', severity: 'high', vetoes: [{ by: 'ENGINE', vetoed: 'everything', reason: 'unreadable_now' }] })];
   const gaps = s.gap ? gapOutputs(s.gap, s.asOf, s.ruleStatus.GAP === 'signed') : [];
   const doses = s.doseChecks ? registrationDose(s, s.doseChecks).map((result) => blank({ rule_id: 'REG', ...result })) : [];
-  return [...doses, ...phi(s), ...harvestGuard(s).map(blank), ...rei(s), ...reg(s), ...rot(s), ...sprayWindowClosed(s), ...frost(s), ...salinity(s), ...stock(s), ...gaps.map((gap) => blank({ rule_id: 'GAP', ...gap })), ...infoOnly(s)];
+  return [...doses, ...phi(s), ...harvestGuard(s).map(blank), ...rei(s), ...reg(s), ...rot(s), ...sprayWindowClosed(s), ...frost(s), ...salinity(s), ...stock(s), ...sowingWindow(s).map(blank), ...gaps.map((gap) => blank({ rule_id: 'GAP', ...gap })), ...infoOnly(s)];
 }
