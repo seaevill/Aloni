@@ -5,6 +5,7 @@ import { NOT_ON_LABEL } from '../labels/label-use';
 import { instantOf } from '../spray/time';
 import { waitRing } from '../summary/wait';
 import { DetailSheet, ListRow, SheetFact } from './ds';
+import { UNIT_KEYS } from './LabelUseForm';
 import { WaitRing } from './ds/WaitRing';
 import { openSheet } from './nav';
 import { nameOf } from './screens';
@@ -13,6 +14,7 @@ import { useRows } from './useRows';
 import './ProductSheet';
 
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
+const unitName = (u: string): string => (Object.hasOwn(UNIT_KEYS, u) ? t(UNIT_KEYS[u as keyof typeof UNIT_KEYS]) : u);
 
 // The process of ONE recorded spraying: product, when, the dose exactly as recorded (never rounded, never advised), the wait ring while the waiting period runs, «Κοπή από», the re-entry end and who sprayed.
 // The periods come only from the record (copied from the label); a missing one is «άγνωστο» with its reason, never a default.
@@ -32,7 +34,7 @@ function SpraySheet({ id, close }: SheetProps) {
   const worker = (workers.rows ?? []).find((w) => w.id === row.applicator_id);
   const where = [...new Set((links.rows ?? []).filter((l) => l.job_id === row.job_id).map((l) => (plantings.rows ?? []).find((p) => p.id === l.planting_id)).filter((p): p is Row => p !== undefined)
     .map((p) => [nameOf((crops.rows ?? []).find((c) => c.id === p.crop_id) ?? {}), nameOf((parcels.rows ?? []).find((x) => x.id === p.parcel_id) ?? {})].join(' · ')))].join(', ');
-  const dose = text(row.dose_str) === '' ? undefined : [text(row.dose_str), text(row.dose_unit)].filter((x) => x !== '').join(' ');
+  const dose = text(row.dose_str) === '' ? undefined : [text(row.dose_str).split('.').join(','), unitName(text(row.dose_unit))].filter((x) => x !== '').join(' ');
   return (
     <DetailSheet heading={product ? nameOf(product) : t('ui.unknown')} onClose={close} testid="spray-sheet">
       {ring && <div class="ds-ring-block"><WaitRing big daysLeft={ring.daysLeft} percent={ring.percent} /></div>}
