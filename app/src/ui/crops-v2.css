@@ -98,3 +98,26 @@
 .sow-ring .sow-on { fill:var(--forest-2); }
 .sow-ring .sow-off { fill:var(--lime-soft); }
 .crop-tips-open { display:inline-flex; align-items:center; justify-content:center; gap:var(--sp-8); }
+.crop-list-tile {
+  align-items: center;
+  background: var(--card);
+  display: flex;
+  flex: 0 0 calc(var(--tile) + var(--sp-8));
+  height: calc(var(--tile) + var(--sp-8));
+  justify-content: center;
+}
+.crop-tile .crop-tile-name strong {
+  font-weight: 800;
+}
+
+[data-testid="planting-demo-note"] {
+  margin-block: 0 var(--sp-8);
+}
+
+.crop-card {
+  margin-block: 0;
+}
+
+.crop-card + .crop-card {
+  border-block-start: 0;
+}
