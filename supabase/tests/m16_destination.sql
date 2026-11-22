@@ -27,5 +27,38 @@ reset role; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000
 do $$ begin
   begin update job_harvest set destination = 'store' where id = '66666666-0000-0000-0000-0000000016a3'; raise exception '(0036) a worker changed a harvest record'; exception when insufficient_privilege or check_violation or raise_exception then if sqlerrm like '(0036)%' then raise; end if; end;
 end $$;
+
+-- the normal sync entry points (SHOULD 1 of the Codex review): an OLD payload (no destination), a NEW payload and an invented value go through apply_ops; pull returns the destination as stored
+set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; pl constant uuid := 'dddddddd-0000-0000-0000-0000000016a1'; w constant uuid := 'bbbbbbbb-0000-0000-0000-0000000016a1'; r jsonb;
+begin
+  r := apply_ops(jsonb_build_array(
+    jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', f, 'table', 'job_harvest', 'op', 'insert', 'row', jsonb_build_object('id', '66666666-0000-0000-0000-0000000016b1', 'farm_id', f, 'planting_id', pl, 'crates_str', '2', 'harvested_at', now(), 'cut_by', w)),
+    jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', f, 'table', 'job_harvest', 'op', 'insert', 'row', jsonb_build_object('id', '66666666-0000-0000-0000-0000000016b2', 'farm_id', f, 'planting_id', pl, 'crates_str', '3', 'harvested_at', now(), 'cut_by', w, 'destination', 'direct'))));
+  if exists (select 1 from jsonb_array_elements(r) e where e->>'status' <> 'applied') then raise exception '(0036) an old or a new payload was not applied: %', r; end if;
+  r := apply_ops(jsonb_build_array(jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', f, 'table', 'job_harvest', 'op', 'insert', 'row', jsonb_build_object('id', '66666666-0000-0000-0000-0000000016b3', 'farm_id', f, 'planting_id', pl, 'crates_str', '1', 'harvested_at', now(), 'cut_by', w, 'destination', 'market'))));
+  if exists (select 1 from jsonb_array_elements(r) e where e->>'status' = 'applied') then raise exception '(0036) an invented destination went through apply_ops: %', r; end if;
+end $$;
+do $$
+declare got jsonb;
+begin   -- a separate block: pull serves only finished transactions
+  got := pull('11111111-1111-1111-1111-111111111111', null, 1000);
+  if not exists (select 1 from jsonb_array_elements(got->'rows') e where e->>'table' = 'job_harvest' and e->'row'->>'id' = '66666666-0000-0000-0000-0000000016b2' and e->'row'->>'destination' = 'direct') then raise exception '(0036) pull lost the destination'; end if;
+  if not exists (select 1 from jsonb_array_elements(got->'rows') e where e->>'table' = 'job_harvest' and e->'row'->>'id' = '66666666-0000-0000-0000-0000000016b1' and (e->'row'->>'destination') is null) then raise exception '(0036) pull invented a destination for an old record'; end if;
+end $$;
+-- a worker of the farm writes her OWN harvest with a destination and reads it back with it; she does not see the owner's rows; and a harvest naming ANOTHER farm is not applied for her
+reset role; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000b2';
+do $$
+declare f constant uuid := '11111111-1111-1111-1111-111111111111'; pl constant uuid := 'dddddddd-0000-0000-0000-000000000705'; w constant uuid := 'bbbbbbbb-0000-0000-0000-000000000001'; r jsonb;
+begin
+  r := apply_ops(jsonb_build_array(jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', f, 'table', 'job_harvest', 'op', 'insert', 'row', jsonb_build_object('id', '66666666-0000-0000-0000-0000000016c1', 'farm_id', f, 'planting_id', pl, 'crates_str', '2', 'harvested_at', now(), 'cut_by', w, 'destination', 'store'))));
+  if exists (select 1 from jsonb_array_elements(r) e where e->>'status' <> 'applied') then raise exception '(0036) the worker''s own harvest with a destination was not applied: %', r; end if;
+end $$;
+do $$ begin
+  if (select count(*) from job_harvest where id = '66666666-0000-0000-0000-0000000016c1' and destination = 'store') <> 1 then raise exception '(0036) a worker cannot read back her own harvest destination'; end if;
+  if (select count(*) from job_harvest where id = '66666666-0000-0000-0000-0000000016b2') <> 0 then raise exception '(0036) a worker read a harvest she did not make'; end if;
+  if exists (select 1 from jsonb_array_elements(apply_ops(jsonb_build_array(jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', '22222222-2222-2222-2222-222222222222', 'table', 'job_harvest', 'op', 'insert', 'row', jsonb_build_object('id', gen_random_uuid(), 'farm_id', '22222222-2222-2222-2222-222222222222', 'planting_id', 'dddddddd-0000-0000-0000-0000000016a1', 'crates_str', '1', 'harvested_at', now(), 'destination', 'store'))))) e where e->>'status' = 'applied') then raise exception '(0036) a worker wrote a harvest into another farm'; end if;
+end $$;
 reset role; set test.uid = '';
 do $$ begin raise notice 'm16-destination tests passed'; end $$;

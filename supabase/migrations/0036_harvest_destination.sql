@@ -7,5 +7,5 @@ do $$ begin
   if exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'job_harvest' and column_name = 'destination') then raise exception '0036 stopped: job_harvest.destination already exists (nothing was changed)'; end if;
 end $$;
 
-alter table job_harvest add column destination text;
-alter table job_harvest add constraint job_harvest_destination_check check (destination is null or destination in ('store', 'direct'));
+alter table public.job_harvest add column destination text;
+alter table public.job_harvest add constraint job_harvest_destination_check check (destination is null or destination in ('store', 'direct'));
