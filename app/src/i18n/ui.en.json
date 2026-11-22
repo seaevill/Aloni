@@ -273,5 +273,17 @@
   "ui.wcard.save": "Save",
   "ui.wcard.saved": "Saved.",
   "ui.wcard.local": "Kept on this phone only. Only the owner sees it.",
-  "ui.wcard.open": "Open card"
+  "ui.wcard.open": "Open card",
+  "ui.store.title": "Harvest in store",
+  "ui.store.crates": "{n} crates",
+  "ui.store.age": "{n} days in store",
+  "ui.store.age.today": "Cut today",
+  "ui.store.none": "No harvest recorded in the store.",
+  "ui.store.tomorrow": "Leaving tomorrow: {n}",
+  "ui.store.tomorrow.unknown": "Leaving tomorrow: unknown – no orders",
+  "ui.store.split.store": "Store: {n}",
+  "ui.store.split.dispatch": "Direct dispatch: {n}",
+  "ui.store.split.unknown": "unknown – old record: {n}",
+  "ui.store.unreadable": "{n} records with an unreadable number are not added",
+  "ui.store.note": "Only records with a destination are counted. Old records are not added to the store."
 }

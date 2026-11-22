@@ -13,6 +13,7 @@ import { MediaThumb } from './Photos';
 import { LabelUses } from './LabelUses';
 import { StockLots } from './StockLots';
 import { ProductSheet } from './ProductSheet';
+import { LazyStoreStock } from './LazyStoreStock';
 import { ProductForm, TYPE_KEYS } from './ProductForm';
 import { nameOf, Status, Title } from './screens';
 import { UnsyncedMark } from './states';
@@ -60,6 +61,7 @@ export function Stock() {
   return (
     <section class="stock-v2">
       <header class="today-head band"><Title k="stock.title" /></header>
+      <LazyStoreStock />
       {demo ? <p class="muted" data-testid="product-demo-note">{t('product.demoActive')}</p> : live.length > 0 && <button class="btn" data-testid="product-add" onClick={() => setAdding(true)}>{t('product.add')}</button>}
       <Status q={{ ...q, rows: q.rows && live.length === 0 ? [] : q.rows }} message={t('list.empty')} action={demo ? undefined : { label: t('product.add'), run: () => setAdding(true) }} />
       {types.length > 1 && (
