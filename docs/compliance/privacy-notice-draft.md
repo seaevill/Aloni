@@ -13,3 +13,8 @@ Questions for the lawyer: (1) the receiver is a third person who never used the 
 
 ## In-app deletion path (E7)
 Info → «Διαγραφή λογαριασμού και δεδομένων» opens a sheet that explains both flows (`docs/compliance/account-deletion.md`) and offers ONE action today: deleting the data on this phone, only after a fresh backup (≤15 minutes), the farm name typed, and nothing unsent. The server account and the worker pseudonymisation are NOT in the app yet (they need the server step of `docs/plan/PRIVACY-STORE-PREP.md` §2–3, a later SQL file); the sheet says so and never claims they were deleted.
+
+## Customers (Άλλα → Πελάτες) – owner only, this phone only
+R22 (2026-11-22): the owner can record a customer's name, phone and a note, and orders for them. Today this stays in the browser storage of the owner's phone (per farm; never in the Demo farm's real data, never sent to the server, no worker screen shows it). Server storage comes only with the owner-only table of `docs/plan/SQL-DESIGN-0037-OWNER-RECORDS.md`; the notice must then say it.
+Draft Greek for the day the server table ships: «Πελάτες: αν καταχωρίσετε πελάτες, αποθηκεύονται το όνομα, το τηλέφωνο και οι σημειώσεις τους. Τα βλέπει μόνο ο ιδιοκτήτης (όχι οι εργάτες). Χρησιμοποιούνται μόνο για τις παραγγελίες και διαγράφονται όταν ζητηθεί, εφόσον δεν κρατούνται για νομική υποχρέωση.»
+Questions for the lawyer: (1) the customer is a third person who never used the app; (2) legal basis and retention of the customer's phone.
