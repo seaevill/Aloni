@@ -30,7 +30,7 @@ begin
   if auth.uid() is null then return new; end if;                          -- maintenance by the database owner only
   if tg_op = 'INSERT' then
     new.from_worker := not has_role(new.farm_id, array['owner']);
-    if new.from_worker then new.status := 'open'; end if;
+    if new.from_worker then new.status := 'open'; new.deleted_at := null; end if;          -- a worker's note starts open and not removed
   else
     new.from_worker := old.from_worker;                                    -- never changed afterwards
     if new.farm_id is distinct from old.farm_id then raise exception 'a day note never changes farm' using errcode = 'check_violation'; end if;   -- not even for an owner of both farms (a move would leave no tombstone in the first farm's pull)

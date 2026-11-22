@@ -12,6 +12,8 @@ begin
   insert into day_notes(id,farm_id,for_day,text,from_worker,status) values ('99999999-0000-0000-0000-0000000019a1',f,'2026-11-25','Να φέρουμε κλούβες',false,'confirmed');   -- she tries to look like the owner
   if (select from_worker from day_notes where id = '99999999-0000-0000-0000-0000000019a1') is not true then raise exception '(0039) a worker note was not marked from_worker'; end if;
   if (select status from day_notes where id = '99999999-0000-0000-0000-0000000019a1') <> 'open' then raise exception '(0039) a worker note did not start open'; end if;
+  insert into day_notes(id,farm_id,for_day,text,deleted_at) values ('99999999-0000-0000-0000-0000000019a9',f,'2026-11-25','born removed',now());
+  if (select deleted_at from day_notes where id = '99999999-0000-0000-0000-0000000019a9') is not null then raise exception '(0039) a worker note was born removed'; end if;
   begin insert into day_notes(farm_id,for_day,text) values (f,'2026-11-25',' '); raise exception '(0039) a blank note was accepted'; exception when check_violation then null; end;
   begin insert into day_notes(farm_id,for_day,text) values (f,'2026-11-25',repeat('x',281)); raise exception '(0039) a 281-character note was accepted'; exception when check_violation then null; end;
   begin update day_notes set status = 'confirmed' where id = '99999999-0000-0000-0000-0000000019a1'; if found then raise exception '(0039) a worker confirmed a note'; end if; exception when insufficient_privilege then null; end;
