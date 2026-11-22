@@ -5,5 +5,8 @@
   "ui.bell.label.count": "सूचनाएँ, {n} नई",
   "ui.bell.title": "क्या नया है",
   "ui.bell.none": "पिछली बार देखने के बाद कुछ नया नहीं है।",
-  "ui.bell.new": "आपके लिए नया काम"
+  "ui.bell.new": "आपके लिए नया काम",
+  "ui.board.title": "खाली काम",
+  "ui.board.take": "मैं लेता हूँ",
+  "ui.board.taken": "इसे किसी और ने ले लिया है।"
 }

@@ -285,5 +285,8 @@
   "ui.store.split.dispatch": "Doğrudan yükleme: {n}",
   "ui.store.split.unknown": "bilinmiyor – eski kayıt: {n}",
   "ui.store.unreadable": "Sayısı okunamayan {n} kayıt toplanmadı",
-  "ui.store.note": "Yalnızca gideceği yer yazılı kayıtlar sayılır. Eski kayıtlar depoya eklenmez."
+  "ui.store.note": "Yalnızca gideceği yer yazılı kayıtlar sayılır. Eski kayıtlar depoya eklenmez.",
+  "ui.board.title": "Boş işler",
+  "ui.board.take": "Ben alıyorum",
+  "ui.board.taken": "Bu işi başkası almış."
 }
