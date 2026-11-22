@@ -1,0 +1,8 @@
+{
+  "gusts": "Gusts are brief increases in wind speed. They differ from the average wind.",
+  "dewPoint": "The dew point is the temperature at which cooling air becomes saturated and condensation can begin.",
+  "leafWetness": "Leaf wetness describes water on leaf surfaces and how long it remains. It may be measured or estimated.",
+  "rain": "Rain in millimetres is the depth of water that would collect on a flat surface over the stated period.",
+  "soilTemperature": "Soil temperature is the temperature at the reported depth. It can differ from air temperature.",
+  "frost": "Frost is ice forming on cold surfaces. Leaf temperature can differ from air temperature."
+}
