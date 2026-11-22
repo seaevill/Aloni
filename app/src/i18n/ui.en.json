@@ -295,5 +295,10 @@
   "ui.dest.recv.name": "Receiver name (optional)",
   "ui.dest.recv.phone": "Receiver phone (optional)",
   "ui.dest.recv.note": "Only the owner sees the receiver's details.",
-  "ui.dest.error": "Choose store or direct dispatch."
+  "ui.dest.error": "Choose store or direct dispatch.",
+  "ui.notes.title": "Notes",
+  "ui.notes.add": "＋ Note for tomorrow",
+  "ui.notes.placeholder": "What should happen tomorrow?",
+  "ui.notes.fromworker": "from a worker",
+  "ui.notes.err": "Write the note."
 }

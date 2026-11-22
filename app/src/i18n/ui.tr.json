@@ -295,5 +295,10 @@
   "ui.dest.recv.name": "Alıcının adı (isteğe bağlı)",
   "ui.dest.recv.phone": "Alıcının telefonu (isteğe bağlı)",
   "ui.dest.recv.note": "Alıcının bilgilerini yalnızca sahibi görür.",
-  "ui.dest.error": "Depoya mı, doğrudan yüklemeye mi gittiğini seçin."
+  "ui.dest.error": "Depoya mı, doğrudan yüklemeye mi gittiğini seçin.",
+  "ui.notes.title": "Notlar",
+  "ui.notes.add": "＋ Yarın için not",
+  "ui.notes.placeholder": "Yarın ne yapılacak?",
+  "ui.notes.fromworker": "işçiden",
+  "ui.notes.err": "Notu yazın."
 }
