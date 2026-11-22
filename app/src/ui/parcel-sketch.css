@@ -34,3 +34,7 @@
 .sketch .sketch-mark { fill:var(--green); fill-opacity:.35; stroke:var(--forest-2); stroke-width:var(--bw-2); }
 .sketch .sketch-mark.on { fill:var(--forest-2); fill-opacity:.7; }
 .sketch-note { color:var(--unknown-fg); display:block; margin:0 0 var(--sp-12); }
+
+[data-testid="planting-sketch-label"] {
+  min-height: 56px;
+}

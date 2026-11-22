@@ -1,3 +1,4 @@
+import { useState } from 'preact/hooks';
 import { formatDate, formatDateTime, t, type I18nKey } from '../i18n';
 import { formatArea, formatQty } from '../i18n/format';
 import { athensToday, validDate } from '../plantings/planting';
@@ -5,12 +6,13 @@ import { cutFromParcel } from '../spray/harvest';
 import { effectiveSprays } from '../spray/spray';
 import { instantOf } from '../spray/time';
 import { parcelTimeline, type TimelineEvent } from '../summary/timeline';
-import { dayOf, parseDays } from '../weather/strip';
+import { dayOf, parseDays, provenance } from '../weather/strip';
 import type { Row } from '../db/schema';
 import { BackBar } from './BackBar';
 import { ParcelSketch } from './ParcelSketch';
 import { plantingMarks } from '../plantings/marks';
-import { openSheet } from './nav';
+import { CropTips } from './CropTips';
+import { DetailSheet, SheetFact } from './ds';
 import { EditTrail } from './EditTrail';
 import { TOPO_KEYS } from './ParcelForm';
 import { STATUS_KEYS } from './PlantingForm';
@@ -25,6 +27,8 @@ const DASH = '\u2014';
 export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: { parcel: Row; onBack: () => void; onEdit: () => void; onAnalyses: () => void; readOnly: boolean }) {
   const labelRows = useRows('label_uses'); const plantings = useRows('plantings'); const crops = useRows('crops'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const products = useRows('products'); const harvests = useRows('job_harvest');
   const weather = useWeather();
+  const [weatherOpen, setWeatherOpen] = useState(false);
+  const [cropTips, setCropTips] = useState<Row>();
   const mine = (plantings.rows ?? []).filter((p) => p.parcel_id === parcel.id && !p.deleted_at);
   const cut = cutFromParcel(parcel.id, instantOf(new Date()) ?? '', plantings.rows ?? [], links.rows ?? [], sprays.rows ?? [], labelRows.rows ?? []);
   const marks = plantingMarks(text(parcel.area_str), mine.map((p) => ({ id: text(p.id), area: text(p.area_str) })));
@@ -36,8 +40,11 @@ export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: {
     : e.kind === 'harvest' ? t('timeline.harvest', { crop: e.crop, n: formatQty(e.crates) })
       : [t('timeline.spray', { product: e.product }), e.reiUntil ? t('timeline.rei', { d: formatDateTime(e.reiUntil) }) : '', e.phiUntil ? t('timeline.phi', { d: formatDateTime(e.phiUntil) }) : ''].filter(Boolean).join(' · '));
   const eventDate = (e: TimelineEvent): string => (e.kind === 'sown' ? (validDate(e.at) ? formatDate(e.at) : '') : formatDateTime(e.at));
-  const wx = dayOf(parseDays(weather.find((w) => w.parcel_id === parcel.id)?.days), athensToday(new Date()) ?? '');
+  const days = parseDays(weather.find((w) => w.parcel_id === parcel.id)?.days);
+  const wx = dayOf(days, athensToday(new Date()) ?? '');
+  const weatherSource = provenance([days], Date.now());
   const wxLine = wx && wx.tmin !== undefined && wx.tmax !== undefined ? [t('wx.temp', { min: formatQty(wx.tmin), max: formatQty(wx.tmax) }), wx.rain !== undefined ? t('wx.rain', { mm: formatQty(wx.rain) }) : '', wx.gust !== undefined ? t('wx.gust', { kmh: formatQty(wx.gust) }) : ''].filter((x) => x !== '').join(' · ') : t('today.weather.none');
+  const cropOf = (planting: Row) => crops.rows?.find((crop) => crop.id === planting.crop_id);
   const plantingLine = (p: Row): string => { const d = text(p.sown_on); const sk = (STATUS_KEYS as Record<string, I18nKey>)[text(p.status)]; return [formatArea(p.area_str as string | number), validDate(d) ? formatDate(d) : '', sk ? t(sk) : ''].filter((x) => x !== '').join(' · '); };
   const cutLine = cut.state === 'free' ? t('cut.free') : cut.state === 'unknown' ? t('cut.unknown') : t('cut.from', { d: formatDateTime(cut.at) });
   const topoKey = (TOPO_KEYS as Record<string, I18nKey>)[text(parcel.topo_class)];
@@ -54,15 +61,43 @@ export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: {
         <h1 tabIndex={-1}>{text(parcel.name)}</h1>
       </header>
       <ParcelSketch boundary={parcel.boundary} sample={readOnly ? parcel.sketch : undefined} marks={marks} clipKey={`pd-${text(parcel.id)}`} />
-      {marks.length > 0 && <small class="sketch-note" data-testid="sketch-note">{t('ui.sketch.note')}</small>}
+      {marks.length > 0 && <>
+        <small class="sketch-note" data-testid="sketch-note">{t('ui.sketch.note')}</small>
+        <div class="tags">{marks.map((mark) => {
+          const planting = mine.find((p) => p.id === mark.id);
+          if (!planting) return null;
+          const crop = cropOf(planting);
+          return <button type="button" class="tag-btn" key={mark.id} data-testid="planting-sketch-label" disabled={!crop} onClick={() => setCropTips(crop)}>
+            {nameOf(crop ?? {}) || t('value.unknown')} {formatArea(planting.area_str as string | number)}
+          </button>;
+        })}</div>
+      </>}
       {mine.length > 0 && marks.length === 0 && <small class="sketch-note" data-testid="sketch-unknown">{t('ui.sketch.unknown')}</small>}
       <div class="card facts">{rows.map(([k, v]) => <div class="fact" key={k}><span>{t(k)}</span><strong>{v}</strong></div>)}</div>
       <div class={cut.state === 'unknown' ? 'card field blocked' : 'card'}><small data-testid="detail-cut">{cutLine}</small></div>
       <h2>{t('detail.weather')}</h2>
-      <div class="card" data-testid="detail-weather"><small>{wxLine}</small></div>
+      <button type="button" class="row" data-testid="detail-weather" onClick={() => setWeatherOpen(true)}>
+        <span>{wxLine}</span><span class="chev" aria-hidden="true" />
+      </button>
+      {weatherOpen && <DetailSheet heading={t('detail.weather')} onClose={() => setWeatherOpen(false)} testid="parcel-weather-source">
+        <h3>{text(parcel.name)}</h3>
+        {wx ? <>
+          <p>{wxLine}</p>
+          <SheetFact name={t('wx.wind')} value={wx.wind === undefined ? undefined : t('wx.kmh', { v: formatQty(wx.wind) })} />
+          <SheetFact name={t('ui.weather.source')} value={weatherSource?.names.join(', ')} unknown={t('value.unknown')} />
+          <SheetFact name={t('ui.weather.issued')} value={weatherSource?.issued ? formatDateTime(weatherSource.issued) : undefined} unknown={t('ui.weather.issued.unknown')} />
+        </> : <p>{t('ui.weather.none.why')}</p>}
+      </DetailSheet>}
       <h2>{t('detail.plantings')}</h2>
       {mine.length === 0 && <p class="muted">{t('list.empty')}</p>}
-      {mine.map((p) => <button type="button" class="card planting-open" key={p.id} data-testid="detail-planting" onClick={() => openSheet('crop', text(p.crop_id))}>{nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {})}<small>{plantingLine(p)}</small></button>)}
+      {mine.map((p) => {
+        const crop = cropOf(p);
+        const label = nameOf(crop ?? {}) || t('value.unknown');
+        return <button type="button" class="card planting-open" key={p.id} data-testid="detail-planting" disabled={!crop} onClick={() => setCropTips(crop)}>
+          <strong>{label}</strong><small>{plantingLine(p)}</small>
+        </button>;
+      })}
+      {cropTips && <CropTips slug={text(cropTips.slug)} onClose={() => setCropTips(undefined)} />}
       <h2>{t('detail.sprays')}</h2>
       {last.length === 0 && <p class="muted">{t('spray.empty')}</p>}
       {last.map((s) => <div class="card" key={s.id} data-testid="detail-spray">{nameOf(products.rows?.find((p) => p.id === s.product_id) ?? {})}<small>{formatDateTime(text(s.sprayed_at))}</small></div>)}

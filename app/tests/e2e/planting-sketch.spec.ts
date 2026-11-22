@@ -10,12 +10,16 @@ test('Demo: the parcel sketch shows its plantings (illustrative), a planting row
   await page.locator('nav.tabs [data-tab="parcels"]').click();
   await page.getByTestId('parcel-sketch-open').first().click();
   const detail = page.getByTestId('parcel-detail');
+  await detail.getByTestId('detail-weather').click();
+  await expect(page.getByTestId('parcel-weather-source')).toBeVisible();
+  await page.getByTestId('sheet-close').click();
   await expect(detail.getByTestId('sketch-mark').first()).toBeVisible();
+  await expect(detail.getByTestId('planting-sketch-label').first()).toContainText('στρ.');
   await expect(detail.getByTestId('sketch-note')).toContainText('Ενδεικτικό σχέδιο');
   const marks = await detail.getByTestId('sketch-mark').count();
   expect(marks).toBe(await detail.getByTestId('detail-planting').count());
   await detail.getByTestId('detail-planting').first().click();
-  await expect(page.getByTestId('sheet-crop')).toBeVisible();
+  await expect(page.getByTestId('crop-tips')).toBeVisible();
   await page.getByTestId('sheet-close').click();
 
   await page.locator('nav.tabs [data-tab="crops"]').click();
