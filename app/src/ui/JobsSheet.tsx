@@ -6,6 +6,7 @@ import { daysLate, jobHub } from '../summary/jobs';
 import { DetailSheet } from './ds/DetailSheet';
 import { ListRow } from './ds/Surfaces';
 import { Icon } from './icons/Icon';
+import { TomorrowNotes } from './TomorrowNotes';
 import { nameOf } from './screens';
 import { registerSheet, type SheetProps } from './sheets';
 import { useRows } from './useRows';
@@ -31,6 +32,7 @@ function JobsSheet({ close }: SheetProps) {
         <section key={k} data-testid={`sheet-jobs-${k}`}><h3>{t(label)}</h3>{hub.open[k].map((j) => row(j, text(j.planned_for) === '' ? t('ui.jobs.day.none') : formatDate(text(j.planned_for))))}</section>
       ))}
       {hub.doneToday.length > 0 && <section data-testid="sheet-jobs-done"><h3>{t('jobs.group.done')}</h3>{hub.doneToday.map((j) => row(j, formatDateTime(text(j.done_at))))}</section>}
+      <TomorrowNotes />
     </DetailSheet>
   );
 }

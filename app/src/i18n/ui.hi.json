@@ -15,5 +15,10 @@
   "ui.dest.recv.name": "लेने वाले का नाम (ज़रूरी नहीं)",
   "ui.dest.recv.phone": "लेने वाले का फ़ोन (ज़रूरी नहीं)",
   "ui.dest.recv.note": "लेने वाले की जानकारी सिर्फ़ मालिक देखता है।",
-  "ui.dest.error": "चुनें: गोदाम या सीधे लोडिंग।"
+  "ui.dest.error": "चुनें: गोदाम या सीधे लोडिंग।",
+  "ui.notes.title": "नोट्स",
+  "ui.notes.add": "＋ कल के लिए नोट",
+  "ui.notes.placeholder": "कल क्या करना है?",
+  "ui.notes.fromworker": "मज़दूर से",
+  "ui.notes.err": "नोट लिखें।"
 }
