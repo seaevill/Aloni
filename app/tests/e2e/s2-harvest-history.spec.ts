@@ -13,11 +13,15 @@ test('a logged Demo harvest opens its source and shows the missing destination r
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-counts')).toBeVisible();
   await page.getByTestId('history-open').click();
-  const source = page.getByTestId('harvest-breakdown-open').first();
+  const source = page.getByTestId('harvest-breakdown-open').filter({ hasText: 'Ρόκα' }).first();
   await expect(source).toBeVisible();
   expect((await source.boundingBox())?.height).toBeGreaterThanOrEqual(56);
   await source.click();
   await expect(page.getByTestId('harvest-breakdown-count')).toContainText('κλούβ');
   await expect(page.getByTestId('harvest-destination')).toHaveText('άγνωστο – παλιά καταγραφή');
+  const history = page.getByTestId('harvest-crop-history');
+  await expect(history.getByTestId('harvest-destination-group')).toHaveCount(3);
+  await expect(history.getByTestId('harvest-crop-event').first()).toBeVisible();
+  await expect(history.getByTestId('harvest-destination-group').filter({ hasText: 'άγνωστο – παλιά καταγραφή' }).getByTestId('harvest-destination-total')).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
 });
