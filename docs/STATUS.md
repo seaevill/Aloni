@@ -4,9 +4,28 @@
 1. **Canlı site bu ortamdan açılamadı** (ağ izni yok): kanıtlar canlı değil, **yerel üretim derlemesi** ekran görüntüleridir; senin telefonundaki gerçek kontrol ayrıdır.
 2. **Gündüz turunda eklenen (merge edildi):** R3, R8, R9–R12, R14–R25, R30 (kısmen) — ayrıntı aşağıdaki tabloda; geri tuşu hatası düzeltildi; açılış boyutu sınırı 160 KB'ye alındı (DECISIONS). **Gece merge edilenler:** Demo canlı (hava 5 gün, etiketler ~%90 imzalı + 5 bilinçli örnek, kilitli işçi işi), KPI tek kaynak, Φυτά listesi (resim+ad+tek çip), parsel krokisi genel bakışı, Μητρώο, hasat kaynağı, sekme kontrastı, işçi daveti QR, zil, kayıt işaretleri, sezon hedefi, hesap silme, iPhone kurulum rehberi, «Τι νέο», hata raporu.
 3. **Yapılmadı (R tablosunda FAIL):** R8, R10–R12, R14–R16, R18–R25, R30 — çoğu Codex içeriğine (bitki/ilaç bilgisi) veya SQL'e bağlı; bu gece yetişmedi.
-4. **Senden tek adımlar:** (a) hava için RUNBOOK §14a (yalnızca «tamam» deyince); (b) **0035 (#271)** main yeşil olunca yükle; ardından 0036 (#362) ve 0037 (#368) Codex incelemesi sonrası.
+4. **Senden tek adımlar:** (a) hava için RUNBOOK §14a (yalnızca «tamam» deyince); (b) 0035 yüklendi ✔; sırada 0036 (#362) ve 0037 (#368) Codex yeniden-kontrolü sonrası.
 5. **Açık PR'lar:** yalnızca SQL (#271, #362, #368) + Codex'in kuyrukta bekleyenleri (#381–#383, #386, #387) ve Dependabot #305/#306.
 6. **Dürüst not:** puanları kendime vermedim; PASS = yerel ekran görüntüsü + test; FAIL = yapılmadı.
+
+## Güncel (2026-11-22 öğleden sonra)
+- **0035 production'da** (workflow «Supabase migrate (manual)», commit d17f739, verify_applied yeşil). 0036 (#362) ve 0037 (#368): Codex yeniden-kontrolünü bekliyor; hükümden sonra aynı yükleme yolu.
+- Faz 1 durumu: `docs/milestones/PHASE1-DONE.md` (a–g, her madde kanıtlı).
+
+## LIVE açma – 6 adım (senkron; ayrıntı RUNBOOK §13)
+1. **Yedek:** Άλλα → **Αντίγραφο** → «Τελευταίο αντίγραφο: bugün» yazmalı.
+2. **Hazırlık kartı:** Άλλα → **Σύνδεση λογαριασμού: τι λείπει** → her satır yeşil olmalı (Supabase → Advisors'ı yenile, «RLS Disabled in Public» yok).
+3. **Giriş:** Άλλα → **Σύνδεση** → e-posta kodu → «Συνδεδεμένος: …».
+4. **Aç:** Άλλα → **Άνοιγμα συγχρονισμού** → «Ο συγχρονισμός είναι ανοιχτός.»
+5. **Çip:** Σήμερα'nın üstünde «Ο συγχρονισμός δουλεύει · τελευταίος: SS:DD».
+6. **Kontrol:** Supabase → Table Editor → `parcels`, `job_spray`: sayılar telefonla aynı. Kırmızı kutu çıkarsa ekrandaki metni bana yaz.
+
+## İşçiyi davet et – 5 adım (RUNBOOK §12c)
+1. Άλλα → **Εργάτες** → işçinin satırı → **Email του εργάτη** → **Αποθήκευση πρόσκλησης** (ya da QR/bağlantı).
+2. İşçi telefonunda: Safari → adres → **Ana Ekrana Ekle** → aç → **Άλλα → Σύνδεση** → e-posta kodu.
+3. Sen: Σήμερα → **+ Ανάθεση δουλειάς** → işçiye bir ilaçlama işi ata.
+4. İşçi: **Δουλειές → Έγινε** → başlangıç saati → onay; sonra **Συγκομιδή**: bitki, **+**, **Αποθήκη** ya da **Απευθείας φόρτωση**, **Καταγραφή**.
+5. Sen: Σήμερα → **Ποιος έκανε τι**: işi ve kasaları görürsün. (Hasat varış yeri ve müşteri/çalışan kartı senin telefonuna 0036/0037 yüklenince gelir.)
 
 ## R1–R30 tablosu
 | R | İstek | Durum | Kanıt | Not |
