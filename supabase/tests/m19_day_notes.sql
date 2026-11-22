@@ -46,6 +46,28 @@ begin
   select count(*) into n from day_notes; if n <> 0 then raise exception '(0039) a stranger reads notes'; end if;
   begin insert into day_notes(farm_id,for_day,text) values (f,'2026-11-25','Sneaky'); raise exception '(0039) a stranger wrote a note'; exception when insufficient_privilege or check_violation then null; end;
 end $$;
+
+-- Codex MUST: a note stays in its farm, even for a person who owns BOTH farms
+reset role; set test.uid = '';
+insert into farm_members(farm_id,user_id,role) values ('22222222-2222-2222-2222-222222222222','00000000-0000-0000-0000-0000000000a1','owner') on conflict do nothing;
+set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
+do $$ begin
+  begin update day_notes set farm_id = '22222222-2222-2222-2222-222222222222' where id = '99999999-0000-0000-0000-0000000019a1'; raise exception '(0039) a note was moved to another farm'; exception when check_violation then null; end;
+  if (select farm_id from day_notes where id = '99999999-0000-0000-0000-0000000019a1') <> '11111111-1111-1111-1111-111111111111' then raise exception '(0039) the note left its farm'; end if;
+end $$;
+-- Codex SHOULD: the normal sync path (apply_ops): a worker inserts, the owner confirms
+reset role; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000b2';
+do $$ declare r jsonb; begin
+  r := apply_ops(jsonb_build_array(jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', '11111111-1111-1111-1111-111111111111', 'table', 'day_notes', 'op', 'insert', 'row', jsonb_build_object('id', '99999999-0000-0000-0000-0000000019b1', 'farm_id', '11111111-1111-1111-1111-111111111111', 'for_day', '2026-11-26', 'text', 'Via apply_ops', 'from_worker', false, 'status', 'confirmed'))));
+  if exists (select 1 from jsonb_array_elements(r) e where e->>'status' <> 'applied') then raise exception '(0039) a worker note through apply_ops was not applied: %', r; end if;
+  if (select from_worker from day_notes where id = '99999999-0000-0000-0000-0000000019b1') is not true or (select status from day_notes where id = '99999999-0000-0000-0000-0000000019b1') <> 'open' then raise exception '(0039) apply_ops let a worker forge the flag or the status'; end if;
+end $$;
+reset role; set role authenticated; set test.uid = '00000000-0000-0000-0000-0000000000a1';
+do $$ declare r jsonb; begin
+  r := apply_ops(jsonb_build_array(jsonb_build_object('op_id', gen_random_uuid(), 'farm_id', '11111111-1111-1111-1111-111111111111', 'table', 'day_notes', 'op', 'update', 'row_id', '99999999-0000-0000-0000-0000000019b1', 'row', jsonb_build_object('id', '99999999-0000-0000-0000-0000000019b1', 'farm_id', '11111111-1111-1111-1111-111111111111', 'status', 'confirmed'))));
+  if exists (select 1 from jsonb_array_elements(r) e where e->>'status' <> 'applied') then raise exception '(0039) the owner''s confirmation through apply_ops was not applied: %', r; end if;
+  if (select status from day_notes where id = '99999999-0000-0000-0000-0000000019b1') <> 'confirmed' then raise exception '(0039) the note was not confirmed'; end if;
+end $$;
 reset role; set test.uid = '';
 do $$ declare g text; begin g := bump_sync_generation(); if g is null then raise exception '(0039) bump_sync_generation returned nothing'; end if; end $$;
 do $$ begin raise notice 'm19-day-notes tests passed'; end $$;
