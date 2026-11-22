@@ -200,5 +200,10 @@
   "ui.news.title": "What is new",
   "ui.news.r1.a": "Σήμερα has a bell with what is new, a «＋» button for quick entry, and a page that shows where every number comes from.",
   "ui.news.r1.b": "Every record shows whether it is only on the phone, was sent, or was not accepted by the server, and why.",
-  "ui.news.r1.c": "Worker invitation with a QR code and a link, an iPhone Home Screen guide, and an error report that stays on the phone."
+  "ui.news.r1.c": "Worker invitation with a QR code and a link, an iPhone Home Screen guide, and an error report that stays on the phone.",
+  "ui.crops.chip.none": "No planting",
+  "ui.crops.chip.unknown": "Waiting unknown",
+  "ui.crops.chip.wait": "In waiting period",
+  "ui.crops.chip.free": "Ready to cut",
+  "ui.crops.plantings": "Plantings"
 }

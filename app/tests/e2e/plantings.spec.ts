@@ -42,12 +42,14 @@ test('add a planting offline: area kept as typed, bigger-than-parcel only warns,
 
   await expect(page.getByTestId('toast')).toContainText('Η φύτευση αποθηκεύτηκε');
   const line = page.getByTestId('planting');
+  await page.getByTestId('crop-open').first().click();                                   // the plantings are on the crop page
   await expect(line).toContainText('Κάτω Κάμπος · 0,75 στρ.');
   await expect(line).toContainText('Σε συγκομιδή');
   await expect(page.getByTestId('sync-chip')).toContainText('Θα σταλεί όταν συνδεθεί λογαριασμός');
 
   await page.reload();
   await tab(page, 'crops');
+  await page.getByTestId('crop-open').first().click();
   await expect(line).toContainText('0,75 στρ.');
 
   await line.getByRole('button', { name: 'Αρχειοθέτηση' }).click();
@@ -93,5 +95,6 @@ test('while the demo farm is active no planting can be added, and the demo shows
   await expect(page.getByTestId('planting-demo-note')).toBeVisible();
   await expect(page.getByTestId('planting-add')).toHaveCount(0);
   await expect(page.locator('main .card')).toHaveCount(10);
+  await page.getByTestId('crop-open').first().click();
   await expect(page.getByTestId('planting').first()).not.toContainText('harvesting');
 });
