@@ -62,7 +62,7 @@ export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: {
       <div class="card" data-testid="detail-weather"><small>{wxLine}</small></div>
       <h2>{t('detail.plantings')}</h2>
       {mine.length === 0 && <p class="muted">{t('list.empty')}</p>}
-      {mine.map((p) => <button type="button" class="card planting-open" key={p.id} data-testid="detail-planting" aria-label={t('ui.sketch.open')} onClick={() => openSheet('crop', text(p.crop_id))}>{nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {})}<small>{plantingLine(p)}</small></button>)}
+      {mine.map((p) => <button type="button" class="card planting-open" key={p.id} data-testid="detail-planting" onClick={() => openSheet('crop', text(p.crop_id))}>{nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {})}<small>{plantingLine(p)}</small></button>)}
       <h2>{t('detail.sprays')}</h2>
       {last.length === 0 && <p class="muted">{t('spray.empty')}</p>}
       {last.map((s) => <div class="card" key={s.id} data-testid="detail-spray">{nameOf(products.rows?.find((p) => p.id === s.product_id) ?? {})}<small>{formatDateTime(text(s.sprayed_at))}</small></div>)}
