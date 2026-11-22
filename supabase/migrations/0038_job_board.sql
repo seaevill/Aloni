@@ -50,7 +50,7 @@ declare allowed constant text[] := array['status','skip_reason','done_at','start
 begin
   if has_role(old.farm_id, array['worker']) and not has_role(old.farm_id, array['owner']) then
     if old.worker_id is null and old.assigned_to is null and old.status = 'planned' and old.kind = 'spray' and old.deleted_at is null
-       and new.worker_id is not null and new.worker_id = (select w.id from workers w where w.user_id = auth.uid() and w.farm_id = old.farm_id and w.deleted_at is null limit 1)
+       and new.worker_id is not null and new.worker_id = (select w.id from workers w where w.user_id = auth.uid() and w.farm_id = old.farm_id and w.deleted_at is null order by w.created_at, w.id limit 1)
        and (to_jsonb(new) - allowed - take_allowed) is not distinct from (to_jsonb(old) - allowed - take_allowed) and new.status = old.status then
       return new;                                                             -- the take of an open job: nothing else changes
     end if;
@@ -72,7 +72,7 @@ begin
   select * into j from jobs where id = p_job;
   -- one answer for «no such job», «another farm's job» and «archived»: nothing is revealed
   if not found or j.deleted_at is not null or not has_role(j.farm_id, array['worker']) then raise exception 'this job is not available to you' using errcode = 'insufficient_privilege'; end if;
-  select * into w from workers x where x.farm_id = j.farm_id and x.user_id = me and x.deleted_at is null limit 1;
+  select * into w from workers x where x.farm_id = j.farm_id and x.user_id = me and x.deleted_at is null order by x.created_at, x.id limit 1;      -- the SAME pick as the guard (review SHOULD)
   if not found then raise exception 'you are not on the farm''s worker list' using errcode = 'insufficient_privilege'; end if;
   update jobs set worker_id = w.id where id = p_job and worker_id is null and assigned_to is null and status = 'planned' and kind = 'spray' and deleted_at is null;
   get diagnostics n = row_count;
