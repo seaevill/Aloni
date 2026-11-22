@@ -288,5 +288,12 @@
   "ui.store.note": "Only records with a destination are counted. Old records are not added to the store.",
   "ui.board.title": "Open jobs",
   "ui.board.take": "I take it",
-  "ui.board.taken": "Someone else already took it."
+  "ui.board.taken": "Someone else already took it.",
+  "ui.dest.title": "Where did the crates go?",
+  "ui.dest.store": "Store",
+  "ui.dest.dispatch": "Direct dispatch",
+  "ui.dest.recv.name": "Receiver name (optional)",
+  "ui.dest.recv.phone": "Receiver phone (optional)",
+  "ui.dest.recv.note": "Only the owner sees the receiver's details.",
+  "ui.dest.error": "Choose store or direct dispatch."
 }
