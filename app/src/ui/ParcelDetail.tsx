@@ -9,6 +9,8 @@ import { dayOf, parseDays } from '../weather/strip';
 import type { Row } from '../db/schema';
 import { BackBar } from './BackBar';
 import { ParcelSketch } from './ParcelSketch';
+import { plantingMarks } from '../plantings/marks';
+import { openSheet } from './nav';
 import { EditTrail } from './EditTrail';
 import { TOPO_KEYS } from './ParcelForm';
 import { STATUS_KEYS } from './PlantingForm';
@@ -25,6 +27,7 @@ export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: {
   const weather = useWeather();
   const mine = (plantings.rows ?? []).filter((p) => p.parcel_id === parcel.id && !p.deleted_at);
   const cut = cutFromParcel(parcel.id, instantOf(new Date()) ?? '', plantings.rows ?? [], links.rows ?? [], sprays.rows ?? [], labelRows.rows ?? []);
+  const marks = plantingMarks(text(parcel.area_str), mine.map((p) => ({ id: text(p.id), area: text(p.area_str) })));
   const jobIds = new Set((links.rows ?? []).filter((l) => mine.some((p) => p.id === l.planting_id)).map((l) => l.job_id));
   const last = effectiveSprays((sprays.rows ?? []).filter((s) => jobIds.has(s.job_id))).sort((a, b) => text(b.sprayed_at).localeCompare(text(a.sprayed_at))).slice(0, 5);
   const stream = parcelTimeline(parcel.id, plantings.rows ?? [], links.rows ?? [], effectiveSprays(sprays.rows ?? []), harvests.rows ?? [],
@@ -50,14 +53,16 @@ export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: {
         <BackBar onBack={onBack} testId="detail-back" />
         <h1 tabIndex={-1}>{text(parcel.name)}</h1>
       </header>
-      <ParcelSketch boundary={parcel.boundary} sample={readOnly ? parcel.sketch : undefined} />
+      <ParcelSketch boundary={parcel.boundary} sample={readOnly ? parcel.sketch : undefined} marks={marks} clipKey={`pd-${text(parcel.id)}`} />
+      {marks.length > 0 && <small class="sketch-note" data-testid="sketch-note">{t('ui.sketch.note')}</small>}
+      {mine.length > 0 && marks.length === 0 && <small class="sketch-note" data-testid="sketch-unknown">{t('ui.sketch.unknown')}</small>}
       <div class="card facts">{rows.map(([k, v]) => <div class="fact" key={k}><span>{t(k)}</span><strong>{v}</strong></div>)}</div>
       <div class={cut.state === 'unknown' ? 'card field blocked' : 'card'}><small data-testid="detail-cut">{cutLine}</small></div>
       <h2>{t('detail.weather')}</h2>
       <div class="card" data-testid="detail-weather"><small>{wxLine}</small></div>
       <h2>{t('detail.plantings')}</h2>
       {mine.length === 0 && <p class="muted">{t('list.empty')}</p>}
-      {mine.map((p) => <div class="card" key={p.id} data-testid="detail-planting">{nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {})}<small>{plantingLine(p)}</small></div>)}
+      {mine.map((p) => <button type="button" class="card planting-open" key={p.id} data-testid="detail-planting" aria-label={t('ui.sketch.open')} onClick={() => openSheet('crop', text(p.crop_id))}>{nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {})}<small>{plantingLine(p)}</small></button>)}
       <h2>{t('detail.sprays')}</h2>
       {last.length === 0 && <p class="muted">{t('spray.empty')}</p>}
       {last.map((s) => <div class="card" key={s.id} data-testid="detail-spray">{nameOf(products.rows?.find((p) => p.id === s.product_id) ?? {})}<small>{formatDateTime(text(s.sprayed_at))}</small></div>)}

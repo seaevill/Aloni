@@ -9,6 +9,8 @@ import { BackBar } from './BackBar';
 import { CropIcon, DetailSheet, ListRow } from './ds';
 import { TapNum } from './cx/TapNum';
 import { CropTips } from './CropTips';
+import { ParcelSketch } from './ParcelSketch';
+import { plantingMarks } from '../plantings/marks';
 import { STATUS_KEYS } from './PlantingForm';
 import { waitLine } from './Sprays';
 import { nameOf } from './screens';
@@ -30,6 +32,13 @@ export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) 
   const jobIds = new Set((links.rows ?? []).filter((l) => mine.some((p) => p.id === l.planting_id)).map((l) => l.job_id));
   const last = effectiveSprays((sprays.rows ?? []).filter((s) => jobIds.has(s.job_id))).sort((a, b) => text(b.sprayed_at).localeCompare(text(a.sprayed_at)))[0];
   const line = (p: Row): string => { const d = text(p.sown_on); const sk = (STATUS_KEYS as Record<string, I18nKey>)[text(p.status)]; return [formatArea(p.area_str as string | number), validDate(d) ? formatDate(d) : '', sk ? t(sk) : ''].filter((x) => x !== '').join(' · '); };
+  const sketchOf = (p: Row) => {
+    const parcel = parcels.rows?.find((x) => x.id === p.parcel_id);
+    if (!parcel) return null;
+    const onParcel = (plantings.rows ?? []).filter((x) => x.parcel_id === p.parcel_id && !x.deleted_at);
+    const marks = plantingMarks(text(parcel.area_str), onParcel.map((x) => ({ id: text(x.id), area: text(x.area_str) })));
+    return <><ParcelSketch boundary={parcel.boundary} sample={parcel.sketch} marks={marks} highlight={text(p.id)} clipKey={`cd-${text(p.id)}`} /><small class="sketch-note">{marks.length > 0 ? t('ui.sketch.note') : t('ui.sketch.unknown')}</small></>;
+  };
   const parcelName = (p: Row): string => text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name);
   return (
     <section class="detail" data-testid="crop-detail">
@@ -55,6 +64,7 @@ export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) 
         return (
           <details class="card crop-planting" key={p.id} open={i === 0} data-testid="detail-planting">
             <summary><strong>{parcelName(p)}</strong><small>{line(p)}</small></summary>
+            <div data-testid="crop-sketch">{sketchOf(p)}</div>
             <section data-testid="crop-weather">
               <h3>{t('today.weather')}</h3>
               {days.length === 0 && <p class="muted">{t('today.weather.none')}</p>}
