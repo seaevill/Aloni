@@ -9,6 +9,7 @@
 6. **Dürüst not:** puanları kendime vermedim; PASS = yerel ekran görüntüsü + test; FAIL = yapılmadı.
 
 ## Güncel (2026-11-22 öğleden sonra)
+- **main yeşil (sha 6a296e2), 0038–0041 yüklemeye hazır** (iş panosu, gün notları, ekim sınırı, ürün hedefleri). 0036+0037 için yükleme onayını bekliyorum; 0038–0041 sonraki paket. Kuyruk yeniden açıldı (SQL dışı işler).
 - **0035 production'da** (workflow «Supabase migrate (manual)», commit d17f739, verify_applied yeşil). 0036 (#362) ve 0037 (#368): Codex yeniden-kontrolünü bekliyor; hükümden sonra aynı yükleme yolu.
 - Faz 1 durumu: `docs/milestones/PHASE1-DONE.md` (a–g, her madde kanıtlı).
 
