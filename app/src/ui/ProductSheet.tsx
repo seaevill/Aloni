@@ -15,6 +15,7 @@ import { nameOf } from './screens';
 import { useRows } from './useRows';
 
 const copy = { el, en, hi, tr };
+const GENERAL: Readonly<Record<string, I18nKey>> = { fungicide: 'ui.product.general.fungicide', insecticide: 'ui.product.general.insecticide', herbicide: 'ui.product.general.herbicide', fertiliser: 'ui.product.general.fertiliser', other: 'ui.product.general.other' };
 const text = (value: unknown): string | undefined => typeof value === 'string' && value.trim() ? value : undefined;
 const labelNumber = (value: unknown): string | undefined => value === NOT_ON_LABEL
   ? t('labeluse.notOnLabel')
@@ -35,7 +36,7 @@ export function ProductSheet({ product, onClose }: { product: Row; onClose: () =
     ? [formatQty(balance), unit].join('\u00a0')
     : undefined;
   const type = text(product.type);
-  const kind = type !== undefined && ['fungicide', 'insecticide', 'herbicide', 'fertiliser', 'other'].includes(type) ? (`ui.product.general.${type}` as I18nKey) : undefined;
+  const kind = type !== undefined && Object.hasOwn(GENERAL, type) ? GENERAL[type] : undefined;
   const last = effectiveSprays(ownRows(sprays.rows)).filter((row) => row.product_id === product.id)
     .sort((a, b) => (text(b.sprayed_at) ?? '').localeCompare(text(a.sprayed_at) ?? ''));
   return <DetailSheet heading={nameOf(product)} onClose={onClose} testid="product-source">
