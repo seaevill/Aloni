@@ -227,5 +227,18 @@
   "ui.product.general.note": "Ό,τι επιτρέπεται και πώς, ορίζει μόνο η ετικέτα του προϊόντος.",
   "ui.product.link": "Επίσημη ετικέτα",
   "ui.product.open": "Πληροφορίες προϊόντος",
-  "ui.job.late": "Καθυστερεί {n} ημ."
+  "ui.job.late": "Καθυστερεί {n} ημ.",
+  "ui.spray.detail": "Λεπτομέρειες ψεκασμού",
+  "ui.spray.dose": "Δόση όπως καταγράφηκε",
+  "ui.spray.dose.none": "άγνωστο – δεν καταγράφηκε δόση",
+  "ui.spray.when": "Πότε ψεκάστηκε",
+  "ui.spray.product": "Προϊόν",
+  "ui.spray.cutfrom": "Κοπή από",
+  "ui.spray.cutfrom.unknown": "άγνωστο – λείπει η αναμονή της ετικέτας",
+  "ui.spray.reentry": "Επανείσοδος από",
+  "ui.spray.reentry.unknown": "άγνωστο – λείπει η επανείσοδος της ετικέτας",
+  "ui.spray.over": "Η αναμονή έχει λήξει",
+  "ui.spray.where": "Χωράφι και φυτό",
+  "ui.spray.who": "Ψέκασε",
+  "ui.spray.who.unknown": "άγνωστο – δεν έχει καταγραφεί εργάτης"
 }

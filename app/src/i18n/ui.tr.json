@@ -227,5 +227,18 @@
   "ui.product.general.note": "Neye ve nasıl izin verildiğini yalnızca ürünün etiketi belirler.",
   "ui.product.link": "Resmi etiket",
   "ui.product.open": "Ürün bilgisi",
-  "ui.job.late": "{n} gün gecikmiş"
+  "ui.job.late": "{n} gün gecikmiş",
+  "ui.spray.detail": "İlaçlama ayrıntısı",
+  "ui.spray.dose": "Kaydedilen doz",
+  "ui.spray.dose.none": "bilinmiyor – doz kaydedilmemiş",
+  "ui.spray.when": "İlaçlama zamanı",
+  "ui.spray.product": "Ürün",
+  "ui.spray.cutfrom": "Hasat tarihi",
+  "ui.spray.cutfrom.unknown": "bilinmiyor – etiketteki bekleme süresi yok",
+  "ui.spray.reentry": "Tarlaya giriş tarihi",
+  "ui.spray.reentry.unknown": "bilinmiyor – etiketteki giriş süresi yok",
+  "ui.spray.over": "Bekleme süresi bitti",
+  "ui.spray.where": "Tarla ve bitki",
+  "ui.spray.who": "İlaçlayan",
+  "ui.spray.who.unknown": "bilinmiyor – işçi kaydedilmemiş"
 }
