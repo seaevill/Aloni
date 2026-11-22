@@ -1,7 +1,7 @@
 import type { Row } from '../db/schema';
 
 // The bell (E2), computed on the phone from the job rows it already holds: no server, no push, nothing invented.
-// owner: a job FINISHED after he last looked; worker: a planned job assigned to her and CREATED after she last looked.
+// owner: a job FINISHED after he last looked; worker: a planned job assigned to her, or an OPEN job nobody has yet (the board, B3), CREATED after she last looked.
 // «Claimed» (a worker took a job) needs the job board (B3) and is not produced here. No «last look» yet = nothing is new (first run does not flood).
 export interface Notice { kind: 'done' | 'new'; jobId: string; at: string }
 export interface NoticeWho { role: 'owner' | 'worker'; workerId?: string; seenAt: string | undefined }
@@ -17,7 +17,7 @@ export function notices(jobs: readonly Row[], who: NoticeWho): Notice[] {
   if (who.role === 'owner') {
     for (const j of live) { const at = iso(j.done_at); if (j.status === 'done' && at && later(at, seenAt)) out.push({ kind: 'done', jobId: String(j.id), at }); }
   } else if (who.workerId) {
-    for (const j of live) { const at = iso(j.created_at); if (j.status === 'planned' && j.worker_id === who.workerId && at && later(at, seenAt)) out.push({ kind: 'new', jobId: String(j.id), at }); }
+    for (const j of live) { const at = iso(j.created_at); if (j.status === 'planned' && (j.worker_id === who.workerId || !j.worker_id) && at && later(at, seenAt)) out.push({ kind: 'new', jobId: String(j.id), at }); }
   }
   return out.sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
 }

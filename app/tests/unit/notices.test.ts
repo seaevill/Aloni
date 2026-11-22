@@ -23,4 +23,9 @@ describe('notices', () => {
     expect(notices([job({ worker_id: 'w1', created_at: '2026-11-21T09:00:00.000Z' })], { role: 'worker', workerId: undefined, seenAt: seen })).toEqual([]);
     expect(notices([job({ id: 'a', status: 'done' })], { role: 'owner', seenAt: seen })).toEqual([]);
   });
+
+  it('worker: an OPEN job nobody has (the board) created after the last look is new for every worker; a taken one is not', () => {
+    const rows = [job({ id: 'open', created_at: '2026-11-21T09:00:00.000Z' }), job({ id: 'taken', worker_id: 'w2', created_at: '2026-11-21T09:00:00.000Z' }), job({ id: 'old-open', created_at: '2026-11-20T09:00:00.000Z' })];
+    expect(notices(rows, { role: 'worker', workerId: 'w1', seenAt: seen }).map((x) => x.jobId)).toEqual(['open']);
+  });
 });
