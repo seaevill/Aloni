@@ -1,0 +1,57 @@
+{
+  "om": {
+    "what": "Organik madde bitki, hayvan ve toprak canlılarından gelen maddelerdir.",
+    "changes": "Miktarı toprağın suyu ve besinleri tutma biçimini etkiler.",
+    "effect": "Toprağın yapısı ve nemi yapraklı sebzelerin köklerini etkiler."
+  },
+  "n": {
+    "what": "Azot bir besin maddesidir ve rapor hangi biçimin ölçüldüğünü belirtir.",
+    "changes": "Daha yüksek değer ölçülen biçimin daha fazla olduğunu gösterir. Yöntem ve örnek alma zamanı önemlidir.",
+    "effect": "Azot yaprak gelişiminde rol oynar."
+  },
+  "p": {
+    "what": "Fosfor bitkide enerjinin aktarılmasında rol oynayan bir besin maddesidir.",
+    "changes": "Değer, kullanılan yönteme göre ölçülen fosforun daha az veya daha çok olduğunu gösterir.",
+    "effect": "Kökler ve yeni yapraklar gelişirken fosfora ihtiyaç duyar."
+  },
+  "k": {
+    "what": "Potasyum bitkinin su dengesinde kullandığı bir besin maddesidir.",
+    "changes": "Yüksek değer daha fazla ölçülen potasyum demektir. Bitkinin alabildiği miktar toprağa da bağlıdır.",
+    "effect": "Potasyum yapraklardaki su dengesine yardımcı olur."
+  },
+  "caco3": {
+    "what": "Kalsiyum karbonat kireçli topraklarda bulunan bir mineraldir.",
+    "changes": "Karbonat arttıkça toprak çoğu zaman asitlik değişimine daha çok direnç gösterir.",
+    "effect": "Kireçli toprakta köklerin bazı besinleri alması zorlaşabilir."
+  },
+  "sodium": {
+    "what": "Sodyum suda ve toprakta ölçülen çözünmüş elementlerden biridir.",
+    "changes": "Yüksek değer, ölçülen biçimde daha fazla sodyum olduğunu gösterir.",
+    "effect": "Sodyum birikmesi suyun köklere ulaşmasını etkileyebilir."
+  },
+  "sar": {
+    "what": "Sodyum adsorpsiyon oranı sudaki sodyumu kalsiyum ve magnezyumla karşılaştırır.",
+    "changes": "Yüksek oran, bu elementlere göre daha fazla sodyum olduğunu gösterir.",
+    "effect": "Bazı topraklarda bu oran suyun köklere ulaşmasını etkiler."
+  },
+  "cl": {
+    "what": "Klorür suda ve toprakta bulunan çözünmüş bir iyondur.",
+    "changes": "Yüksek değer örnekte daha fazla klorür olduğunu gösterir.",
+    "effect": "Birikmesi bazı bitkilerin yapraklarını etkileyebilir."
+  },
+  "no3": {
+    "what": "Nitrat azotun suda çözünen bir biçimidir.",
+    "changes": "Suya, toprağa ve örnek alma zamanına göre değer değişebilir.",
+    "effect": "Yapraklı sebzeler gelişmek için nitrat kullanır. Toprak veya su sonucu yapraktaki nitratı göstermez."
+  },
+  "ec": {
+    "what": "Elektriksel iletkenlik suyun elektriği ne kadar kolay ilettiğini gösterir.",
+    "changes": "Aynı yöntemle, daha yüksek değer genelde daha çok çözünmüş tuz anlamına gelir.",
+    "effect": "Kök çevresinde daha fazla tuz varsa bitkinin su alması zorlaşabilir."
+  },
+  "ph": {
+    "what": "pH suyun ne kadar asitli veya bazlı olduğunu gösterir.",
+    "changes": "Düşük değer daha asitli, yüksek değer daha bazlı demektir.",
+    "effect": "Köklerin çevresindeki asitlik bitkinin yararlanabileceği besinleri etkiler."
+  }
+}
