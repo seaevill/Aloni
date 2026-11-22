@@ -13,7 +13,7 @@ import { formatDate, formatDateTime, lang, t, ts, type I18nKey, LANGS, LANG_META
 import { UNIT_KEYS } from './LabelUseForm';
 import { formatDose } from '../i18n/format';
 import { known, type Decimal } from '@aloni/rules-core';
-import { putLocal, putMany } from '../repo';
+import { put, putLocal, putMany } from '../repo';
 import { isLate } from '../spray/spray';
 import { storePhoto } from '../media/photo';
 import { MediaThumb } from './Photos';
@@ -70,11 +70,20 @@ export function WorkerApp() {
   useEffect(() => { void db.outbox.where('status').equals('pending').toArray().then((r) => setQueued(r.filter((o) => o.table === `${RPC_PREFIX}${COMPLETE}`).map((o) => o.row_id))); }, [pendingOps.value, dataVersion.value]);
   const [when, setWhen] = useState(athensLocalNow(new Date()) ?? ''); const [startWhen, setStartWhen] = useState(''); const [startError, setStartError] = useState(false);   // the start is REQUIRED (the server asks for it) and never pre-filled
   const [note, setNote] = useState('');
+  const [takenMsg, setTakenMsg] = useState('');
   const [parcel, setParcel] = useState(''); const [kind, setKind] = useState<ObservationKind | undefined>(undefined);
   if (!me || (real && !(AUTH_ENABLED && session.value))) return null;
 
   const mine = (jobs.rows ?? []).filter((j) => j.kind === 'spray' && j.worker_id === me.id && !held.includes(j.id));
   const open_ = mine.filter((j) => j.status === 'planned' && !queued.includes(j.id));
+  // the shared board (Demo practice view): an open job nobody has yet. Taking it sets the worker on the job; the first to take it wins (the job is read again right before the write).
+  const free = real ? [] : (jobs.rows ?? []).filter((j) => j.kind === 'spray' && j.status === 'planned' && !j.deleted_at && !j.worker_id);
+  const take = async (job: Row) => {
+    const now = (await db.jobs.get(job.id));
+    if (!now || now.worker_id) { setTakenMsg(job.id); return; }
+    await put(db, 'jobs', { ...now, worker_id: me.id });
+    dataVersion.value++;
+  };
   const groups = groupJobs(open_, athensToday(new Date()) ?? '');
   const waiting = mine.filter((j) => j.status === 'planned' && queued.includes(j.id));
   const finished = mine.filter((j) => j.status !== 'planned');
@@ -143,6 +152,12 @@ export function WorkerApp() {
       {tabId === 'harvest' && harvestSaved && <p class="msg" role="status" data-testid="worker-status-harvest">{t('harvest.saved')} {t(queuedKey(SYNC_CONNECTED))}</p>}
       {tabId === 'jobs' && (
         <>
+          {free.length > 0 && <section data-testid="worker-board"><h2>{t('ui.board.title')}</h2>
+            {free.map((j) => <div class="card job" key={j.id} data-testid="worker-free-job"><strong class="job-title">{nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {})}</strong>
+              <button class="btn big" data-testid="worker-take" onClick={() => void take(j)}>{t('ui.board.take')}</button>
+              {takenMsg === j.id && <p class="msg error" role="alert">{t('ui.board.taken')}</p>}
+            </div>)}
+          </section>}
           <h2>{t('worker.jobs')}</h2>
           {open_.length === 0 && <p class="muted" data-testid="worker-nojobs">{t('worker.noJobs')}</p>}
           {JOB_GROUPS.map(([gk, glabel]) => groups[gk].length > 0 && (<section key={gk}><h3 class={gk === 'overdue' ? 'late' : undefined} data-testid={`worker-group-${gk}`}>{t(glabel)} <span class="count">{groups[gk].length}</span></h3>
