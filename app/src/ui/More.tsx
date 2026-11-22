@@ -9,7 +9,7 @@ import { Info } from './Info';
 import { Photos } from './Photos';
 import { SettingsBox } from './SettingsBox';
 import { Orders } from './Orders';
-import { LazyCustomers } from './LazyCustomers';
+import { Customers } from './Customers';
 import { Register } from './Register';
 import { Workers } from './Workers';
 import { workerView } from './nav';
@@ -48,7 +48,7 @@ export function More() {
   if (view === 'info') return <Info onBack={() => setView('main')} />;
   if (view === 'weekly') return <WeeklyReport onBack={() => setView('main')} />;
   if (view === 'orders') return <Orders onBack={() => setView('main')} />;
-  if (view === 'customers') return <LazyCustomers onBack={() => setView('main')} />;
+  if (view === 'customers') return <Customers onBack={() => setView('main')} />;
   if (view === 'register') return <Register onBack={() => setView('main')} />;
   if (view === 'workers') return <Workers onBack={() => setView('main')} />;
   if (view === 'photos') return <Photos onBack={() => setView('main')} />;
