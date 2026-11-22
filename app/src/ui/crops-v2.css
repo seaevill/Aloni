@@ -102,8 +102,8 @@
   align-items: center;
   background: var(--card);
   display: flex;
-  flex: 0 0 64px;
-  height: 64px;
+  flex: 0 0 calc(var(--tile) + var(--sp-8));
+  height: calc(var(--tile) + var(--sp-8));
   justify-content: center;
 }
 .crop-tile .crop-tile-name strong {

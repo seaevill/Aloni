@@ -90,14 +90,14 @@ export function Crops() {
   const filtered = shown?.filter((r) => matchesRecord(query, nameOf(r)));
   if (!demo && parcels.rows && crops.rows && liveParcels.length === 0) {
     return (
-      <section>
+      <section aria-label={t('crops.title')}>
         <PageHead heading={t('ui.tab.crops')} />
         <EmptyState message={t('planting.noParcels')} actionLabel={t('parcel.add')} onAction={() => { tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
       </section>
     );
   }
   return (
-    <section>
+    <section aria-label={t('crops.title')}>
       <PageHead heading={t('ui.tab.crops')} />
       {demo && <p class="muted" data-testid="planting-demo-note">{t('planting.demoActive')}</p>}
       {canAdd && live.length > 0 && <button class="btn" data-testid="planting-add" onClick={() => setAdding(true)}>{t('planting.add')}</button>}
@@ -108,7 +108,7 @@ export function Crops() {
         const chip = chipOf(c);
         return <div class="card crop-card" key={c.id}>
           <button class="row crop-open crop-tile" data-testid="crop-open" onClick={() => setShownId(String(c.id))}>
-            <span class="crop-list-tile"><CropIcon slug={text(c.slug)} size="48px" /></span>
+            <span class="crop-list-tile"><CropIcon slug={text(c.slug)} size="calc(var(--tile) - var(--sp-8))" /></span>
             <span class="crop-tile-name"><strong>{nameOf(c)}</strong><Chip tone={chip.tone}>{t(chip.key)}</Chip></span>
             <span aria-hidden="true" class="chev" />
           </button>
