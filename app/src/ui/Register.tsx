@@ -14,6 +14,7 @@ import { nameOf } from './screens';
 import { useRows } from './useRows';
 import type { Flag } from '../spray/spray';
 import type { DoseUnit } from '@aloni/rules-core';
+import { RegisterPrint } from './RegisterPrint';
 import { BackBar } from './BackBar';
 import './register-v2.css';
 
@@ -37,8 +38,10 @@ export function Register({ onBack }: { onBack: () => void }) {
   const [sprays, links, plantings, parcels, crops, products, workers] = [useRows('job_spray'), useRows('job_plantings'), useRows('plantings'), useRows('parcels'), useRows('crops'), useRows('products'), useRows('workers')]; const lots = useRows('stock_lots');
   const demo = activeFarm.value === DEMO_FARM_ID;
   const lines = registerLines({ sprays: sprays.rows ?? [], links: links.rows ?? [], plantings: plantings.rows ?? [], parcels: parcels.rows ?? [], crops: crops.rows ?? [], products: products.rows ?? [], workers: workers.rows ?? [], lots: lots.rows ?? [] }, { ...SCREEN, missing: t('register.missing') });
-  const [holder, setHolder] = useState(''); const [vat, setVat] = useState(''); const [vatSaved, setVatSaved] = useState(false);
-  useEffect(() => { void loadController(db).then((c) => setHolder(c?.name ?? '')); void db.settings.get('business').then((r) => setVat(String((r?.value as { vat_id?: string } | undefined)?.vat_id ?? ''))); }, []);
+  const [controller, setController] = useState<Awaited<ReturnType<typeof loadController>>>();
+  const holder = controller?.name ?? '';
+  const [storedVat, setStoredVat] = useState(''); const [vat, setVat] = useState(''); const [vatSaved, setVatSaved] = useState(false);
+  useEffect(() => { void loadController(db).then((c) => setController(c)); void db.settings.get('business').then((r) => { const saved = String((r?.value as { vat_id?: string } | undefined)?.vat_id ?? ''); setVat(saved); setStoredVat(saved); }); }, []);
   const data = { sprays: sprays.rows ?? [], links: links.rows ?? [], plantings: plantings.rows ?? [], parcels: parcels.rows ?? [], crops: crops.rows ?? [], products: products.rows ?? [], workers: workers.rows ?? [], lots: lots.rows ?? [] };
   const csvLines = registerLines(data, { ...FMT, missing: t('register.missing') });
   const fillIn = FILL_IN.filter((c) => warningLines(data).some((w) => w.warning_code === c));
@@ -63,7 +66,7 @@ export function Register({ onBack }: { onBack: () => void }) {
       {!demo && (
         <label class="field noprint">{t('register.vat')}
           <input class="input" value={vat} autoComplete="off" data-testid="register-vat" onInput={(e) => { setVat((e.target as HTMLInputElement).value); setVatSaved(false); }} />
-          <button class="btn secondary" onClick={() => { void putSetting(db, realFarmId.value, 'business', { vat_id: vat.trim() }).then(() => setVatSaved(true)); }}>{t('register.vat.save')}</button>
+          <button class="btn secondary" onClick={() => { void putSetting(db, realFarmId.value, 'business', { vat_id: vat.trim() }).then(() => { setVatSaved(true); setStoredVat(vat.trim()); }); }}>{t('register.vat.save')}</button>
           {vatSaved && <span class="msg" role="status">{t('register.vat.saved')}</span>}
         </label>
       )}
@@ -84,6 +87,7 @@ export function Register({ onBack }: { onBack: () => void }) {
           {COLUMNS.filter((c) => c !== 'product' && c !== 'when' && l[c]).map((c) => <small key={c}>{t('labeluse.line', { name: t(COL_KEYS[c]), value: l[c] })}</small>)}
         </div>
       ))}
+      <RegisterPrint data={data} demo={demo} name={holder} address={controller?.address ?? ''} phone={controller?.phone ?? ''} vat={storedVat} />
       <p class="sign">{t('register.sign')}</p>
     </section>
   );
