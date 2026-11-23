@@ -8,6 +8,9 @@
 5. **Senden tek adımlar:** (a) 0036–0042'yi «Supabase migrate (manual)» ile sırayla yükle (0036+0037 önce, sonra «Yükleme tamam» yaz; 0042'den ÖNCE telefon tarafını yayınlayacağım, bu yüzden 0042'yi en son yükle); (b) Codex'in 4 işi (ilaçlama defteri PDF, GPS sınır, sezon takvimi, More menüsü) merge ediliyor, telefonda dene; (c) **para defteri PR'ları #484/#485** (F1 Ταμείο) başka bir ekipten geldi, onayın olmadan merge etmiyorum: «evet/hayır» de.
 6. **Açık PR'lar:** #500 (SQL, bekliyor) · #460 (0037 yüklenince) · #484/#485 (para defteri, onayını bekliyor) · #471/#480/#481/#488 (yalnızca belge) · Dependabot #306 (testleri kırmızı).
 
+## Güncel (2026-11-23 akşam)
+- **main yeşil (sha d9edf04), 0036+0037 yüklemeye hazır.** Yeni özellik yok (dondurma); #484/#485, #504/#507/#508 ve #500 birleştirilmedi.
+
 ## Güncel (2026-11-22 öğleden sonra)
 - **main yeşil (sha 6a296e2), 0038–0041 yüklemeye hazır** (iş panosu, gün notları, ekim sınırı, ürün hedefleri). 0036+0037 için yükleme onayını bekliyorum; 0038–0041 sonraki paket. Kuyruk yeniden açıldı (SQL dışı işler).
 - **0035 production'da** (workflow «Supabase migrate (manual)», commit d17f739, verify_applied yeşil). 0036 (#362) ve 0037 (#368): Codex yeniden-kontrolünü bekliyor; hükümden sonra aynı yükleme yolu.
