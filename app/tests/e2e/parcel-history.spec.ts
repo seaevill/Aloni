@@ -38,7 +38,9 @@ test('the parcel history lists sowing, fertilising, irrigation, an observation a
   await expect(page.getByTestId('timeline')).toContainText('Παρατήρηση: Εχθρός · κηλίδες στα φύλλα');
   await expect(page.getByTestId('timeline')).toContainText('Συγκομιδή: Σπανάκι · 4 κλούβες');
   expect(await lines.count()).toBe(5);                                              // five events, none twice
-  await expect(page.getByTestId('water-recorded')).toContainText('7 m³/στρ. νερό');  // 3,5 m³ ÷ 0,5 στρ.
+  await expect(page.getByTestId('water-recorded')).toContainText('Καταγεγραμμένη άρδευση: 7 m³/στρ.');  // 3,5 m³ ÷ 0,5 στρ.
+  await expect(page.getByTestId('water-recorded')).toContainText('δεν είναι η συνολική κατανάλωση νερού');   // recorded, never «total use»
+  await expect(page.getByTestId('water-local')).toContainText('μόνο σε αυτό το τηλέφωνο');         // the phone-only warning stays
   await page.getByTestId('timeline').scrollIntoViewIfNeeded();
   await page.screenshot({ path: `${SHOTS}/parcel-history-timeline.png` });
   expect(errors).toEqual([]);

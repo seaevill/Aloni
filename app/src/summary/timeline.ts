@@ -8,9 +8,9 @@ export const TIMELINE_MAX = 20;
 const text = (v: unknown): string => (typeof v === 'string' ? v : typeof v === 'number' ? String(v) : '');
 
 export type TimelineEvent =
-  | { kind: 'sown'; id: string; at: string; crop: string }
+  | { kind: 'sown'; id: string; at: string; crop: string; archived?: true }
   | { kind: 'spray'; id: string; at: string; product: string; phiUntil?: string; reiUntil?: string }
-  | { kind: 'harvest'; id: string; at: string; crop: string; crates: string }
+  | { kind: 'harvest'; id: string; at: string; crop: string; crates: string; archived?: true }
   | { kind: 'cut'; id: string; at: string; method: 'shredder' | 'hand' | 'other' }
   | { kind: 'fertilise'; id: string; at: string; nForm: string; kgPerStr?: string }
   | { kind: 'irrigate'; id: string; at: string; m3?: string; minutes?: string }
@@ -41,7 +41,9 @@ export function parcelTimeline(
   /** the owner's fertilising / irrigation records (kept on the phone) and the observations (rows) – only the ones of THIS parcel are used */
   more: { work?: readonly Work[]; observations?: readonly Row[] } = {},
 ): TimelineEvent[] {
-  const mine = plantings.filter((p) => p.parcel_id === parcelId && !p.deleted_at);
+  // archived plantings stay in the history (what happened, happened); the same set the parcel productivity counts. Deleted HARVEST rows never show.
+  const mine = plantings.filter((p) => p.parcel_id === parcelId);
+  const archivedIds = new Set(mine.filter((p) => p.deleted_at).map((p) => String(p.id)));
   const ids = new Set(mine.map((p) => String(p.id)));
   const jobs = new Set(links.filter((l) => ids.has(String(l.planting_id))).map((l) => String(l.job_id)));
   const cropOf = (plantingId: unknown): string => names.crop(mine.find((p) => p.id === plantingId)?.crop_id);
@@ -51,12 +53,12 @@ export function parcelTimeline(
       : { kind: 'irrigate', id: w.id, at: w.day, ...(w.m3 !== undefined ? { m3: w.m3 } : {}), ...(w.minutes !== undefined ? { minutes: w.minutes } : {}) })),
     ...(more.observations ?? []).filter((o) => o.parcel_id === parcelId && !o.deleted_at && text(o.observed_at) !== '').map((o): TimelineEvent => ({ kind: 'observation', id: String(o.id), at: text(o.observed_at), what: text(o.kind), ...(text(o.note) !== '' ? { note: text(o.note) } : {}) })),
     ...cuts.map((c): TimelineEvent => ({ kind: 'cut', id: c.id, at: c.day, method: c.method })),
-    ...mine.filter((p) => text(p.sown_on) !== '').map((p): TimelineEvent => ({ kind: 'sown', id: String(p.id), at: text(p.sown_on), crop: names.crop(p.crop_id) })),
+    ...mine.filter((p) => text(p.sown_on) !== '').map((p): TimelineEvent => ({ kind: 'sown', id: String(p.id), at: text(p.sown_on), crop: names.crop(p.crop_id), ...(p.deleted_at ? { archived: true as const } : {}) })),
     ...sprays.filter((s) => jobs.has(String(s.job_id)) && text(s.sprayed_at) !== '').map((s): TimelineEvent => ({
       kind: 'spray', id: String(s.id), at: text(s.sprayed_at), product: names.product(s.product_id),
       ...(text(s.phi_until) !== '' ? { phiUntil: text(s.phi_until) } : {}), ...(text(s.rei_until) !== '' ? { reiUntil: text(s.rei_until) } : {}),
     })),
-    ...harvests.filter((h) => ids.has(String(h.planting_id)) && text(h.harvested_at) !== '').map((h): TimelineEvent => ({ kind: 'harvest', id: String(h.id), at: text(h.harvested_at), crop: cropOf(h.planting_id), crates: text(h.crates_str) })),
+    ...harvests.filter((h) => !h.deleted_at && ids.has(String(h.planting_id)) && text(h.harvested_at) !== '').map((h): TimelineEvent => ({ kind: 'harvest', id: String(h.id), at: text(h.harvested_at), crop: cropOf(h.planting_id), crates: text(h.crates_str), ...(archivedIds.has(String(h.planting_id)) ? { archived: true as const } : {}) })),
   ];
   const dated: { event: TimelineEvent; instant: number }[] = [];
   const undated: TimelineEvent[] = [];
