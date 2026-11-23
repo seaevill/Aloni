@@ -792,5 +792,11 @@
   "tomorrow.covered": "Covered",
   "tomorrow.surplus": "{n} extra",
   "tomorrow.supply": "Ready plantings: {free} · on hold (not counted): {held} · unknown (not counted): {unknown}",
-  "tomorrow.unmapped": "{n} products not linked to a crop are not shown above."
+  "tomorrow.unmapped": "{n} products not linked to a crop are not shown above.",
+  "timeline.fertilise": "Fertilising: {form}",
+  "timeline.fertilise.kg": "{n} kg N/στρ.",
+  "timeline.irrigate": "Irrigation",
+  "timeline.irrigate.m3": "{n} m³",
+  "timeline.irrigate.min": "{n} min",
+  "timeline.observation": "Observation: {what}"
 }

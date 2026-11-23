@@ -792,5 +792,11 @@
   "tomorrow.covered": "Karşılanıyor",
   "tomorrow.surplus": "{n} fazla",
   "tomorrow.supply": "Hazır ekim: {free} · beklemede (sayılmaz): {held} · bilinmeyen (sayılmaz): {unknown}",
-  "tomorrow.unmapped": "Ürüne bağlanmamış {n} ürün yukarıda görünmüyor."
+  "tomorrow.unmapped": "Ürüne bağlanmamış {n} ürün yukarıda görünmüyor.",
+  "timeline.fertilise": "Gübreleme: {form}",
+  "timeline.fertilise.kg": "{n} kg N/dönüm",
+  "timeline.irrigate": "Sulama",
+  "timeline.irrigate.m3": "{n} m³",
+  "timeline.irrigate.min": "{n} dk",
+  "timeline.observation": "Gözlem: {what}"
 }

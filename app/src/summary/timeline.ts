@@ -1,4 +1,5 @@
 import type { Row } from '../db/schema';
+import type { Work } from '../fieldwork/fieldwork';
 import { athensInstant } from '../spray/time';
 
 // «Χρονολόγιο» of a parcel: ONE read-only stream of what the records say happened on it (sowing, sprayings, harvests), newest first.
@@ -10,11 +11,14 @@ export type TimelineEvent =
   | { kind: 'sown'; id: string; at: string; crop: string }
   | { kind: 'spray'; id: string; at: string; product: string; phiUntil?: string; reiUntil?: string }
   | { kind: 'harvest'; id: string; at: string; crop: string; crates: string }
-  | { kind: 'cut'; id: string; at: string; method: 'shredder' | 'hand' | 'other' };
+  | { kind: 'cut'; id: string; at: string; method: 'shredder' | 'hand' | 'other' }
+  | { kind: 'fertilise'; id: string; at: string; nForm: string; kgPerStr?: string }
+  | { kind: 'irrigate'; id: string; at: string; m3?: string; minutes?: string }
+  | { kind: 'observation'; id: string; at: string; what: string; note?: string };
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const ZONED_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
-const KIND_ORDER: Record<TimelineEvent['kind'], number> = { harvest: 0, spray: 1, cut: 2, sown: 3 };
+const KIND_ORDER: Record<TimelineEvent['kind'], number> = { harvest: 0, spray: 1, observation: 2, irrigate: 3, fertilise: 4, cut: 5, sown: 6 };
 
 function timelineInstant(at: string): number | undefined {
   const zoned = DATE.test(at) ? athensInstant(`${at}T00:00`) : ZONED_TIME.test(at) ? at : undefined;
@@ -34,12 +38,18 @@ export function parcelTimeline(
   names: { crop: (id: unknown) => string; product: (id: unknown) => string },
   /** cut / clean records of THIS parcel (kept on the phone) */
   cuts: readonly { id: string; day: string; method: 'shredder' | 'hand' | 'other' }[] = [],
+  /** the owner's fertilising / irrigation records (kept on the phone) and the observations (rows) – only the ones of THIS parcel are used */
+  more: { work?: readonly Work[]; observations?: readonly Row[] } = {},
 ): TimelineEvent[] {
   const mine = plantings.filter((p) => p.parcel_id === parcelId && !p.deleted_at);
   const ids = new Set(mine.map((p) => String(p.id)));
   const jobs = new Set(links.filter((l) => ids.has(String(l.planting_id))).map((l) => String(l.job_id)));
   const cropOf = (plantingId: unknown): string => names.crop(mine.find((p) => p.id === plantingId)?.crop_id);
   const events: TimelineEvent[] = [
+    ...(more.work ?? []).filter((w) => w.parcel_id === parcelId).map((w): TimelineEvent => (w.kind === 'fertilise'
+      ? { kind: 'fertilise', id: w.id, at: w.day, nForm: w.n_form ?? '', ...(w.n_kg_per_str !== undefined ? { kgPerStr: w.n_kg_per_str } : {}) }
+      : { kind: 'irrigate', id: w.id, at: w.day, ...(w.m3 !== undefined ? { m3: w.m3 } : {}), ...(w.minutes !== undefined ? { minutes: w.minutes } : {}) })),
+    ...(more.observations ?? []).filter((o) => o.parcel_id === parcelId && !o.deleted_at && text(o.observed_at) !== '').map((o): TimelineEvent => ({ kind: 'observation', id: String(o.id), at: text(o.observed_at), what: text(o.kind), ...(text(o.note) !== '' ? { note: text(o.note) } : {}) })),
     ...cuts.map((c): TimelineEvent => ({ kind: 'cut', id: c.id, at: c.day, method: c.method })),
     ...mine.filter((p) => text(p.sown_on) !== '').map((p): TimelineEvent => ({ kind: 'sown', id: String(p.id), at: text(p.sown_on), crop: names.crop(p.crop_id) })),
     ...sprays.filter((s) => jobs.has(String(s.job_id)) && text(s.sprayed_at) !== '').map((s): TimelineEvent => ({

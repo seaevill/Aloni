@@ -58,3 +58,30 @@ describe('the parcel timeline: one read-only stream of what happened on THIS par
     expect(e[0]).toMatchObject({ kind: 'cut', method: 'shredder', at: '2026-11-21' });
   });
 });
+
+describe('the parcel timeline also carries fertilising, irrigation and observations of THIS parcel (only what is stored)', () => {
+  const plantings = [planting('p1', 'A', 'c1', '2026-10-01')];
+  const work = [
+    { id: 'w1', parcel_id: 'A', kind: 'fertilise' as const, day: '2026-11-12', n_form: 'ουρία', n_kg_per_str: '4,5' },
+    { id: 'w2', parcel_id: 'A', kind: 'irrigate' as const, day: '2026-11-15', m3: '3,5' },
+    { id: 'w3', parcel_id: 'B', kind: 'irrigate' as const, day: '2026-11-16', m3: '9' },
+  ];
+  const obs: Row[] = [
+    { id: 'o1', farm_id: 'f', parcel_id: 'A', kind: 'pest', observed_at: '2026-11-14T08:00:00.000Z', note: 'κηλίδες' },
+    { id: 'o2', farm_id: 'f', parcel_id: 'A', kind: 'dew', observed_at: '2026-11-13T08:00:00.000Z', deleted_at: '2026-11-13T09:00:00Z' },
+    { id: 'o3', farm_id: 'f', parcel_id: 'B', kind: 'dew', observed_at: '2026-11-13T08:00:00.000Z' },
+  ];
+  it('orders them newest first with the other events, keeps each record as typed, and leaves out other parcels and deleted observations', () => {
+    const e = parcelTimeline('A', plantings, [], [], [], names, [], { work, observations: obs });
+    expect(e.map((x) => `${x.kind}:${x.id}`)).toEqual(['irrigate:w2', 'observation:o1', 'fertilise:w1', 'sown:p1']);
+    expect(e[0]).toMatchObject({ m3: '3,5' });
+    expect(e[2]).toMatchObject({ nForm: 'ουρία', kgPerStr: '4,5' });
+    expect(e[1]).toMatchObject({ what: 'pest', note: 'κηλίδες' });
+  });
+  it('a record without a quantity shows no quantity (never a zero)', () => {
+    const e = parcelTimeline('A', plantings, [], [], [], names, [], { work: [{ id: 'w', parcel_id: 'A', kind: 'irrigate', day: '2026-11-15', minutes: '40' }] });
+    const i = e.find((x) => x.kind === 'irrigate');
+    expect(i).toBeDefined();
+    expect('m3' in i!).toBe(false);
+  });
+});

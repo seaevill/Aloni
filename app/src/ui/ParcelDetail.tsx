@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
 import { activeFarm, db } from '../db';
 import { loadCuts, type CutRecord } from '../cuts/cuts';
+import type { Work } from '../fieldwork/fieldwork';
 import { ParcelCut, METHOD_KEYS } from './ParcelCut';
 import { formatDate, formatDateTime, t, type I18nKey } from '../i18n';
 import { formatArea, formatQty } from '../i18n/format';
@@ -27,16 +28,18 @@ import { nameOf } from './screens';
 import { useRows } from './useRows';
 import { useWeather } from './useWeather';
 
+const OBS_KEYS: Record<string, I18nKey> = { dew: 'worker.kind.dew', frost_damage: 'worker.kind.frost_damage', disease: 'worker.kind.disease', pest: 'worker.kind.pest', other: 'worker.kind.other' };
 const text = (v: unknown): string => (typeof v === 'string' ? v : typeof v === 'number' ? String(v) : '');
 const DASH = '\u2014';
 
 /** Tapped from the parcel list (prototype «Parcel detail»): a sketch, the facts, today's weather, the plantings and the last sprayings on THIS parcel. Everything is read from the same records; nothing is decided here. */
 export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: { parcel: Row; onBack: () => void; onEdit: () => void; onAnalyses: () => void; readOnly: boolean }) {
-  const labelRows = useRows('label_uses'); const plantings = useRows('plantings'); const crops = useRows('crops'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const products = useRows('products'); const harvests = useRows('job_harvest');
+  const labelRows = useRows('label_uses'); const plantings = useRows('plantings'); const crops = useRows('crops'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const products = useRows('products'); const harvests = useRows('job_harvest'); const observations = useRows('observations');
   const weather = useWeather();
   const [weatherOpen, setWeatherOpen] = useState(false);
   const [cropTips, setCropTips] = useState<Row>();
   const [cuts, setCuts] = useState<CutRecord[]>([]);
+  const [work, setWork] = useState<Work[]>([]);
   const reloadCuts = () => void loadCuts(db, activeFarm.value).then(setCuts);
   useEffect(reloadCuts, [parcel.id]);
   const mine = (plantings.rows ?? []).filter((p) => p.parcel_id === parcel.id && !p.deleted_at);
@@ -46,12 +49,15 @@ export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: {
   const last = effectiveSprays((sprays.rows ?? []).filter((s) => jobIds.has(s.job_id))).sort((a, b) => text(b.sprayed_at).localeCompare(text(a.sprayed_at))).slice(0, 5);
   const stream = parcelTimeline(parcel.id, plantings.rows ?? [], links.rows ?? [], effectiveSprays(sprays.rows ?? []), harvests.rows ?? [],
     { crop: (id) => nameOf(crops.rows?.find((c) => c.id === id) ?? {}), product: (id) => nameOf(products.rows?.find((p) => p.id === id) ?? {}) },
-    cuts.filter((c) => c.parcel_id === parcel.id));
+    cuts.filter((c) => c.parcel_id === parcel.id), { work, observations: observations.rows ?? [] });
   const eventLine = (e: TimelineEvent): string => (e.kind === 'sown' ? t('timeline.sown', { crop: e.crop })
     : e.kind === 'cut' ? t('timeline.cut', { method: t(METHOD_KEYS[e.method]) })
+    : e.kind === 'fertilise' ? [t('timeline.fertilise', { form: e.nForm }), e.kgPerStr ? t('timeline.fertilise.kg', { n: e.kgPerStr }) : ''].filter(Boolean).join(' · ')
+    : e.kind === 'irrigate' ? [t('timeline.irrigate'), e.m3 ? t('timeline.irrigate.m3', { n: e.m3 }) : '', e.minutes ? t('timeline.irrigate.min', { n: e.minutes }) : ''].filter(Boolean).join(' · ')
+    : e.kind === 'observation' ? [t('timeline.observation', { what: t((OBS_KEYS[e.what] ?? 'worker.kind.other') as I18nKey) }), e.note ?? ''].filter(Boolean).join(' · ')
     : e.kind === 'harvest' ? t('timeline.harvest', { crop: e.crop, n: formatQty(e.crates) })
       : [t('timeline.spray', { product: e.product }), e.reiUntil ? t('timeline.rei', { d: formatDateTime(e.reiUntil) }) : '', e.phiUntil ? t('timeline.phi', { d: formatDateTime(e.phiUntil) }) : ''].filter(Boolean).join(' · '));
-  const eventDate = (e: TimelineEvent): string => (e.kind === 'sown' || e.kind === 'cut' ? (validDate(e.at) ? formatDate(e.at) : '') : formatDateTime(e.at));
+  const eventDate = (e: TimelineEvent): string => (e.kind === 'sown' || e.kind === 'cut' || e.kind === 'fertilise' || e.kind === 'irrigate' ? (validDate(e.at) ? formatDate(e.at) : '') : formatDateTime(e.at));
   const waterCrops = [...new Set(mine.map((p) => String(p.crop_id)))].flatMap((cid) => { const crop = crops.rows?.find((c) => c.id === cid); return crop ? [{ crop, areas: mine.filter((p) => String(p.crop_id) === cid).map((p) => text(p.area_str)) }] : []; });
   const days = parseDays(weather.find((w) => w.parcel_id === parcel.id)?.days);
   const wx = dayOf(days, athensToday(new Date()) ?? '');
@@ -113,8 +119,8 @@ export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: {
         </button>;
       })}
       {cropTips && <CropTips slug={text(cropTips.slug)} onClose={() => setCropTips(undefined)} />}
-      <FieldWorkCard parcelId={String(parcel.id)} days={days} />
-      <ParcelYield parcel={parcel} plantings={plantings.rows ?? []} harvests={harvests.rows ?? []} cropName={(pid) => nameOf(crops.rows?.find((c) => c.id === mine.find((p) => p.id === pid)?.crop_id) ?? {})} />
+      <FieldWorkCard parcelId={String(parcel.id)} days={days} onChange={setWork} />
+      <ParcelYield parcel={parcel} work={work} plantings={plantings.rows ?? []} harvests={harvests.rows ?? []} cropName={(pid) => nameOf(crops.rows?.find((c) => c.id === mine.find((p) => p.id === pid)?.crop_id) ?? {})} />
       <WaterCard days={days} crops={waterCrops} />
       <h2>{t('detail.sprays')}</h2>
       {last.length === 0 && <p class="muted">{t('spray.empty')}</p>}
