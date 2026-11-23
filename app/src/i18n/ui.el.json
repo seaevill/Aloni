@@ -355,5 +355,18 @@
   "ui.guide.none": "δεν υπάρχει πηγή",
   "ui.guide.v.ph": "pH {low}–{high}",
   "ui.guide.v.days": "{low}–{high} ημέρες",
-  "ui.guide.v.cuts": "{low}–{high} κοπές"
+  "ui.guide.v.cuts": "{low}–{high} κοπές",
+  "ui.cut.title": "Κοπή / καθαρισμός",
+  "ui.cut.method": "Μέθοδος",
+  "ui.cut.method.shredder": "καταστροφέας",
+  "ui.cut.method.hand": "με το χέρι",
+  "ui.cut.method.other": "άλλο",
+  "ui.cut.date": "Ημερομηνία",
+  "ui.cut.add": "Καταγραφή κοπής",
+  "ui.cut.save": "Αποθήκευση",
+  "ui.cut.undo": "Ακύρωση τελευταίας καταγραφής",
+  "ui.cut.none": "Δεν υπάρχει καταγραφή κοπής σε αυτό το χωράφι.",
+  "ui.cut.sprout": "νέα βλάστηση: ημέρα {n}",
+  "ui.cut.local": "Αποθηκεύεται μόνο σε αυτό το τηλέφωνο· δεν στέλνεται ακόμη στον διακομιστή.",
+  "ui.cut.sep": " · {method}"
 }

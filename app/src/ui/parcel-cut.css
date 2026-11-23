@@ -1,0 +1,6 @@
+/* Χωράφι › «Κοπή / καθαρισμός» */
+.parcel-cut-card { display: grid; gap: var(--sp-2); margin-block: var(--sp-3); }
+.parcel-cut-card small { display: block; }
+.parcel-cut-card .btn { margin-top: var(--sp-2); }
+.parcel-cut-form { display: grid; gap: var(--sp-2); }
+.icon-head { display: flex; align-items: center; gap: var(--sp-2); }

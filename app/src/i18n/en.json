@@ -682,6 +682,7 @@
   "detail.sprays": "Last sprayings",
   "timeline.title": "Timeline",
   "timeline.empty": "Nothing recorded yet.",
+  "timeline.cut": "Cut ({method})",
   "timeline.sown": "Sowing: {crop}",
   "timeline.spray": "Spraying: {product}",
   "timeline.harvest": "Harvest: {crop} · {n} crates",
