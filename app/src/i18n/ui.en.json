@@ -431,5 +431,13 @@
   "ui.rec.save": "Save",
   "ui.rec.local": "Kept on this phone only; not sent to the server yet.",
   "ui.rec.today": "Repeating jobs today",
-  "ui.guide.source": "{source} ↗"
+  "ui.guide.source": "{source} ↗",
+  "ui.kaek.title": "ΚΑΕΚ (cadastre no.)",
+  "ui.kaek.none": "No ΚΑΕΚ entered.",
+  "ui.kaek.edit": "Enter the ΚΑΕΚ",
+  "ui.kaek.label": "ΚΑΕΚ (12 digits)",
+  "ui.kaek.err": "A ΚΑΕΚ has exactly 12 digits.",
+  "ui.kaek.save": "Save",
+  "ui.kaek.remove": "Delete the ΚΑΕΚ",
+  "ui.kaek.local": "Kept on this phone only; nothing is looked up and nothing is sent."
 }

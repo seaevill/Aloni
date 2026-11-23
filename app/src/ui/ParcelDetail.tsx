@@ -14,6 +14,7 @@ import type { Row } from '../db/schema';
 import { BackBar } from './BackBar';
 import { ParcelSketch } from './ParcelSketch';
 import { WaterCard } from './WaterCard';
+import { KaekCard } from './KaekCard';
 import { plantingMarks } from '../plantings/marks';
 import { CropTips } from './CropTips';
 import { DetailSheet, SheetFact } from './ds';
@@ -84,6 +85,7 @@ export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: {
       {mine.length > 0 && marks.length === 0 && <small class="sketch-note" data-testid="sketch-unknown">{t('ui.sketch.unknown')}</small>}
       <div class="card facts">{rows.map(([k, v]) => <div class="fact" key={k}><span>{t(k)}</span><strong>{v}</strong></div>)}</div>
       <div class={cut.state === 'unknown' ? 'card field blocked' : 'card'}><small data-testid="detail-cut">{cutLine}</small></div>
+      <KaekCard parcelId={String(parcel.id)} readOnly={readOnly} />
       <ParcelCut parcelId={String(parcel.id)} cuts={cuts} onChange={reloadCuts} />
       <h2>{t('detail.weather')}</h2>
       <button type="button" class="row" data-testid="detail-weather" onClick={() => setWeatherOpen(true)}>
