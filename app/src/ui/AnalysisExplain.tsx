@@ -62,16 +62,16 @@ export function AnalysisExplain({ field, row, records, onBack }: { field: Measur
       </figure> : <small>{copy.noRange}</small>}
       <p>{copy.approvalNote}</p>
     </Card>
-    {field === 'ph' && cropsHere.length > 0 && <Card testid="analysis-crop-ranges">
+    {cropsHere.length > 0 && <Card testid="analysis-crop-ranges">
       <h3>{t('ui.range.title')}</h3>
-      {cropsHere.map((c) => <CropRanges key={String(c.id)} crop={c} />)}
+      {cropsHere.map((c) => <CropRanges key={String(c.id)} crop={c} field={field} />)}
       <small>{t('ui.range.note')}</small>
     </Card>}
   </section>;
 }
 
-function CropRanges({ crop }: { crop: Row }) {
-  const found = rangesFor(String(crop.slug), 'ph');
+function CropRanges({ crop, field }: { crop: Row; field: Measurement }) {
+  const found = rangesFor(String(crop.slug), field);
   if (found.length === 0) return <p class="ds-muted" data-testid="analysis-crop-range">{t('ui.range.none', { crop: nameOf(crop) })}</p>;
   return <>{found.map((r) => <p key={r.url} data-testid="analysis-crop-range">{t('ui.range.line', { crop: nameOf(crop), low: r.low, high: r.high })}<br /><a href={r.url} target="_blank" rel="noopener noreferrer">{r.source}</a></p>)}{found.length > 1 && <small>{t('ui.range.differ')}</small>}</>;
 }

@@ -24,3 +24,10 @@
 .stock-v2 .product-card .row {
   min-height: 56px;
 }
+
+.product-info { width:auto; min-width:var(--tap); display:inline-flex; align-items:center; justify-content:center; }
+[data-testid="store-row"] .ds-row-meta {
+  color: var(--fg);
+  font-size: var(--fs-h2);
+  font-weight: 800;
+}

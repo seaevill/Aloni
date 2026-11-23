@@ -217,3 +217,5 @@ h3 .count { display:inline-block; min-width:var(--sp-24); padding:0 var(--sp-6);
 
 .worker-tray button { display:grid; justify-items:center; align-content:center; gap:var(--sp-4); min-height:var(--tile-row); }
 .worker-tray button:active { transform:scale(.96); }
+
+.pick { display:inline-flex; align-items:center; gap:var(--sp-8); text-align:start; }

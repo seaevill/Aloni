@@ -1,0 +1,27 @@
+.cx-crop-heat { overflow-x: auto; max-inline-size: 100%; }
+.cx-crop-heat table { border-spacing: var(--sp-4); color: var(--fg); text-align: center; }
+.cx-crop-heat th, .cx-crop-heat td { min-inline-size: var(--tap); }
+.cx-crop-heat tbody th { text-align: start; }
+.cx-crop-heat td { background: var(--card); }
+.cx-crop-heat td[data-level="sage"] { background: var(--bg); }
+.cx-crop-heat td[data-level="lime"] { background: var(--lime-soft); }
+.cx-crop-heat td[data-level="forest"], .cx-crop-heat td[data-level="deep"] { background: var(--green); color: var(--white); }
+.cx-crop-heat td[data-level="deep"] { background: var(--forest-2); }
+.cx-crop-heat td[data-excluded="true"] {
+  background: repeating-linear-gradient(135deg, var(--card) 0 var(--sp-4), var(--line) var(--sp-4) var(--sp-8));
+}
+.cx-crop-heat td button, .cx-crop-heat td span { display: grid; place-items: center; width: 100%; min-height: var(--tap); }
+.cx-crop-heat td button { background: transparent; color: inherit; font: inherit; border: 0; padding: var(--sp-4); }
+.cx-crop-heat td[data-excluded="true"] button, .cx-crop-heat td[data-excluded="true"] span { background: var(--card); width: auto; margin: var(--sp-4); }
+.cx-month-ring ol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--sp-4); list-style: none; max-width: calc(var(--tap) * 4 + var(--sp-16)); padding: 0; }
+.cx-month-ring li { display: grid; place-items: center; min-height: var(--tap); background: var(--bg); border: var(--bw-1) solid var(--line); border-radius: var(--r-pill); }
+.cx-month-ring li[data-recorded="true"] { background: var(--green); color: var(--white); font-weight: 800; }
+.cx-month-ring li:nth-child(5) { grid-column: 4; grid-row: 2; }
+.cx-month-ring li:nth-child(6) { grid-column: 4; grid-row: 3; }
+.cx-month-ring li:nth-child(7) { grid-column: 4; grid-row: 4; }
+.cx-month-ring li:nth-child(8) { grid-column: 3; grid-row: 4; }
+.cx-month-ring li:nth-child(9) { grid-column: 2; grid-row: 4; }
+.cx-month-ring li:nth-child(10) { grid-column: 1; grid-row: 4; }
+.cx-month-ring li:nth-child(11) { grid-column: 1; grid-row: 3; }
+.cx-month-ring li:nth-child(12) { grid-column: 1; grid-row: 2; }
+.cx-tips-card { padding: var(--sp-16); background: var(--card); border: var(--bw-1) solid var(--line); border-radius: var(--r-card); }
