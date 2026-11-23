@@ -19,7 +19,7 @@ test('shell: five tabs in Greek, 375 px, no horizontal scroll', async ({ page })
 
 test('tabs switch screens', async ({ page }) => {
   await page.goto('/');
-  for (const [id, title] of [['crops', 'Καλλιέργειες'], ['parcels', 'Χωράφια'], ['stock', 'Αποθήκη'], ['more', 'Άλλα'], ['today', 'Σήμερα']]) {
+  for (const [id, title] of [['crops', 'Φυτά'], ['parcels', 'Χωράφια'], ['stock', 'Αποθήκη'], ['more', 'Άλλα'], ['today', 'Σήμερα']]) {
     await page.locator(`nav.tabs [data-tab="${id}"]`).click();
     await expect(page.locator('h1')).toContainText(title);
   }

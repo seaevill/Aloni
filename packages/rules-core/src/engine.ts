@@ -27,6 +27,12 @@ export interface Output {
   parcel_ids: string[]; planting_ids: string[]; product_ids: string[]; crop_ids: string[];
   window?: { start: string; end: string }; values: Record<string, unknown>; vetoes: Veto[];
 }
+export interface NitrogenReading {
+  parcelId: string;
+  sampledOn?: string;
+  nitrogenPpm?: number;
+}
+
 export interface Snapshot {
   asOf: string; plantings: readonly PlantingFact[]; jobs: readonly JobFact[]; uses: readonly UseFact[]; tasks: readonly TaskFact[];
   ruleStatus: Readonly<Record<string, 'signed' | 'unsigned'>>; parcelsForInfo: readonly string[]; draftJobs: readonly DraftJob[]; products: readonly ProductFact[];
@@ -38,6 +44,7 @@ export interface Snapshot {
   /** Shelf, planned uses and the STOCK thresholds. */
   stock?: StockFacts;
   salinity?: SalinityFacts;
+  nitrogen?: readonly NitrogenReading[];
   gap?: GapFacts;
   sowing?: SowingFacts;
   harvestGuard?: readonly HarvestGuardFact[];
@@ -242,7 +249,18 @@ function infoOnly(s: Snapshot): Output[] {
   const frost = s.ruleStatus.FROST === 'unsigned' ? s.parcelsForInfo.map((id) => blank({ rule_id: 'FROST', kind: 'info', category: 'frost_inputs', parcel_ids: [id], values: { shows_inputs: true, badge: 'not_signed_off', notify: false } })) : [];
   const spray = s.ruleStatus['SPRAY-WIN'] === 'unsigned' ? Object.keys(s.weather?.hours ?? {}).map((id) => blank({ rule_id: 'SPRAY-WIN', kind: 'info', category: 'spray_window_inputs', parcel_ids: [id], values: { shows_inputs: true, badge: 'not_signed_off', notify: false } })) : [];
   const stockInfo = s.ruleStatus.STOCK === 'unsigned' ? [...new Set((s.stock?.lots ?? []).map((l) => l.productId))].map((id) => blank({ rule_id: 'STOCK', kind: 'info', category: 'stock_inputs', product_ids: [id], values: { shows_inputs: true, badge: 'not_signed_off', notify: false } })) : [];
-  return [...frost, ...spray, ...stockInfo];
+  const nitrogen = s.ruleStatus.N === 'signed' ? [] : (s.nitrogen ?? []).map((reading) => blank({
+    rule_id: 'N',
+    kind: 'info',
+    category: 'nitrogen_inputs',
+    parcel_ids: [reading.parcelId],
+    values: {
+      badge: 'not_signed_off',
+      sampled_on: reading.sampledOn && isCalendarDate(reading.sampledOn) ? reading.sampledOn : null,
+      nitrogen_ppm: typeof reading.nitrogenPpm === 'number' && Number.isFinite(reading.nitrogenPpm) && reading.nitrogenPpm >= 0 ? reading.nitrogenPpm : null,
+    },
+  }));
+  return [...frost, ...spray, ...stockInfo, ...nitrogen];
 }
 
 export function runRules(s: Snapshot): Output[] {
