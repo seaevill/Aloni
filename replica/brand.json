@@ -1,0 +1,5 @@
+{
+  "avoid": ["Farmable", "İmeceMobil", "ImeceMobil", "Imece Mobil", "Агроном Онлайн", "Agronom Online", "AgronomOnline", "AgroMind", "Farm Aloni", "FieldWise"],
+  "domains": ["farmable.tech", "imecemobil.com.tr"],
+  "colors": []
+}
