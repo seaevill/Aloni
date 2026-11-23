@@ -121,3 +121,8 @@
 .crop-card + .crop-card {
   border-block-start: 0;
 }
+
+/* «Νερό αυτή την εβδομάδα» on the parcel page */
+.water { display: grid; gap: var(--sp-2); margin-block: var(--sp-3); }
+.water small { display: block; }
+.water-form { display: grid; gap: var(--sp-2); }
