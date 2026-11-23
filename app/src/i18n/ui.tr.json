@@ -358,5 +358,18 @@
   "ui.cut.none": "Bu tarlada kayıtlı kesim yok.",
   "ui.cut.sprout": "yeni sürgün: gün {n}",
   "ui.cut.local": "Yalnızca bu telefonda saklanır; henüz sunucuya gönderilmiyor.",
-  "ui.cut.sep": " · {method}"
+  "ui.cut.sep": " · {method}",
+  "ui.fert.title": "Gübre planı",
+  "ui.fert.photo": "Ziraat mühendisinin kâğıdının fotoğrafı",
+  "ui.fert.none": "Girilmiş plan yok.",
+  "ui.fert.day": "{n}. gün",
+  "ui.fert.written": "mühendisin yazdığı gibi",
+  "ui.fert.remove": "Sil",
+  "ui.fert.add": "Mühendisin bir satırını ekle",
+  "ui.fert.day.label": "Ekimden sonraki gün",
+  "ui.fert.text.label": "Mühendisin metni (yazdığı gibi)",
+  "ui.fert.err": "Tam sayı gün ve metin yaz.",
+  "ui.fert.save": "Kaydet",
+  "ui.fert.reminders": "Hatırlatmalar: kapalı (mühendis imzalayınca açılır).",
+  "ui.fert.note": "Uygulama gübre ya da miktar önermez."
 }

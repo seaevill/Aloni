@@ -358,5 +358,18 @@
   "ui.cut.none": "No cut is recorded on this parcel.",
   "ui.cut.sprout": "new growth: day {n}",
   "ui.cut.local": "Kept on this phone only; not sent to the server yet.",
-  "ui.cut.sep": " · {method}"
+  "ui.cut.sep": " · {method}",
+  "ui.fert.title": "Fertiliser plan",
+  "ui.fert.photo": "Photo of the agronomist's paper",
+  "ui.fert.none": "No plan entered.",
+  "ui.fert.day": "Day {n}",
+  "ui.fert.written": "as the agronomist wrote it",
+  "ui.fert.remove": "Delete",
+  "ui.fert.add": "Add a line from the agronomist",
+  "ui.fert.day.label": "Day after sowing",
+  "ui.fert.text.label": "The agronomist's text (as written)",
+  "ui.fert.err": "Enter a whole number of days and the text.",
+  "ui.fert.save": "Save",
+  "ui.fert.reminders": "Reminders: off (they open only after an agronomist has signed).",
+  "ui.fert.note": "The app does not suggest a fertiliser or a quantity."
 }
