@@ -478,5 +478,14 @@
   "ui.year.crates": "{n} kasa",
   "ui.year.chart.alt": "Aylık kasa, bu yıl ve geçen yıl",
   "ui.year.legend": "Aylık: açık yeşil = geçen yıl, koyu = bu yıl. Yalnızca kendi kayıtlarından.",
-  "ui.year.unreadable": "{k} kayıt sayılmadı (kasa sayısı okunamıyor)."
+  "ui.year.unreadable": "{k} kayıt sayılmadı (kasa sayısı okunamıyor).",
+  "ui.water.m3": "{n} m³",
+  "ui.water.why.area": "alan eksik",
+  "ui.water.why.flow": "debi eksik",
+  "ui.water.vneed": "İhtiyaç hacmi",
+  "ui.water.vgap": "Fark hacmi",
+  "ui.water.hours": "Sulama saati (ihtiyaç için)",
+  "ui.water.hours.v": "{n} saat",
+  "ui.water.flow.edit": "Sulama debisi (m³/saat)",
+  "ui.water.flow.label": "Debi (saatte m³)"
 }
