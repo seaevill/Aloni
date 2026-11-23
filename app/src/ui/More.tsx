@@ -61,9 +61,9 @@ export function More() {
         {activeFarm.value === DEMO_FARM_ID && <button class="row" data-testid="open-worker-view" onClick={() => { workerView.value = ''; }}><MenuIcon name="worker" /><span>{t('more.workerView')}</span><span aria-hidden="true" class="chev" /></button>}
         <button class="row" data-testid="open-customers" onClick={() => setView('customers')}><MenuIcon name="workers" /><span>{t('ui.cust.open')}</span><span aria-hidden="true" class="chev" /></button>
         <button class="row" data-testid="open-workers" onClick={() => setView('workers')}><MenuIcon name="workers" /><span>{t('workers.open')}</span><span aria-hidden="true" class="chev" /></button>
+        <button class="row" data-testid="open-weekly-report" onClick={() => setView('weekly')}><MenuIcon name="register" /><span>{weeklyCopy[lang.value].title}</span><span aria-hidden="true" class="chev" /></button>
         <button class="row" data-testid="open-photos" onClick={() => setView('photos')}><MenuIcon name="photos" /><span>{t('photos.title')}</span><span aria-hidden="true" class="chev" /></button>
         <button class="row" data-testid="open-info" onClick={() => setView('info')}><MenuIcon name="info" /><span>{t('more.info')}</span><span aria-hidden="true" class="chev" /></button>
-        <button class="row" data-testid="open-weekly-report" onClick={() => setView('weekly')}><MenuIcon name="register" /><span>{weeklyCopy[lang.value].title}</span><span aria-hidden="true" class="chev" /></button>
       </nav>
 
       <h2>{t('more.settings')}</h2>

@@ -50,7 +50,7 @@ export function StoreStock() {
     <section data-testid="store-stock">
       <h2>{t('ui.store.title')}</h2>
       {lines !== undefined && shown.length === 0 && <p class="muted" data-testid="store-none">{t('ui.store.none')}</p>}
-      {shown.map((l) => <ListRow key={l.slug} testid="store-row" icon={<CropIcon slug={l.slug} size="var(--icon-sm)" />} heading={cropName(crops, l.slug)} meta={t('ui.store.crates', { n: formatQty(l.store) })} trailing={ageChip(l)} onClick={() => openSheet('store', l.slug)} />)}
+      {shown.map((l) => <ListRow key={l.slug} testid="store-row" icon={<CropIcon slug={l.slug} size="calc(var(--tile) - var(--sp-8))" />} heading={cropName(crops, l.slug)} meta={t('ui.store.crates', { n: formatQty(l.store) })} trailing={ageChip(l)} onClick={() => openSheet('store', l.slug)} />)}
       {tomorrow !== undefined && <p class="muted" data-testid="store-tomorrow">{tomorrow}</p>}
       <p class="muted">{t('ui.store.note')}</p>
     </section>

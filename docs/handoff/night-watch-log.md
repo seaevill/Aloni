@@ -1,0 +1,5 @@
+# Night watch log
+
+One line per run (Europe/Istanbul time): what was merged, opened or blocked.
+
+- 2026-11-23 03:13 (Istanbul) — Claude Code idle (last main commit 23:00 UTC, last non-codex PR update 21:58 UTC). main green (8b75791). Merged (squash, no supabase/**, check+sql green): #454, #459, #461; #458 after updating its branch from main (the today-sheets failure was the midnight race fixed in #466). Blocked: #453 has merge conflicts with main (left for Claude Code); #444, #446, #387, #422 touch supabase/tests/phone-columns.json so not merged by the night watch; #460 HOLD; #427/#429/#430 SQL; #464 stacked on #456; #306 Dependabot red. No new feature PR this run.
