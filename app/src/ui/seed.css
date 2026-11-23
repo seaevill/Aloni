@@ -1,0 +1,4 @@
+/* «Σπόρος» */
+.seed { display: grid; gap: var(--sp-2); margin-block: var(--sp-3); }
+.seed small { display: block; }
+.seed-form { display: grid; gap: var(--sp-2); }
