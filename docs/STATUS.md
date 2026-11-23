@@ -70,6 +70,7 @@
 Codex ekran PR'ları: #294 Καλλιέργειες kartları · #296 Χωράφια çizimi · #297 Αποθήκη kartları · #298 Μητρώο kimliği · #299 Άλλα menü sırası · #300 ψεκασμός formu adımları · #308 Χωράφια listesi ayrıştırma · #292 Demo haftalık sipariş · #326/#329/#330/#331 kaynak/bilinmeyen bileşenleri, ekim eskizi, analiz açıklaması, hasat kaynağı. Benim ekran işlerim: E1–E7 (yukarıdaki 10 kontrol).
 
 ## Sorular (cevap gelene kadar durmuyorum)
+- **Ürün rehberi rakamları (2026-11-23):** maydanoz için arama sonuçlarında pH 6,0–7,0 (UMN, UC Marin) ve ekimden hasada 60–75 gün (UC Sonoma) / 70–90 gün (UMD takvimi) görüldü, **ama sayfaları açıp okuyamadım** (bu ortamda bu siteler kapalı). Doğrulanmadığı için koda eklemedim; rehberde «δεν υπάρχει πηγή» yazıyor. Siteleri açıp kontrol edersen (ya da `extension.umn.edu`, `ucanr.edu`, `extension.umd.edu` ağ izni verirsen) eklerim.
 5. **Hintçe metinler (işçi ekranı):** Hasat varış yeri, iş panosu ve yarın notu metinlerini Hintçe ekledim; bir Hintçe bilen işçi okusun (yanlış çeviri riskini ben ölçemem).
 6. **Açılış boyutu:** sınırı 170 KB'ye çektim (DECISIONS); sonraki adım metinleri ve bileşenleri küçültmek (bundle analizi).
 0. **Demo etiket işi (import-demo.ts bende):** görevin ayrıntısı repoda yok. Etiket verisi (doz, PHI, REI) uydurmam; Demo'da yalnızca prototipin `registered[]` değerleri kullanılır. Ne istediğini bir cümleyle yazarsan yaparım (örn. «Demo'daki her ilaca resmi etiket bağlantısı»).
