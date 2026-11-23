@@ -25,4 +25,14 @@ test('a «Αύριο φεύγουν» row opens who orders it (per customer), wh
   await expect(sheet.getByTestId('tomorrow-store')).toContainText('αποθήκη');
   await expect(sheet.getByTestId('tomorrow-copy')).toBeVisible();
   expect((await sheet.getByTestId('tomorrow-copy').boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(56);
+  // «Φορτώθηκε»: confirming a customer's load takes it off the store; it survives closing and reopening; a second tap undoes it
+  const loaded = mine.locator('xpath=..').getByTestId('tomorrow-loaded');
+  await expect(loaded).toHaveText('Φορτώθηκε');
+  await loaded.click();
+  await expect(loaded).toContainText('Φορτώθηκε ✓');
+  await sheet.getByTestId('sheet-close').click();
+  await page.getByTestId('tomorrow-open').filter({ hasText: 'Μαϊντανός' }).click();
+  await expect(page.getByTestId('tomorrow-sheet').getByTestId('tomorrow-customer').filter({ hasText: 'Μαρία Παπά' }).locator('xpath=..').getByTestId('tomorrow-loaded')).toContainText('Φορτώθηκε ✓');
+  await page.getByTestId('tomorrow-sheet').getByTestId('tomorrow-customer').filter({ hasText: 'Μαρία Παπά' }).locator('xpath=..').getByTestId('tomorrow-loaded').click();
+  await expect(page.getByTestId('tomorrow-sheet').getByTestId('tomorrow-customer').filter({ hasText: 'Μαρία Παπά' }).locator('xpath=..').getByTestId('tomorrow-loaded')).toHaveText('Φορτώθηκε');
 });
