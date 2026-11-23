@@ -9,6 +9,7 @@ import { openSheet } from './nav';
 import { registerSheet, type SheetProps } from './sheets';
 import { useRows } from './useRows';
 import './ProductSheet';
+import './CrateLabelSheet';
 
 const where = (d: DoneRecord): string => (d.destination === 'store' ? t('ui.done.dest.store') : d.destination === 'dispatch' ? t('ui.done.dest.dispatch') : t('ui.done.dest.unknown'));
 const cratesOf = (d: DoneRecord): string => (d.crates === undefined ? t('ui.done.crates.unknown') : t('ui.done.crates', { n: d.crates }));
@@ -53,6 +54,7 @@ function DoneSheet({ id, close }: SheetProps) {
       {kind === 'spray' && <SheetFact name={t('ui.done.product')} value={nameById(products.rows, row.product_id) || undefined} unknown={t('ui.unknown')} />}
       {kind === 'harvest' && <SheetFact name={t('ui.done.harvest')} value={n} unknown={t('ui.done.crates.unknown')} />}
       {kind === 'harvest' && <SheetFact name={t('ui.done.dest')} value={dest} unknown={t('ui.done.dest.unknown')} />}
+      {kind === 'harvest' && <ListRow testid="crate-open" heading={t('ui.crate.open')} onClick={() => openSheet('crate', String(row.id))} />}
       {kind === 'spray' && typeof row.product_id === 'string' && <ListRow heading={t('ui.done.productpage')} onClick={() => openSheet('product', String(row.product_id))} />}
     </DetailSheet>
   );

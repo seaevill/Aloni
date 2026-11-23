@@ -1,0 +1,3 @@
+/* Προϊόν › Υπολογισμός ψεκαστικού */
+.spray-calc-result { display: grid; gap: var(--sp-2); }
+.spray-calc-result p { margin: 0; display: grid; }

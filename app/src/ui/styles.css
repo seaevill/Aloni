@@ -219,3 +219,6 @@ h3 .count { display:inline-block; min-width:var(--sp-24); padding:0 var(--sp-6);
 .worker-tray button:active { transform:scale(.96); }
 
 .pick { display:inline-flex; align-items:center; gap:var(--sp-8); text-align:start; }
+
+/* «ready offline»: floats over the top of the screen (no layout shift under a tap that is already on its way), does not take taps, goes away by itself */
+.offline-note { position:fixed; inset-block-start:calc(env(safe-area-inset-top) + var(--sp-8)); inset-inline:var(--sp-16); margin:0 auto; inline-size:fit-content; max-inline-size:calc(100% - 2 * var(--sp-16)); z-index:10; pointer-events:none; box-shadow:var(--shadow-card); }
