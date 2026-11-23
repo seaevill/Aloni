@@ -59,6 +59,13 @@ export function voidOf(target: MoneyEntry, id: string, nowIso: string): MoneyEnt
   return v;
 }
 
+/** «Αναίρεση» of a cancel: a row that amends the void row with the original values, so the entry counts again (nothing is removed). */
+export function restoreOf(voidRow: MoneyEntry, id: string, nowIso: string): MoneyEntry {
+  const r: MoneyEntry = { id, day: voidRow.day, dir: voidRow.dir, category: voidRow.category, cents: voidRow.cents, note: voidRow.note, amends: voidRow.id, at: nowIso };
+  if (voidRow.crop !== undefined) r.crop = voidRow.crop;
+  return r;
+}
+
 /** The rows that count: every row nobody amended, minus void rows. A row amended twice: the newest amendment wins (by `at`, then id). */
 export function effective(rows: readonly MoneyEntry[]): MoneyEntry[] {
   const replaced = new Map<string, MoneyEntry>();
@@ -102,7 +109,7 @@ export function rootOf(rows: readonly MoneyEntry[], entry: MoneyEntry): string {
 export interface Totals { inCents: number; outCents: number; netCents: number }
 export interface YearSummary extends Totals { year: string; months: Totals[]; byCategory: Array<{ dir: Direction; category: Category; cents: number }> }
 
-const MONTHS = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+export const MONTHS = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
 const totals = (inCents: number, outCents: number): Totals => ({ inCents, outCents, netCents: inCents - outCents });
 
 /** In, out and net of one calendar year, the 12 months (January first) and each category (biggest first). Integer sums only. */

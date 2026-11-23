@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto';
 import { describe, expect, it } from 'vitest';
-import { appendMoney, buildEntry, categoriesOf, effective, historyOf, loadMoney, parseCents, rootOf, voidOf, yearSummary, yearsOf, MAX_CENTS, type MoneyEntry } from '../../src/money/ledger';
+import { appendMoney, buildEntry, categoriesOf, effective, historyOf, loadMoney, parseCents, restoreOf, rootOf, voidOf, yearSummary, yearsOf, MAX_CENTS, type MoneyEntry } from '../../src/money/ledger';
 import { formatMoney } from '../../src/i18n/format';
 import { lang } from '../../src/i18n';
 import { newDb, TEST_FARM_ID as F } from '../helpers/factories';
@@ -69,7 +69,8 @@ describe('append-only chain: correct and cancel', () => {
     const v = voidOf(a2, 'v', '2026-11-03T10:00:00Z');
     expect(v).toEqual({ id: 'v', day: '2026-11-01', dir: 'out', category: 'fuel', cents: 4000, note: '', amends: 'a2', void: true, at: '2026-11-03T10:00:00Z' });
     expect(effective([a, a2, v, b]).map((e) => e.id)).toEqual(['b']);
-    const back = row('u', '2026-11-01', 'out', 4000, '2026-11-03T10:00:05Z', { amends: 'v' });
+    const back = restoreOf(v, 'u', '2026-11-03T10:00:05Z');
+    expect(back).toEqual({ id: 'u', day: '2026-11-01', dir: 'out', category: 'fuel', cents: 4000, note: '', amends: 'v', at: '2026-11-03T10:00:05Z' });
     expect(effective([a, a2, v, back, b]).map((e) => e.id)).toEqual(['b', 'u']);
   });
   it('two amendments of the same row: the newest wins', () => {
