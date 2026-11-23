@@ -121,3 +121,9 @@
 .crop-card + .crop-card {
   border-block-start: 0;
 }
+
+/* «Ρυθμός συγκομιδής» and «Από τις καταγραφές σας» on the crop page */
+.pace { display: grid; gap: var(--sp-2); margin-block: var(--sp-3); }
+.pace small { display: block; }
+.pace .btn { margin-top: var(--sp-2); }
+.pace-form { display: grid; gap: var(--sp-2); }
