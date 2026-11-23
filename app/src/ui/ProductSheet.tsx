@@ -12,6 +12,8 @@ import tr from '../content/product-source/tr.json';
 import { productKnowledge } from '../content/products';
 import { Card, Chip, DetailSheet, ListRow, SheetFact } from './ds';
 import type { I18nKey, Lang } from '../i18n';
+import { openSheet } from './nav';
+import './SprayCalcSheet';
 import { registerSheet, type SheetProps } from './sheets';
 import { nameOf } from './screens';
 import { useRows } from './useRows';
@@ -84,6 +86,7 @@ export function ProductSheet({ product, onClose }: { product: Row; onClose: () =
       </Card>;
     })}
     <div data-testid="product-link"><h4>{t('ui.product.link')}</h4><p>{words.missingRegistry}</p></div>
+    <ListRow testid="product-calc" heading={t('ui.scalc.open')} onClick={() => openSheet('spraycalc', String(product.id))} />
     <h3>{t('spray.title')}</h3>
     {last.length ? last.map((row) => {
       const at = text(row.sprayed_at);
