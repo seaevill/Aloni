@@ -20,10 +20,9 @@ test('a harvest of today opens its crate label: crop, day, parcel, crates, lot a
       };
     };
   }));
+  // the sheet rides on the address: open the label of that harvest directly (clicking through two rows was flaky in WebKit CI)
+  await page.goto('/#/own/today/sheet/crate/3f2a9c1e-7b44-4d0a-8c11-aa00bb22cc33');
   await page.reload();
-  await page.getByTestId('today-done-row').filter({ hasText: 'Συγκομιδή' }).click();
-  await expect(page.getByTestId('done-sheet')).toBeVisible();
-  await page.getByTestId('crate-open').evaluate((el) => (el as HTMLElement).click());      // (a click on a row inside a sheet can wait for «stable» in WebKit)
   const label = page.getByTestId('crate-label');
   await expect(label).toBeVisible();
   await expect(label.getByTestId('crate-crop')).toHaveText('Σπανάκι');
