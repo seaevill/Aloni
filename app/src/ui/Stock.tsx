@@ -13,6 +13,7 @@ import { MediaThumb } from './Photos';
 import { LabelUses } from './LabelUses';
 import { StockLots } from './StockLots';
 import { ProductSheet } from './ProductSheet';
+import { Icon } from './icons/Icon';
 import { StoreStock } from './StoreStock';
 import { ProductForm, TYPE_KEYS } from './ProductForm';
 import { nameOf, Status, Title } from './screens';
@@ -78,6 +79,7 @@ export function Stock() {
         const active = text(r.active);
         return (
           <div class="card product-card" key={r.id} data-testid="product"><button class="row" data-testid="product-source-open" onClick={() => setSourceId(r.id)}><strong>{nameOf(r)}</strong><span aria-hidden="true" class="chev" /></button>
+            <button type="button" class="btn secondary product-info" data-testid="product-info" aria-label={t('ui.product.info.label')} onClick={() => setSourceId(r.id)}><Icon name="info" /></button>
             {active && <small class="product-identity" lang={demo ? 'en' : undefined} data-testid="stock-active">{active}</small>}
             <div class="tags">{group && <span class="tag" data-testid="stock-group">{group}</span>}{typeText(r.type) && <span class="tag">{typeText(r.type)}</span>}{text(r.reg_no) && <span class="tag">{text(r.reg_no)}</span>}</div>
             {!text(r.reg_no) && <span class="badge warn" data-testid="product-noreg">{t('product.noreg')}</span>}

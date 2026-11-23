@@ -10,7 +10,7 @@ const seed = (page: import('@playwright/test').Page, hoursAgo: number) => page.e
     const tx = r.result.transaction(['parcels', 'weather'], 'readwrite');
     tx.objectStore('parcels').getAll().onsuccess = (e) => {
       const p = (e.target as IDBRequest<Array<{ id: string; farm_id: string }>>).result[0]!;
-      const days = [0, 1, 2, 3].map((i) => ({ date: new Date(Date.now() + i * 86_400_000).toISOString().slice(0, 10), tmin: 3, tmax: 11, rain_mm: 0.4, wind_kmh: 12, gust_kmh: 30, model: 'metno', issued_at: new Date(Date.now() - h * 3_600_000).toISOString() }));
+      const days = [0, 1, 2, 3].map((i) => ({ date: new Date(Date.now() + i * 86_400_000).toLocaleDateString('sv-SE', { timeZone: 'Europe/Athens' }), tmin: 3, tmax: 11, rain_mm: 0.4, wind_kmh: 12, gust_kmh: 30, model: 'metno', issued_at: new Date(Date.now() - h * 3_600_000).toISOString() }));
       tx.objectStore('weather').put({ id: p.id, farm_id: p.farm_id, parcel_id: p.id, days });
     };
     tx.oncomplete = () => done();

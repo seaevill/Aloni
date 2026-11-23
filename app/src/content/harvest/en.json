@@ -1,1 +1,4 @@
-{"destination": "unknown – older record"}
+{
+  "destination": "unknown – older record",
+  "excluded": "The total includes crates with a recorded quantity and a known waiting period that has ended."
+}

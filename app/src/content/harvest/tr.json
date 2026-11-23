@@ -1,1 +1,4 @@
-{"destination": "bilinmiyor – eski kayıt"}
+{
+  "destination": "bilinmiyor – eski kayıt",
+  "excluded": "Toplama yalnızca miktarı kayıtlı ve bilinen bekleme süresi sona ermiş kasalar dahil edilir."
+}

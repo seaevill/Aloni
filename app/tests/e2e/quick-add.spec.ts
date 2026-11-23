@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
 import { iphone } from './helpers/iphone';
 import { setup } from './helpers/farm';
+import { athensInput, fixClock } from './helpers/clock';
+import { DAY_MS } from '../helpers/clock';
 
 // Quick add: one round «＋» on Σήμερα in the thumb zone; four 56 px rows; each opens the right form; the observation form saves a record; Back closes the menu.
 test.use({ viewport: { width: 375, height: 812 } });
@@ -25,6 +27,7 @@ test('the plus sits at the bottom right above the tab bar (thumb zone, 56 px); t
 });
 
 test('each row opens its form: spraying, harvest, observation (saves a record) and a job for tomorrow (the day is already tomorrow)', async ({ page }) => {
+  await fixClock(page);
   await iphone(page);
   await setup(page, true);
   await page.locator('nav.tabs [data-tab="today"]').click();
@@ -35,11 +38,8 @@ test('each row opens its form: spraying, harvest, observation (saves a record) a
   await expect(page.getByTestId('harvest-save')).toBeVisible();
   await page.reload();
   await page.getByTestId('quick-open').click(); await page.getByTestId('quick-job').click();
-  const tomorrow = new Date(Date.now() + 86_400_000);
-  const want = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Athens', year: 'numeric', month: '2-digit', day: '2-digit' }).format(tomorrow);
-  const shown = await page.locator('input[type="date"]').inputValue();
-  expect(Math.abs(Date.parse(shown) - Date.parse(want))).toBeLessThanOrEqual(86_400_000);   // tomorrow (Athens), give or take the clock of the test machine
-  expect(shown).not.toBe(new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Athens' }).format(new Date()));
+  const tomorrow = (await athensInput(page, DAY_MS)).slice(0, 10);
+  await expect(page.locator('input[type="date"]')).toHaveValue(tomorrow);
   await page.reload();
   await page.getByTestId('quick-open').click(); await page.getByTestId('quick-observe').click();
   await page.getByTestId('observe-save').click();
