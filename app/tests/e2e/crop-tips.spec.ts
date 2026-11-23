@@ -21,4 +21,10 @@ test('crop page has a «Συμβουλές» button opening the sourced general-
   await expect(card).toContainText('Περονόσπορος');
   await expect(card.getByTestId('crop-tips-fact')).toHaveCount(3);
   await expect(card).not.toContainText(/ασφαλ/i);
+  // R14: a ring of the months this crop was SOWN on the farm (recorded plantings), and the lightbulb on the button
+  await expect(button.locator('svg')).toHaveCount(1);
+  const ring = card.getByTestId('crop-tips-ring');
+  await expect(ring).toBeVisible();
+  expect(Number(await ring.getAttribute('data-count'))).toBeGreaterThan(0);
+  await expect(card.getByTestId('crop-tips-ring-block')).toContainText('Μήνες σποράς');
 });

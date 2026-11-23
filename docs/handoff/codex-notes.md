@@ -130,3 +130,8 @@ Stok ve dört haftalık arz hesapları hazır; ekran bağlantıları B1 ve #292�
 - **X13 / tomorrow board:** movement ordering and scope as built in `src/stock/store-stock.ts` and `src/ui/TomorrowSheet.tsx` (#410, #423): a harvest counts toward the STORE only when its record says `store` (the row's own `destination`, or the phone's `harvest_dest:<farm>` answer until 0036 is applied); `direct` and records without a destination are listed apart and never added; the day is the Athens calendar day; tomorrow's demand is `dispatchDay(orders, map, nextDay(today))` per crop slug. The database value for «direct dispatch» is `direct` (the phone says `dispatch`: map it when 0036 is wired). Nothing leaves the store yet (no outgoing record exists before the B1 stock table): the sheet says «not calculated» when the store quantity is unknown.
 - **X15:** observations and jobs are separate tables with no shared photo link: use `media.job_id` for job photos and `observations.photo_id` for observation photos; both read-only here.
 - **X11:** `job_spray` rows carry no `max_apps` or label-photo snapshot; the label use (`label_uses.max_apps`, `photo_id`) at the time is the only source and it can be edited (edit history 0024). Show those two fields as «άγνωστο – δεν καταγράφηκε στον ψεκασμό» until a snapshot column exists.
+## Z5 components ready to wire after integration
+
+- HarvestHeat — pass twelve Athens week keys, parcel rows, and a link to the parcel/week harvest source.
+- MonthRing — pass ordered month labels and months from recorded sowing dates.
+- TipsCard — pass the localized Z2 cropContent entry and the general-information banner.

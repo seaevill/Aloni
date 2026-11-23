@@ -9,6 +9,7 @@
 6. **Dürüst not:** puanları kendime vermedim; PASS = yerel ekran görüntüsü + test; FAIL = yapılmadı.
 
 ## Güncel (2026-11-22 öğleden sonra)
+- **main yeşil (sha 6a296e2), 0038–0041 yüklemeye hazır** (iş panosu, gün notları, ekim sınırı, ürün hedefleri). 0036+0037 için yükleme onayını bekliyorum; 0038–0041 sonraki paket. Kuyruk yeniden açıldı (SQL dışı işler).
 - **0035 production'da** (workflow «Supabase migrate (manual)», commit d17f739, verify_applied yeşil). 0036 (#362) ve 0037 (#368): Codex yeniden-kontrolünü bekliyor; hükümden sonra aynı yükleme yolu.
 - Faz 1 durumu: `docs/milestones/PHASE1-DONE.md` (a–g, her madde kanıtlı).
 
@@ -69,6 +70,8 @@
 Codex ekran PR'ları: #294 Καλλιέργειες kartları · #296 Χωράφια çizimi · #297 Αποθήκη kartları · #298 Μητρώο kimliği · #299 Άλλα menü sırası · #300 ψεκασμός formu adımları · #308 Χωράφια listesi ayrıştırma · #292 Demo haftalık sipariş · #326/#329/#330/#331 kaynak/bilinmeyen bileşenleri, ekim eskizi, analiz açıklaması, hasat kaynağı. Benim ekran işlerim: E1–E7 (yukarıdaki 10 kontrol).
 
 ## Sorular (cevap gelene kadar durmuyorum)
+5. **Hintçe metinler (işçi ekranı):** Hasat varış yeri, iş panosu ve yarın notu metinlerini Hintçe ekledim; bir Hintçe bilen işçi okusun (yanlış çeviri riskini ben ölçemem).
+6. **Açılış boyutu:** sınırı 170 KB'ye çektim (DECISIONS); sonraki adım metinleri ve bileşenleri küçültmek (bundle analizi).
 0. **Demo etiket işi (import-demo.ts bende):** görevin ayrıntısı repoda yok. Etiket verisi (doz, PHI, REI) uydurmam; Demo'da yalnızca prototipin `registered[]` değerleri kullanılır. Ne istediğini bir cümleyle yazarsan yaparım (örn. «Demo'daki her ilaca resmi etiket bağlantısı»).
 1. **E-posta gönderimi (para):** Supabase'in kendi e-postası saatte az kod gönderir; sürekli kullanım için kendi SMTP/EU sağlayıcı gerekir → sen karar ver, ben ücret/hesap açmam.
 2. **Alıcı telefonu (B1) gizlilik metni:** B1 yapılmadan uygulama metnine yazılmadı; avukat soruları `docs/compliance/privacy-notice-draft.md`.

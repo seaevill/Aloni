@@ -21,6 +21,7 @@ test('the 7-day tile and the table behind it agree at ANY time of day (Athens la
   await page.goto('/');
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-counts')).toBeVisible();
+  await expect(page.getByTestId('today-cut7').locator('strong')).toHaveText(/\d/);        // the tile is filled once the Demo rows are in (reading it earlier gave '')
   const tile = (await page.getByTestId('today-cut7').locator('strong').innerText()).replace(/\D/g, '');
   await page.getByTestId('today-cut7').click();
   await expect(page.getByTestId('sheet-crates').locator('.ds-bignum-value')).toBeVisible();

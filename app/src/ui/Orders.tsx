@@ -58,6 +58,9 @@ export function Orders({ onBack }: { onBack: () => void }) {
   const dispatchTxt = dispatchText(clients, { header: t('dispatch.header', { day: dayLabel(date) }), total: (q, n) => tn('dispatch.total', oneOrMore(n), { q }) });
   const copy = async () => setCopied(await copyText(dispatchTxt, { share: typeof navigator.share === 'function' ? (d) => navigator.share(d) : undefined, clipboard: navigator.clipboard }));
   const heldSlug = (slug: string | undefined): boolean => { const s = slug === undefined ? undefined : supply[slug]; return s !== undefined && s.free === 0 && s.held + s.unknown > 0; }; // nothing free but something held or unknown: shown in red, never counted as supply
+  const weeksAhead = thisWeek === undefined ? [] : [0, 1, 2, 3].map((k) => shiftDay(thisWeek, 7 * k));
+  const perWeek = weeksAhead.map((w) => cratesByCrop(orders?.weeks[w], map));
+  const fourSlugs = CATALOG.filter((c) => perWeek.some((w) => w.bySlug[c.slug] !== undefined));
   const unmapped = new Set([...now.unmapped, ...before.unmapped]).size;
   return (
     <section data-testid="orders">
@@ -91,6 +94,21 @@ export function Orders({ onBack }: { onBack: () => void }) {
           {clients.length > 0 && <button class="btn" data-testid="dispatch-copy" onClick={() => void copy()}>{t('dispatch.copy')}</button>}
           {copied !== '' && COPY_NOTE[copied] !== '' && <p class="msg" role="status" data-testid="dispatch-copied">{t(COPY_NOTE[copied])}</p>}
           {copied === 'manual' && <textarea class="input" readOnly rows={6} value={dispatchTxt} data-testid="dispatch-text" onFocus={(e) => (e.target as HTMLTextAreaElement).select()} />}
+        </section>
+      )}
+      {orders && weeksAhead.length > 0 && fourSlugs.length > 0 && (
+        <section data-testid="fourweeks">
+          <h2>{t('ui.fw.title')}</h2>
+          <div class="fw-grid" role="table">
+            <div class="fw-row" role="row"><span /> {weeksAhead.map((w) => <strong key={w} role="columnheader" data-testid="fourweeks-head">{dayLabel(w).split(' ').slice(-1)[0]}</strong>)}</div>
+            {fourSlugs.map((c) => (
+              <div class="fw-row" role="row" key={c.slug} data-testid="fourweeks-row">
+                <span role="rowheader">{cropName(c, lang.value)}</span>
+                {perWeek.map((w, i) => <span key={weeksAhead[i]} role="cell" data-testid="fourweeks-cell">{w.bySlug[c.slug] === undefined ? t('ui.fw.none') : formatQty(w.bySlug[c.slug] ?? '')}</span>)}
+              </div>
+            ))}
+          </div>
+          <p class="muted">{t('ui.fw.note')}</p>
         </section>
       )}
       {!orders && <p class="muted" data-testid="orders-empty">{t('orders.empty')}</p>}
