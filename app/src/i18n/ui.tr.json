@@ -431,5 +431,13 @@
   "ui.rec.save": "Kaydet",
   "ui.rec.local": "Yalnızca bu telefonda saklanır; henüz sunucuya gönderilmiyor.",
   "ui.rec.today": "Bugünün tekrarlayan işleri",
-  "ui.guide.source": "{source} ↗"
+  "ui.guide.source": "{source} ↗",
+  "ui.kaek.title": "ΚΑΕΚ (kadastro no.)",
+  "ui.kaek.none": "ΚΑΕΚ girilmemiş.",
+  "ui.kaek.edit": "ΚΑΕΚ gir",
+  "ui.kaek.label": "ΚΑΕΚ (12 hane)",
+  "ui.kaek.err": "ΚΑΕΚ tam 12 haneli olmalı.",
+  "ui.kaek.save": "Kaydet",
+  "ui.kaek.remove": "ΚΑΕΚ'i sil",
+  "ui.kaek.local": "Yalnızca bu telefonda saklanır; hiçbir yerde aranmaz, hiçbir yere gönderilmez."
 }

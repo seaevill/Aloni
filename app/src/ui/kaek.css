@@ -1,0 +1,5 @@
+/* Χωράφι › ΚΑΕΚ */
+.kaek { display: grid; gap: var(--sp-2); margin-block: var(--sp-3); }
+.kaek small { display: block; }
+.kaek-num { margin: 0; font-variant-numeric: tabular-nums; letter-spacing: 0.04em; font-weight: 700; }
+.kaek-form { display: grid; gap: var(--sp-2); }
