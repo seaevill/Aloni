@@ -16,6 +16,12 @@ test('Demo: the weekly water card shows rain, need and difference; the note says
   await expect(card.getByTestId('water-rain')).toContainText('mm');
   await expect(card.getByTestId('water-need').first()).toContainText('mm');
   await expect(card.getByTestId('water-gap').first()).toContainText('mm');
+  await expect(card.getByTestId('water-vneed').first()).toHaveText('Όγκος ανάγκης: 21 m³');            // 14 mm × 1,5 στρ. (the first crop of the parcel), exactly
+  await expect(card.getByTestId('water-hours').first()).toContainText('άγνωστο – λείπει η παροχή');   // no flow typed yet
+  await card.getByTestId('water-flow-edit').click();
+  await card.getByTestId('water-flow').fill('3');
+  await card.getByTestId('water-flow-save').click();
+  await expect(card.getByTestId('water-hours').first()).toHaveText('Ώρες άρδευσης (για την ανάγκη): 7 ώρες');   // 21 m³ ÷ 3 m³/hour
   await expect(card.getByTestId('water-note')).toContainText('δεν λέει «ποτίστε τώρα»');
   await expect(card).not.toContainText(/ασφαλ/i);
   await card.getByTestId('water-kc-edit').first().click();
@@ -33,4 +39,5 @@ test('a real farm without stored weather: rain, need and difference say WHY they
   await expect(card.getByTestId('water-rain')).toContainText('άγνωστο – λείπουν ημέρες βροχής');
   await expect(card.getByTestId('water-need').first()).toContainText('άγνωστο – ο καιρός μας δεν δίνει εξατμισοδιαπνοή');
   await expect(card.getByTestId('water-gap').first()).toContainText('άγνωστο');
+  await expect(card.getByTestId('water-vneed').first()).toContainText('άγνωστο – ο καιρός μας δεν δίνει εξατμισοδιαπνοή');
 });

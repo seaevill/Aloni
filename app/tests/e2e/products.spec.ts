@@ -47,6 +47,7 @@ test('while the demo farm is active no product can be added', async ({ page }) =
   await iphone(page);
   await tab(page, 'more');
   await page.locator('main button.btn').first().click();
+  await expect(page.getByTestId('demo-banner')).toBeVisible();      // wait until the demo is loaded: its banner pushes the page down, a tap sent before it lands on the wrong spot
   await tab(page, 'stock');
   await expect(page.getByTestId('product-demo-note')).toBeVisible();
   await expect(page.getByTestId('product-add')).toHaveCount(0);

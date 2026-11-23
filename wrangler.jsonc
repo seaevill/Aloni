@@ -5,5 +5,7 @@
   "name": "aloni",
   "compatibility_date": "2026-11-01",
   "send_metrics": false,
-  "assets": { "directory": "./app/dist", "not_found_handling": "single-page-application" }
+  "assets": { "directory": "./app/dist", "not_found_handling": "single-page-application" },
+  // Workers Builds runs `wrangler preview` for pull-request branches and refuses to without this block ("missing a previews block"). Empty = inherit everything from the settings above; production is not affected.
+  "previews": {}
 }

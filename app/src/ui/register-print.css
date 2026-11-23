@@ -1,0 +1,23 @@
+.register-print { display: none; }
+
+@media print {
+  @page registerDraft { size: A4 landscape; margin: 12mm; }
+  #app:has(.register-print) { page: registerDraft; display: block; min-height: 0; }
+  #app:has(.register-print) > :not(main),
+  main:has(.register-print) > :not(.register, :has(.register-print)),
+  .register > :not(.register-print) { display: none !important; }
+  main:has(.register-print) { max-width: none; }
+  .register .register-print { display: block; color: var(--fg); }
+  .register-print table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .register-print thead { display: table-header-group; }
+  .register-print tr { break-inside: avoid; }
+  .register-print th, .register-print td {
+    vertical-align: top;
+    text-align: start;
+    font-size: 9pt;
+    padding: 2mm;
+    border: var(--bw-1) solid currentColor;
+    overflow-wrap: anywhere;
+  }
+  .register-print p { white-space: pre-wrap; }
+}
