@@ -146,8 +146,8 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 .wx.dark .wx-row { color:var(--white); }
 .wx.dark .wx-none { color:var(--white); margin:var(--sp-8) 0 0; font-size:var(--fs-14); }
 .tiles { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-8); margin:0 0 var(--sp-10); }
-.tile { background:var(--card-on-dark); border-radius:var(--r-md); padding:var(--sp-10) var(--sp-12); display:grid; gap:var(--sp-2); }
-.tile strong { font-size:var(--fs-22); font-variant-numeric:tabular-nums; }
+.tile { background:var(--card-on-dark); border-radius:var(--r-md); padding:var(--sp-8) var(--sp-12); display:grid; gap:0; }
+.tile strong { font-size:var(--fs-18); font-variant-numeric:tabular-nums; }
 .tile small { color:var(--white); font-size:var(--fs-14); }
 .kpis { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-8); margin:0 0 var(--sp-12); }
 .kpi { background:var(--card); border:var(--bw-1) solid var(--line); border-radius:var(--r-card); padding:var(--sp-12) var(--sp-14); display:grid; gap:var(--sp-2); }
@@ -219,3 +219,8 @@ h3 .count { display:inline-block; min-width:var(--sp-24); padding:0 var(--sp-6);
 .worker-tray button:active { transform:scale(.96); }
 
 .pick { display:inline-flex; align-items:center; gap:var(--sp-8); text-align:start; }
+
+/* the quiet status lines (sync, backup) share ONE row; a refused record (RejectedList) stays a full-width alert above it */
+.status-row { display:flex; flex-wrap:wrap; gap:var(--sp-6); }
+.status-row:empty { display:none; }
+.status-row .chip { margin:0 0 var(--sp-8); flex:0 1 auto; }

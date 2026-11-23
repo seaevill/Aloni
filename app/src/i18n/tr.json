@@ -541,7 +541,7 @@
   "today.urgent": "Bugün en önemli",
   "today.urgent.unknown": "Bekleme süresi bilinmiyor · {parcel}",
   "today.urgent.wait": "Bekleme {d} günü bitiyor · {crop} · {parcel}",
-  "today.urgent.action": "İlaçlamalara bak",
+  "today.urgent.action": "Nedenine bak",
   "history.title": "Geçmiş",
   "job.add.plus": "+ İş ata",
   "today.jobs.none": "Bugün iş yok.",

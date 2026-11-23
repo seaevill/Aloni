@@ -5,6 +5,7 @@ import { formatDateTime, t, tn, type I18nKey } from '../i18n';
 import { storePhoto } from '../media/photo';
 import { EmptyState } from './states';
 import { BackBar } from './BackBar';
+import { NoteTip } from './NoteTip';
 
 const MSG_KEYS: Record<'saved' | 'duplicate' | 'error', I18nKey> = { saved: 'photos.saved', duplicate: 'photos.duplicate', error: 'photos.error' };
 
@@ -65,7 +66,7 @@ export function Photos({ onBack }: { onBack: () => void }) {
       <BackBar onBack={onBack} />
       <h1 tabIndex={-1}>{t('photos.title')}</h1>
       <input ref={input} type="file" accept="image/*" hidden aria-hidden="true" tabIndex={-1} onChange={(e) => void pick(e)} />
-      {demo ? <p class="muted" data-testid="photos-demo-note">{t('photos.demoActive')}</p>
+      {demo ? <NoteTip inline testid="photos-demo-note" text={t('photos.demoActive')} />
         : rows && rows.length > 0 && <button class="btn" data-testid="photo-add" onClick={add}>{t('photos.add')}</button>}
       {msg && <p class="msg" role="status" data-testid="photo-msg">{t(MSG_KEYS[msg])}</p>}
       {rows && rows.length === 0 && !demo && <EmptyState art="photos" message={t('photos.empty')} actionLabel={t('photos.add')} onAction={add} />}

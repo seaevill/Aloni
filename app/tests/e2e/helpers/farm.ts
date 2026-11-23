@@ -5,7 +5,7 @@ const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"
 const inputs = (page: Page) => page.locator('main input.input');
 
 /** A real farm with everything a spray needs: parcel, planting, product with a COMPLETE label (optionally signed), a lot of 4,5 kg and a worker. */
-export async function setup(page: Page, signed: boolean) {
+export async function setup(page: Page, signed: boolean, lotQty = '4,5') {
   const seen: string[] = [];                                                           // browser errors during setup, printed if the worker never shows
   page.on('pageerror', (e) => seen.push(`pageerror: ${e.message}`));
   page.on('console', (m) => { if (m.type() === 'error') seen.push(`console: ${m.text()}`); });
@@ -39,7 +39,7 @@ export async function setup(page: Page, signed: boolean) {
   await page.getByRole('button', { name: 'Επιστροφή' }).click();
   await page.getByTestId('stock-open').click();
   await page.getByTestId('receive-open').click();
-  await page.locator('input[type=date]').fill('2028-03-31'); await inputs(page).nth(2).fill('4,5');
+  await page.locator('input[type=date]').fill('2028-03-31'); await inputs(page).nth(2).fill(lotQty);
   await page.getByTestId('receive-save').click();
   await expect(page.getByTestId('receive-save')).toBeHidden();
   await tab(page, 'more');

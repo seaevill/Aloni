@@ -51,7 +51,7 @@ export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) 
     <section class="detail" data-testid="crop-detail">
       <BackBar onBack={onBack} testId="detail-back" />
       <header class="crop-detail-hero">
-        <div class="crop-detail-art"><CropIcon slug={text(crop.slug)} size="var(--thumb)" /></div>
+        <div class="crop-detail-art"><CropIcon slug={text(crop.slug)} size="var(--tile)" /></div>
         <h1 class="ds-title" tabIndex={-1}>{nameOf(crop)}</h1>
         {typeof crop.latin === 'string' && crop.latin !== '' && <p class="latin" lang="la">{crop.latin}</p>}
       </header>

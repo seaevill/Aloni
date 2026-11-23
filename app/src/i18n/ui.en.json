@@ -551,5 +551,14 @@
   "ui.fert.bag.label": "Weight of the bag you buy, kg (optional)",
   "ui.fert.calc.kg": "For this planting's area: {kg} kg",
   "ui.fert.calc.bags": "For this planting's area: {kg} kg = at least {n} bags",
-  "ui.fert.calc.noarea": "The planting's area is missing: not calculated."
+  "ui.fert.calc.noarea": "The planting's area is missing: not calculated.",
+  "ui.note.aria": "Information",
+  "ui.crops.meta": "{n} plantings · {area}",
+  "ui.crops.meta.count": "{n} plantings",
+  "ui.crops.meta.none": "no planting",
+  "ui.job.kind.fertilise": "Fertilising",
+  "ui.job.kind.irrigate": "Irrigation",
+  "ui.job.kind.sow": "Sowing",
+  "ui.job.kind.harvest": "Harvest",
+  "ui.job.kind.other": "Other job"
 }

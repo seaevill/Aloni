@@ -9,6 +9,7 @@ import { hoursFor, volumeFor, weekWater, type Part, type Volume } from '../summa
 import type { Day } from '../weather/strip';
 import type { Row } from '../db/schema';
 import { nameOf } from './screens';
+import { NoteTip } from './NoteTip';
 
 // Χωράφι › «Νερό αυτή την εβδομάδα»: the water lost in the last 7 days (ET0 × Kc) against the rain. Information only: no «water now», no alert. ET0 comes from the stored weather (the free source
 // does not give it → «άγνωστο» with the reason); Kc is typed by the owner per crop (from the agronomist) and kept on this phone. In the Demo a fictional Kc of 1 is used.
@@ -63,7 +64,7 @@ export function WaterCard({ days, crops }: { days: readonly Day[]; crops: Readon
         <label class="field"><span class="ds-muted">{t('ui.water.flow.label')}</span><input class="input" inputMode="decimal" value={flowDraft} autoComplete="off" data-testid="water-flow" onInput={(e) => setFlowDraft((e.target as HTMLInputElement).value)} /></label>
         <button type="button" class="btn" data-testid="water-flow-save" onClick={() => void saveFlow()}>{t('ui.water.kc.save')}</button>
       </div>}
-      <small data-testid="water-note">{t('ui.water.note')}</small>
+      <NoteTip testid="water-note" text={t('ui.water.note')} />
     </section>
   );
 }

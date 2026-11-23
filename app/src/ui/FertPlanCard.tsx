@@ -7,6 +7,7 @@ import { fertCalc, type FertCalc } from '../fert/calc';
 import { formatQty } from '../i18n/format';
 import { MediaThumb } from './Photos';
 import './fert.css';
+import { NoteTip } from './NoteTip';
 
 // Φυτά › a planting › «Πρόγραμμα λίπανσης»: the agronomist's plan typed IN HIS WORDS (day after sowing + his line) and a photo of his paper. The app proposes no fertiliser and no quantity,
 // and sends no reminder («Υπενθυμίσεις κλειστές»: they stay closed until an agronomist has signed). Kept on this phone. Information only.
@@ -64,8 +65,8 @@ export function FertPlanCard({ plantingId, sownOn, areaStr }: { plantingId: stri
         {bad && <p class="msg error" role="alert" data-testid="fert-error">{t('ui.fert.err')}</p>}
         <button type="button" class="btn" data-testid="fert-save" onClick={() => void save()}>{t('ui.fert.save')}</button>
       </div>}
-      <small data-testid="fert-reminders">{t('ui.fert.reminders')}</small>
-      <small data-testid="fert-note">{t('ui.fert.note')}</small>
+      <NoteTip testid="fert-reminders" text={t('ui.fert.reminders')} />
+      <NoteTip testid="fert-note" text={t('ui.fert.note')} />
     </section>
   );
 }

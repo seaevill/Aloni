@@ -3,6 +3,7 @@ import { activeFarm, db } from '../db';
 import { formatDate, t } from '../i18n';
 import { athensToday } from '../plantings/planting';
 import { addRule, dueToday, loadRules, nextOccurrence, removeRule, type Rule } from '../recurring/recurring';
+import { NoteTip } from './NoteTip';
 
 // Εργασίες › «Επαναλαμβανόμενες»: a job written once («Κάθε Δευτέρα: έλεγχος χωραφιού») that comes back every week, in the owner's list and on the worker screen of the SAME phone.
 // Kept on this phone per farm; the screen says so. A line the owner wrote himself: no spray, no dose, no advice.
@@ -40,7 +41,7 @@ export function RecurringJobs() {
         {bad && <p class="msg error" role="alert" data-testid="rec-error">{t('ui.rec.err')}</p>}
         <button type="button" class="btn" data-testid="rec-save" onClick={() => void save()}>{t('ui.rec.save')}</button>
       </div>}
-      <small data-testid="rec-local">{t('ui.rec.local')}</small>
+      <NoteTip testid="rec-local" text={t('ui.rec.local')} />
     </section>
   );
 }

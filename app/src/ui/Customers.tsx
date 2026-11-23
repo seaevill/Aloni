@@ -14,6 +14,7 @@ import { useRows } from './useRows';
 import type { KlouvesOrders } from '../orders/klouves';
 import { BackBar } from './BackBar';
 import { Card, ListRow } from './ds';
+import { NoteTip } from './NoteTip';
 
 // Άλλα → Πελάτες: the owner's customers (name, phone, note) and the orders he types for them. Everything stays on this phone, per farm; only the owner opens this screen. The orders go into the same shape the Κλούβες import
 // uses, so «Αύριο φεύγουν» and the supply table read them.
@@ -51,7 +52,7 @@ export function Customers({ onBack }: { onBack: () => void }) {
       {(list ?? []).map((c) => <ListRow key={c.id} testid="customer" heading={c.name} meta={[c.phone === '' ? t('ui.cust.phone.none') : c.phone, weekLine(clientIdOf(c.id))].join(' · ')} onClick={() => setOpen(c.id)} />)}
       {imported.map((c) => <ListRow key={c.id} testid="customer-imported" heading={c.name} meta={[t('ui.cust.imported'), weekLine(c.id)].join(' · ')} />)}
       <button class="btn" data-testid="customer-add" onClick={() => setAdding(true)}>{t('ui.cust.add')}</button>
-      {!server && <p class="muted">{t('ui.cust.local')}</p>}
+      {!server && <NoteTip inline testid="cust-local" text={t('ui.cust.local')} />}
     </section>
   );
 }

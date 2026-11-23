@@ -20,6 +20,7 @@ import type { Row } from '../db/schema';
 import { useRows } from './useRows';
 import { matchesRecord, RecordSearch } from './cx/RecordSearch';
 import { Status, Title } from './screens';
+import { NoteTip } from './NoteTip';
 
 export function Parcels() {
   const [query, setQuery] = useState('');
@@ -47,7 +48,7 @@ export function Parcels() {
   return (
     <section>
       <header class="today-head band"><Title k="parcels.title" /></header>
-      {demo ? <p class="muted" data-testid="parcel-demo-note">{t('parcel.demoActive')}</p> : live.length > 0 && <button class="btn" data-testid="parcel-add" onClick={() => setAdding(true)}>{t('parcel.add')}</button>}
+      {demo ? <NoteTip inline testid="parcel-demo-note" text={t('parcel.demoActive')} /> : live.length > 0 && <button class="btn" data-testid="parcel-add" onClick={() => setAdding(true)}>{t('parcel.add')}</button>}
       <Status q={{ ...q, rows: q.rows && live.length === 0 ? [] : q.rows }} message={t('list.empty')} action={demo ? undefined : { label: t('parcel.add'), run: () => setAdding(true) }} />
       {live.length > 0 && <section aria-label={t('detail.sketch')} data-testid="parcel-sketch-overview">
         <h2>{t('detail.sketch')}</h2>

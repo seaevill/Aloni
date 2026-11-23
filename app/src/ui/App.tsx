@@ -58,7 +58,7 @@ export function App() {
   if (onboarding) return <main><Onboarding done={endOnboarding} /></main>;   // owner first run only: never reached by the worker route above
   return (
     <>
-      <main><UpdateBar /><LeaveBar /><DemoRibbon /><SyncChip /><RejectedList /><BackupBanner /><Screen /></main>
+      <main><UpdateBar /><LeaveBar /><DemoRibbon /><RejectedList /><div class="status-row"><SyncChip /><BackupBanner /></div><Screen /></main>
       <Toast />
       <SheetHost />
       <nav class="tabs" aria-label={t('nav.main')}>

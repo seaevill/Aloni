@@ -21,6 +21,7 @@ import { UnsyncedMark } from './states';
 import { showUndo } from './Toast';
 import { useRows } from './useRows';
 import './stock-v2.css';
+import { NoteTip } from './NoteTip';
 
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 const dot = (...xs: string[]): string => xs.filter(Boolean).join(' · ');
@@ -63,7 +64,7 @@ export function Stock() {
     <section class="stock-v2">
       <header class="today-head band"><Title k="stock.title" /></header>
       <StoreStock />
-      {demo ? <p class="muted" data-testid="product-demo-note">{t('product.demoActive')}</p> : live.length > 0 && <button class="btn" data-testid="product-add" onClick={() => setAdding(true)}>{t('product.add')}</button>}
+      {demo ? <NoteTip inline testid="product-demo-note" text={t('product.demoActive')} /> : live.length > 0 && <button class="btn" data-testid="product-add" onClick={() => setAdding(true)}>{t('product.add')}</button>}
       <Status q={{ ...q, rows: q.rows && live.length === 0 ? [] : q.rows }} message={t('list.empty')} action={demo ? undefined : { label: t('product.add'), run: () => setAdding(true) }} />
       {types.length > 1 && (
         <div class="filters" data-testid="stock-filters" role="group" aria-label={t('stock.filter')}>

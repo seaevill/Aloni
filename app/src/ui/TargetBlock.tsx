@@ -8,6 +8,7 @@ import { Chip } from './ds/Chip';
 import { ProgressRing } from './ds/ProgressRing';
 import { SheetFact } from './ds/DetailSheet';
 import { useRows } from './useRows';
+import { NoteTip } from './NoteTip';
 
 // The season target on the crop sheet (E6): the target the owner typed, the crates LOGGED since the start day, what remains, and a ring. Until the server table exists (SQL 0040) the target is kept on THIS phone only, and the sheet says so.
 const keyOf = (cropId: string): string => `season_target:${activeFarm.value}:${cropId}`;
@@ -56,7 +57,7 @@ export function TargetBlock({ cropId }: { cropId: string }) {
           {target && <button type="button" class="btn secondary" data-testid="target-clear" onClick={() => void clear()}>{t('ui.target.clear')}</button>}
         </>
       )}
-      <p class="ds-muted" data-testid="target-local">{t('ui.target.local')}</p>
+      <NoteTip inline testid="target-local" text={t('ui.target.local')} />
     </section>
   );
 }

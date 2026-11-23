@@ -8,6 +8,7 @@ import { QrSvg } from './QrSvg';
 import { registerSheet, type SheetProps } from './sheets';
 import { useRows } from './useRows';
 import './crate-label.css';
+import { NoteTip } from './NoteTip';
 
 // A harvest record → «Ετικέτα κασέλας»: a sticker to print with the crop, the harvest day, the parcel, the crates, a lot code and a QR code of the same facts as plain text.
 // Nothing personal on it (no worker, no phone) and nothing advisory. The code is read by any phone camera as text; the app does not read codes yet.
@@ -33,7 +34,7 @@ function CrateLabelSheet({ id, close }: SheetProps) {
         <small class="crate-code" data-testid="crate-code">{label.qrText}</small>
       </section>
       <button type="button" class="btn" data-testid="crate-print" onClick={() => window.print()}>{t('ui.crate.print')}</button>
-      <small class="ds-muted">{t('ui.crate.note')}</small>
+      <NoteTip inline testid="crate-note" text={t('ui.crate.note')} />
     </DetailSheet>
   );
 }

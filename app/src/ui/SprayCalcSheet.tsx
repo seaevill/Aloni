@@ -10,6 +10,7 @@ import { nameOf } from './screens';
 import { registerSheet, type SheetProps } from './sheets';
 import { useRows } from './useRows';
 import './spray-calc.css';
+import { NoteTip } from './NoteTip';
 
 // Προϊόν › «Υπολογισμός ψεκαστικού»: the dose of a SIGNED label × the area, exactly, in the label's own unit. No signed label = no number. The app chooses no product, no dose and no water rate:
 // the water (litres per στρέμμα) and the tank volume are typed by the grower and kept on this phone. Information only.
@@ -60,7 +61,7 @@ function SprayCalcSheet({ id, close }: SheetProps) {
           <p data-testid="scalc-tanks"><small>{t('ui.scalc.tanks')}</small><strong>{calc.tanks.known ? calc.tanks.count : t('ui.scalc.unknown.tank')}</strong></p>
         </section>}
       </>}
-      <small data-testid="scalc-note">{t('ui.scalc.note')}</small>
+      <NoteTip testid="scalc-note" text={t('ui.scalc.note')} />
     </DetailSheet>
   );
 }

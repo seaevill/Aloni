@@ -9,6 +9,7 @@ import { DetailSheet } from './ds';
 import { nameOf } from './screens';
 import { registerSheet, type SheetProps } from './sheets';
 import { useRows } from './useRows';
+import { NoteTip } from './NoteTip';
 
 // Εργάτες → a name opens the worker's card: name, surname, phone. NO birth date (Bora's decision, 2026-11-21). Owner only (the worker screens have no way to open it), kept on this phone per farm; the server table is the owner-only one of 0037.
 interface Card { surname: string; phone: string }
@@ -47,7 +48,7 @@ function WorkerCardSheet({ id, close }: SheetProps) {
       <label class="field">{t('ui.wcard.phone')}<input class="input" type="tel" value={card.phone} autoComplete="off" data-testid="wcard-phone" onInput={(e) => { setSaved(false); setCard({ ...card, phone: (e.target as HTMLInputElement).value }); }} /></label>
       <button class="btn" data-testid="wcard-save" onClick={() => void save()}>{t('ui.wcard.save')}</button>
       {saved && <p class="msg" role="status" data-testid="wcard-saved">{t('ui.wcard.saved')}</p>}
-      {!server && <p class="muted">{t('ui.wcard.local')}</p>}
+      {!server && <NoteTip inline testid="wcard-local" text={t('ui.wcard.local')} />}
     </DetailSheet>
   );
 }

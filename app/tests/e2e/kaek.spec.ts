@@ -37,6 +37,6 @@ test('the Demo parcel page has no ΚΑΕΚ entry (real numbers never go into the
   await expect(page.getByTestId('today-counts')).toBeVisible();
   await page.locator('nav.tabs [data-tab="parcels"]').click();
   await page.getByTestId('parcel-open').first().click();
-  await expect(page.getByTestId('kaek-none')).toBeVisible();
+  await expect(page.getByTestId('kaek-card')).toHaveCount(0);                          // nothing to edit and nothing to show: no empty card
   await expect(page.getByTestId('kaek-edit')).toHaveCount(0);
 });

@@ -6,6 +6,7 @@ import { athensToday } from '../plantings/planting';
 import { CUT_METHODS, addCut, removeCut, resprout, type CutMethod, type CutRecord } from '../cuts/cuts';
 import { Icon } from './icons/Icon';
 import './parcel-cut.css';
+import { NoteTip } from './NoteTip';
 
 // Χωράφι › «Κοπή / καθαρισμός»: one tap to record that the parcel was cut or cleaned (e.g. wild chicory shredded with the tractor); the counter «νέα βλάστηση: ημέρα N» counts from that day.
 // Kept on this phone for now (the screen says so). Information only: no advice about watering, feeding or spraying.
@@ -33,7 +34,7 @@ export function ParcelCut({ parcelId, cuts, onChange }: { parcelId: string; cuts
         <button type="button" class="btn" data-testid="cut-save" disabled={day === '' || day > today} onClick={() => void save()}>{t('ui.cut.save')}</button>
       </div>}
       {mine.length > 0 && <button type="button" class="btn quiet" data-testid="cut-undo" onClick={() => void removeCut(db, activeFarm.value, (mine[0] as CutRecord).id).then(onChange)}>{t('ui.cut.undo')}</button>}
-      <small data-testid="cut-local">{t('ui.cut.local')}</small>
+      <NoteTip testid="cut-local" text={t('ui.cut.local')} />
     </section>
   );
 }

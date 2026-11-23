@@ -1,0 +1,7 @@
+/* «ⓘ» notes */
+.note-tip summary { list-style: none; display: inline-flex; align-items: center; justify-content: center; min-inline-size: var(--tile); min-block-size: var(--tile); cursor: pointer; color: var(--muted); }
+.note-tip summary::-webkit-details-marker { display: none; }
+.card:has(> .note-tip) { position: relative; }
+.card > .note-tip { position: absolute; inset-block-start: 0; inset-inline-end: 0; }
+.note-tip p { margin: 0; padding: var(--sp-8) var(--sp-12); background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card, 12px); color: var(--fg); font-size: var(--fs-meta); }
+.card > .note-tip[open] p { position: absolute; inset-block-start: var(--tile); inset-inline-end: var(--sp-8); inline-size: min(280px, 80vw); z-index: 3; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); }

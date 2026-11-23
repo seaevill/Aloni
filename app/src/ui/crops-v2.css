@@ -54,12 +54,13 @@
 }
 
 .crop-detail-hero {
+  align-items: center;
+  column-gap: var(--sp-16);
   display: grid;
-  gap: var(--sp-8);
-  justify-items: center;
-  padding-block: var(--sp-16) var(--sp-24);
-  text-align: center;
+  grid-template-columns: auto 1fr;
+  padding-block: var(--sp-8) var(--sp-12);
 }
+.crop-detail-art { grid-row: span 2; }
 
 .crop-detail-art {
   align-items: center;
@@ -67,8 +68,7 @@
   border-radius: 50%;
   display: flex;
   justify-content: center;
-  margin-block-end: var(--sp-4);
-  padding: var(--sp-16);
+  padding: var(--sp-8);
 }
 
 .crop-detail-hero .ds-title,
@@ -131,3 +131,8 @@
 .water { display: grid; gap: var(--sp-2); margin-block: var(--sp-3); }
 .water small { display: block; }
 .water-form { display: grid; gap: var(--sp-2); }
+
+/* planting rows on the parcel page: left-aligned like every other list */
+.planting-open { text-align: start; inline-size: 100%; }
+
+.crop-tile-line { align-items: center; column-gap: var(--sp-8); display: flex; flex-wrap: wrap; }

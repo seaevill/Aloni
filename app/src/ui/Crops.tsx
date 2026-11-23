@@ -1,3 +1,4 @@
+import { parseDecimal } from '@aloni/rules-core';
 import { useState } from 'preact/hooks';
 import { useBack } from './backstack';
 import { activeFarm, dataVersion, db, loadDemo, realFarmId } from '../db';
@@ -23,6 +24,7 @@ import { showUndo } from './Toast';
 import { useRows } from './useRows';
 import { matchesRecord, RecordSearch } from './cx/RecordSearch';
 import './crops-v2.css';
+import { NoteTip } from './NoteTip';
 
 const dot = (...xs: string[]): string => xs.filter(Boolean).join(' · ');
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
@@ -53,6 +55,14 @@ export function Crops() {
     await put(db, 'plantings', archived(r, new Date().toISOString()));
     dataVersion.value++;
     showUndo(t('planting.archived'), async () => { await put(db, 'plantings', restored(r, new Date().toISOString())); dataVersion.value++; });
+  };
+  /** «3 φυτείες · 2,5 στρ.»: how many plantings and how much land the farm has under this crop (the sum of the typed areas; an unreadable area makes the sum unknown). */
+  const metaOf = (c: Row): string | undefined => {
+    const mine = live.filter((p) => p.crop_id === c.id);
+    if (mine.length === 0) return undefined;
+    const areas = mine.map((p) => parseDecimal(text(p.area_str)));
+    const sum = areas.every((a) => a.known) ? areas.reduce((acc, a) => (a.known ? acc + parseFloat(a.value) : acc), 0) : undefined;
+    return sum === undefined ? t('ui.crops.meta.count', { n: formatQty(mine.length) }) : t('ui.crops.meta', { n: formatQty(mine.length), area: formatArea(sum) });
   };
   const sown = (r: Row) => { const d = text(r.sown_on) || text(r.sown); return validDate(d) ? formatDate(d) : t('value.unknown'); };
   const now = instantOf(new Date()) ?? '';
@@ -105,7 +115,7 @@ export function Crops() {
   return (
     <section aria-label={t('crops.title')}>
       <PageHead heading={t('ui.tab.crops')} />
-      {demo && <p class="muted" data-testid="planting-demo-note">{t('planting.demoActive')}</p>}
+      {demo && <NoteTip inline testid="planting-demo-note" text={t('planting.demoActive')} />}
       {canAdd && live.length > 0 && <button class="btn" data-testid="planting-add" onClick={() => setAdding(true)}>{t('planting.add')}</button>}
       <Status q={{ ...crops, rows: shown && shown.length === 0 ? [] : shown ?? null }} message={t('list.empty')}
         action={canAdd ? { label: t('planting.add'), run: () => setAdding(true) } : undefined} />
@@ -118,7 +128,7 @@ export function Crops() {
         return <div class="card crop-card" key={c.id}>
           <button class="row crop-open crop-tile" data-testid="crop-open" onClick={() => setShownId(String(c.id))}>
             <span class="crop-list-tile"><CropIcon slug={text(c.slug)} size="calc(var(--tile) - var(--sp-8))" /></span>
-            <span class="crop-tile-name"><strong>{nameOf(c)}</strong><Chip tone={chip.tone}>{t(chip.key)}</Chip></span>
+            <span class="crop-tile-name"><strong>{nameOf(c)}</strong><span class="crop-tile-line"><Chip tone={chip.tone}>{t(chip.key)}</Chip><small data-testid="crop-meta">{metaOf(c) ?? t('ui.crops.meta.none')}</small></span></span>
             <span aria-hidden="true" class="chev" />
           </button>
         </div>;

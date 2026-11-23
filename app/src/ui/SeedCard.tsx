@@ -6,6 +6,7 @@ import { loadRates, removeRate, seedKg, setRate, type Seed } from '../seed/seed'
 import type { Row } from '../db/schema';
 import { nameOf } from './screens';
 import './seed.css';
+import { NoteTip } from './NoteTip';
 
 // Φυτά › a crop › «Σπόρος»: the seed needed for each planting = the seed rate the grower (or his agronomist) wrote × the planting's area. The app proposes no rate; no rate = unknown. Kept on this phone.
 const WHY: Record<'no-rate' | 'no-area', I18nKey> = { 'no-rate': 'ui.seed.unknown.rate', 'no-area': 'ui.seed.unknown.area' };
@@ -40,7 +41,7 @@ export function SeedCard({ crop, plantings, parcels }: { crop: Row; plantings: r
         <button type="button" class="btn" data-testid="seed-save" onClick={() => void save()}>{t('ui.seed.save')}</button>
         {rate !== undefined && <button type="button" class="btn quiet" data-testid="seed-remove" onClick={() => void removeRate(db, farm, id).then(() => { setEdit(false); return reload(); })}>{t('ui.seed.remove')}</button>}
       </div>}
-      <small data-testid="seed-note">{t('ui.seed.note')}</small>
+      <NoteTip testid="seed-note" text={t('ui.seed.note')} />
     </section>
   );
 }

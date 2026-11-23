@@ -6,6 +6,7 @@ import { athensToday } from '../plantings/planting';
 import { addWork, loadWork, removeWork, snapshotOf, type Snapshot, type Work } from '../fieldwork/fieldwork';
 import type { Day } from '../weather/strip';
 import './fieldwork.css';
+import { NoteTip } from './NoteTip';
 
 // Χωράφι › «Λίπανση / Άρδευση»: RECORDS of what was done, typed by the owner (the app suggests nothing). The weather of that day is copied from the stored weather when it is known.
 // Kept on this phone per farm (the server tables exist but do not sync yet); the screen says so.
@@ -70,8 +71,8 @@ export function FieldWorkCard({ parcelId, days }: { parcelId: string; days: read
         <button type="button" class="btn" data-testid="work-save" onClick={() => void save()}>{t('ui.work.save')}</button>
         <button type="button" class="btn quiet" data-testid="work-cancel" onClick={() => setKind(undefined)}>{t('ui.work.cancel')}</button>
       </div>}
-      <small data-testid="work-local">{t('ui.work.local')}</small>
-      <small data-testid="work-note">{t('ui.work.note')}</small>
+      <NoteTip testid="work-local" text={t('ui.work.local')} />
+      <NoteTip testid="work-note" text={t('ui.work.note')} />
     </section>
   );
 }

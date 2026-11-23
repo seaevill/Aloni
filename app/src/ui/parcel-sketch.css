@@ -11,6 +11,7 @@
   border-radius: .75rem;
   color: var(--fg);
   display: grid;
+  font: inherit;
   gap: .25rem;
   min-height: 56px;
   min-width: 0;
@@ -38,3 +39,5 @@
 [data-testid="planting-sketch-label"] {
   min-height: 56px;
 }
+
+.parcel-sketch-tile small { font-size: var(--fs-14); }

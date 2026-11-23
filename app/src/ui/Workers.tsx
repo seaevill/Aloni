@@ -16,6 +16,7 @@ import { showUndo } from './Toast';
 import { useRows } from './useRows';
 import { BackBar } from './BackBar';
 import './WorkerCard';
+import { NoteTip } from './NoteTip';
 
 /** More → Εργάτες: the roster used to say who sprayed. A name only. Add, archive with 5 s undo; real farm only. */
 /** The invitation of one roster worker: only with a live sign-in AND the data controller's details entered (the same gate the server keeps). */
@@ -80,7 +81,7 @@ export function Workers({ onBack }: { onBack: () => void }) {
       <BackBar onBack={onBack} />
       <h1 tabIndex={-1}>{t('workers.title')}</h1>
       <p class="muted">{t('workers.note')}</p>
-      {demo && <p class="muted" data-testid="workers-demo">{t('workers.demo')}</p>}
+      {demo && <NoteTip inline testid="workers-demo" text={t('workers.demo')} />}
       {!demo && (
         <>
           <label class="field">{t('workers.name')}
