@@ -18,7 +18,7 @@ Scope: what the stored records can already answer, what was added in PRs #504–
 ## 2. Added in this sprint
 * **#504 Parcel productivity**: crates ÷ parcel area from non-deleted harvests of the parcel's live plantings, exact whole-number division (cut, never rounded); unknown with a reason for: no harvest, no/zero area, any unreadable crate number. Recorded irrigation m³ and m³/στρ.; unknown if any irrigation record has only minutes. Fixture: 0,8 στρ. + 30 + 20 crates = **62,5 crates/στρ.**; 3,5 m³ on 0,5 στρ. = **7 m³/στρ.**
 * **#505 Timeline**: fertilise, irrigate, observation events join sowing / spray / harvest / cut. Only stored records; other parcels and deleted observations excluded.
-* **#506 (this PR) Unmet-demand prototype** `orders/unmet-demand.ts` — tested, **not wired to a screen**.
+* **#506 (this PR) Unmet-demand RESEARCH PROTOTYPE** `orders/unmet-demand.ts` — tested, **not wired to a screen, not a feature**. It is a calculation only: it never reserves stock, never confirms an order, never tells a customer anything. «Confirmed order» has no meaning in the Klouves data yet (see §4).
 
 ## 3. Finance (PR #484 / #485) — can a cost be tied to a parcel, crop, season, operation?
 `MoneyEntry` = `{ id, day, dir, category, cents, crop?, note, amends?, void?, at }`, kept on the phone (`money:<farm>`), append-only via `amends`/`void`.
@@ -41,8 +41,14 @@ Smallest safe extension (proposal, not built): a phone-local `obs_review:<farm>`
 ## 6. Water
 Implemented: totals and m³/στρ. from irrigation records (see #504). Not done and not advised: irrigation rates. A future FAO-56 calculation needs documented inputs (ET0 source + date, crop-stage Kc with source, effective rain rule, soil water capacity/ root depth, irrigation efficiency), stored provenance next to every result and an agronomist's signed approval before it may drive any notification (CLAUDE.md rule 3).
 
-## 7. Unsupported / open
+## 7. Archive semantics, scope, water (decisions after the 2026-11-23 release review)
+* **Archived plantings count.** In the data model «archive» is the soft-delete flag `plantings.deleted_at` (undoable). It hides the planting from lists; it does not make a harvest that happened untrue. Harvest rows of an archived planting therefore stay in the parcel's cumulative yield, are tagged «αρχειοθετημένη φυτεία», and are summed apart («Περιλαμβάνει N κλούβες από αρχειοθετημένες φυτείες»). A **deleted harvest row** (`job_harvest.deleted_at`) never counts. Limitation: the flag cannot tell «finished season» from «entered by mistake», so a planting archived because it was a typing error would still contribute; the owner sees the tag and can delete the harvest rows themselves.
+* **Scope is cumulative and says so**: «Σύνολο όλων των καταγραφών: όλες οι καλλιέργειες και όλες οι εποχές». The per-crop split divides each crop's crates by the PARCEL's area (not the planting's). There is no season entity, so no season-specific yield exists; it is not simulated.
+* **The timeline reads the same records**: a unit test proves every harvest event is one productivity source (same ids, same total), with an archived planting included and deleted / other-parcel harvests in neither.
+* **Water is «recorded», never «total»**: the card says «Καταγεγραμμένη άρδευση» and «δεν είναι η συνολική κατανάλωση νερού». The app cannot know a watering was never typed in; one record with only minutes makes the per-στρέμμα number unknown.
+* **Phone-local warning stays**: fertilise/irrigate records live only on the phone until SQL 0042 is applied through the approved workflow and the sync is written; the card prints this next to the water numbers.
+
+## 8. Unsupported / open
 * Harvests have no amendment chain: a wrong crate count can only be deleted and re-entered.
-* Archived plantings' harvests are left out of parcel productivity (same set as the timeline). Decide whether they should count once archiving is common.
 * Phone-local records (fertilise/irrigate) are lost with the phone until 0042 is applied and the sync is written.
 * Productivity sums every recorded harvest of the parcel (all seasons, all crops): a season filter needs a season definition.

@@ -1,6 +1,7 @@
 import type { StoreLine } from '../stock/store-stock';
 
-// PROTOTYPE (not wired to any screen): unmet demand = the crates ordered − the crates VERIFIED to be in the store. Offline, pure, tested; it commits to nothing and promises nothing to a customer.
+// RESEARCH PROTOTYPE – not a feature, not wired to any screen, no commercial meaning: an order in the Klouves data is only an order (there is no «confirmed» state), so this makes NO promise to a customer and reserves nothing.
+// (not wired to any screen): unmet demand = the crates ordered − the crates VERIFIED to be in the store. Offline, pure, tested; it commits to nothing and promises nothing to a customer.
 // «Verified» = crates whose harvest record says «store» minus the crates the owner marked as loaded (StoreLine.left). Never counted as available: records without a destination («unknown»),
 // records with an unreadable crate number, direct-dispatch crates (already gone), plantings that are still growing or held by a waiting period (they are not crates yet).
 // A negative `left` (more loaded than the store records show) is not netted against the demand: it is flagged, and the verified quantity is the zero it cannot go below.
