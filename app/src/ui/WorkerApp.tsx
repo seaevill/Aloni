@@ -21,6 +21,7 @@ import { Chip } from './ds/Chip';
 import { CheckDraw } from './ds/CheckDraw';
 import { Icon } from './icons/Icon';
 import { TomorrowNotes } from './TomorrowNotes';
+import { RecurringToday } from './RecurringJobs';
 import { buildObservation, completeSprayJob, OBSERVATION_KINDS, SKIP_REASONS, skipSprayJob, type ObservationKind, type SkipReason } from '../worker/jobs';
 import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
 import { doneBlocked, reiLockJob, type Lock } from '../spray/harvest';
@@ -160,6 +161,7 @@ export function WorkerApp() {
               {takenMsg === j.id && <p class="msg error" role="alert">{t('ui.board.taken')}</p>}
             </div>)}
           </section>}
+          <RecurringToday />
           {!real && <TomorrowNotes byWorker />}
           <h2>{t('worker.jobs')}</h2>
           {open_.length === 0 && <p class="muted" data-testid="worker-nojobs">{t('worker.noJobs')}</p>}
