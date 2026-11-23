@@ -368,5 +368,17 @@
   "ui.own.from": "from {k} records",
   "ui.own.few": "little data – only {k} records",
   "ui.own.none": "not enough records yet",
-  "ui.own.unusable": "{k} records were not counted (unreadable number or no area)"
+  "ui.own.unusable": "{k} records were not counted (unreadable number or no area)",
+  "ui.cut.title": "Cut / clearing",
+  "ui.cut.method": "Method",
+  "ui.cut.method.shredder": "shredder",
+  "ui.cut.method.hand": "by hand",
+  "ui.cut.method.other": "other",
+  "ui.cut.date": "Date",
+  "ui.cut.add": "Record a cut",
+  "ui.cut.save": "Save",
+  "ui.cut.undo": "Undo the last record",
+  "ui.cut.none": "No cut is recorded on this parcel.",
+  "ui.cut.sprout": "new growth: day {n}",
+  "ui.cut.local": "Kept on this phone only; not sent to the server yet."
 }
