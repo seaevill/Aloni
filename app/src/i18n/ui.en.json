@@ -345,5 +345,15 @@
   "ui.product.info.label": "Product information",
   "ui.crop.ring.title": "Recorded sowing months",
   "ui.crop.ring.none": "no sowing recorded for this crop",
-  "ui.crop.ring.sr": "Sowing months: {months}"
+  "ui.crop.ring.sr": "Sowing months: {months}",
+  "ui.guide.open": "Crop guide",
+  "ui.guide.title": "Crop guide",
+  "ui.guide.banner": "Information only, not signed by an agronomist. It decides nothing.",
+  "ui.guide.sow": "From sowing to the 1st cut",
+  "ui.guide.cuts": "Cuts per crop",
+  "ui.guide.ph": "Soil pH",
+  "ui.guide.none": "no source",
+  "ui.guide.v.ph": "pH {low}–{high}",
+  "ui.guide.v.days": "{low}–{high} days",
+  "ui.guide.v.cuts": "{low}–{high} cuts"
 }

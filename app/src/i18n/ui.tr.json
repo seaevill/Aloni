@@ -345,5 +345,15 @@
   "ui.product.info.label": "Ürün bilgisi",
   "ui.crop.ring.title": "Kaydedilmiş ekim ayları",
   "ui.crop.ring.none": "bu bitki için ekim kaydı yok",
-  "ui.crop.ring.sr": "Ekim ayları: {months}"
+  "ui.crop.ring.sr": "Ekim ayları: {months}",
+  "ui.guide.open": "Ürün rehberi",
+  "ui.guide.title": "Ürün rehberi",
+  "ui.guide.banner": "Yalnızca bilgi; ziraat mühendisi imzası yok. Hiçbir şeye karar vermez.",
+  "ui.guide.sow": "Ekimden 1. kesime",
+  "ui.guide.cuts": "Ürün başına kesim",
+  "ui.guide.ph": "Toprak pH'ı",
+  "ui.guide.none": "kaynak yok",
+  "ui.guide.v.ph": "pH {low}–{high}",
+  "ui.guide.v.days": "{low}–{high} gün",
+  "ui.guide.v.cuts": "{low}–{high} kesim"
 }

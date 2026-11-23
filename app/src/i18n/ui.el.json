@@ -345,5 +345,15 @@
   "ui.product.info.label": "Πληροφορίες προϊόντος",
   "ui.crop.ring.title": "Μήνες σποράς που έχουν καταγραφεί",
   "ui.crop.ring.none": "δεν υπάρχει καταγραφή σποράς για αυτό το φυτό",
-  "ui.crop.ring.sr": "Μήνες σποράς: {months}"
+  "ui.crop.ring.sr": "Μήνες σποράς: {months}",
+  "ui.guide.open": "Οδηγός καλλιέργειας",
+  "ui.guide.title": "Οδηγός καλλιέργειας",
+  "ui.guide.banner": "Πληροφοριακό, χωρίς υπογραφή γεωπόνου. Δεν αποφασίζει τίποτα.",
+  "ui.guide.sow": "Από σπορά σε 1η κοπή",
+  "ui.guide.cuts": "Κοπές ανά καλλιέργεια",
+  "ui.guide.ph": "pH εδάφους",
+  "ui.guide.none": "δεν υπάρχει πηγή",
+  "ui.guide.v.ph": "pH {low}–{high}",
+  "ui.guide.v.days": "{low}–{high} ημέρες",
+  "ui.guide.v.cuts": "{low}–{high} κοπές"
 }
