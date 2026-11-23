@@ -1,0 +1,38 @@
+feature,area,priority,original,clone,notes
+Draw a field on the map by tapping its corners,fields,must,yes,yes,ui/ParcelMap.tsx (MapLibre + Terra Draw); drawn area shown next to the typed area
+Field details: name / crop / variety / area,fields,must,yes,yes,ui/ParcelForm.tsx; crops are a planting (ui/PlantingForm.tsx) not a field property
+Field list and map view of all fields,fields,must,yes,yes,ui/Parcels.tsx + ui/ParcelSketch.tsx
+Edit or delete a field boundary,fields,must,yes,yes,ui/ParcelMap.tsx select mode (drag vertices / midpoints)
+Split a field into blocks (sub-areas),fields,should,yes,yes,several plantings per parcel with lot labels + ui/PlantingSketchDraw.tsx (SQL 0040 planting_boundary)
+Walk the boundary with phone GPS to measure a field,fields,should,yes,no,planned in TECH-SPEC §4.4 (Walk boundary); not built; phone GPS accuracy is limited
+Import fields from a file (KML/GeoJSON),fields,could,yes,no,
+Create a spray job: field(s) + date + product + dose,jobs,must,yes,yes,ui/SprayForm.tsx; stricter than Farmable: registered-only products / label dose / PHI-REI gates / stock
+Plan a job for later and assign a worker (planned vs done),jobs,must,yes,yes,spray/plan.ts + ui/JobForm.tsx + worker app; job board in SQL 0038
+Tank mix (several products in one tank),jobs,should,yes,yes,ui/SprayForm.tsx «+ another product»
+Tank-mix calculator (product per tank from area and rate),jobs,could,yes,partial,mixing exists; a per-tank quantity calculator was not found
+Fertilise job logging,jobs,must,yes,no,tables job_fertilise exist since SQL 0003; no screen in the app
+Irrigation job logging,jobs,must,yes,no,tables job_irrigate exist since SQL 0003; no screen in the app
+Sow/plant starts a crop cycle on all or part of a field,jobs,should,yes,yes,ui/PlantingForm.tsx (sown_on + area) + ui/SowRing.tsx
+Prune / mow / clean jobs,jobs,could,yes,partial,«Κοπή / καθαρισμός» one-tap record (ui/ParcelCut.tsx) kept on the phone only
+Weather at the time of the job,jobs,should,yes,partial,jobs.weather_snapshot column exists in SQL; not filled or shown in the app
+Duplicate-job warning,jobs,could,yes,no,
+Job log: filter by field / type / date,jobs,must,yes,yes,ui/History.tsx + ui/Sprays.tsx + ui/TodayDone.tsx
+Job sheet to share with a worker,jobs,could,yes,partial,workers get jobs in their own app; no shareable sheet (WhatsApp/PDF)
+GPS-tracked job progress while spraying,jobs,could,yes,no,background location + battery; not needed for a small farm yet
+Record a harvest: field / crop / date / quantity,harvest,must,yes,yes,ui/HarvestForm.tsx: crates with +1/−1 counter; blocked inside PHI/REI
+Harvest quality grade and batch number,harvest,could,yes,no,
+Harvest units other than crates (kg / pieces),harvest,could,yes,no,crates only (TECH-SPEC lists kg + waste_pct in job_harvest)
+Harvest totals per field and per crop,harvest,must,yes,yes,ui/HarvestHistory.tsx + ui/HarvestBreakdown.tsx + crop sheet (R1)
+Season target per crop,harvest,should,no,yes,ui/TargetBlock.tsx (Aloni-only; server table SQL 0041)
+Compare yield season over season,harvest,should,yes,no,
+Harvest crate label with QR (field / crop / date / batch),harvest,should,yes,no,auth/qr.ts QR generator already exists (used for invites)
+Harvest destination: store or direct dispatch to a buyer,aloni,should,no,yes,stock/destination.ts + SQL 0036 (Aloni-only)
+Link harvest to orders / customers (Κλούβες),aloni,should,no,yes,orders/* + ui/Orders.tsx + «Αύριο φεύγουν»
+Works offline in the field and syncs later,core,must,no,yes,Dexie + sync/engine.ts outbox; Farmable's one visible review complains of freezing
+Spray register export,reports,should,yes,partial,ui/Register.tsx CSV draft; TECH-SPEC §4.11 wants a Greek PDF too
+Seasons: pick the active season,core,could,yes,no,Aloni works with dates and a season target start day; no season picker
+Compliance exports for GlobalGAP / Freshcare / SIEX,reports,could,yes,skip,certification formats - out of scope
+NDVI satellite layers / AI yield forecast,fields,could,yes,skip,paid imagery and models
+Weather-station integrations (Davis/Sencrop/Metos),integrations,could,yes,skip,hardware partners; Aloni uses Open-Meteo
+Pest & disease scouting notes,notes,could,yes,skip,left out of this slice by Bora; Aloni already has observations (ui/ObservationForm.tsx)
+Teams / timesheets / inventory / sales modules,modules,could,yes,skip,left out of this slice by Bora; Aloni already has workers / stock / orders
