@@ -17,7 +17,7 @@ export interface WeatherRow { id: string; farm_id: string; parcel_id: string; da
 /** A photo stored on this phone: the processed JPEG bytes (an ArrayBuffer: iPhone Safari cannot always store a Blob) and their SHA-256. Append-only; the outbox entry carries everything except the bytes. */
 export interface MediaRow extends Row { device_id?: string; actor_id?: string; sha256: string; mime: string; data: ArrayBuffer; width: number; height: number; bytes: number; created_at: string }
 
-export const FARM_TABLES = ['parcels', 'crops', 'plantings', 'products', 'label_uses', 'stock_lots', 'stock_movements', 'soil_tests', 'water_tests', 'workers', 'jobs', 'job_plantings', 'job_spray', 'job_harvest', 'observations', 'orders_weekly', 'alerts', 'recommendations'] as const;
+export const FARM_TABLES = ['parcels', 'crops', 'plantings', 'products', 'label_uses', 'stock_lots', 'stock_movements', 'soil_tests', 'water_tests', 'workers', 'jobs', 'job_plantings', 'job_spray', 'job_harvest', 'observations', 'orders_weekly', 'alerts', 'recommendations', 'worker_cards', 'customers', 'customer_orders'] as const;
 export type FarmTable = (typeof FARM_TABLES)[number];
 
 export class AppDB extends Dexie {
@@ -40,6 +40,9 @@ export class AppDB extends Dexie {
   orders_weekly!: Table<Row, string>;
   alerts!: Table<Row, string>;
   recommendations!: Table<Row, string>;
+  worker_cards!: Table<Row, string>;
+  customers!: Table<Row, string>;
+  customer_orders!: Table<Row, string>;
   weather!: Table<WeatherRow, string>;
   settings!: Table<SettingRow, string>;
   media!: Table<MediaRow, string>;
@@ -61,5 +64,6 @@ export class AppDB extends Dexie {
     this.version(6).stores({ soil_tests: 'id, farm_id, parcel_id', water_tests: 'id, farm_id, parcel_id' });
     this.version(7).stores({ workers: 'id, farm_id', job_plantings: 'id, farm_id, job_id, planting_id', job_spray: 'id, farm_id, job_id, amends_id', job_harvest: 'id, farm_id, planting_id' });
     this.version(8).stores({ observations: 'id, farm_id, parcel_id' });
+    this.version(9).stores({ worker_cards: 'id, farm_id, worker_id', customers: 'id, farm_id', customer_orders: 'id, farm_id, customer_id, for_day' });   // the owner-only records of SQL 0037 (used once the server has them)
   }
 }
