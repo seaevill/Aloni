@@ -23,3 +23,19 @@ export function weekWater(days: readonly Day[], today: string, kc: string | unde
   const gap: Part = !need.known ? need : !rainPart.known ? rainPart : { known: true, mm: need.mm - rainPart.mm };
   return { rain: rainPart, need, gap };
 }
+
+/** The water to bring, as a volume: the need (mm) × the area. 1 mm over 1 στρέμμα (1000 m²) is exactly 1 m³. An unknown need keeps its reason; a missing or unreadable area is unknown, never 0. */
+export type Volume = { known: true; m3: number } | { known: false; reason: 'no-et0' | 'no-kc' | 'no-rain' | 'no-area' };
+export function volumeFor(need: Part, areaStr: readonly string[]): Volume {
+  if (!need.known) return need;
+  if (areaStr.length === 0) return { known: false, reason: 'no-area' };
+  let area = 0;
+  for (const a of areaStr) { const d = parseDecimal(a); if (!d.known) return { known: false, reason: 'no-area' }; area += parseFloat(d.value); }
+  return { known: true, m3: need.mm * area };
+}
+/** Hours of irrigation = m³ ÷ the flow (m³ per hour) the owner typed; no flow, a bad flow or a flow of 0 = unknown. */
+export function hoursFor(m3: number, flow: string | undefined): { known: true; hours: number } | { known: false } {
+  const f = flow === undefined ? undefined : parseDecimal(flow);
+  if (f === undefined || !f.known || !(parseFloat(f.value) > 0)) return { known: false };
+  return { known: true, hours: m3 / parseFloat(f.value) };
+}
