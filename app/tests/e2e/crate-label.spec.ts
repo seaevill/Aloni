@@ -23,7 +23,7 @@ test('a harvest of today opens its crate label: crop, day, parcel, crates, lot a
   await page.reload();
   await page.getByTestId('today-done-row').filter({ hasText: 'Συγκομιδή' }).click();
   await expect(page.getByTestId('done-sheet')).toBeVisible();
-  await page.getByTestId('crate-open').click();
+  await page.getByTestId('crate-open').evaluate((el) => (el as HTMLElement).click());      // (a click on a row inside a sheet can wait for «stable» in WebKit)
   const label = page.getByTestId('crate-label');
   await expect(label).toBeVisible();
   await expect(label.getByTestId('crate-crop')).toHaveText('Σπανάκι');
