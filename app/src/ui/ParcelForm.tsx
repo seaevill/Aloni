@@ -7,6 +7,7 @@ import { readPin } from '../parcels/pin';
 import { put } from '../repo';
 import { applyEdit, commaText } from '../records/edits';
 import { validBoundary, type Boundary } from '../map/geo';
+import { ParcelWalk } from './ParcelWalk';
 import { ParcelMap } from './ParcelMap';
 import { useSubmit } from './useSubmit';
 import type { Row } from '../db/schema';
@@ -31,6 +32,9 @@ export function ParcelForm({ onDone, existing }: { onDone: () => void; existing?
     setPinFailed(!r.known);
     setPin(r.known ? r.value : undefined);
   };
+  const [walkOpen, setWalkOpen] = useState(false);
+  if (walkOpen) return <ParcelWalk typedArea={area} onCancel={() => setWalkOpen(false)}
+    onDone={(next) => { setBoundary(next); setWalkOpen(false); }} />;
   if (mapOpen) return <ParcelMap initial={boundary} typedArea={area} onCancel={() => setMapOpen(false)} onDone={(b) => { setBoundary(b); setMapOpen(false); }} />;
   const titleKey: I18nKey = existing ? 'edit.title' : 'parcel.add';
   const save = async () => {
@@ -81,6 +85,7 @@ export function ParcelForm({ onDone, existing }: { onDone: () => void; existing?
       {whyMissing && why.trim() === '' && <p class="msg error" role="alert" data-testid="edit-reason-error">{t('edit.reason.error')}</p>}
 
       <button class="row" data-testid="parcel-map-open" onClick={() => setMapOpen(true)}><span>{t('map.open')}</span><span aria-hidden="true" class="chev" /></button>
+      <button type="button" class="row" data-testid="parcel-walk-open" onClick={() => setWalkOpen(true)}><span>{t('ui.walk.title')}</span><span aria-hidden="true" class="chev" /></button>
       {boundary && <p class="muted" data-testid="parcel-boundary-set">{t('map.has')}</p>}
 
       <button class="btn secondary" onClick={() => void takePin()}>{t('parcel.pin')}</button>
