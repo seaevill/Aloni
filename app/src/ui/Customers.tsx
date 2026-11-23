@@ -7,7 +7,10 @@ import { fractionText } from '../orders/dispatch';
 import { nextDay } from '../orders/tomorrow';
 import { athensToday } from '../plantings/planting';
 import { CATALOG } from '../crops/catalog';
-import { putLocal } from '../repo';
+import { put, putLocal } from '../repo';
+import { serverRecordsOn } from '../owner-records/mode';
+import { buildCustomer, buildCustomerOrder } from '../owner-records/records';
+import { useRows } from './useRows';
 import type { KlouvesOrders } from '../orders/klouves';
 import { BackBar } from './BackBar';
 import { Card, ListRow } from './ds';
@@ -18,7 +21,10 @@ interface Customer { id: string; name: string; phone: string; note: string }
 const key = (farm: string): string => `customers:${farm}`;
 const EMPTY: KlouvesOrders = { products: [], weeks: {}, skipped: 0, days: {}, clients: [] };
 
-async function loadCustomers(farm: string): Promise<Customer[]> { return ((await db.settings.get(key(farm)))?.value as Customer[] | undefined) ?? []; }
+async function loadCustomers(farm: string, server: boolean): Promise<Customer[]> {
+  if (server) return (await db.customers.where('farm_id').equals(farm).toArray()).filter((c) => !c.deleted_at).map((c) => ({ id: String(c.id), name: String(c.name), phone: String(c.phone ?? ''), note: String(c.note ?? '') }));
+  return ((await db.settings.get(key(farm)))?.value as Customer[] | undefined) ?? [];
+}
 
 export function Customers({ onBack }: { onBack: () => void }) {
   const farm = activeFarm.value;
@@ -26,15 +32,17 @@ export function Customers({ onBack }: { onBack: () => void }) {
   const [orders, setOrders] = useState<KlouvesOrders>(EMPTY);
   const [map, setMap] = useState<Record<string, string>>({});
   const [adding, setAdding] = useState(false);
+  const [server, setServer] = useState(false);
+  const crops = useRows('crops');
   const [open, setOpen] = useState<string | undefined>(undefined);
-  const reload = async () => { setList(await loadCustomers(farm)); const o = await loadOrders(db, farm); setOrders(o.orders ?? EMPTY); setMap(o.map); };
+  const reload = async () => { const on = await serverRecordsOn(db); setServer(on); const o = await loadOrders(db, farm); setOrders(o.orders ?? EMPTY); setMap(o.map); setList(await loadCustomers(farm, on)); };      // loadOrders first: it moves the local records to the server tables once, when the owner confirmed 0037
   useEffect(() => { void reload(); }, [farm]);
   const week = weekCratesByClient(orders, athensToday(new Date()) ?? '');
   const weekLine = (client: string): string => { const n = week.get(client); return n === undefined ? t('ui.cust.week.none') : t('ui.cust.week', { n: fractionText(n) }); };
   const imported = (orders.clients ?? []).filter((c) => !c.id.startsWith('own:'));
   const shown = (list ?? []).find((c) => c.id === open);
-  if (shown) return <CustomerPage customer={shown} orders={orders} map={map} onBack={() => setOpen(undefined)} onSaved={async (o, m) => { await saveOrders(db, farm, o, m); dataVersion.value++; await reload(); }} />;
-  if (adding) return <NewCustomer onBack={() => setAdding(false)} onSave={async (c) => { await putLocal(db, key(farm), [...(list ?? []), c]); await reload(); setAdding(false); }} />;
+  if (shown) return <CustomerPage customer={shown} orders={orders} map={map} onBack={() => setOpen(undefined)} server={server} cropRows={crops.rows ?? []} farm={farm} onSaved={async (o, m) => { if (!server) await saveOrders(db, farm, o, m); dataVersion.value++; await reload(); }} />;
+  if (adding) return <NewCustomer onBack={() => setAdding(false)} onSave={async (c) => { if (server) { const r = buildCustomer({ name: c.name, phone: c.phone, note: c.note }, farm, new Date().toISOString(), c.id); if (r.ok) await put(db, 'customers', r.row, 'insert'); dataVersion.value++; } else await putLocal(db, key(farm), [...(list ?? []), c]); await reload(); setAdding(false); }} />;
   return (
     <section data-testid="customers">
       <BackBar onBack={onBack} testId="customers-back" />
@@ -43,7 +51,7 @@ export function Customers({ onBack }: { onBack: () => void }) {
       {(list ?? []).map((c) => <ListRow key={c.id} testid="customer" heading={c.name} meta={[c.phone === '' ? t('ui.cust.phone.none') : c.phone, weekLine(clientIdOf(c.id))].join(' · ')} onClick={() => setOpen(c.id)} />)}
       {imported.map((c) => <ListRow key={c.id} testid="customer-imported" heading={c.name} meta={[t('ui.cust.imported'), weekLine(c.id)].join(' · ')} />)}
       <button class="btn" data-testid="customer-add" onClick={() => setAdding(true)}>{t('ui.cust.add')}</button>
-      <p class="muted">{t('ui.cust.local')}</p>
+      {!server && <p class="muted">{t('ui.cust.local')}</p>}
     </section>
   );
 }
@@ -64,7 +72,7 @@ function NewCustomer({ onBack, onSave }: { onBack: () => void; onSave: (c: Custo
   );
 }
 
-function CustomerPage({ customer, orders, map, onBack, onSaved }: { customer: Customer; orders: KlouvesOrders; map: Record<string, string>; onBack: () => void; onSaved: (o: KlouvesOrders, m: Record<string, string>) => Promise<void> }) {
+function CustomerPage({ customer, orders, map, onBack, onSaved, server, cropRows, farm }: { customer: Customer; orders: KlouvesOrders; map: Record<string, string>; onBack: () => void; onSaved: (o: KlouvesOrders, m: Record<string, string>) => Promise<void>; server: boolean; cropRows: readonly import('../db/schema').Row[]; farm: string }) {
   const today = athensToday(new Date()) ?? '';
   const [slug, setSlug] = useState(''); const [crates, setCrates] = useState(''); const [day, setDay] = useState(nextDay(today));
   const [err, setErr] = useState<'crates' | 'day' | 'crop' | undefined>(undefined); const [saved, setSaved] = useState(false);
@@ -74,6 +82,13 @@ function CustomerPage({ customer, orders, map, onBack, onSaved }: { customer: Cu
   const submit = async () => {
     setSaved(false);
     if (slug === '') { setErr('crop'); return; }
+    if (server) {                                                  // the order is a SERVER row (synced between phones); the screens read it back through loadOrders
+      const crop = cropRows.find((c) => c.slug === slug);
+      const built = crop ? buildCustomerOrder({ customerId: customer.id, cropId: String(crop.id), crates, day }, farm, new Date().toISOString(), crypto.randomUUID()) : undefined;
+      if (!built?.ok) { setErr(built === undefined ? 'crop' : built.reason === 'day' ? 'day' : 'crates'); return; }
+      await put(db, 'customer_orders', built.row, 'insert');
+      setErr(undefined); await onSaved(orders, map); setCrates(''); setSaved(true); return;
+    }
     const r = addCustomerOrder(orders, map, { customerId: customer.id, customerName: customer.name, slug, cropName: cropName(slug), day, crates });
     if (!r.ok) { setErr(r.reason); return; }
     setErr(undefined); await onSaved(r.orders, r.map); setCrates(''); setSaved(true);
@@ -91,7 +106,7 @@ function CustomerPage({ customer, orders, map, onBack, onSaved }: { customer: Cu
       {mine.map((o) => <div class="card" key={`${o.d}-${o.slug}`} data-testid="customer-order">{t('ui.cust.line', { day: formatDate(o.d), crop: cropName(o.slug), n: o.n })}</div>)}
       <h2>{t('ui.cust.neworder')}</h2>
       <div class="seg two" role="group" aria-label={t('ui.cust.crop')}>
-        {CATALOG.map((c) => <button key={c.slug} aria-pressed={slug === c.slug} data-testid={`order-crop-${c.slug}`} onClick={() => setSlug(c.slug)}>{c.el}</button>)}
+        {CATALOG.filter((c) => !server || cropRows.some((r) => r.slug === c.slug && !r.deleted_at)).map((c) => <button key={c.slug} aria-pressed={slug === c.slug} data-testid={`order-crop-${c.slug}`} onClick={() => setSlug(c.slug)}>{c.el}</button>)}
       </div>
       <label class="field">{t('ui.cust.crates')}<input class="input" inputMode="numeric" value={crates} autoComplete="off" data-testid="order-crates" onInput={(e) => setCrates((e.target as HTMLInputElement).value)} /></label>
       <label class="field">{t('ui.cust.day')}<input class="input" type="date" value={day} data-testid="order-day" onInput={(e) => setDay((e.target as HTMLInputElement).value)} /></label>
