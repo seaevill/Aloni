@@ -1,0 +1,12 @@
+/* «Ετικέτα κασέλας»: shown in the sheet, printed on its own */
+.crate-label { display: grid; gap: var(--sp-2); justify-items: start; padding: var(--sp-4); border: 2px solid currentColor; border-radius: var(--r-card, 12px); background: #fff; color: #000; }
+.crate-label h2 { margin: 0; }
+.crate-label p { margin: 0; }
+.crate-lot { font-weight: 700; letter-spacing: 0.06em; }
+.crate-qr { width: min(60vw, 220px); height: auto; }
+.crate-code { word-break: break-all; }
+@media print {
+  body * { visibility: hidden; }
+  .crate-label, .crate-label * { visibility: visible; }
+  .crate-label { position: fixed; inset-block-start: 0; inset-inline-start: 0; width: 100%; border-width: 3px; }
+}

@@ -439,5 +439,11 @@
   "ui.kaek.err": "ΚΑΕΚ tam 12 haneli olmalı.",
   "ui.kaek.save": "Kaydet",
   "ui.kaek.remove": "ΚΑΕΚ'i sil",
-  "ui.kaek.local": "Yalnızca bu telefonda saklanır; hiçbir yerde aranmaz, hiçbir yere gönderilmez."
+  "ui.kaek.local": "Yalnızca bu telefonda saklanır; hiçbir yerde aranmaz, hiçbir yere gönderilmez.",
+  "ui.crate.title": "Kasa etiketi",
+  "ui.crate.lot": "Parti {lot}",
+  "ui.crate.qr.alt": "Partinin QR kodu",
+  "ui.crate.print": "Etiketi yazdır",
+  "ui.crate.note": "Kod, kamerayla düz metin olarak okunur. İçinde kişi ya da öneri yok.",
+  "ui.crate.open": "Kasa etiketi"
 }
