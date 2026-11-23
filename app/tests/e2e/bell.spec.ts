@@ -44,7 +44,7 @@ test('the bell counts a job finished after the last look, lists it, and the coun
 test('the worker screen has the bell: 56 px, no count at first, and a reason when opened', async ({ page }) => {
   await iphone(page);
   await page.locator('nav.tabs [data-tab="more"]').click();
-  await page.locator('main button.btn').first().click();          // the demo farm (it has the worker view)
+  await page.getByTestId('demo-load').click();          // the demo farm (it has the worker view)
   await page.getByTestId('open-worker-view').click();
   const bell = page.getByTestId('worker-app').getByTestId('bell');
   await expect(bell).toBeVisible();

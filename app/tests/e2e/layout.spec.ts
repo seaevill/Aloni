@@ -6,7 +6,7 @@ const TABS = ['today', 'crops', 'parcels', 'stock', 'more'] as const;
 test('no horizontal overflow at 375 px, with demo data, in el/tr/en, on every tab', async ({ page }) => {
   await page.goto('/');
   await page.locator('nav.tabs [data-tab="more"]').click();
-  await page.locator('main button.btn').first().click(); // the first big button = load demo (text differs per PR/language)
+  await page.getByTestId('demo-load').click(); // the first big button = load demo (text differs per PR/language)
   for (const lang of ['EL', 'TR', 'EN']) {
     await page.locator('nav.tabs [data-tab="more"]').click();
     await page.getByRole('button', { name: lang, exact: true }).click();

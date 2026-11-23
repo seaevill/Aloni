@@ -15,7 +15,7 @@ test('the app runs under the production CSP: no violations, demo import and serv
 
   await page.goto('/');
   await page.locator('nav.tabs [data-tab="more"]').click();
-  await page.locator('main button.btn').first().click(); // load the demo farm (IndexedDB)
+  await page.getByTestId('demo-load').click(); // load the demo farm (IndexedDB)
   await page.locator('nav.tabs [data-tab="today"]').click();
   await expect(page.getByTestId('today-counts')).toContainText('5');
   expect(await page.evaluate(async () => !!(await navigator.serviceWorker.ready).active)).toBe(true);

@@ -90,7 +90,7 @@ test('the planting form meets the UX bar in el/tr/en (375 px, targets, text size
 test('while the demo farm is active no planting can be added, and the demo shows its plantings in the farm\'s words', async ({ page }) => {
   await iphone(page);
   await tab(page, 'more');
-  await page.locator('main button.btn').first().click();
+  await page.getByTestId('demo-load').click();
   await tab(page, 'crops');
   await expect(page.getByTestId('planting-demo-note')).toBeVisible();
   await expect(page.getByTestId('planting-add')).toHaveCount(0);

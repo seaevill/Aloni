@@ -66,7 +66,7 @@ test('add photos offline: shrunk to 2000 px, the same photo only once, kept afte
 test('while the demo farm is active no photo can be added', async ({ page }) => {
   await iphone(page);
   await page.locator('nav.tabs [data-tab="more"]').click();
-  await page.locator('main button.btn').first().click();
+  await page.getByTestId('demo-load').click();
   await page.getByTestId('open-photos').click();
   await expect(page.getByTestId('photos-demo-note')).toBeVisible();
   await expect(page.getByTestId('photo-add')).toHaveCount(0);

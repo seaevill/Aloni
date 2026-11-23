@@ -43,7 +43,7 @@ test('add a parcel offline (typed στρ. kept exactly), keep it after reload, a
 test('while the demo farm is active no parcel can be added to it', async ({ page }) => {
   await iphone(page);
   await page.locator('nav.tabs [data-tab="more"]').click();
-  await page.locator('main button.btn').first().click(); // load the demo
+  await page.getByTestId('demo-load').click(); // load the demo
   await page.locator('nav.tabs [data-tab="parcels"]').click();
   await expect(page.getByTestId('parcel-demo-note')).toBeVisible();
   await expect(page.getByTestId('parcel-add')).toHaveCount(0);

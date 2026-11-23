@@ -46,7 +46,7 @@ test('add a product offline with a label photo: name kept, type and unit must be
 test('while the demo farm is active no product can be added', async ({ page }) => {
   await iphone(page);
   await tab(page, 'more');
-  await page.locator('main button.btn').first().click();
+  await page.getByTestId('demo-load').click();
   await tab(page, 'stock');
   await expect(page.getByTestId('product-demo-note')).toBeVisible();
   await expect(page.getByTestId('product-add')).toHaveCount(0);
