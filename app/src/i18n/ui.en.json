@@ -359,5 +359,18 @@
   "ui.water.kc.label": "Kc (as the agronomist gave it)",
   "ui.water.kc.save": "Save",
   "ui.water.note": "Information only: it never says «water now» and sends no alert.",
-  "ui.water.line": "{label}: {value}"
+  "ui.water.line": "{label}: {value}",
+  "ui.cut.title": "Cut / clearing",
+  "ui.cut.method": "Method",
+  "ui.cut.method.shredder": "shredder",
+  "ui.cut.method.hand": "by hand",
+  "ui.cut.method.other": "other",
+  "ui.cut.date": "Date",
+  "ui.cut.add": "Record a cut",
+  "ui.cut.save": "Save",
+  "ui.cut.undo": "Undo the last record",
+  "ui.cut.none": "No cut is recorded on this parcel.",
+  "ui.cut.sprout": "new growth: day {n}",
+  "ui.cut.local": "Kept on this phone only; not sent to the server yet.",
+  "ui.cut.sep": " · {method}"
 }

@@ -51,4 +51,10 @@ describe('the parcel timeline: one read-only stream of what happened on THIS par
     const many = Array.from({ length: TIMELINE_MAX + 10 }, (_, i) => harvest(`h${i}`, 'p1', `2026-11-${String(1 + (i % 28)).padStart(2, '0')}T06:00:00.000Z`, '1'));
     expect(parcelTimeline('A', plantings, links, [], many, names)).toHaveLength(TIMELINE_MAX);
   });
+  it('a cut / clean record of THIS parcel is part of the stream, with its method', () => {
+    const cuts = [{ id: 'c1', day: '2026-11-21', method: 'shredder' as const }];
+    const e = parcelTimeline('A', plantings, links, sprays, harvests, names, cuts);
+    expect(e.map((x) => `${x.kind}:${x.id}`)).toEqual(['cut:c1', 'harvest:h1', 'spray:s1', 'sown:p1']);
+    expect(e[0]).toMatchObject({ kind: 'cut', method: 'shredder', at: '2026-11-21' });
+  });
 });

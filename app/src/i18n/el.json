@@ -682,6 +682,7 @@
   "detail.sprays": "Τελευταίοι ψεκασμοί",
   "timeline.title": "Χρονολόγιο",
   "timeline.empty": "Δεν υπάρχουν ακόμη καταγραφές.",
+  "timeline.cut": "Κοπή ({method})",
   "timeline.sown": "Σπορά: {crop}",
   "timeline.spray": "Ψεκασμός: {product}",
   "timeline.harvest": "Συγκομιδή: {crop} · {n} κλούβες",

@@ -359,5 +359,18 @@
   "ui.water.kc.label": "Kc (mühendisin verdiği)",
   "ui.water.kc.save": "Kaydet",
   "ui.water.note": "Yalnızca bilgi: «şimdi sula» demez, bildirim göndermez.",
-  "ui.water.line": "{label}: {value}"
+  "ui.water.line": "{label}: {value}",
+  "ui.cut.title": "Kesim / temizlik",
+  "ui.cut.method": "Yöntem",
+  "ui.cut.method.shredder": "parçalayıcı (καταστροφέας)",
+  "ui.cut.method.hand": "elle",
+  "ui.cut.method.other": "diğer",
+  "ui.cut.date": "Tarih",
+  "ui.cut.add": "Kesim kaydet",
+  "ui.cut.save": "Kaydet",
+  "ui.cut.undo": "Son kaydı geri al",
+  "ui.cut.none": "Bu tarlada kayıtlı kesim yok.",
+  "ui.cut.sprout": "yeni sürgün: gün {n}",
+  "ui.cut.local": "Yalnızca bu telefonda saklanır; henüz sunucuya gönderilmiyor.",
+  "ui.cut.sep": " · {method}"
 }
