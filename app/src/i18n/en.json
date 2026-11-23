@@ -541,7 +541,7 @@
   "today.urgent": "Most important today",
   "today.urgent.unknown": "Unknown waiting period · {parcel}",
   "today.urgent.wait": "Waiting ends {d} · {crop} · {parcel}",
-  "today.urgent.action": "See the sprayings",
+  "today.urgent.action": "See why",
   "history.title": "History",
   "job.add.plus": "+ Assign a job",
   "today.jobs.none": "No jobs today.",

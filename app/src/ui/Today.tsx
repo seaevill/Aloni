@@ -41,7 +41,8 @@ import './WaitSheet';
 import './WeatherSheet';
 import './JobsSheet';
 import { WaitRing } from './ds/WaitRing';
-import { runningSince, waitRing } from '../summary/wait';
+import { plantingWait, runningSince, waitRing } from '../summary/wait';
+import { kindTitle } from './jobkind';
 import type { Row } from '../db/schema';
 
 // Σήμερα (Design 2): the date and the farm, ONE big card for the most urgent thing, the weather strip (empty until the data exists), a card per field with its cut counter,
@@ -238,7 +239,12 @@ export function Today() {
   const weatherOf = new Map(weatherRows.map((w) => [w.parcel_id, parseDays(w.days)] as const));
   const harvestRows = useRows('job_harvest');
   const summary = todaySummary(athensToday(new Date()) ?? '', sprays.rows ?? [], harvestRows.rows ?? [], jobs.rows ?? [], (id) => text(workers.rows?.find((w) => w.id === id)?.name), (id) => nameOf(products.rows?.find((p) => p.id === id) ?? {}));
-  const jobLine = (j: Row): string => [...new Set(links.rows?.filter((l) => l.job_id === j.id).map((l) => plantings.rows?.find((p) => p.id === l.planting_id)).filter((p): p is Row => !!p).map((p) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) })) ?? [])].concat(text(workers.rows?.find((w) => w.id === j.worker_id)?.name), typeof j.planned_for === 'string' && j.planned_for !== '' ? formatDate(j.planned_for) : '').filter(Boolean).join(' · ');
+  const jobLineBase = (j: Row): string => [...new Set(links.rows?.filter((l) => l.job_id === j.id).map((l) => plantings.rows?.find((p) => p.id === l.planting_id)).filter((p): p is Row => !!p).map((p) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) })) ?? [])].concat(text(workers.rows?.find((w) => w.id === j.worker_id)?.name), typeof j.planned_for === 'string' && j.planned_for !== '' ? formatDate(j.planned_for) : '').filter(Boolean).join(' · ');
+  const jobLine = (j: Row): string => [kindTitle(j as { kind?: unknown }), jobLineBase(j)].filter((x) => x !== undefined && x !== '').join(' · ');
+  const urgentPlanting = (p: Row): string | undefined => {          // the planting on that parcel whose waiting period is the reason (unknown first, then the earliest running one)
+    const waits = live(plantings).filter((x) => x.parcel_id === p.id).map((x) => ({ id: String(x.id), w: plantingWait(String(x.id), now, links.rows ?? [], sprays.rows ?? [], plantings.rows ?? [], labelRows.rows ?? []) }));
+    return (waits.find((x) => x.w.state === 'unknown') ?? waits.find((x) => x.w.state === 'running'))?.id;
+  };
   const hub = jobHub(jobs.rows ?? [], athensToday(new Date()) ?? '');
   const jobGroups = hub.open;
   const lateLine = (j: Row): string => { const n = daysLate(text(j.planned_for), athensToday(new Date()) ?? ''); return n === undefined ? '' : t('ui.job.late', { n }); };
@@ -287,7 +293,7 @@ export function Today() {
         <section class="hero" data-testid="urgent" aria-label={t('today.urgent')}>
           <span class="kicker"><span aria-hidden="true"><Icon name={BADGE[urgent.state].mark} /></span>{SP}{t('today.urgent')}</span>
           <h2>{urgent.state === 'unknown' ? t('today.urgent.unknown', { parcel: text(urgent.p.name) }) : t('today.urgent.wait', { d: formatDate(urgent.at.slice(0, 10)), crop: urgent.crops.split(', ')[0] ?? '', parcel: text(urgent.p.name) })}</h2>
-          <button class="btn lime" data-testid="urgent-action" onClick={() => setHistory(true)}>{t('today.urgent.action')}</button>
+          <button class="btn lime" data-testid="urgent-action" onClick={() => { const id = urgentPlanting(urgent.p); if (id) openSheet('wait', id); else setHistory(true); }}>{t('today.urgent.action')}</button>
         </section>
       )}
       {loaded && has && <WeatherStrip perParcel={[...weatherOf.values()]} />}

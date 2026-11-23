@@ -17,7 +17,7 @@ export function todaySummary(today: string, sprays: readonly Row[], harvests: re
   const cut = harvests.filter((h) => !h.deleted_at && dayOf(h.harvested_at) === today);
   let sum = '0' as Decimal | string;
   for (const h of cut) { const q = parseDecimal(String(h.crates_str ?? '')); if (q.known) sum = addDecimal(sum as Decimal, q.value); }
-  const overdue = jobs.filter((j) => !j.deleted_at && j.kind === 'spray' && j.status === 'planned' && typeof j.planned_for === 'string' && j.planned_for < today);
+  const overdue = jobs.filter((j) => !j.deleted_at && j.status === 'planned' && typeof j.planned_for === 'string' && j.planned_for < today);
   return { done, crates: String(sum), harvests: cut.length, overdue };
 }
 

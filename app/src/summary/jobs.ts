@@ -34,7 +34,7 @@ const athensDay = (instant: string): string | undefined => {
 
 /** The «Εργασίες» summary of Σήμερα: the open sprayings in their groups plus the ones DONE today (the Athens day), oldest first. Removed jobs and jobs that are not sprayings never count. Counting only: nothing is decided here. */
 export function jobHub(jobs: readonly Row[], today: string): JobHub {
-  const live = jobs.filter((j) => !j.deleted_at && j.kind === 'spray');
+  const live = jobs.filter((j) => !j.deleted_at);          // EVERY kind of job (spray, fertilise, irrigate, sow, harvest, other): nothing is hidden because a screen was built for sprayings first
   const open = groupJobs(live.filter((j) => j.status === 'planned'), today);
   const doneToday = live.filter((j) => j.status === 'done' && typeof j.done_at === 'string' && athensDay(j.done_at) === today).sort((a, b) => String(a.done_at).localeCompare(String(b.done_at)));
   return { open, doneToday, counts: { overdue: open.overdue.length, today: open.today.length, upcoming: open.tomorrow.length + open.later.length, doneToday: doneToday.length } };
@@ -43,7 +43,7 @@ export function jobHub(jobs: readonly Row[], today: string): JobHub {
 // ---- Εργασίες → one job's detail ----
 export interface JobDetailRows { jobs: readonly Row[]; links: readonly Row[]; plantings: readonly Row[]; sprays: readonly Row[]; harvests: readonly Row[] }
 export interface JobDetail {
-  id: string; plannedFor: string | undefined; late: boolean; status: string; productId: string | undefined; workerId: string | undefined;
+  id: string; kind: string; plannedFor: string | undefined; late: boolean; status: string; productId: string | undefined; workerId: string | undefined;
   plantings: Array<{ id: string; cropId: string; parcelId: string }>;
   spray: { id: string; at: string } | undefined;
   harvests: Array<{ id: string; at: string; crates: number | undefined }>;
@@ -64,5 +64,5 @@ export function jobDetail(jobId: string, rows: JobDetailRows, today: string): Jo
   const harvests = rows.harvests.filter((h) => ids.has(str(h.planting_id)) && (plannedFor === undefined || athensDay(str(h.harvested_at)) !== undefined && (athensDay(str(h.harvested_at)) ?? '') >= plannedFor))
     .sort((a, b) => str(b.harvested_at).localeCompare(str(a.harvested_at)))
     .map((h) => { const n = parseWhole<'Crates'>(str(h.crates_str)); return { id: str(h.id), at: str(h.harvested_at), crates: n.known ? n.value : undefined }; });
-  return { id: jobId, plannedFor, late, status, productId: str(job.product_id) === '' ? undefined : str(job.product_id), workerId: str(job.worker_id) === '' ? undefined : str(job.worker_id), plantings, spray: sprayRow ? { id: str(sprayRow.id), at: str(sprayRow.sprayed_at) } : undefined, harvests };
+  return { id: jobId, kind: str(job.kind), plannedFor, late, status, productId: str(job.product_id) === '' ? undefined : str(job.product_id), workerId: str(job.worker_id) === '' ? undefined : str(job.worker_id), plantings, spray: sprayRow ? { id: str(sprayRow.id), at: str(sprayRow.sprayed_at) } : undefined, harvests };
 }
