@@ -1,6 +1,7 @@
 import { signal } from '@preact/signals';
 import { AppDB, type FarmRow } from './schema';
 import { importDemo, removeDemo, type PrototypeData } from './import-demo';
+import { clearDemoGuide, seedDemoGuide } from './demo-guide';
 import { migrateLegacyDb } from './legacy';
 import { delLocal, guardAppendOnly, putLocal, refreshPending } from '../repo';
 import { APP_NAME, DEMO_FARM_ID } from '../config';
@@ -50,6 +51,7 @@ export async function initDb() {
 export async function loadDemo() {
   const data = (await import('../../../reference/prototype/data.json')).default as unknown as PrototypeData;
   await importDemo(db, data);
+  await clearDemoGuide(db); await seedDemoGuide(db);      // the two farmer cases (parsley, wild chicory): phone-local, Demo farm only
   const sample = demoOrders(Date.now()); await saveOrders(db, DEMO_FARM_ID, sample.orders, sample.map);      // a fictional order list, in the demo farm only
   hasDemo.value = true;
   activeFarm.value = DEMO_FARM_ID;
@@ -58,6 +60,7 @@ export async function loadDemo() {
 
 export async function deleteDemo() {
   await removeDemo(db);
+  await clearDemoGuide(db);
   await delLocal(db, ordersKey(DEMO_FARM_ID)); await delLocal(db, mapKey(DEMO_FARM_ID));      // the demo's order sample goes with it
   hasDemo.value = false;
   if (activeFarm.value === DEMO_FARM_ID) activeFarm.value = realFarmId.value;
