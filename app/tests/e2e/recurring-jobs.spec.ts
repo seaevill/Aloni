@@ -9,21 +9,22 @@ test('a Monday rule: «Κάθε Δευ», the next day, it comes back after a re
   await expect(page.getByTestId('today-counts')).toBeVisible();
   await page.getByTestId('tasks-counts').evaluate((el) => (el as HTMLElement).click());        // «Εργασίες»
   const box = page.getByTestId('recurring');
-  await expect(box.getByTestId('rec-none')).toBeVisible();
+  await expect(box.getByTestId('rec-rule')).toHaveCount(2);                       // the Demo's two examples (Monday field check, Friday store cleaning)
   await expect(box.getByTestId('rec-local')).toContainText('μόνο σε αυτό το τηλέφωνο');
   await box.getByTestId('rec-add').click();
   await box.getByTestId('rec-day-1').click();
   await box.getByTestId('rec-title').fill('Έλεγχος χωραφιού');
   await box.getByTestId('rec-save').click();
-  await expect(box.getByTestId('rec-rule')).toContainText('Κάθε Δευ');
-  await expect(box.getByTestId('rec-rule')).toContainText('Έλεγχος χωραφιού');
-  await expect(box.getByTestId('rec-next')).toContainText('Δευ 23 Νοε');
+  await expect(box.getByTestId('rec-rule')).toHaveCount(3);
+  await expect(box.getByTestId('rec-rule').last()).toContainText('Κάθε Δευ');
+  await expect(box.getByTestId('rec-rule').last()).toContainText('Έλεγχος χωραφιού');
+  await expect(box.getByTestId('rec-next').last()).toContainText('Δευ 23 Νοε');
   await page.reload();
   await page.getByTestId('tasks-counts').evaluate((el) => (el as HTMLElement).click());        // «Εργασίες»
-  await expect(page.getByTestId('recurring').getByTestId('rec-rule')).toHaveCount(1);
+  await expect(page.getByTestId('recurring').getByTestId('rec-rule')).toHaveCount(3);
   await page.keyboard.press('Escape');
   await page.locator('nav.tabs [data-tab="more"]').click();
   await page.getByTestId('open-worker-view').click();
   await expect(page.getByTestId('worker-app')).toBeVisible();
-  await expect(page.getByTestId('rec-today-item')).toHaveText('Έλεγχος χωραφιού');
+  await expect(page.getByTestId('rec-today-item')).toHaveText(['Έλεγχος χωραφιού', 'Έλεγχος χωραφιού']);         // the Demo's Monday example and the one just added
 });
