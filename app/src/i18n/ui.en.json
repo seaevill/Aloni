@@ -487,5 +487,10 @@
   "ui.water.hours": "Hours of irrigation (for the need)",
   "ui.water.hours.v": "{n} hours",
   "ui.water.flow.edit": "Irrigation flow (m³/hour)",
-  "ui.water.flow.label": "Flow (m³ per hour)"
+  "ui.water.flow.label": "Flow (m³ per hour)",
+  "ui.fert.kg.label": "Amount the agronomist wrote, kg per στρέμμα (optional)",
+  "ui.fert.bag.label": "Weight of the bag you buy, kg (optional)",
+  "ui.fert.calc.kg": "For this planting's area: {kg} kg",
+  "ui.fert.calc.bags": "For this planting's area: {kg} kg = at least {n} bags",
+  "ui.fert.calc.noarea": "The planting's area is missing: not calculated."
 }

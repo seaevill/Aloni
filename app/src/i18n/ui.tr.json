@@ -487,5 +487,10 @@
   "ui.water.hours": "Sulama saati (ihtiyaç için)",
   "ui.water.hours.v": "{n} saat",
   "ui.water.flow.edit": "Sulama debisi (m³/saat)",
-  "ui.water.flow.label": "Debi (saatte m³)"
+  "ui.water.flow.label": "Debi (saatte m³)",
+  "ui.fert.kg.label": "Mühendisin yazdığı miktar, dönüm başına kg (isteğe bağlı)",
+  "ui.fert.bag.label": "Aldığın çuvalın ağırlığı, kg (isteğe bağlı)",
+  "ui.fert.calc.kg": "Bu ekimin alanı için: {kg} kg",
+  "ui.fert.calc.bags": "Bu ekimin alanı için: {kg} kg = en az {n} çuval",
+  "ui.fert.calc.noarea": "Ekimin alanı eksik: hesaplanmadı."
 }
