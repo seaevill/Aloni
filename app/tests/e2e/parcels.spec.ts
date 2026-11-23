@@ -44,6 +44,7 @@ test('while the demo farm is active no parcel can be added to it', async ({ page
   await iphone(page);
   await page.locator('nav.tabs [data-tab="more"]').click();
   await page.locator('main button.btn').first().click(); // load the demo
+  await expect(page.getByTestId('demo-banner')).toBeVisible();      // wait until the demo is loaded: its banner pushes the page down, a tap sent before it lands on the wrong spot
   await page.locator('nav.tabs [data-tab="parcels"]').click();
   await expect(page.getByTestId('parcel-demo-note')).toBeVisible();
   await expect(page.getByTestId('parcel-add')).toHaveCount(0);
