@@ -12,6 +12,7 @@ import { Icon } from './icons/Icon';
 import { CropTips } from './CropTips';
 import { FertPlanCard } from './FertPlanCard';
 import { CropPace } from './CropPace';
+import { YearCompare } from './YearCompare';
 import { CropGuide } from './CropGuide';
 import { ParcelSketch } from './ParcelSketch';
 import { plantingMarks } from '../plantings/marks';
@@ -55,6 +56,7 @@ export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) 
       </header>
       <button type="button" class="btn secondary crop-tips-open" data-testid="crop-tips-open" onClick={() => setShowTips(true)}><Icon name="bulb" /><span>{t('ui.crop.tips')}</span></button>
       <CropPace crop={crop} plantings={plantings.rows ?? []} harvests={harvests.rows ?? []} />
+      <YearCompare cropId={String(crop.id)} plantings={plantings.rows ?? []} harvests={harvests.rows ?? []} />
       <button type="button" class="btn secondary" data-testid="crop-guide-open" onClick={() => setShowGuide(true)}><Icon name="info" /><span>{t('ui.guide.open')}</span></button>
       {showGuide && <CropGuide crop={crop} onClose={() => setShowGuide(false)} />}
       {showTips && <CropTips slug={text(crop.slug)} onClose={() => setShowTips(false)} />}

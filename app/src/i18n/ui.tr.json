@@ -463,5 +463,14 @@
   "ui.work.save": "Kaydet",
   "ui.work.cancel": "İptal",
   "ui.work.local": "Yalnızca bu telefonda saklanır; henüz sunucuya gönderilmiyor.",
-  "ui.work.note": "Yalnızca kayıt: uygulama gübre, miktar ya da program önermez."
+  "ui.work.note": "Yalnızca kayıt: uygulama gübre, miktar ya da program önermez.",
+  "ui.year.title": "Bu yıl – geçen yıl",
+  "ui.year.nolast": "Geçen yıldan hasat kaydı yok.",
+  "ui.year.this": "Bu yıl",
+  "ui.year.last.same": "Geçen yıl, aynı güne kadar",
+  "ui.year.last.total": "Geçen yıl, toplam",
+  "ui.year.crates": "{n} kasa",
+  "ui.year.chart.alt": "Aylık kasa, bu yıl ve geçen yıl",
+  "ui.year.legend": "Aylık: açık yeşil = geçen yıl, koyu = bu yıl. Yalnızca kendi kayıtlarından.",
+  "ui.year.unreadable": "{k} kayıt sayılmadı (kasa sayısı okunamıyor)."
 }
