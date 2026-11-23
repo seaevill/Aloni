@@ -491,5 +491,14 @@
   "ui.seed.err": "Enter a number above 0.",
   "ui.seed.save": "Save",
   "ui.seed.remove": "Delete the rate",
-  "ui.seed.note": "The app does not suggest a seed rate; it only multiplies the number you entered by the area. Kept on this phone only."
+  "ui.seed.note": "The app does not suggest a seed rate; it only multiplies the number you entered by the area. Kept on this phone only.",
+  "ui.water.m3": "{n} m³",
+  "ui.water.why.area": "the area is missing",
+  "ui.water.why.flow": "the flow is missing",
+  "ui.water.vneed": "Volume of the need",
+  "ui.water.vgap": "Volume of the difference",
+  "ui.water.hours": "Hours of irrigation (for the need)",
+  "ui.water.hours.v": "{n} hours",
+  "ui.water.flow.edit": "Irrigation flow (m³/hour)",
+  "ui.water.flow.label": "Flow (m³ per hour)"
 }

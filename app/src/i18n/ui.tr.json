@@ -491,5 +491,14 @@
   "ui.seed.err": "0'dan büyük bir sayı yaz.",
   "ui.seed.save": "Kaydet",
   "ui.seed.remove": "Normu sil",
-  "ui.seed.note": "Uygulama ekim normu önermez; yazdığın sayıyı alanla çarpar. Yalnızca bu telefonda saklanır."
+  "ui.seed.note": "Uygulama ekim normu önermez; yazdığın sayıyı alanla çarpar. Yalnızca bu telefonda saklanır.",
+  "ui.water.m3": "{n} m³",
+  "ui.water.why.area": "alan eksik",
+  "ui.water.why.flow": "debi eksik",
+  "ui.water.vneed": "İhtiyaç hacmi",
+  "ui.water.vgap": "Fark hacmi",
+  "ui.water.hours": "Sulama saati (ihtiyaç için)",
+  "ui.water.hours.v": "{n} saat",
+  "ui.water.flow.edit": "Sulama debisi (m³/saat)",
+  "ui.water.flow.label": "Debi (saatte m³)"
 }
