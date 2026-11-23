@@ -1,8 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { fixClock } from './helpers/clock';
 
 test('the detail offers a 14-day parcel weather panel', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 667 });
-  await page.clock.setFixedTime(new Date('2026-11-16T10:00:00Z'));
+  await fixClock(page, '2026-11-16T10:00:00Z');
   await page.goto('/');
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-counts')).toBeVisible();
