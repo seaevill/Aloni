@@ -337,6 +337,7 @@
   "ui.fw.title": "Haftalık siparişler (4 hafta)",
   "ui.fw.note": "Sipariş edilen kasalar. Üretim tahmini ya da ekim emri değildir.",
   "ui.fw.none": "—",
+  "ui.bell.claimed": "{worker} işi üstlendi",
   "ui.product.info.label": "Ürün bilgisi",
   "ui.crop.ring.title": "Kaydedilmiş ekim ayları",
   "ui.crop.ring.none": "bu bitki için ekim kaydı yok",
