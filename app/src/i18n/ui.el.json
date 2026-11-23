@@ -551,5 +551,10 @@
   "ui.fert.bag.label": "Βάρος σακιού που αγοράζετε, kg (προαιρετικό)",
   "ui.fert.calc.kg": "Για την έκταση της φυτείας: {kg} kg",
   "ui.fert.calc.bags": "Για την έκταση της φυτείας: {kg} kg = τουλάχιστον {n} σακιά",
-  "ui.fert.calc.noarea": "Λείπει η έκταση της φυτείας: δεν υπολογίζεται."
+  "ui.fert.calc.noarea": "Λείπει η έκταση της φυτείας: δεν υπολογίζεται.",
+  "ui.job.kind.fertilise": "Λίπανση",
+  "ui.job.kind.irrigate": "Άρδευση",
+  "ui.job.kind.sow": "Σπορά",
+  "ui.job.kind.harvest": "Συγκομιδή",
+  "ui.job.kind.other": "Άλλη εργασία"
 }

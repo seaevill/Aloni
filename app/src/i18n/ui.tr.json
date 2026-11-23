@@ -551,5 +551,10 @@
   "ui.fert.bag.label": "Aldığın çuvalın ağırlığı, kg (isteğe bağlı)",
   "ui.fert.calc.kg": "Bu ekimin alanı için: {kg} kg",
   "ui.fert.calc.bags": "Bu ekimin alanı için: {kg} kg = en az {n} çuval",
-  "ui.fert.calc.noarea": "Ekimin alanı eksik: hesaplanmadı."
+  "ui.fert.calc.noarea": "Ekimin alanı eksik: hesaplanmadı.",
+  "ui.job.kind.fertilise": "Gübreleme",
+  "ui.job.kind.irrigate": "Sulama",
+  "ui.job.kind.sow": "Ekim",
+  "ui.job.kind.harvest": "Hasat",
+  "ui.job.kind.other": "Diğer iş"
 }

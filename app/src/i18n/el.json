@@ -541,7 +541,7 @@
   "today.urgent": "Το πιο σημαντικό σήμερα",
   "today.urgent.unknown": "Άγνωστη αναμονή · {parcel}",
   "today.urgent.wait": "Αναμονή λήγει {d} · {crop} · {parcel}",
-  "today.urgent.action": "Δείτε τους ψεκασμούς",
+  "today.urgent.action": "Δείτε γιατί",
   "history.title": "Ιστορικό",
   "job.add.plus": "+ Ανάθεση δουλειάς",
   "today.jobs.none": "Σήμερα δεν υπάρχουν δουλειές.",
