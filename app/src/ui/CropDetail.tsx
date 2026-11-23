@@ -10,6 +10,7 @@ import { CropIcon, DetailSheet, ListRow } from './ds';
 import { TapNum } from './cx/TapNum';
 import { Icon } from './icons/Icon';
 import { CropTips } from './CropTips';
+import { CropPace } from './CropPace';
 import { ParcelSketch } from './ParcelSketch';
 import { plantingMarks } from '../plantings/marks';
 import { STATUS_KEYS } from './PlantingForm';
@@ -24,7 +25,7 @@ const DASH = '—';
 
 /** Tapped from the crops list (prototype «Crop detail»): the crop, its plantings per parcel, and the LAST spraying on it with the waiting period read from the record. Information only. */
 export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) {
-  const plantings = useRows('plantings'); const parcels = useRows('parcels'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const products = useRows('products');
+  const plantings = useRows('plantings'); const parcels = useRows('parcels'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const products = useRows('products'); const harvests = useRows('job_harvest');
   const weather = useWeather();
   const [showPlantingSource, setShowPlantingSource] = useState(false);
   const [showTips, setShowTips] = useState(false);
@@ -50,6 +51,7 @@ export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) 
         {typeof crop.latin === 'string' && crop.latin !== '' && <p class="latin" lang="la">{crop.latin}</p>}
       </header>
       <button type="button" class="btn secondary crop-tips-open" data-testid="crop-tips-open" onClick={() => setShowTips(true)}><Icon name="bulb" /><span>{t('ui.crop.tips')}</span></button>
+      <CropPace crop={crop} plantings={plantings.rows ?? []} harvests={harvests.rows ?? []} />
       {showTips && <CropTips slug={text(crop.slug)} onClose={() => setShowTips(false)} />}
       {mine.length > 0 && <div class="crop-detail-source">
         <TapNum caption={t('detail.plantings')} source={{ value: formatQty(mine.length), count: mine.length }} onOpen={() => setShowPlantingSource(true)} />
