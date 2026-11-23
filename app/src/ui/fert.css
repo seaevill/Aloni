@@ -1,5 +1,0 @@
-/* «Πρόγραμμα λίπανσης» */
-.fert { display: grid; gap: var(--sp-2); margin-block: var(--sp-3); }
-.fert small { display: block; }
-.fert-quote { margin: 0; white-space: pre-wrap; }
-.fert-form { display: grid; gap: var(--sp-2); }
