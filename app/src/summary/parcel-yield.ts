@@ -16,27 +16,39 @@ export function ratio(a: string, b: string): string {
   return frac === '' ? String(whole) : `${String(whole)}.${frac}`;
 }
 
-export interface YieldSource { id: string; at: string; crates: string; plantingId: string }
+export interface YieldSource { id: string; at: string; crates: string; plantingId: string; /** the planting was archived later: the harvest still happened and still counts */ archived: boolean }
+export interface CropYield { cropId: string; crates: number; perStrema: string }
+// SCOPE (stated on the screen, never implied otherwise): CUMULATIVE = every non-deleted harvest ever recorded on this parcel, all crops, all seasons, archived plantings included
+// (archiving a planting hides it from the lists; it does not undo a harvest that happened). `byCrop` = the same records split by crop, each ÷ the PARCEL's area (not the planting's area).
+// There is no season in the data model, so no season-specific yield exists here. Deleted harvest rows are never counted.
 export type ParcelYield =
-  | { known: true; crates: number; area: string; perStrema: string; sources: YieldSource[] }
+  | { known: true; crates: number; area: string; perStrema: string; sources: YieldSource[]; byCrop: CropYield[]; archivedCrates: number }
   | { known: false; reason: 'no-area' | 'no-records' | 'unreadable'; sources: YieldSource[]; unreadable: number };
 
 export function parcelYield(parcel: Row, plantings: readonly Row[], harvests: readonly Row[]): ParcelYield {
-  const ids = new Set(plantings.filter((p) => p.parcel_id === parcel.id && !p.deleted_at).map((p) => text(p.id)));
+  const own = plantings.filter((p) => p.parcel_id === parcel.id);
+  const ids = new Set(own.map((p) => text(p.id)));
   const mine = harvests.filter((h) => !h.deleted_at && ids.has(text(h.planting_id)));
-  const sources: YieldSource[] = []; let crates = 0; let unreadable = 0;
+  const sources: YieldSource[] = []; let crates = 0; let archivedCrates = 0; let unreadable = 0;
+  const perCrop = new Map<string, number[]>();
   for (const h of mine) {
     const n = parseWhole<'Crates'>(text(h.crates_str));
     if (!n.known) { unreadable += 1; continue; }
+    const planting = own.find((p) => p.id === h.planting_id);
+    const archived = Boolean(planting?.deleted_at);
     crates += n.value;
-    sources.push({ id: text(h.id), at: text(h.harvested_at), crates: text(h.crates_str).trim(), plantingId: text(h.planting_id) });
+    if (archived) archivedCrates += n.value;
+    const crop = text(planting?.crop_id);
+    perCrop.set(crop, [...(perCrop.get(crop) ?? []), n.value]);
+    sources.push({ id: text(h.id), at: text(h.harvested_at), crates: text(h.crates_str).trim(), plantingId: text(h.planting_id), archived });
   }
   sources.sort((a, b) => b.at.localeCompare(a.at));
   if (mine.length === 0) return { known: false, reason: 'no-records', sources, unreadable };
   if (unreadable > 0) return { known: false, reason: 'unreadable', sources, unreadable };
   const area = parseDecimal(text(parcel.area_str));
   if (!area.known || !(parseFloat(area.value) > 0)) return { known: false, reason: 'no-area', sources, unreadable };
-  return { known: true, crates, area: area.value, perStrema: ratio(String(crates), area.value), sources };
+  const byCrop = [...perCrop].map(([cropId, parts]): CropYield => { const c = parts.reduce((a, b) => a + b, Number('0')); return { cropId, crates: c, perStrema: ratio(String(c), area.value) }; });
+  return { known: true, crates, area: area.value, perStrema: ratio(String(crates), area.value), sources, byCrop, archivedCrates };
 }
 
 // «Νερό που καταγράφηκε»: the m³ the owner wrote in his irrigation records of this parcel, and m³ per στρέμμα. If one irrigation record has only minutes (no m³) the total is NOT shown as complete:

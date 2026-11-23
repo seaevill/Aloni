@@ -34,11 +34,24 @@ test('real farm: 0,8 στρ. and two harvest records (30 + 20 crates) show 62,5 
   await expect(page.getByTestId('yield-value')).toContainText('50 κλούβες σε 0,8');
   await page.getByTestId('yield-sources').locator('summary').click();
   await expect(page.getByTestId('yield-source')).toHaveCount(2);
+  await expect(page.getByTestId('yield-value')).toContainText('όλες οι καλλιέργειες και όλες οι εποχές');   // the scope is on the screen
   await expect(page.getByTestId('parcel-yield')).not.toContainText('kg');
   await page.getByTestId('parcel-yield').scrollIntoViewIfNeeded();
   await page.screenshot({ path: `${SHOTS}/yield-after-62-5.png` });
   await page.reload();
   await openParcel(page);
   await expect(page.getByTestId('yield-value')).toContainText('62,5');
+  // archiving the planting hides it from the lists but the harvests happened: they still count, tagged
+  await page.locator('nav.tabs [data-tab="crops"]').click();
+  await page.getByTestId('crop-open').first().click();
+  await page.getByTestId('planting').getByRole('button', { name: 'Αρχειοθέτηση' }).click();
+  await expect(page.getByTestId('planting')).toHaveCount(0);
+  await openParcel(page);
+  await expect(page.getByTestId('yield-value')).toContainText('62,5 κλούβες/στρ.');
+  await expect(page.getByTestId('yield-archived')).toContainText('Περιλαμβάνει 50 κλούβες από αρχειοθετημένες φυτείες');
+  await page.getByTestId('yield-bycrop').locator('summary').click();
+  await expect(page.getByTestId('yield-crop')).toContainText('Σπανάκι: 62,5 κλούβες/στρ. (50 κλούβες)');
+  await page.getByTestId('parcel-yield').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: `${SHOTS}/yield-archived-scope.png` });
   expect(errors).toEqual([]);
 });

@@ -114,7 +114,7 @@ export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: {
       })}
       {cropTips && <CropTips slug={text(cropTips.slug)} onClose={() => setCropTips(undefined)} />}
       <FieldWorkCard parcelId={String(parcel.id)} days={days} />
-      <ParcelYield parcel={parcel} plantings={plantings.rows ?? []} harvests={harvests.rows ?? []} cropName={(pid) => nameOf(crops.rows?.find((c) => c.id === mine.find((p) => p.id === pid)?.crop_id) ?? {})} />
+      <ParcelYield parcel={parcel} plantings={plantings.rows ?? []} harvests={harvests.rows ?? []} cropName={(pid) => nameOf(crops.rows?.find((c) => c.id === (plantings.rows ?? []).find((p) => p.id === pid)?.crop_id) ?? {})} cropById={(cid) => nameOf(crops.rows?.find((c) => c.id === cid) ?? {})} />
       <WaterCard days={days} crops={waterCrops} />
       <h2>{t('detail.sprays')}</h2>
       {last.length === 0 && <p class="muted">{t('spray.empty')}</p>}

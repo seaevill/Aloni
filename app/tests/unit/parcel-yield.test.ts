@@ -22,8 +22,26 @@ describe('parcelYield: crates per στρέμμα from the stored harvest records
     expect(parcelYield({ id: 'p1', farm_id: 'f', area_str: '0' }, [planting('a')], [harvest('h1', 'a', '5')])).toMatchObject({ known: false, reason: 'no-area' });
     expect(parcelYield(parcel, [planting('a')], [harvest('h1', 'a', '5'), harvest('h2', 'a', 'πολλές')])).toMatchObject({ known: false, reason: 'unreadable', unreadable: 1 });
   });
-  it('an archived planting is left out, like in the parcel timeline', () => {
-    expect(parcelYield(parcel, [planting('a', { deleted_at: 'x' })], [harvest('h1', 'a', '5')])).toMatchObject({ known: false, reason: 'no-records' });
+  it('an archived planting still counts (the harvest happened): it is tagged, summed apart as archivedCrates, and part of the cumulative total', () => {
+    const r = parcelYield(parcel, [planting('a'), planting('old', { deleted_at: '2026-10-01T00:00:00Z', crop_id: 'c2' })], [harvest('h1', 'a', '30'), harvest('h2', 'old', '20')]);
+    expect(r).toMatchObject({ known: true, crates: 50, perStrema: '62.5', archivedCrates: 20 });
+    expect(r.sources.find((s) => s.id === 'h2')).toMatchObject({ archived: true });
+    expect(r.sources.find((s) => s.id === 'h1')).toMatchObject({ archived: false });
+  });
+  it('a DELETED harvest of an archived planting is still not counted', () => {
+    const r = parcelYield(parcel, [planting('old', { deleted_at: 'x' })], [harvest('h', 'old', '9', { deleted_at: 'y' })]);
+    expect(r).toMatchObject({ known: false, reason: 'no-records' });
+  });
+  it('the per-crop split is the same records: it sums to the cumulative total, each crop ÷ the PARCEL area', () => {
+    const r = parcelYield(parcel, [planting('a', { crop_id: 'c1' }), planting('b', { crop_id: 'c2' })], [harvest('h1', 'a', '30'), harvest('h2', 'b', '12'), harvest('h3', 'a', '8')]);
+    expect(r).toMatchObject({ known: true, crates: 50 });
+    if (!r.known) return;
+    expect(r.byCrop.map((c) => [c.cropId, c.crates, c.perStrema])).toEqual([['c1', 38, '47.5'], ['c2', 12, '15']]);
+    expect(r.byCrop.reduce((a, c) => a + c.crates, Number('0'))).toBe(r.crates);
+  });
+  it('the harvests of another parcel never enter (cross-parcel isolation), even when the planting ids are similar', () => {
+    const r = parcelYield(parcel, [planting('a'), { id: 'a2', farm_id: 'f', parcel_id: 'other' }], [harvest('h1', 'a', '30'), harvest('x', 'a2', '1000')]);
+    expect(r).toMatchObject({ known: true, crates: 30 });
   });
 });
 
