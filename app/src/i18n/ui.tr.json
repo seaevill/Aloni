@@ -337,5 +337,9 @@
   "ui.out.loaded": "Yüklendi",
   "ui.out.done": "Yüklendi ✓ · geri al",
   "ui.out.left": "{n} kasa · yüklenen {out}",
-  "ui.out.over": "bilinmiyor – yüklemeler ({out}) depoyu aşıyor"
+  "ui.out.over": "bilinmiyor – yüklemeler ({out}) depoyu aşıyor",
+  "ui.product.info.label": "Ürün bilgisi",
+  "ui.crop.ring.title": "Kaydedilmiş ekim ayları",
+  "ui.crop.ring.none": "bu bitki için ekim kaydı yok",
+  "ui.crop.ring.sr": "Ekim ayları: {months}"
 }
