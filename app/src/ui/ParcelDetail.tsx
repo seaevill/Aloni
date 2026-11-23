@@ -10,6 +10,7 @@ import { dayOf, parseDays, provenance } from '../weather/strip';
 import type { Row } from '../db/schema';
 import { BackBar } from './BackBar';
 import { ParcelSketch } from './ParcelSketch';
+import { WaterCard } from './WaterCard';
 import { plantingMarks } from '../plantings/marks';
 import { CropTips } from './CropTips';
 import { DetailSheet, SheetFact } from './ds';
@@ -98,6 +99,7 @@ export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: {
         </button>;
       })}
       {cropTips && <CropTips slug={text(cropTips.slug)} onClose={() => setCropTips(undefined)} />}
+      <WaterCard days={days} crops={[...new Map(mine.map((p) => [String(p.crop_id), crops.rows?.find((c) => c.id === p.crop_id)]).filter((e): e is [string, Row] => e[1] !== undefined)).values()]} />
       <h2>{t('detail.sprays')}</h2>
       {last.length === 0 && <p class="muted">{t('spray.empty')}</p>}
       {last.map((s) => <div class="card" key={s.id} data-testid="detail-spray">{nameOf(products.rows?.find((p) => p.id === s.product_id) ?? {})}<small>{formatDateTime(text(s.sprayed_at))}</small></div>)}

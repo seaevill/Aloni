@@ -1,6 +1,6 @@
 // Weather for the screens: what the `weather` table holds (per parcel, one entry per day), shown as it is. Nothing here decides or advises anything;
 // a day without data stays empty («—»). Values are kept exactly as stored (no rounding, no invented fill-in).
-export interface Day { date: string; tmin?: number; tmax?: number; rain?: number; gust?: number; wind?: number; rh?: number; issued?: string; model?: string }
+export interface Day { date: string; tmin?: number; tmax?: number; rain?: number; /** reference evapotranspiration, mm/day (only when the stored weather carries it; the free source does not) */ et0?: number; gust?: number; wind?: number; rh?: number; issued?: string; model?: string }
 
 const num = (v: unknown): number | undefined => (typeof v === 'number' && Number.isFinite(v) ? v : undefined);
 
@@ -11,7 +11,7 @@ export function parseDays(days: readonly unknown[] | undefined): Day[] {
     if (typeof d !== 'object' || d === null) continue;
     const r = d as Record<string, unknown>;
     if (typeof r.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(r.date)) continue;
-    out.push({ date: r.date, tmin: num(r.tmin), tmax: num(r.tmax), rain: num(r.rain_mm), gust: num(r.gust_kmh), wind: num(r.wind_kmh), rh: num(r.rh_pct), issued: typeof r.issued_at === 'string' ? r.issued_at : undefined, model: typeof r.model === 'string' ? r.model : undefined });
+    out.push({ date: r.date, tmin: num(r.tmin), tmax: num(r.tmax), rain: num(r.rain_mm), et0: num(r.et0_mm), gust: num(r.gust_kmh), wind: num(r.wind_kmh), rh: num(r.rh_pct), issued: typeof r.issued_at === 'string' ? r.issued_at : undefined, model: typeof r.model === 'string' ? r.model : undefined });
   }
   return out;
 }
