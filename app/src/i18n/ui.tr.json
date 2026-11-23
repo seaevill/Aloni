@@ -406,5 +406,17 @@
   "ui.cut.sprout": "yeni sürgün: gün {n}",
   "ui.cut.local": "Yalnızca bu telefonda saklanır; henüz sunucuya gönderilmiyor.",
   "ui.cut.sep": " · {method}",
+  "ui.rec.title": "Tekrarlayan işler",
+  "ui.rec.none": "Tekrarlayan iş yok.",
+  "ui.rec.every": "Her {day}",
+  "ui.rec.next": "Sonraki: {day}",
+  "ui.rec.remove": "Sil",
+  "ui.rec.add": "＋ Yeni tekrarlayan iş",
+  "ui.rec.day": "Haftanın günü",
+  "ui.rec.what": "Hangi iş (örn. Tarla kontrolü)",
+  "ui.rec.err": "İşin ne olduğunu yaz.",
+  "ui.rec.save": "Kaydet",
+  "ui.rec.local": "Yalnızca bu telefonda saklanır; henüz sunucuya gönderilmiyor.",
+  "ui.rec.today": "Bugünün tekrarlayan işleri",
   "ui.guide.source": "{source} ↗"
 }

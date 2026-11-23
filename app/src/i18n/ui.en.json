@@ -406,5 +406,17 @@
   "ui.cut.sprout": "new growth: day {n}",
   "ui.cut.local": "Kept on this phone only; not sent to the server yet.",
   "ui.cut.sep": " · {method}",
+  "ui.rec.title": "Repeating jobs",
+  "ui.rec.none": "No repeating job.",
+  "ui.rec.every": "Every {day}",
+  "ui.rec.next": "Next: {day}",
+  "ui.rec.remove": "Delete",
+  "ui.rec.add": "＋ New repeating job",
+  "ui.rec.day": "Day of the week",
+  "ui.rec.what": "What job (e.g. Field check)",
+  "ui.rec.err": "Write what the job is.",
+  "ui.rec.save": "Save",
+  "ui.rec.local": "Kept on this phone only; not sent to the server yet.",
+  "ui.rec.today": "Repeating jobs today",
   "ui.guide.source": "{source} ↗"
 }
