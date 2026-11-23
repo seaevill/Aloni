@@ -11,6 +11,7 @@ import { archived, restored } from '../parcels/parcel'; // generic: set / clear 
 import { validDate } from '../plantings/planting';
 import { put } from '../repo';
 import type { Row } from '../db/schema';
+import { SeasonCalendar } from './SeasonCalendar';
 import { CropDetail } from './CropDetail';
 import { Chip, CropIcon, PageHead, type Tone } from './ds';
 import { EditTrail } from './EditTrail';
@@ -32,6 +33,7 @@ const statusText = (v: unknown): string => {
 
 /** Crops in use, each with its plantings (parcel · area · sowing date · status). Adding is only for the real farm. */
 export function Crops() {
+  const [calendar, setCalendar] = useState(false);
   const [query, setQuery] = useState('');
   const [adding, setAdding] = useState(false); const [editing, setEditing] = useState<Row | undefined>(undefined); const [shownId, setShownId] = useState<string | undefined>(undefined);
   const crops = useRows('crops');
@@ -39,7 +41,8 @@ export function Crops() {
   const parcels = useRows('parcels');
   const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const labels = useRows('label_uses');
   const liveParcels = parcels.rows?.filter((p) => !p.deleted_at) ?? [];
-  useBack(adding || !!editing || !!shownId, () => { setAdding(false); setEditing(undefined); setShownId(undefined); }, adding || !!editing);
+  useBack(calendar || adding || !!editing || !!shownId, () => { setCalendar(false); setAdding(false); setEditing(undefined); setShownId(undefined); }, adding || !!editing);
+  if (calendar) return <SeasonCalendar onBack={() => setCalendar(false)} />;
   if (adding) return <PlantingForm parcels={liveParcels} onDone={() => setAdding(false)} />;
   if (editing) return <PlantingForm parcels={liveParcels} existing={editing} onDone={() => setEditing(undefined)} />;
   const shownCrop = crops.rows?.find((c0) => c0.id === shownId);
@@ -88,10 +91,13 @@ export function Crops() {
   // Only crops that are really planted are listed (label details for a crop do not make it «grown»); the demo shows its whole list.
   const shown = demo ? crops.rows : crops.rows?.filter((c) => live.some((p) => p.crop_id === c.id));
   const filtered = shown?.filter((r) => matchesRecord(query, nameOf(r)));
+  const calendarButton = <button type="button" class="btn secondary" data-testid="season-calendar-open"
+    onClick={() => setCalendar(true)}>{t('ui.seasonCalendar.title')}</button>;
   if (!demo && parcels.rows && crops.rows && liveParcels.length === 0) {
     return (
       <section aria-label={t('crops.title')}>
         <PageHead heading={t('ui.tab.crops')} />
+        {calendarButton}
         <EmptyState message={t('planting.noParcels')} actionLabel={t('parcel.add')} onAction={() => { tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
       </section>
     );
@@ -103,7 +109,10 @@ export function Crops() {
       {canAdd && live.length > 0 && <button class="btn" data-testid="planting-add" onClick={() => setAdding(true)}>{t('planting.add')}</button>}
       <Status q={{ ...crops, rows: shown && shown.length === 0 ? [] : shown ?? null }} message={t('list.empty')}
         action={canAdd ? { label: t('planting.add'), run: () => setAdding(true) } : undefined} />
-      {shown && shown.length > 0 && <RecordSearch query={query} onQuery={setQuery} empty={filtered?.length === 0} />}
+      {shown && <div class="season-list-tools">
+        {shown.length > 0 && <RecordSearch query={query} onQuery={setQuery} empty={filtered?.length === 0} />}
+        {calendarButton}
+      </div>}
       {filtered?.map((c) => {
         const chip = chipOf(c);
         return <div class="card crop-card" key={c.id}>
