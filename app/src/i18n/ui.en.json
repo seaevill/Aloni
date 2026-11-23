@@ -334,6 +334,7 @@
   "ui.cust.week": "This week: {n} crates",
   "ui.cust.week.none": "This week: —",
   "ui.cust.imported": "from Κλούβες",
+  "ui.bell.claimed": "{worker} took the job",
   "ui.product.info.label": "Product information",
   "ui.crop.ring.title": "Recorded sowing months",
   "ui.crop.ring.none": "no sowing recorded for this crop",
