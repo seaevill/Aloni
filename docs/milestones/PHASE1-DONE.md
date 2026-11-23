@@ -6,7 +6,7 @@ Phase 1 = Bora (owner) + his workers, his own farm. Each line says what is PROVE
 - ✅ Sign-in, invitation by e-mail / QR / link, worker-only screens, sync engine, outbox, «not accepted» sheet, 3-state marks: `live-auth`, `live-invite`, `live-golive`, `live-firstfarm`, `live-worker`, `live-job-cycle`, `live-worker-flow`, `live-sync-marks` (e2e with a stand-in server) and `live-rehearsal.test.ts` (real sync engine, two local databases) — `docs/perf/live-rehearsal-2026-11-21.md`.
 - ✅ Production holds 0001–0035 (workflow «Supabase migrate (manual)», commit d17f739, run 45015103642, verify_applied green).
 - 🟡 The real try-out on two real phones is Bora's: STATUS top, «LIVE açma» (6 steps) and «İşçiyi davet et» (5 steps); RUNBOOK §13 and §12c.
-- 🟡 The worker's harvest destination, customers and the worker card reach the OWNER'S phone only after 0036 and 0037 are applied (today they stay on the phone that typed them and the screens say so).
+- 🟡 The worker's harvest destination, customers and the worker card reach the OWNER'S phone only after 0036 and 0037 are applied (today they stay on the phone that typed them and the screens say so). The phone side is MERGED but dormant (#455 builders/contract/Dexie v9, #456 server mode behind the readiness confirmation «0037», #464 two-phone e2e `live-owner-records.spec.ts`: customers and orders reach the server, a worker phone gets none). #460 (EXPECTED_MIGRATION 0037) waits for Bora's «Yükleme tamam: 0036+0037 production'da.»
 
 ## b) Spray → harvest lock with a signed label; the agronomist's approval is recorded in the app — ✅
 - Lock by the recorded waiting period and the SIGNED label, no override: `harvest.spec` (blocked until the clock passes; an unsigned label = PHI unknown = blocked even far in the future), `spray.spec`, `labeluse.spec` (only a complete label can be signed; editing a value removes the signature), `worker-view.spec` (worker «Έγινε» lock), SQL `0032_planting_gate` / `0033_label_approvals` tests (`m14_approval.sql`).
@@ -38,6 +38,9 @@ Phase 1 = Bora (owner) + his workers, his own farm. Each line says what is PROVE
 
 ## Server files written after the 0036/0037 pair (SQL only, NOT merged, Codex reviews, Bora applies in number order)
 0038 job board (#427), 0039 notes for the next days (#429), 0040 planting outline (#430), 0041 season target (#431): each with real-role tests; MUSTs of the Codex reviews are fixed and re-checks are requested. The phone side of each (contract, local stores, screens) ships after the file is applied.
+
+## Overnight 2026-11-22/23 (merged)
+#465 STATUS, #448 product/fertiliser cards (R16/R19), #447 sowing-month ring (R14), #466/#468 time-of-day test fixes, #443 harvest destinations, #442 review notes, #441 crop list, #440 owner accessibility, #437 nitrogen inputs, #422 product knowledge, #394/#387/#395 Codex clock hygiene, standalone views, test gallery, #446 docs, #453 store «Φορτώθηκε» (local), #455/#456/#464 owner records server mode (dormant), #457 Orders four weeks, #462 bell «claimed», #444 readiness. Still not done: store-out on the server (0042), v2 parity of Χωράφια/Αποθήκη/Μητρώο beyond what Codex merged, Σήμερα «spray window / frost / disease» cards (need signed rules).
 
 ## Still needed from Bora (single steps)
 1. Apply 0036 and 0037 when «main yeşil» is written (workflow «Supabase migrate (manual)»). 2. Weather: RUNBOOK §14a, say «tamam» first. 3. LIVE opening and the worker try-out on two phones. 4. The agronomist's visit (sign the real labels). 5. Lawyer's answers for the privacy notice.
