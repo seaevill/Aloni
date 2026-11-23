@@ -463,5 +463,9 @@
   "ui.work.save": "Kaydet",
   "ui.work.cancel": "İptal",
   "ui.work.local": "Yalnızca bu telefonda saklanır; henüz sunucuya gönderilmiyor.",
-  "ui.work.note": "Yalnızca kayıt: uygulama gübre, miktar ya da program önermez."
+  "ui.work.note": "Yalnızca kayıt: uygulama gübre, miktar ya da program önermez.",
+  "ui.pdf.unknown": "bilinmiyor",
+  "ui.pdf.contact": "Adres {address} · Telefon {phone}",
+  "ui.pdf.place": "Parsel ve bitki",
+  "ui.pdf.wait": "Bekleme süreleri"
 }
