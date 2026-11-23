@@ -469,5 +469,14 @@
   "ui.work.save": "Save",
   "ui.work.cancel": "Cancel",
   "ui.work.local": "Kept on this phone only; not sent to the server yet.",
-  "ui.work.note": "A record only: the app does not suggest a fertiliser, a quantity or a schedule."
+  "ui.work.note": "A record only: the app does not suggest a fertiliser, a quantity or a schedule.",
+  "ui.year.title": "This year – last year",
+  "ui.year.nolast": "No harvest records from last year.",
+  "ui.year.this": "This year",
+  "ui.year.last.same": "Last year, same day",
+  "ui.year.last.total": "Last year, total",
+  "ui.year.crates": "{n} crates",
+  "ui.year.chart.alt": "Crates per month, this year and last year",
+  "ui.year.legend": "Per month: light green = last year, dark = this year. From your own records only.",
+  "ui.year.unreadable": "{k} records were not counted (unreadable crate number)."
 }
