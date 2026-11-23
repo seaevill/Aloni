@@ -89,7 +89,7 @@ money_entries   id, farm_id, occurred_on (date, Europe/Athens), direction (in|ou
                 note?, photo_media_id?, doc_ref? (invoice/receipt number typed by Bora, free text),
                 amends_id?, created_at/by, server_seq ...                -- append-only; a correction is a new row
 prices          id, farm_id, crop_id, customer_id?, price_cents_per_crate, valid_from   -- variable (Bora 2026-11-23): per customer × crop, changes over time; history kept, newest valid_from wins; only a suggestion, the price is confirmed on each load
-payments        id, farm_id, customer_id, paid_on, amount_cents (int > 0), method? (cash|bank|other), note?, amends_id?, ...   -- a received payment; also writes the money_entries 'in' row? NO: see below
+payments        id, farm_id, customer_id, paid_on, amount_cents (int > 0), method? (cash|bank|other), note?, amends_id?, ...   -- a received payment; reduces the customer's balance, writes no income row (see Income timing)
 stock_lots      + unit_cost_cents?, total_cost_cents?   (typed at Receive; unknown allowed)
 customer_orders + price_cents_per_crate? (copied from prices when loaded; editable before loading)
 ```
