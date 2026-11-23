@@ -384,7 +384,7 @@
   "ui.water.need": "Ανάγκη (ET0 × Kc)",
   "ui.water.gap": "Διαφορά",
   "ui.water.mm": "{n} mm",
-  "ui.water.unknown": "άγνωστο – {why}",
+  "ui.water.unknown": "Νερό: άγνωστο – {why}",
   "ui.water.why.et0": "ο καιρός μας δεν δίνει εξατμισοδιαπνοή",
   "ui.water.why.kc": "λείπει ο συντελεστής Kc",
   "ui.water.why.rain": "λείπουν ημέρες βροχής",
@@ -551,5 +551,18 @@
   "ui.fert.bag.label": "Βάρος σακιού που αγοράζετε, kg (προαιρετικό)",
   "ui.fert.calc.kg": "Για την έκταση της φυτείας: {kg} kg",
   "ui.fert.calc.bags": "Για την έκταση της φυτείας: {kg} kg = τουλάχιστον {n} σακιά",
-  "ui.fert.calc.noarea": "Λείπει η έκταση της φυτείας: δεν υπολογίζεται."
+  "ui.fert.calc.noarea": "Λείπει η έκταση της φυτείας: δεν υπολογίζεται.",
+  "ui.yield.title": "Παραγωγικότητα",
+  "ui.yield.value": "{n} κλούβες/στρ.",
+  "ui.yield.of": "{crates} κλούβες σε {area}",
+  "ui.yield.unknown": "άγνωστο – {why}",
+  "ui.yield.why.area": "το εμβαδόν του χωραφιού λείπει",
+  "ui.yield.why.records": "δεν υπάρχουν καταγραφές συγκομιδής",
+  "ui.yield.why.unreadable": "{n} καταγραφή(ές) με αδιάβαστο αριθμό κλουβών",
+  "ui.yield.sources": "Από ποιες καταγραφές ({n})",
+  "ui.yield.crates": "{n} κλούβες",
+  "ui.water.value": "{n} m³/στρ. νερό",
+  "ui.water.of": "{m3} m³ σε {records} καταγραφές ποτίσματος",
+  "ui.water.why.records": "δεν υπάρχουν καταγραφές ποτίσματος",
+  "ui.water.why.m3": "{n} καταγραφή(ές) χωρίς m³"
 }

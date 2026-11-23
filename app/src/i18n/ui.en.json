@@ -384,7 +384,7 @@
   "ui.water.need": "Need (ET0 × Kc)",
   "ui.water.gap": "Difference",
   "ui.water.mm": "{n} mm",
-  "ui.water.unknown": "unknown – {why}",
+  "ui.water.unknown": "Water: unknown – {why}",
   "ui.water.why.et0": "our weather source gives no evapotranspiration",
   "ui.water.why.kc": "the Kc is missing",
   "ui.water.why.rain": "some days have no rain data",
@@ -551,5 +551,18 @@
   "ui.fert.bag.label": "Weight of the bag you buy, kg (optional)",
   "ui.fert.calc.kg": "For this planting's area: {kg} kg",
   "ui.fert.calc.bags": "For this planting's area: {kg} kg = at least {n} bags",
-  "ui.fert.calc.noarea": "The planting's area is missing: not calculated."
+  "ui.fert.calc.noarea": "The planting's area is missing: not calculated.",
+  "ui.yield.title": "Productivity",
+  "ui.yield.value": "{n} crates/στρ.",
+  "ui.yield.of": "{crates} crates on {area}",
+  "ui.yield.unknown": "unknown – {why}",
+  "ui.yield.why.area": "the parcel area is missing",
+  "ui.yield.why.records": "there are no harvest records",
+  "ui.yield.why.unreadable": "{n} record(s) with an unreadable crate number",
+  "ui.yield.sources": "Which records ({n})",
+  "ui.yield.crates": "{n} crates",
+  "ui.water.value": "{n} m³/στρ. water",
+  "ui.water.of": "{m3} m³ in {records} irrigation records",
+  "ui.water.why.records": "there are no irrigation records",
+  "ui.water.why.m3": "{n} record(s) without m³"
 }

@@ -384,7 +384,7 @@
   "ui.water.need": "İhtiyaç (ET0 × Kc)",
   "ui.water.gap": "Fark",
   "ui.water.mm": "{n} mm",
-  "ui.water.unknown": "bilinmiyor – {why}",
+  "ui.water.unknown": "Su: bilinmiyor – {why}",
   "ui.water.why.et0": "hava kaynağımız buharlaşma vermiyor",
   "ui.water.why.kc": "Kc eksik",
   "ui.water.why.rain": "bazı günlerin yağmur verisi yok",
@@ -551,5 +551,18 @@
   "ui.fert.bag.label": "Aldığın çuvalın ağırlığı, kg (isteğe bağlı)",
   "ui.fert.calc.kg": "Bu ekimin alanı için: {kg} kg",
   "ui.fert.calc.bags": "Bu ekimin alanı için: {kg} kg = en az {n} çuval",
-  "ui.fert.calc.noarea": "Ekimin alanı eksik: hesaplanmadı."
+  "ui.fert.calc.noarea": "Ekimin alanı eksik: hesaplanmadı.",
+  "ui.yield.title": "Verimlilik",
+  "ui.yield.value": "{n} kasa/dönüm",
+  "ui.yield.of": "{area} üzerinde {crates} kasa",
+  "ui.yield.unknown": "bilinmiyor – {why}",
+  "ui.yield.why.area": "parsel alanı yok",
+  "ui.yield.why.records": "hasat kaydı yok",
+  "ui.yield.why.unreadable": "{n} kayıtta kasa sayısı okunamıyor",
+  "ui.yield.sources": "Hangi kayıtlardan ({n})",
+  "ui.yield.crates": "{n} kasa",
+  "ui.water.value": "{n} m³/dönüm su",
+  "ui.water.of": "{records} sulama kaydında {m3} m³",
+  "ui.water.why.records": "sulama kaydı yok",
+  "ui.water.why.m3": "{n} kayıtta m³ yok"
 }
