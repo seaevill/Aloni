@@ -463,5 +463,17 @@
   "ui.work.save": "Save",
   "ui.work.cancel": "Cancel",
   "ui.work.local": "Kept on this phone only; not sent to the server yet.",
-  "ui.work.note": "A record only: the app does not suggest a fertiliser, a quantity or a schedule."
+  "ui.work.note": "A record only: the app does not suggest a fertiliser, a quantity or a schedule.",
+  "ui.walk.title": "Walk boundary with GPS",
+  "ui.walk.help": "Walk around the parcel. Tap at each corner. GPS runs only when you tap.",
+  "ui.walk.add": "Add point",
+  "ui.walk.reading": "Reading position…",
+  "ui.walk.missing": "unknown – no GPS fix",
+  "ui.walk.accuracy": "GPS accuracy ±{n} m",
+  "ui.walk.poor": "The reported accuracy cannot distinguish this corner from the previous one. The point was skipped.",
+  "ui.walk.undo": "Remove last point",
+  "ui.walk.areaMissing": "unknown – a valid boundary is needed",
+  "ui.walk.typed": "Entered area · {area}",
+  "ui.walk.unknown": "unknown – no entered area",
+  "ui.walk.use": "Use boundary"
 }
