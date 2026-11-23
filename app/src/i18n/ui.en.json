@@ -478,5 +478,14 @@
   "ui.year.crates": "{n} crates",
   "ui.year.chart.alt": "Crates per month, this year and last year",
   "ui.year.legend": "Per month: light green = last year, dark = this year. From your own records only.",
-  "ui.year.unreadable": "{k} records were not counted (unreadable crate number)."
+  "ui.year.unreadable": "{k} records were not counted (unreadable crate number).",
+  "ui.water.m3": "{n} m³",
+  "ui.water.why.area": "the area is missing",
+  "ui.water.why.flow": "the flow is missing",
+  "ui.water.vneed": "Volume of the need",
+  "ui.water.vgap": "Volume of the difference",
+  "ui.water.hours": "Hours of irrigation (for the need)",
+  "ui.water.hours.v": "{n} hours",
+  "ui.water.flow.edit": "Irrigation flow (m³/hour)",
+  "ui.water.flow.label": "Flow (m³ per hour)"
 }
