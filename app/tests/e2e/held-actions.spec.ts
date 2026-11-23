@@ -1,11 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
 import { iphone } from './helpers/iphone';
+import { installClock } from './helpers/clock';
 
 // a safety test is never retried: a failure that comes and goes is a real race, not noise (see playwright.config.ts)
 test.describe.configure({ retries: 0 });
 
 // «Saved» means saved (T4): the worker's action is kept at the tap and written at the next start even if the app is closed inside the 10 seconds; «Αναίρεση» leaves nothing.
 const demoWorker = async (page: Page) => {
+  await installClock(page);
   await iphone(page);
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-counts')).toBeVisible();
@@ -25,7 +27,7 @@ test('a skip: reload after 2 seconds and the skip is recorded (the job is not ba
   await page.getByTestId('job-skip').first().click();
   await page.getByTestId('skip-rain').click();
   await expect(page.getByTestId('toast')).toBeVisible();
-  await page.waitForTimeout(2000);
+  await page.clock.runFor(2000);
   await page.reload();                                                           // the app is closed inside the 10 seconds
   await expect(page.getByTestId('worker-app')).toBeVisible();
   await expect.poll(skipped).toBe(before + 1);
@@ -35,7 +37,7 @@ test('a skip: reload after 2 seconds and the skip is recorded (the job is not ba
   if (n > 0) {
     await page.getByTestId('job-skip').first().click(); await page.getByTestId('skip-rain').click();
     await page.getByTestId('toast').getByRole('button').click();
-    await page.waitForTimeout(500);
+    await page.clock.runFor(500);
     expect(await skipped()).toBe(before + 1);
     await expect(jobs).toHaveCount(n);
   }
@@ -51,7 +53,7 @@ test('an observation: reload after 2 seconds and it is one row; the toast does n
   await page.getByTestId('observe-save').click();
   const toast = await page.getByTestId('toast').boundingBox();
   expect(toast!.y).toBeLessThan(120);                                              // at the top, clear of the buttons below
-  await page.waitForTimeout(2000);
+  await page.clock.runFor(2000);
   await page.reload();
   await expect(page.getByTestId('worker-app')).toBeVisible();
   await expect.poll(rows).toBe(before + 1);

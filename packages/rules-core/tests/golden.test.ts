@@ -239,6 +239,26 @@ describe('golden cases', () => {
     const held = runRules({ ...s, asOf: '2026-11-08T09:00:00Z' }).filter((o) => o.rule_id === 'PHI-GUARD');
     expect(held.map((o) => o.kind)).toEqual(['block']);
   });
+  it('R03 exposes recorded nitrogen inputs without a decision when unsigned', () => {
+    const fixture = cases.find((c) => c.id === 'R03-n-leek-fertigation')!;
+    const parcel = fixture.inputs.parcels[0];
+    const reading = parcel.soil_test;
+    const nitrogen = [{ parcelId: parcel.id, sampledOn: reading.date, nitrogenPpm: reading.N_ppm }];
+    const rules = snapshot(fixture);
+    const statuses: Snapshot['ruleStatus'][] = [{ N: 'unsigned' }, {}];
+    for (const ruleStatus of statuses) {
+      const output = runRules({ ...rules, ruleStatus, nitrogen }).filter((r) => r.rule_id === 'N');
+      expect(output).toMatchObject([{
+        kind: 'info', notify: false, vetoes: [], parcel_ids: [parcel.id],
+        values: { badge: 'not_signed_off', sampled_on: reading.date, nitrogen_ppm: reading.N_ppm },
+      }]);
+      expect(output[0].severity).toBeUndefined();
+      expect(output[0].window).toBeUndefined();
+      expect(output[0].values.dose_per_str).toBeUndefined();
+    }
+    const missing = runRules({ ...rules, ruleStatus: {}, nitrogen: [{ parcelId: parcel.id }] });
+    expect(missing.find((r) => r.rule_id === 'N')?.values).toMatchObject({ nitrogen_ppm: null });
+  });
   it('SOW exposes inputs only without a signature and does not fill missing rainfall', () => {
     const s = snapshot(cases.find((c) => c.id === 'R04-sow-spinach-south-plain')!);
     const unsigned = runRules({ ...s, ruleStatus: {} }).filter((out) => out.rule_id === 'SOW');

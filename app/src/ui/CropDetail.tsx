@@ -8,6 +8,7 @@ import type { Row } from '../db/schema';
 import { BackBar } from './BackBar';
 import { CropIcon, DetailSheet, ListRow } from './ds';
 import { TapNum } from './cx/TapNum';
+import { Icon } from './icons/Icon';
 import { CropTips } from './CropTips';
 import { ParcelSketch } from './ParcelSketch';
 import { plantingMarks } from '../plantings/marks';
@@ -48,7 +49,7 @@ export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) 
         <h1 class="ds-title" tabIndex={-1}>{nameOf(crop)}</h1>
         {typeof crop.latin === 'string' && crop.latin !== '' && <p class="latin" lang="la">{crop.latin}</p>}
       </header>
-      <button type="button" class="btn secondary crop-tips-open" data-testid="crop-tips-open" onClick={() => setShowTips(true)}>{t('ui.crop.tips')}</button>
+      <button type="button" class="btn secondary crop-tips-open" data-testid="crop-tips-open" onClick={() => setShowTips(true)}><Icon name="bulb" /><span>{t('ui.crop.tips')}</span></button>
       {showTips && <CropTips slug={text(crop.slug)} onClose={() => setShowTips(false)} />}
       {mine.length > 0 && <div class="crop-detail-source">
         <TapNum caption={t('detail.plantings')} source={{ value: formatQty(mine.length), count: mine.length }} onOpen={() => setShowPlantingSource(true)} />

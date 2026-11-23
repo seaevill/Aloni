@@ -336,5 +336,9 @@
   "ui.cust.imported": "from Κλούβες",
   "ui.fw.title": "Orders per week (4 weeks)",
   "ui.fw.note": "Crates that are ordered. Not a production forecast and not an order to sow.",
-  "ui.fw.none": "—"
+  "ui.fw.none": "—",
+  "ui.product.info.label": "Product information",
+  "ui.crop.ring.title": "Recorded sowing months",
+  "ui.crop.ring.none": "no sowing recorded for this crop",
+  "ui.crop.ring.sr": "Sowing months: {months}"
 }
