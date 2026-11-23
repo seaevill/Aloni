@@ -1,12 +1,12 @@
 # DURUM – Aloni (Bora'nın sayfası)
 
-**Sabah özeti (2026-11-22, Türkçe):**
-1. **Canlı site bu ortamdan açılamadı** (ağ izni yok): kanıtlar canlı değil, **yerel üretim derlemesi** ekran görüntüleridir; senin telefonundaki gerçek kontrol ayrıdır.
-2. **Gündüz turunda eklenen (merge edildi):** R3, R8, R9–R12, R14–R25, R30 (kısmen) — ayrıntı aşağıdaki tabloda; geri tuşu hatası düzeltildi; açılış boyutu sınırı 160 KB'ye alındı (DECISIONS). **Gece merge edilenler:** Demo canlı (hava 5 gün, etiketler ~%90 imzalı + 5 bilinçli örnek, kilitli işçi işi), KPI tek kaynak, Φυτά listesi (resim+ad+tek çip), parsel krokisi genel bakışı, Μητρώο, hasat kaynağı, sekme kontrastı, işçi daveti QR, zil, kayıt işaretleri, sezon hedefi, hesap silme, iPhone kurulum rehberi, «Τι νέο», hata raporu.
-3. **Yapılmadı (R tablosunda FAIL):** R8, R10–R12, R14–R16, R18–R25, R30 — çoğu Codex içeriğine (bitki/ilaç bilgisi) veya SQL'e bağlı; bu gece yetişmedi.
-4. **Senden tek adımlar:** (a) hava için RUNBOOK §14a (yalnızca «tamam» deyince); (b) 0035 yüklendi ✔; sırada 0036 (#362) ve 0037 (#368) Codex yeniden-kontrolü sonrası.
-5. **Açık PR'lar:** yalnızca SQL (#271, #362, #368) + Codex'in kuyrukta bekleyenleri (#381–#383, #386, #387) ve Dependabot #305/#306.
-6. **Dürüst not:** puanları kendime vermedim; PASS = yerel ekran görüntüsü + test; FAIL = yapılmadı.
+**Sabah özeti (2026-11-23, Türkçe):**
+1. **Gece canlıya hazır hale gelenler (main'e merge edildi, hepsi CI yeşil):** ürün/gübre bilgi kartları (R16/R19), ekim ayı halkası (R14), Αποθήκη «Φορτώθηκε» onayı (depo düşer, bu telefonda), Orders dört haftalık tablo, Άλλα menüsü yeniden sıralandı, zil «iş alındı» bildirimi, Codex'in ürün bilgisi, hasat hedefleri, erişilebilirlik ve hazırlık kartı işleri; sunucuya bağlama kodu (müşteri/sipariş/işçi kartı) hazır ama **kapalı** (0037 onayına kadar).
+2. **main yeşil; 0038–0041 yüklemeye hazır** (iş panosu, gün notları, ekim sınırı, ürün hedefleri). Yükleme: «Supabase migrate (manual)» workflow'u, sırayla.
+3. **Senden tek adımlar:** (a) 0036+0037'yi yükle, sonra «Yükleme tamam: 0036+0037 production'da.» yaz (ben #460'ı merge edip sunucu modunu açarım); (b) sonra 0038–0041; (c) hava için RUNBOOK §14a («tamam» de); (d) LIVE açma ve işçi denemesi iki telefonda; (e) γεωπόνος ziyareti (gerçek etiketleri imzalat).
+4. **Açık PR'lar:** #460 (BEKLETİLİYOR: 0037 yüklenince) ve Dependabot #306 (testleri kırmızı, dokunmadım). SQL PR'ları main'de; production'a yalnızca senin workflow'unla gider.
+5. **Yapılmadı / kısmen:** v2 prototip benzerliği ekran ekran sürüyor (Σήμερα'daki «spray window / frost / disease» kartları imzalı kural ister, uydurmadım); depodan çıkışın sunucu tarafı (0042) yazılmadı; Hint dilindeki metinleri bir Hintçe bilen kişi kontrol etmeli.
+6. **Dürüst not:** puanları kendime vermedim; PASS = yerel ekran görüntüsü + test. Cloudflare «Workers Builds» PR dallarında kırmızı görünüyor (ana dalda yeşil); nedenini panelden göremiyorum, kod derlemesi yerelde geçiyor.
 
 ## Güncel (2026-11-22 öğleden sonra)
 - **main yeşil (sha 6a296e2), 0038–0041 yüklemeye hazır** (iş panosu, gün notları, ekim sınırı, ürün hedefleri). 0036+0037 için yükleme onayını bekliyorum; 0038–0041 sonraki paket. Kuyruk yeniden açıldı (SQL dışı işler).
