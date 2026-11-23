@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 // Design-system gallery (D2): the eight status chips and the tags, at 375 px.
 // icon, word and fill all differ between tones (colour is never the only signal); every chip is 32 px high; text contrast >= 7:1 (composited over white).

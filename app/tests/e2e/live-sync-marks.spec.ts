@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './helpers/test';
 
 // E3 sync trust: every record says where it is. A parcel the server confirmed says «στάλθηκε»; a parcel written in airplane mode says «μη συγχρονισμένο» and flips to «στάλθηκε» when the signal comes back;
 // one the server refuses says «δεν έγινε δεκτό» and a tap opens the plain explanation (what, why, what to do, and that it is still on the phone). Against the MOCK backend (nothing leaves the machine).

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // T18: the technical items live in a collapsed «Για προγραμματιστές» section at the bottom of Άλλα.

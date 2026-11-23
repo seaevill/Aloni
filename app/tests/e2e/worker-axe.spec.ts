@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 test('worker jobs, observations and harvest meet the axe gate in Hindi at 375 px', async ({ page }) => {

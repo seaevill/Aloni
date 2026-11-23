@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 // Προϊόν › «Υπολογισμός ψεκαστικού»: the dose of a SIGNED label × the area, exactly; an unsigned or incomplete label gives no number; the grower types the water and the tank.
 test('the Demo copper product: a signed label gives exact numbers, an unsigned one stays closed; tanks come from the grower\'s own water and tank numbers', async ({ page }) => {

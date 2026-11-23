@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { fixClock } from './helpers/clock';
 
 test('the Demo stock product opens recorded label and balance facts', async ({ page, baseURL }) => {

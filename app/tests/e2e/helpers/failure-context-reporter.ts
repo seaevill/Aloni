@@ -9,7 +9,9 @@ export default class FailureContext implements Reporter {
     const ctx = result.attachments.find((a) => a.name === 'error-context' && a.path !== undefined);
     let body = '(no page snapshot attached)';
     if (ctx?.path !== undefined) { try { body = readFileSync(ctx.path, 'utf8').split('\n').slice(0, 130).join('\n'); } catch { body = '(snapshot unreadable)'; } }
-    process.stdout.write(`\n=== FAILURE CONTEXT: ${test.titlePath().slice(1).join(' › ')} (attempt ${result.retry + 1}, ${result.duration} ms)\n${body}\n=== END FAILURE CONTEXT\n`);
+    const blog = result.attachments.find((a) => a.name === 'browser-log');
+    const events = blog?.body !== undefined ? blog.body.toString('utf8') : '(none)';
+    process.stdout.write(`\n=== FAILURE CONTEXT: ${test.titlePath().slice(1).join(' › ')} (attempt ${result.retry + 1}, ${result.duration} ms)\n--- browser log\n${events}\n--- page snapshot\n${body}\n=== END FAILURE CONTEXT\n`);
   }
   printsToStdio(): boolean { return false; }
   onEnd(_result: FullResult): void { /* nothing to summarise */ }

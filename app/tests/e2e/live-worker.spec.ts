@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './helpers/test';
 import { athensInput, fixClock } from './helpers/clock';
 
 // A worker's own phone against a MOCK backend (the e2e build): the invitation is claimed at the first sign-in, the farm's id is taken, the server's rows arrive by pull and the worker

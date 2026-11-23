@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // D5: the tab bar uses the shared icon set, the crops tab is «Φυτά», and no tab label wraps at 320 px in el, tr or en; the active tab keeps its lime pill.

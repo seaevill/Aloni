@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // T11: a phone in Hindi starts in Hindi; a worker's language choice does not change the owner's language; the «your data» notice is shown once.

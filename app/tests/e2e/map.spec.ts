@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // The parcel map at 375 px. The base map itself comes from the internet, so the style is a tiny local stub. A browser without WebGL (some CI machines) shows a plain message instead of a map:

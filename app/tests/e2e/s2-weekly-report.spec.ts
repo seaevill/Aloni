@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { fixClock } from './helpers/clock';
 
 test('the weekly report opens on the Demo farm and presents a printable date range', async ({ page, baseURL }) => {

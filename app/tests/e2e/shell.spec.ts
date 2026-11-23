@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { APP_NAME } from '../../src/config';
 
 test('shell: five tabs in Greek, 375 px, no horizontal scroll', async ({ page }) => {

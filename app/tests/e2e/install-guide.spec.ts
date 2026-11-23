@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 // iPhone install guide: on iPhone Safari (not yet on the Home Screen) Σήμερα offers «Προσθήκη στην αρχική οθόνη» — five steps with pictures and the warning that Safari and the Home Screen app keep SEPARATE data.
 // It is not shown on other phones or inside the installed app.

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // T19: a photo with GPS in its EXIF block is re-encoded: the stored bytes carry no APP1 / «Exif» segment (no location leaves the phone, FACTS: no location tracking).

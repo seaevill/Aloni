@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './helpers/test';
 import { athensDateTime, TEST_NOW } from '../helpers/clock';
 import { fixClock } from './helpers/clock';
 import { setup } from './helpers/farm';

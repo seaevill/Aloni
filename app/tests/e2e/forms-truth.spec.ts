@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // T17b: an absurd area is refused with a reason; with only one parcel the planting form has it preselected.

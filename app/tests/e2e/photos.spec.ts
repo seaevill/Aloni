@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 /** A real PNG made in the browser: `w`×`h`, a gradient shifted by `seed` so that different seeds are different pictures. */

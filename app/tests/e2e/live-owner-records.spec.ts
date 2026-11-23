@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { fixClock } from './helpers/clock';
 import { Server, mockFor, ownerInvitesWorker, signIn } from './helpers/mock-server';
 

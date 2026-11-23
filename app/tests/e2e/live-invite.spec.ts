@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { Server, mockFor, ownerInvitesWorker } from './helpers/mock-server';
 
 // E4: the owner shows a QR code (and a copyable link) for a worker; it opens the app in the worker's language, Hindi unless the owner picks another. The link carries only the language.

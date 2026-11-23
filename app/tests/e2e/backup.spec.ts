@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // Real data in (the data controller details), export a file, open the app on a "new phone" (a fresh browser profile), restore, same data.

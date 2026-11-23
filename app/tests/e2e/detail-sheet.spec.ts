@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // DetailSheet: the shared bottom sheet. Handle, 24 px top corners, soft shadow, heading 20/800 with the crop drawing, a 56 px close button; Back, Escape, the scrim and a pull on the handle close it; it slides up once (not under reduced motion);

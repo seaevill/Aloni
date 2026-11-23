@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 test('sign-in readiness: lists what is missing, never switches anything on, and says ready only when all five are done', async ({ page }) => {

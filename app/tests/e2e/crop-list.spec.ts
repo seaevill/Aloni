@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // R13 Φυτά list for people who do not like reading: a picture, the name and ONE chip per crop, at least six crops in the first screen; the plantings (field, area, waiting line, edit) are one tap away on the crop page.

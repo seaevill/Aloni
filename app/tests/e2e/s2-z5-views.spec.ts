@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { mountViewGallery } from './fixtures/z5-route';
 
 test('the standalone views render on an isolated test route', async ({ page, baseURL }, testInfo) => {

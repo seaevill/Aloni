@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { athensInput, fixClock } from './helpers/clock';
 import { iphone } from './helpers/iphone';
 

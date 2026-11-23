@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // D13: the share card. Owner only; a preview of one 1080 x 1350 PNG made on the phone; the share sheet or a download; no network request at all; the handle is optional and off by default.

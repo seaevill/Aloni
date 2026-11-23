@@ -1,5 +1,5 @@
 /// <reference path="../../src/pwa/update.ts" />
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 import { installClock } from './helpers/clock';
 

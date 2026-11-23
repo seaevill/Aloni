@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 test('spray groups and explicit selection fit at 320 px without picking a dose', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 667 });

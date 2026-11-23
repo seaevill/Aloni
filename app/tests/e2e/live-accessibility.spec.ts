@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 test('live-build email and code steps meet the axe gate at 375 px', async ({ page }) => {
   await page.route('**/mock/auth/v1/otp', (route) => route.fulfill({ json: {} }));

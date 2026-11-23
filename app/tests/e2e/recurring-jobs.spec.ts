@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 // Εργασίες › «Επαναλαμβανόμενες»: written once, it shows its next day, and on its weekday it is on the worker screen of the same phone. Kept on the phone, and says so.
 test('a Monday rule: «Κάθε Δευ», the next day, it comes back after a reload, and the worker screen shows it today (a Monday)', async ({ page }) => {

@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { eachScreen, iphone } from './helpers/iphone';
 
 // UX bar (every screen × el/tr/en × empty/demo): no sideways scroll, tap targets >= 56 × 44 px, text >= 14 px, no serious axe issue.

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 // Φυτά › a planting › «Πρόγραμμα λίπανσης»: the agronomist's plan in HIS words (a day after sowing + his line); the app suggests nothing, reminders stay off. Kept on the phone.
 test('the agronomist\'s line is kept exactly as written, with its day; reminders are off; the app proposes no fertiliser or quantity', async ({ page }) => {

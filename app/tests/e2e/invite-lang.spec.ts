@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 // E4: an invitation link (…/?lang=hi) opens the app in that language on a phone that has no saved language; a saved language always wins; the language can still be changed.
 test.use({ viewport: { width: 375, height: 812 }, locale: 'el-GR' });

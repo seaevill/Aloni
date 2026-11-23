@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { fixClock } from './helpers/clock';
 
 test('the detail offers a 14-day parcel weather panel', async ({ page }) => {

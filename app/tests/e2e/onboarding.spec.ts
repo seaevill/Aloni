@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 // D9: owner first-run onboarding: three skippable cards, a local seen-flag only, then the normal screen. A farm that already has a field never sees it; the worker route never renders it.
 test.use({ storageState: { cookies: [], origins: [] } });   // a brand-new phone

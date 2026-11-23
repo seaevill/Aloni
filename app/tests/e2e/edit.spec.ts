@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 test('edit a parcel and a planting append-only: a reason is required, the new values show, the previous ones stay in the change history and on Ιστορικό', async ({ page }) => {

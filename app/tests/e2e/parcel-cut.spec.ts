@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 // Χωράφι › «Κοπή / καθαρισμός»: one record (method + day) starts the «νέα βλάστηση: ημέρα N» counter and appears in the parcel's timeline. Kept on this phone, and it says so.
 test('a cut with the shredder two days ago: the counter says day 2, the timeline has the cut, it survives a reload, undo removes it', async ({ page }) => {

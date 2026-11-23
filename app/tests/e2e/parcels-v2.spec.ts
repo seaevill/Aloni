@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 test('Demo parcel overview shows labelled sketches and opens the matching detail at 320 px', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 667 });

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // T9: no ISO dates on the owner's Σήμερα, the spray history, the register or the worker view; jobs sit under «Καθυστερημένες / Σήμερα / Αύριο»; one lock message under the one job.

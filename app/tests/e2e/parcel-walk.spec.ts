@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 test('walking an offline parcel rejects an overlapping fix and preserves the typed area', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });

@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { mountViewGallery } from './fixtures/z5-route';
 
 for (const width of [320, 375]) {

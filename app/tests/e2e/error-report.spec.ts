@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // A local error log: an error is kept on the phone only; Info → «Αναφορά σφάλματος» copies a plain report with ids scrubbed; nothing is sent over the network.

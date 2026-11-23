@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 test('the wordmark «Αλώνι» is in the Σήμερα header and with the version in Άλλα', async ({ page }) => {

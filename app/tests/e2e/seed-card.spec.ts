@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 // Φυτά › a crop › «Σπόρος»: the seed rate the grower writes × each planting's area; no rate = unknown; the app proposes no rate.
 test('seed: unknown until the grower writes a rate, then rate × area per planting, exactly; a bad rate is refused', async ({ page }) => {

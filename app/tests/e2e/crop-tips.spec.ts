@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 test('crop page has a «Συμβουλές» button opening the sourced general-information card', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });

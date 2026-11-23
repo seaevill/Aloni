@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 test('the Demo register promotes record identity and retains draft and export controls at 320 px', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 667 });

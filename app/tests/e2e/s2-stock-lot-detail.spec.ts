@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { fixClock } from './helpers/clock';
 
 test('Demo lot details show the recorded ledger with no adjustment action', async ({ page }) => {

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 test('More prioritizes register and orders, with labelled targets at 320 px', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 667 });

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // UX1 step 2 (docs/milestones/UX1.md): on Σήμερα the plantings that are free to cut are folded into ONE line when there are many, so the ones that need attention (waiting period running, unknown) come first and are never hidden.

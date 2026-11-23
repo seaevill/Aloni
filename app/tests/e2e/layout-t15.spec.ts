@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // T15: the five tab labels never overlap (375 and 320 px), no button word is cut in the middle, and the area «3,5 στρ.» stays on one line.

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { fixClock } from './helpers/clock';
 
 test('a Demo report opens a neutral measurement explanation at 320 px', async ({ page }) => {

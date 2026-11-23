@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 test('worker roster offline: a name only, kept after reload, archive and undo, no dialog; not in the demo', async ({ page, context }) => {

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // T12: the worker view in Hindi: crop names have a Hindi name beside the Greek one, the dose reads «0,2»-style (comma) and no Greek sentence appears outside elements marked lang="el".

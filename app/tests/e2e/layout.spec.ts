@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 // Greek (and TR/EN) strings run long: nothing may stick out of the 375 px screen or force sideways scrolling.
 const TABS = ['today', 'crops', 'parcels', 'stock', 'more'] as const;

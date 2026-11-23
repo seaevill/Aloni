@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { fixClock } from './helpers/clock';
 
 test('Demo records can be filtered by Latin transliteration or accentless Greek', async ({ page, baseURL }) => {

@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './helpers/test';
 import { fillStart, setup, spray } from './helpers/farm';
 import { fixClock } from './helpers/clock';
 import { iphone } from './helpers/iphone';

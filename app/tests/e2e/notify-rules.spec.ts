@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 test('Ειδοποιήσεις: all 16 rules are unsigned – listed as information only, none may notify', async ({ page }) => {

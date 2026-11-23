@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { Server, mockFor, ownerInvitesWorker, signIn } from './helpers/mock-server';
 
 // Tasks cycle against the shared mock server (two phones): the owner plans and assigns a spray job on Σήμερα → «Εργασίες» ->

@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './helpers/test';
 
 // The live features against a MOCK backend (the e2e build, port 4174): e-mail code sign-in and the owner's invitation of a worker.
 // The mock answers what Supabase would; nothing leaves the machine.

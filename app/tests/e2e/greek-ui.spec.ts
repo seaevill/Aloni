@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { APP_NAME } from '../../src/config';
 
 // The Greek UI chrome must not contain English words (the v2 prototype showed an English toast in Greek mode).

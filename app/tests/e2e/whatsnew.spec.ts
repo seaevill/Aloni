@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // «Τι νέο»: the release notes open from their address: the newest release first, exactly three plain lines each.

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { fixClock } from './helpers/clock';
 
 test('the crop detail shows its illustration and opens the recorded planting source', async ({ page, baseURL }) => {

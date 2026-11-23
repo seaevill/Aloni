@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 test('the spray register (demo): marked «ΠΡΟΣΧΕΔΙΟ», every field, CSV with the draft notice, printable, no sideways scroll at 375 px', async ({ page }) => {

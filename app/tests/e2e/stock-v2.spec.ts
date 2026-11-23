@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 test('Demo stock cards show the recorded group and substance at 320 px', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 667 });

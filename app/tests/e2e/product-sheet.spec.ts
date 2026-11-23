@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { fixClock } from './helpers/clock';
 
 test('a spray in Ιστορικό opens the product page: label purpose, active substance, waits, stock, general card, no advice', async ({ page }) => {

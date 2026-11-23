@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { eachScreen, iphone } from './helpers/iphone';
 
 // Accessibility (D15): the phone's «larger text» setting at 200 % must not push any screen sideways. Fonts are rem tokens, so the root size scales them.

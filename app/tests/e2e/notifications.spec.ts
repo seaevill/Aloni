@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 test('Ειδοποιήσεις: the quiet hours are kept (default 21:00–05:30), a wrong time is refused, and without a push key the switch says «not available yet» and requests nothing', async ({ page }) => {

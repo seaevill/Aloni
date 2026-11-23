@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './helpers/test';
 
 // The go-live wizard against the MOCK backend (the e2e build): the button is closed until every item is ok; signing in alone sends NOTHING; pressing it sends an empty call first, then
 // the queued records, then pulls; a server error switches nothing on.

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // T13: the harvest picker (demo, worker view, 375 px): no two chips with the same text, an empty save says why and moves focus, the chosen chip is filled, and the Harvest tab stays after a save.

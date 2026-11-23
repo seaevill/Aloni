@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // T20: a screen opened from a list takes the focus on its heading and gives it back on Back; the toast container exists before any toast; Escape closes the photo viewer.

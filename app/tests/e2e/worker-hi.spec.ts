@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // Hindi on the worker screens: Devanagari shown with the bundled font (offline), the safety texts TOGETHER with the Greek ones, the translation marked «προς έλεγχο»,

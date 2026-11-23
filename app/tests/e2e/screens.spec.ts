@@ -1,5 +1,5 @@
 import { mkdirSync } from 'node:fs';
-import { test } from '@playwright/test';
+import { test } from './helpers/test';
 import { eachScreen, iphone } from './helpers/iphone';
 
 // Full-page PNG of every screen × language × (empty | demo). CI always uploads them as the artifact `screens-<PR#>`; no pixel diffs yet.

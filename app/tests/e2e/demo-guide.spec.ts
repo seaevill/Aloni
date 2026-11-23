@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 // The Demo farm holds the two cases the farmers asked about (fictional, Demo only): parsley with its pace, fertiliser plan and repeating jobs; a field cleared with the shredder («νέα βλάστηση: ημέρα 2»).
 test('Demo: parsley has a harvest pace and a fertiliser plan; the cleared field counts new growth; repeating jobs are there', async ({ page }) => {

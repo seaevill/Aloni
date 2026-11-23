@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // Every badge (the red «αναμονή έως…» pill on a cut card, the green signed one, the amber and grey ones) carries a DRAWN icon (a mask), not a text glyph: a «×» in a red pill looked like a close button.

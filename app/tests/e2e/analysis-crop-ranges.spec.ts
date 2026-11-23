@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { fixClock } from './helpers/clock';
 
 test('a pH reading lists, per crop of that parcel, the general literature range WITH its source, or says there is no source', async ({ page }) => {

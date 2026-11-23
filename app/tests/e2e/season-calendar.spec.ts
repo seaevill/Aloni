@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 
 test('opens a Greek twelve-month calendar for the Demo farm from Φυτά', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './helpers/test';
 import { iphone } from './helpers/iphone';
 
 // T14: the demo farm is writable (practice) and can be reset; nothing of it is queued for sync.

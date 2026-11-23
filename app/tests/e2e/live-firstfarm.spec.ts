@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './helpers/test';
 
 // «Δημιουργία κτήματος» against the MOCK backend (the e2e build): a signed-in person with NO farm sets up the first one through the app (migration 0034). Nothing leaves the machine.
 const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
