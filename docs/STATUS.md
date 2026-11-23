@@ -1,12 +1,12 @@
 # DURUM – Aloni (Bora'nın sayfası)
 
-**Sabah özeti (2026-11-23, Türkçe):**
-1. **Gece canlıya hazır hale gelenler (main'e merge edildi, hepsi CI yeşil):** ürün/gübre bilgi kartları (R16/R19), ekim ayı halkası (R14), Αποθήκη «Φορτώθηκε» onayı (depo düşer, bu telefonda), Orders dört haftalık tablo, Άλλα menüsü yeniden sıralandı, zil «iş alındı» bildirimi, Codex'in ürün bilgisi, hasat hedefleri, erişilebilirlik ve hazırlık kartı işleri; sunucuya bağlama kodu (müşteri/sipariş/işçi kartı) hazır ama **kapalı** (0037 onayına kadar).
-2. **main yeşil; 0038–0041 yüklemeye hazır** (iş panosu, gün notları, ekim sınırı, ürün hedefleri). Yükleme: «Supabase migrate (manual)» workflow'u, sırayla.
-3. **Senden tek adımlar:** (a) 0036+0037'yi yükle, sonra «Yükleme tamam: 0036+0037 production'da.» yaz (ben #460'ı merge edip sunucu modunu açarım); (b) sonra 0038–0041; (c) hava için RUNBOOK §14a («tamam» de); (d) LIVE açma ve işçi denemesi iki telefonda; (e) γεωπόνος ziyareti (gerçek etiketleri imzalat).
-4. **Açık PR'lar:** #460 (BEKLETİLİYOR: 0037 yüklenince) ve Dependabot #306 (testleri kırmızı, dokunmadım). SQL PR'ları main'de; production'a yalnızca senin workflow'unla gider.
-5. **Yapılmadı / kısmen:** v2 prototip benzerliği ekran ekran sürüyor (Σήμερα'daki «spray window / frost / disease» kartları imzalı kural ister, uydurmadım); depodan çıkışın sunucu tarafı (0042) yazılmadı; Hint dilindeki metinleri bir Hintçe bilen kişi kontrol etmeli.
-6. **Dürüst not:** puanları kendime vermedim; PASS = yerel ekran görüntüsü + test. Cloudflare «Workers Builds» PR dallarında kırmızı görünüyor (ana dalda yeşil); nedenini panelden göremiyorum, kod derlemesi yerelde geçiyor.
+**Öğleden sonra özeti (2026-11-23, Türkçe):**
+1. **Canlıda (main'e girdi, CI yeşil):** hasat temposu · kendi kayıtlarından verim · ürün rehberi (yalnızca kaynağı okunmuş aralıklar) · kesim/temizlik kaydı · haftalık su kartı · gübre planı (mühendisin sözleri, fotoğraflı) · tekrarlayan işler · ΚΑΕΚ kartı · gübreleme/sulama kaydı (o günün havasıyla) · kasa etiketi (QR) · bu yıl–geçen yıl karşılaştırma · dört hesaplayıcı (sulama m³/saat, tohum kg, ilaçlama tankı, gübre çuvalı).
+2. **Hesaplayıcı kuralı:** yalnızca senin yazdığın ya da imzalı etiketteki rakamı çarpar; ilaç etiketi imzasızsa hiç sayı vermez; eksik girdi = «άγνωστο», asla 0; yalnızca tank/çuval ADEDİ yukarı yuvarlanır, doz asla.
+3. **Telefonda dene:** Φυτά › Μαϊντανός (tempo, tohum, gübre planı, rehber, bu yıl–geçen yıl) · Χωράφια › parsel (ΚΑΕΚ, kesim, gübreleme/sulama, su kartı) · Αποθήκη › ilaç › «Υπολογισμός ψεκαστικού» · bir hasat kaydı › «Ετικέτα κασέλας» · Σήμερα › Εργασίες › «Επαναλαμβανόμενες». Demo çiftlikte hepsi örnekle dolu.
+4. **Şimdilik yalnızca o telefonda saklananlar** (ekranda da yazıyor): kesim, gübreleme/sulama, ΚΑΕΚ, gübre planı, tekrarlayan işler, hesaplayıcı girdileri. Sunucuya bağlamak için SQL **0042** yazıldı (#500, MERGE EDİLMEDİ, bağımsız inceleme: açık MUST yok).
+5. **Senden tek adımlar:** (a) 0036–0042'yi «Supabase migrate (manual)» ile sırayla yükle (0036+0037 önce, sonra «Yükleme tamam» yaz; 0042'den ÖNCE telefon tarafını yayınlayacağım, bu yüzden 0042'yi en son yükle); (b) Codex'in 4 işi (ilaçlama defteri PDF, GPS sınır, sezon takvimi, More menüsü) merge ediliyor, telefonda dene; (c) **para defteri PR'ları #484/#485** (F1 Ταμείο) başka bir ekipten geldi, onayın olmadan merge etmiyorum: «evet/hayır» de.
+6. **Açık PR'lar:** #500 (SQL, bekliyor) · #460 (0037 yüklenince) · #484/#485 (para defteri, onayını bekliyor) · #471/#480/#481/#488 (yalnızca belge) · Dependabot #306 (testleri kırmızı).
 
 ## Güncel (2026-11-22 öğleden sonra)
 - **main yeşil (sha 6a296e2), 0038–0041 yüklemeye hazır** (iş panosu, gün notları, ekim sınırı, ürün hedefleri). 0036+0037 için yükleme onayını bekliyorum; 0038–0041 sonraki paket. Kuyruk yeniden açıldı (SQL dışı işler).
