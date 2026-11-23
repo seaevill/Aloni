@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
-import { activeFarm, db } from '../db';
-import { loadWork, type Work } from '../fieldwork/fieldwork';
+import type { Work } from '../fieldwork/fieldwork';
 import { formatDateTime, t, type I18nKey } from '../i18n';
 import { formatArea, formatDerived, formatQty } from '../i18n/format';
 import { parcelWater, parcelYield } from '../summary/parcel-yield';
@@ -12,10 +10,7 @@ const YIELD_WHY: Record<string, I18nKey> = { 'no-area': 'ui.yield.why.area', 'no
 const WATER_WHY: Record<string, I18nKey> = { 'no-area': 'ui.yield.why.area', 'no-records': 'ui.water.why.records', 'missing-m3': 'ui.water.why.m3' };
 const one = (s: string): string => formatDerived(parseFloat(s), 1);
 
-export function ParcelYield({ parcel, plantings, harvests, cropName, cropById }: { parcel: Row; plantings: readonly Row[]; harvests: readonly Row[]; cropName: (plantingId: string) => string; cropById: (cropId: string) => string }) {
-  const farm = activeFarm.value;
-  const [work, setWork] = useState<Work[]>([]);
-  useEffect(() => { void loadWork(db, farm).then(setWork); }, [farm, parcel.id]);
+export function ParcelYield({ parcel, plantings, harvests, work, cropName, cropById }: { parcel: Row; work: readonly Work[]; plantings: readonly Row[]; harvests: readonly Row[]; cropName: (plantingId: string) => string; cropById: (cropId: string) => string }) {
   const y = parcelYield(parcel, plantings, harvests);
   const w = parcelWater(parcel, work);
   const waterWhy = w.known ? '' : t(WATER_WHY[w.reason] as I18nKey, { n: String(w.missing) });
