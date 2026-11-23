@@ -9,6 +9,7 @@ test('demo: the 7-day number opens the table that adds up to it; the same number
   const errors = await iphone(page);
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-cut7')).toBeVisible();
+  await expect(page.getByTestId('today-cut7').locator('strong')).toHaveText(/\d/);          // the harvest rows load after the tile first shows: wait for the number (the Demo always has crates in the last 7 days)
   const kpi = Number((await page.getByTestId('today-cut7').locator('strong').innerText()).replace(/\D/g, ''));
   await page.getByTestId('today-cut7').click();
   const sheet = page.getByTestId('sheet-crates');
