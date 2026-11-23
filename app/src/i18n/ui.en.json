@@ -346,6 +346,16 @@
   "ui.crop.ring.title": "Recorded sowing months",
   "ui.crop.ring.none": "no sowing recorded for this crop",
   "ui.crop.ring.sr": "Sowing months: {months}",
+  "ui.guide.open": "Crop guide",
+  "ui.guide.title": "Crop guide",
+  "ui.guide.banner": "Information only, not signed by an agronomist. It decides nothing.",
+  "ui.guide.sow": "From sowing to the 1st cut",
+  "ui.guide.cuts": "Cuts per crop",
+  "ui.guide.ph": "Soil pH",
+  "ui.guide.none": "no source",
+  "ui.guide.v.ph": "pH {low}–{high}",
+  "ui.guide.v.days": "{low}–{high} days",
+  "ui.guide.v.cuts": "{low}–{high} cuts",
   "ui.water.title": "Water this week",
   "ui.water.rain": "Rain (7 days)",
   "ui.water.need": "Need (ET0 × Kc)",
@@ -372,5 +382,6 @@
   "ui.cut.none": "No cut is recorded on this parcel.",
   "ui.cut.sprout": "new growth: day {n}",
   "ui.cut.local": "Kept on this phone only; not sent to the server yet.",
-  "ui.cut.sep": " · {method}"
+  "ui.cut.sep": " · {method}",
+  "ui.guide.source": "{source} ↗"
 }
