@@ -28,4 +28,10 @@ describe('notices', () => {
     const rows = [job({ id: 'open', created_at: '2026-11-21T09:00:00.000Z' }), job({ id: 'taken', worker_id: 'w2', created_at: '2026-11-21T09:00:00.000Z' }), job({ id: 'old-open', created_at: '2026-11-20T09:00:00.000Z' })];
     expect(notices(rows, { role: 'worker', workerId: 'w1', seenAt: seen }).map((x) => x.jobId)).toEqual(['open']);
   });
+
+  it('owner: a job that was open when he last looked and has a worker now was TAKEN; one that was never seen open is not', () => {
+    const rows = [job({ id: 'was-open', worker_id: 'w2', created_at: '2026-11-20T09:00:00.000Z', updated_at: '2026-11-21T09:00:00.000Z' }), job({ id: 'always-assigned', worker_id: 'w2', created_at: '2026-11-20T09:00:00.000Z', updated_at: '2026-11-21T09:00:00.000Z' }), job({ id: 'still-open', created_at: '2026-11-20T09:00:00.000Z' })];
+    const n = notices(rows, { role: 'owner', seenAt: seen }, new Set(['was-open', 'still-open']));
+    expect(n.map((x) => [x.kind, x.jobId])).toEqual([['claimed', 'was-open']]);
+  });
 });

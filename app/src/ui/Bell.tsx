@@ -3,7 +3,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { activeFarm, db } from '../db';
 import { putLocal } from '../repo';
 import { formatDateTime, t } from '../i18n';
-import { notices, type NoticeWho } from '../summary/notices';
+import { notices, openIds, type NoticeWho } from '../summary/notices';
 import { DetailSheet } from './ds/DetailSheet';
 import { ListRow } from './ds/Surfaces';
 import { Icon } from './icons/Icon';
@@ -32,10 +32,25 @@ function useSeen(id: string): [string | undefined, (at: string) => void] {
   return [seenAt.value[key], (at) => { seenAt.value = { ...seenAt.value, [key]: at }; void putLocal(db, key, at); }];
 }
 
+const openKey = (who: string): string => `bell_open:${activeFarm.value}:${who}`;
+/** The open jobs as the owner last saw them (device-local). First time: now, so nothing is called «taken» that was never seen open. */
+function useOpenSeen(id: string, jobs: ReadonlyArray<Record<string, unknown>> | null): [ReadonlySet<string> | undefined, () => void] {
+  const [set, setSet] = useState<ReadonlySet<string> | undefined>(undefined);
+  useEffect(() => {
+    if (id !== 'owner' || !jobs) return;
+    void db.settings.get(openKey(id)).then(async (r) => {
+      if (Array.isArray(r?.value)) { setSet(new Set(r.value as string[])); return; }
+      const now = openIds(jobs as never); await putLocal(db, openKey(id), now); setSet(new Set(now));
+    });
+  }, [id, jobs === null]);
+  return [set, () => { if (jobs) void putLocal(db, openKey(id), openIds(jobs as never)); }];
+}
+
 export function Bell({ id }: { id: string }) {
   const jobs = useRows('jobs');
   const [seen] = useSeen(id);
-  const n = notices(jobs.rows ?? [], { ...whoOf(id), seenAt: seen }).length;
+  const [prevOpen] = useOpenSeen(id, jobs.rows);
+  const n = notices(jobs.rows ?? [], { ...whoOf(id), seenAt: seen }, prevOpen).length;
   return (
     <button type="button" class="bell-btn" data-testid="bell" aria-label={n > 0 ? t('ui.bell.label.count', { n }) : t('ui.bell.label')} onClick={() => openSheet('notices', id)}>
       <Icon name="bell" />
@@ -47,17 +62,19 @@ export function Bell({ id }: { id: string }) {
 function NoticesSheet({ id, close }: SheetProps) {
   const jobs = useRows('jobs'); const products = useRows('products');
   const [seen, setSeen] = useSeen(id);
-  const list = notices(jobs.rows ?? [], { ...whoOf(id), seenAt: seen });
+  const workers = useRows('workers');
+  const [prevOpen, rememberOpen] = useOpenSeen(id, jobs.rows);
+  const list = notices(jobs.rows ?? [], { ...whoOf(id), seenAt: seen }, prevOpen);
   const [shown, setShown] = useState<typeof list | undefined>(undefined);
-  useEffect(() => { if (seen !== undefined && shown === undefined && jobs.rows) setShown(list); }, [seen, jobs.rows]);   // the list stays as it was when the sheet opened; the next look starts from the time it was closed
+  useEffect(() => { if (seen !== undefined && shown === undefined && jobs.rows && (id !== 'owner' || prevOpen !== undefined)) setShown(list); }, [seen, jobs.rows, prevOpen]);   // the list stays as it was when the sheet opened; the next look starts from the time it was closed
   const items = shown ?? list;
-  const done = () => { setSeen(new Date().toISOString()); close(); };
+  const done = () => { setSeen(new Date().toISOString()); rememberOpen(); close(); };
   return (
     <DetailSheet heading={t('ui.bell.title')} icon={<Icon name="bell" />} onClose={done} testid="sheet-notices">
       {items.length === 0 && <p class="ds-muted" data-testid="sheet-why">{t('ui.bell.none')}</p>}
       {items.map((x) => {
         const job = (jobs.rows ?? []).find((j) => String(j.id) === x.jobId);
-        return <ListRow key={x.jobId + x.kind} testid="notice" heading={t(x.kind === 'done' ? 'ui.bell.done' : 'ui.bell.new')} meta={nameOf((products.rows ?? []).find((p) => p.id === job?.product_id) ?? {}) || t('ui.unknown')} trailing={<strong>{formatDateTime(x.at)}</strong>} />;
+        return <ListRow key={x.jobId + x.kind} testid="notice" heading={x.kind === 'claimed' ? t('ui.bell.claimed', { worker: nameOf((workers.rows ?? []).find((w) => w.id === job?.worker_id) ?? {}) || t('ui.unknown') }) : t(x.kind === 'done' ? 'ui.bell.done' : 'ui.bell.new')} meta={nameOf((products.rows ?? []).find((p) => p.id === job?.product_id) ?? {}) || t('ui.unknown')} trailing={<strong>{formatDateTime(x.at)}</strong>} />;
       })}
     </DetailSheet>
   );
