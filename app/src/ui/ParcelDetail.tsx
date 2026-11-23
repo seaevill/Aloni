@@ -51,6 +51,7 @@ export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: {
     : e.kind === 'harvest' ? t('timeline.harvest', { crop: e.crop, n: formatQty(e.crates) })
       : [t('timeline.spray', { product: e.product }), e.reiUntil ? t('timeline.rei', { d: formatDateTime(e.reiUntil) }) : '', e.phiUntil ? t('timeline.phi', { d: formatDateTime(e.phiUntil) }) : ''].filter(Boolean).join(' · '));
   const eventDate = (e: TimelineEvent): string => (e.kind === 'sown' || e.kind === 'cut' ? (validDate(e.at) ? formatDate(e.at) : '') : formatDateTime(e.at));
+  const waterCrops = [...new Set(mine.map((p) => String(p.crop_id)))].flatMap((cid) => { const crop = crops.rows?.find((c) => c.id === cid); return crop ? [{ crop, areas: mine.filter((p) => String(p.crop_id) === cid).map((p) => text(p.area_str)) }] : []; });
   const days = parseDays(weather.find((w) => w.parcel_id === parcel.id)?.days);
   const wx = dayOf(days, athensToday(new Date()) ?? '');
   const weatherSource = provenance([days], Date.now());
@@ -112,7 +113,7 @@ export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: {
       })}
       {cropTips && <CropTips slug={text(cropTips.slug)} onClose={() => setCropTips(undefined)} />}
       <FieldWorkCard parcelId={String(parcel.id)} days={days} />
-      <WaterCard days={days} crops={[...new Map(mine.map((p) => [String(p.crop_id), crops.rows?.find((c) => c.id === p.crop_id)]).filter((e): e is [string, Row] => e[1] !== undefined)).values()]} />
+      <WaterCard days={days} crops={waterCrops} />
       <h2>{t('detail.sprays')}</h2>
       {last.length === 0 && <p class="muted">{t('spray.empty')}</p>}
       {last.map((s) => <div class="card" key={s.id} data-testid="detail-spray">{nameOf(products.rows?.find((p) => p.id === s.product_id) ?? {})}<small>{formatDateTime(text(s.sprayed_at))}</small></div>)}
