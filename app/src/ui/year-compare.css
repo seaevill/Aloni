@@ -1,0 +1,10 @@
+/* «Φέτος – πέρυσι» */
+.yearcmp { display: grid; gap: var(--sp-2); margin-block: var(--sp-3); }
+.yearcmp small { display: block; }
+.yearcmp-sums { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-2); }
+.yearcmp-sums strong { display: block; }
+.yearcmp-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; align-items: end; block-size: 96px; }
+.yearcmp-month { display: flex; align-items: end; gap: 1px; block-size: 100%; }
+.yearcmp-bar { flex: 1; min-block-size: 1px; border-radius: 2px 2px 0 0; }
+.yearcmp-bar.this { background: var(--green-700, #1b5e3a); }
+.yearcmp-bar.last { background: var(--green-300, #9cc9ad); }
