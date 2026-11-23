@@ -78,10 +78,16 @@ jobs:
       - run: npm ci
       - name: Install WebKit only (browser binaries are not cached, restoring takes as long as downloading); 5 minutes per try, one retry
         # this step hung for the full 20 minutes of the job three times on the same commit (2026-11-20); a hung try is stopped after 5 minutes and tried once more
+        # 2026-11-23: try 1 is stopped by `timeout`, but the apt-get it started keeps running and keeps the dpkg lock, so try 2 failed at once with
+        # «Could not get lock /var/lib/dpkg/lock-frontend … held by process (apt-get)» (job logs of runs 45169432774, 45254265117, 45270201156). Now a try that ends takes its apt-get with it,
+        # and the next try waits (at most two minutes) until nothing holds the lock.
         run: |
           for try in 1 2; do
-            if timeout 300 npx playwright install --with-deps webkit; then exit 0; fi
+            if timeout --kill-after=15 300 npx playwright install --with-deps webkit; then exit 0; fi
             echo "WebKit install try $try did not finish in 5 minutes or failed"
+            sudo pkill -x apt-get || true
+            sudo pkill -x dpkg || true
+            for wait in $(seq 1 24); do sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 || break; sleep 5; done
           done
           exit 1
         working-directory: app
