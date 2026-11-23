@@ -21,3 +21,18 @@ describe('storeStock: harvested crates by where they went, per crop', () => {
     expect(r).toEqual([]);
   });
 });
+
+describe('storeStock: what has left the store (loaded onto a vehicle) comes off the store', () => {
+  it('left = store − out; out is kept apart and never changes the other counts', () => {
+    const rows = [h('1', 'p1', '2026-11-20', '12', 'store'), h('2', 'p1', '2026-11-21', '8', 'store'), h('3', 'p1', '2026-11-21', '5', 'dispatch'), h('4', 'p1', '2026-11-21', '7')];
+    const r = storeStock('2026-11-22', rows, plantings, crops, {}, { parsley: 15 });
+    expect(r[0]).toMatchObject({ slug: 'parsley', store: 20, out: 15, left: 5, dispatch: 5, unknown: 7 });
+  });
+  it('more loaded than recorded in the store is shown as it is (negative), never hidden or clamped', () => {
+    const r = storeStock('2026-11-22', [h('1', 'p1', '2026-11-21', '4', 'store')], plantings, crops, {}, { parsley: 6 });
+    expect(r[0]).toMatchObject({ store: 4, out: 6, left: -2 });
+  });
+  it('nothing loaded: out 0, left = store', () => {
+    expect(storeStock('2026-11-22', [h('1', 'p1', '2026-11-21', '4', 'store')], plantings, crops)[0]).toMatchObject({ out: 0, left: 4 });
+  });
+});

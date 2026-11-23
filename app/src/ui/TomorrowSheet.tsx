@@ -7,6 +7,7 @@ import { loadOrders } from '../orders/store';
 import { nextDay } from '../orders/tomorrow';
 import { athensToday } from '../plantings/planting';
 import { loadDestinations } from '../stock/destination';
+import { loadOuts, markLoaded, outBySlug, outKey, undoLoaded, type OutRecord } from '../stock/store-out';
 import { storeStock } from '../stock/store-stock';
 import type { KlouvesOrders } from '../orders/klouves';
 import { CropIcon, DetailSheet, ListRow, SheetFact } from './ds';
@@ -21,21 +22,27 @@ function TomorrowSheet({ id, close }: SheetProps) {
   const crops = useRows('crops'); const plantings = useRows('plantings'); const harvests = useRows('job_harvest');
   const [data, setData] = useState<{ orders: KlouvesOrders | undefined; map: Record<string, string>; dest: Awaited<ReturnType<typeof loadDestinations>> } | undefined>(undefined);
   const [msg, setMsg] = useState('');
-  useEffect(() => { void (async () => { const o = await loadOrders(db, farm); setData({ ...o, dest: await loadDestinations(db, farm) }); })(); }, [farm, dataVersion.value]);
+  const [outs, setOuts] = useState<Record<string, OutRecord>>({});
+  useEffect(() => { void (async () => { const o = await loadOrders(db, farm); setData({ ...o, dest: await loadDestinations(db, farm) }); setOuts(await loadOuts(db, farm)); })(); }, [farm, dataVersion.value]);
   if (!data || !crops.rows || !plantings.rows || !harvests.rows) return null;
   const crop = crops.rows.find((c) => c.slug === id);
   const today = athensToday(new Date()) ?? '';
   const day = nextDay(today);
   const clients = dispatchDay(data.orders, data.map, day).map((c) => ({ ...c, items: c.items.filter((i) => i.slug === id) })).map((c) => ({ ...c, total: c.items.reduce((a, i) => a + i.qty, 0) })).filter((c) => c.items.length > 0);
   const ordered = clients.reduce((a, c) => a + c.total, 0);
-  const line = storeStock(today, harvests.rows, plantings.rows, crops.rows, data.dest).find((l) => l.slug === id);
-  const inStore = line !== undefined && line.store > 0 ? line.store : undefined;
+  const line = storeStock(today, harvests.rows, plantings.rows, crops.rows, data.dest, outBySlug(outs)).find((l) => l.slug === id);
+  const inStore = line !== undefined && line.store > 0 ? line.left : undefined;       // what the store holds after the loads already confirmed
+  const toggleLoaded = async (client: string, crates: number) => {
+    if (Object.hasOwn(outs, outKey(day, client, id))) await undoLoaded(db, farm, day, client, id);
+    else await markLoaded(db, farm, { day, client, slug: id, crates, at: new Date().toISOString() });
+    setOuts(await loadOuts(db, farm)); dataVersion.value++;
+  };
   const txt = dispatchText(clients, { header: nameOf(crop ?? {}) || id, total: (q) => t('ui.tom.title') + ': ' + q });
   const copy = async () => { const r = await copyText(txt, { share: typeof navigator.share === 'function' ? (d) => navigator.share(d) : undefined, clipboard: navigator.clipboard }); setMsg(r === 'copied' || r === 'shared' ? t('ui.tom.copied') : r === 'manual' ? t('ui.tom.manual') : ''); };
   return (
     <DetailSheet heading={nameOf(crop ?? {}) || id} icon={<CropIcon slug={id} size="calc(var(--tile) - var(--sp-16))" />} onClose={close} testid="tomorrow-sheet">
       <h3>{t('ui.tom.customers')}</h3>
-      {clients.map((c) => <ListRow key={c.clientId} testid="tomorrow-customer" heading={c.name} meta={t('ui.store.crates', { n: fractionText(c.total) })} />)}
+      {clients.map((c) => <div key={c.clientId}><ListRow testid="tomorrow-customer" heading={c.name} meta={t('ui.store.crates', { n: fractionText(c.total) })} /><LoadButton done={Object.hasOwn(outs, outKey(day, c.clientId, id))} onToggle={() => void toggleLoaded(c.clientId, c.total)} /></div>)}
       <span data-testid="tomorrow-store"><SheetFact name={t('ui.store.title')} value={inStore === undefined ? undefined : t('ui.tom.store', { n: formatQty(inStore) })} unknown={t('ui.tom.store.none')} /></span>
       {inStore !== undefined && <p data-testid="tomorrow-gap">{inStore >= ordered ? t('ui.tom.gap.enough') : t('ui.tom.gap.short', { n: fractionText(ordered - inStore) })}</p>}
       {inStore === undefined && <p class="ds-muted">{t('ui.tom.gap.unknown')}</p>}
@@ -44,5 +51,8 @@ function TomorrowSheet({ id, close }: SheetProps) {
       {msg !== '' && <p class="msg" role="status">{msg}</p>}
     </DetailSheet>
   );
+}
+function LoadButton({ done, onToggle }: { done: boolean; onToggle: () => void }) {
+  return <button type="button" class={done ? 'btn secondary' : 'btn'} aria-pressed={done} data-testid="tomorrow-loaded" onClick={onToggle}>{done ? t('ui.out.done') : t('ui.out.loaded')}</button>;
 }
 registerSheet('tomorrow', TomorrowSheet);
