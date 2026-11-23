@@ -8,6 +8,7 @@ import { saveDestination, type Destination } from '../stock/destination';
 import { buildHarvest, harvestGate } from '../spray/harvest';
 import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
 import { useSubmit } from './useSubmit';
+import { CropIcon } from './ds';
 import type { Row } from '../db/schema';
 import { nameOf } from './screens';
 import { useRows } from './useRows';
@@ -43,6 +44,7 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
   const name = (p: Row) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) });
   const parcelOf = (p: Row): string => text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name);
   const cratesN = parseWhole<'Crates'>(crates);
+  const slugOf = (p: Row): string => text(crops.rows?.find((c) => c.id === p.crop_id)?.slug);
   const cropOf = (p: Row): string => nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {});
   const sameIn = (p: Row, q: Row): boolean => q.parcel_id === p.parcel_id && cropOf(q) === cropOf(p);
   const dated = (p: Row): string => (p.sown_on ? formatDate(text(p.sown_on)) : '');
@@ -66,7 +68,7 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
   const picker = (list: Row[]) => [...new Set(list.map((p) => text(p.parcel_id)))].map((pid) => (
     <div key={pid}>
       <h3>{text(parcels.rows?.find((x) => x.id === pid)?.name)}</h3>
-      <div class="seg two">{list.filter((p) => text(p.parcel_id) === pid).map((p) => <button class="pick" key={p.id} data-testid="harvest-chip" aria-pressed={planting === p.id} onClick={() => setPlanting(String(p.id))}>{chipText(p)}</button>)}</div>
+      <div class="seg two">{list.filter((p) => text(p.parcel_id) === pid).map((p) => <button class="pick" key={p.id} data-testid="harvest-chip" aria-pressed={planting === p.id} onClick={() => setPlanting(String(p.id))}><CropIcon slug={slugOf(p)} size="var(--icon-sm)" /><span>{chipText(p)}</span></button>)}</div>
     </div>
   ));
   const cratesError = failed > 0 ? (!cratesN.known ? t('harvest.error.crates') : cratesN.value < 1 ? t('harvest.error.zero') : cratesN.value > MAX_CRATES ? t('harvest.error.max', { max: MAX_CRATES }) : '') : '';
