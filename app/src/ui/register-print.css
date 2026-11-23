@@ -2,8 +2,12 @@
 
 @media print {
   @page registerDraft { size: A4 landscape; margin: 12mm; }
+  #app:has(.register-print) { page: registerDraft; display: block; min-height: 0; }
+  #app:has(.register-print) > :not(main),
+  main:has(.register-print) > :not(.register, :has(.register-print)),
   .register > :not(.register-print) { display: none !important; }
-  .register .register-print { page: registerDraft; display: block; color: var(--fg); }
+  main:has(.register-print) { max-width: none; }
+  .register .register-print { display: block; color: var(--fg); }
   .register-print table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .register-print thead { display: table-header-group; }
   .register-print tr { break-inside: avoid; }
