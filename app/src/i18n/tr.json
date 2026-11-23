@@ -682,6 +682,7 @@
   "detail.sprays": "Son ilaçlamalar",
   "timeline.title": "Zaman çizgisi",
   "timeline.empty": "Henüz kayıt yok.",
+  "timeline.cut": "Kesim ({method})",
   "timeline.sown": "Ekim: {crop}",
   "timeline.spray": "İlaçlama: {product}",
   "timeline.harvest": "Hasat: {crop} · {n} kasa",
