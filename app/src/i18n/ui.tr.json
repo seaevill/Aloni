@@ -478,5 +478,18 @@
   "ui.year.crates": "{n} kasa",
   "ui.year.chart.alt": "Aylık kasa, bu yıl ve geçen yıl",
   "ui.year.legend": "Aylık: açık yeşil = geçen yıl, koyu = bu yıl. Yalnızca kendi kayıtlarından.",
-  "ui.year.unreadable": "{k} kayıt sayılmadı (kasa sayısı okunamıyor)."
+  "ui.year.unreadable": "{k} kayıt sayılmadı (kasa sayısı okunamıyor).",
+  "ui.seed.title": "Tohum",
+  "ui.seed.rate": "Yazdığın ekim normu: {v} kg/στρ.",
+  "ui.seed.rate.none": "Ekim normu girilmemiş.",
+  "ui.seed.kg": "{n} kg tohum",
+  "ui.seed.unknown.rate": "bilinmiyor – ekim normu eksik",
+  "ui.seed.unknown.area": "bilinmiyor – alan eksik",
+  "ui.seed.total": "Toplam: {n} kg tohum",
+  "ui.seed.edit": "Ekim normu (kg/στρ.)",
+  "ui.seed.label": "Dönüm başına kg ekim normu (sen ya da mühendis)",
+  "ui.seed.err": "0'dan büyük bir sayı yaz.",
+  "ui.seed.save": "Kaydet",
+  "ui.seed.remove": "Normu sil",
+  "ui.seed.note": "Uygulama ekim normu önermez; yazdığın sayıyı alanla çarpar. Yalnızca bu telefonda saklanır."
 }
