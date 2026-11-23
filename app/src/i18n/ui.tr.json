@@ -334,6 +334,7 @@
   "ui.cust.week": "Bu hafta: {n} kasa",
   "ui.cust.week.none": "Bu hafta: —",
   "ui.cust.imported": "Κλούβες'ten",
+  "ui.bell.claimed": "{worker} işi üstlendi",
   "ui.product.info.label": "Ürün bilgisi",
   "ui.crop.ring.title": "Kaydedilmiş ekim ayları",
   "ui.crop.ring.none": "bu bitki için ekim kaydı yok",
