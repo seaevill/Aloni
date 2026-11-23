@@ -49,6 +49,11 @@ export async function initDb() {
 }
 
 export async function loadDemo() {
+  performance.mark('aloni-demo-start');      // diagnostic only (e2e failure log): when the demo load began / ended / failed
+  try { await loadDemoInner(); performance.mark('aloni-demo-end'); } catch (e) { performance.mark('aloni-demo-error'); throw e; }
+}
+
+async function loadDemoInner() {
   const data = (await import('../../../reference/prototype/data.json')).default as unknown as PrototypeData;
   await importDemo(db, data);
   await clearDemoGuide(db); await seedDemoGuide(db);      // the two farmer cases (parsley, wild chicory): phone-local, Demo farm only

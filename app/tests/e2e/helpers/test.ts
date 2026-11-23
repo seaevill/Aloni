@@ -7,6 +7,12 @@ export * from '@playwright/test';
 // and the CI reporter prints them. Purpose: explain a failure that only happens on the CI WebKit runner (a screen that went back to an earlier state).
 export const test = base.extend<{ browserLog: void }>({
   browserLog: [async ({ page }, use, testInfo) => {
+    // every tap the page received (time, element, test id, text, position) and the app's own «demo» marks (set in loadDemo): they tell «the tap never reached the button» from «the demo started and never finished»
+    await page.addInitScript(() => {
+      const w = window as unknown as { __clicks: unknown[] };
+      w.__clicks = [];
+      document.addEventListener('click', (e) => { const el = e.target as Element | null; w.__clicks.push([Math.round(performance.now()), el?.tagName ?? '', el?.getAttribute?.('data-testid') ?? '', (el?.textContent ?? '').slice(0, 24), Math.round((e as MouseEvent).clientX), Math.round((e as MouseEvent).clientY)]); }, true);
+    });
     const started = Date.now(); const lines: string[] = [];
     const at = (): string => `+${Date.now() - started} ms`;
     page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') lines.push(`${at()} console.${m.type()}: ${m.text().slice(0, 200)}`); });
@@ -16,6 +22,10 @@ export const test = base.extend<{ browserLog: void }>({
     page.on('domcontentloaded', () => lines.push(`${at()} domcontentloaded`));
     page.on('crash', () => lines.push(`${at()} PAGE CRASHED`));
     await use();
+    if (testInfo.status !== testInfo.expectedStatus) {
+      const inPage = await page.evaluate(() => ({ now: Math.round(performance.now()), clicks: (window as unknown as { __clicks?: unknown[] }).__clicks ?? [], marks: performance.getEntriesByType('mark').map((m) => [m.name, Math.round(m.startTime)]) })).catch(() => undefined);
+      lines.push(`in-page: ${JSON.stringify(inPage)}`);
+    }
     if (testInfo.status !== testInfo.expectedStatus) await testInfo.attach('browser-log', { body: lines.join('\n') || '(no events)', contentType: 'text/plain' });
   }, { auto: true }],
 });
