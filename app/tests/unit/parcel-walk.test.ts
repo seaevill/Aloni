@@ -12,5 +12,6 @@ it('flags overlapping accuracy and closes only a simple positive-area 2D ring', 
   expect(accuracyOverlaps(a, b)).toBe(false);
   expect(walkedBoundary([a, b])).toBeUndefined();
   expect(walkedBoundary([a, c, b, d])).toBeUndefined();
+  expect(walkedBoundary([point(23, 38), point(24, 39), point(25, 40)])).toBeUndefined();
   expect(walkedBoundary([a, b, c])?.coordinates).toEqual([[[23.35, 38], [23.351, 38], [23.351, 38.001], [23.35, 38]]]);
 });

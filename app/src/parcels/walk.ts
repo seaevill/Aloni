@@ -32,6 +32,7 @@ export function walkedBoundary(points: readonly Pin[]): Boundary | undefined {
   if (points.length < 3 || !points.every(validFix)) return undefined;
   const ring: Ring = points.map(({ lng, lat }) => [lng, lat]);
   if (new Set(ring.map((p) => p.join(','))).size !== ring.length) return undefined;
+  if (!ring.some((point) => cross(ring[0], ring[1], point) !== 0)) return undefined;
   ring.push(ring[0]);
   const edges = ring.length - 1;
   for (let a = 0; a < edges; a += 1) {
