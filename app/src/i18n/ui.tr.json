@@ -368,5 +368,6 @@
   "ui.cut.none": "Bu tarlada kayıtlı kesim yok.",
   "ui.cut.sprout": "yeni sürgün: gün {n}",
   "ui.cut.local": "Yalnızca bu telefonda saklanır; henüz sunucuya gönderilmiyor.",
-  "ui.cut.sep": " · {method}"
+  "ui.cut.sep": " · {method}",
+  "ui.guide.source": "{source} ↗"
 }

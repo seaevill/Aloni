@@ -11,7 +11,7 @@ const ROWS = [['sow_to_cut', 'ui.guide.sow'], ['cuts', 'ui.guide.cuts'], ['ph', 
 
 function Line({ r }: { r: CropRange }) {
   const text = r.measure === 'ph' ? t('ui.guide.v.ph', { low: formatQty(r.low), high: formatQty(r.high) }) : r.measure === 'sow_to_cut' ? t('ui.guide.v.days', { low: formatQty(r.low), high: formatQty(r.high) }) : t('ui.guide.v.cuts', { low: formatQty(r.low), high: formatQty(r.high) });
-  return <p data-testid="guide-range"><strong>{text}</strong><br /><a href={r.url} target="_blank" rel="noopener noreferrer">{r.source} ↗</a></p>;
+  return <p data-testid="guide-range"><strong>{text}</strong><br /><a href={r.url} target="_blank" rel="noopener noreferrer">{t('ui.guide.source', { source: r.source })}</a></p>;
 }
 
 export function CropGuide({ crop, onClose }: { crop: Row; onClose: () => void }) {

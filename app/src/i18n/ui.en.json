@@ -368,5 +368,6 @@
   "ui.cut.none": "No cut is recorded on this parcel.",
   "ui.cut.sprout": "new growth: day {n}",
   "ui.cut.local": "Kept on this phone only; not sent to the server yet.",
-  "ui.cut.sep": " · {method}"
+  "ui.cut.sep": " · {method}",
+  "ui.guide.source": "{source} ↗"
 }
