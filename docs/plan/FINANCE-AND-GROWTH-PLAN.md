@@ -1,6 +1,6 @@
 # Finance ledger + growth ideas – action plan (DRAFT, 2026-11-23)
 
-**Status: draft for Bora. Nothing here is approved or built.** Per CLAUDE.md, each phase below becomes a `docs/milestones/` plan that Bora confirms before any code. Inputs: Bora's request (2026-11-23), `replica/recon.md` (Farmable gaps), the İmeceMobil look (income/expense idea), TECH-SPEC, `docs/design/design-sprint-2026-11-21.md` (role voices), `docs/brand/brand.md`.
+**Status: draft for Bora; questions 1–3 of §9 answered 2026-11-23. Nothing is built.** Per CLAUDE.md, each phase below becomes a `docs/milestones/` plan that Bora confirms before any code. Inputs: Bora's request (2026-11-23), `replica/recon.md` (Farmable gaps), the İmeceMobil look (income/expense idea), TECH-SPEC, `docs/design/design-sprint-2026-11-21.md` (role voices), `docs/brand/brand.md`.
 
 ## Özet (Türkçe, Bora için)
 
@@ -49,7 +49,9 @@
 6. QR kasa etiketi ve paylaşım kartları.
 7. Sunucu senkronu.
 
-**Senden istenenler:** Bölüm 9'daki soruları cevapla. Bu plan Claude Code'da açılınca önce 1. aşamanın `docs/milestones/` planı yazılır, sen onaylarsın, sonra kod başlar.
+**Cevapların (2026-11-23):** fiyat değişken (müşteriye ve zamana göre), ödeme zamanı değişken, **veresiye takibi gerekli**, muhasebeci için **CSV ve PDF ikisi de**. Kalan 5 soru (bölüm 9, 4–8) F1 planı yazılırken sorulacak.
+
+**Senden istenenler:** Bölüm 9'daki kalan soruları cevapla. Bu plan Claude Code'da açılınca önce 1. aşamanın `docs/milestones/` planı yazılır, sen onaylarsın, sonra kod başlar.
 
 ---
 
@@ -86,7 +88,8 @@ money_entries   id, farm_id, occurred_on (date, Europe/Athens), direction (in|ou
                 source (manual|order|stock_lot|labour_day), source_id?,   -- auto rows point back at their origin
                 note?, photo_media_id?, doc_ref? (invoice/receipt number typed by Bora, free text),
                 amends_id?, created_at/by, server_seq ...                -- append-only; a correction is a new row
-prices          id, farm_id, crop_id, customer_id?, price_cents_per_crate, valid_from   -- last-used price; customer-specific overrides farm default
+prices          id, farm_id, crop_id, customer_id?, price_cents_per_crate, valid_from   -- variable (Bora 2026-11-23): per customer × crop, changes over time; history kept, newest valid_from wins; only a suggestion, the price is confirmed on each load
+payments        id, farm_id, customer_id, paid_on, amount_cents (int > 0), method? (cash|bank|other), note?, amends_id?, ...   -- a received payment; also writes the money_entries 'in' row? NO: see below
 stock_lots      + unit_cost_cents?, total_cost_cents?   (typed at Receive; unknown allowed)
 customer_orders + price_cents_per_crate? (copied from prices when loaded; editable before loading)
 ```
@@ -95,7 +98,9 @@ Derived (pure functions in `/app/src/money/`, unit-tested):
 - `yearSummary(entries, year)`: in, out, net, per month, per category.
 - `cropResult(entries, harvests, year)`: income per crop, direct costs per crop, cost per crate, with `incomplete` when crates have no price or costs are unassigned.
 - `parcelResult(...)`: the same per parcel. Shared costs are split by στρέμματα only if Bora turns that on; otherwise they show as "not assigned".
-- `receivables(orders, payments)`: crates loaded but not paid, per customer.
+- `receivables(orders, payments)`: per customer, the value of loaded orders minus payments received, oldest open first (FIFO allocation), with the days open. A loaded order without a price counts as «χωρίς τιμή», never as 0.
+
+**Income timing (decided with the veresiye answer, to confirm in F1):** income is recorded when the crates are **loaded** (the sale), and a payment only reduces what the customer owes. A payment never writes a second income row, so nothing is counted twice. The ledger can show both views: «πωλήσεις» (sales, by load date) and «εισπράξεις» (cash received, by payment date).
 - `regimeWatch(entries, year)`: sales and subsidies against the €15,000 / €5,000 limits, with the source link and date. Information only.
 
 ## 5. Phases (each one becomes a milestone plan first)
@@ -110,7 +115,7 @@ Derived (pure functions in `/app/src/money/`, unit-tested):
 - Tests: Vitest for the money functions (cents, Greek formatting, amendments), Playwright at 375 px WebKit.
 - Done when: Bora can enter a month of real entries on his iPhone and the totals match his notebook.
 
-**F2 – Auto entries.**
+**F2 – Auto entries and veresiye.**
 - Stock Receive asks for a cost (optional; unknown allowed) and writes an `out` row.
 - An order marked «Φορτώθηκε» with a price writes an `in` row.
 - Labour: a «μεροκάματο» quick entry per worker per day (amount typed by Bora; no wage rules).
@@ -118,8 +123,9 @@ Derived (pure functions in `/app/src/money/`, unit-tested):
 - Done when: a full Demo week (receive → spray → harvest → load) shows the right ledger without manual typing, tested end to end.
 
 **F3 – Reports and accountant export.**
-- Crop and parcel results with cost per crate, year-over-year comparison, receivables per customer, and the regime watch line.
-- Export: CSV (UTF-8 BOM, semicolons, formula guard) and a Greek PDF with the "not official books" line, plus a ZIP of receipt photos for a date range.
+- **Veresiye** (moved up from F3 into F2 because Bora needs it): «Πελάτες» shows each customer's open balance, «＋ Πληρωμή» records a payment (amount, date, method), and a customer page lists loaded orders, payments and the balance. Variable prices: the load sheet pre-fills the last price for this customer × crop and Bora confirms or changes it.
+- Crop and parcel results with cost per crate, year-over-year comparison, and the regime watch line.
+- Export **both** (Bora 2026-11-23): CSV (UTF-8 BOM, semicolons, formula guard) and a Greek PDF with the "not official books" line. Both cover sales, payments, open balances per customer and expenses, plus a ZIP of receipt photos for a date range.
 - Done when: Bora sends one export to his accountant and the accountant confirms the export is usable.
 
 **F4 – Farmable gaps that feed the ledger** (from `replica/recon.md`).
@@ -164,9 +170,9 @@ As in every milestone: a Greek checklist for Bora's iPhone, a Turkish summary, C
 
 ## 9. Questions for Bora (answer before F1)
 
-1. Is a sale price per **crop** or per **customer × crop**? Do prices change during the season?
-2. Do customers pay on delivery, weekly or monthly? Should Aloni track who still owes money?
-3. Do you have an accountant (λογιστής)? Which export do they want: CSV, PDF or both?
+1. ~~Price per crop or per customer × crop?~~ **Answered 2026-11-23: variable** (differs by customer and changes over time) → `prices` history per customer × crop, confirmed on each load.
+2. ~~When do customers pay? Track who owes?~~ **Answered 2026-11-23: variable; veresiye tracking is needed** → `payments` + `receivables`, in F2.
+3. ~~Accountant export format?~~ **Answered 2026-11-23: both CSV and PDF.**
 4. Which expense categories do you really use? (The list in §4 is a starting point.)
 5. Wages: a fixed amount per day per worker, or typed each time?
 6. Should shared costs (diesel, water, power) be split across parcels by στρέμματα, or stay "farm-wide"?
