@@ -68,7 +68,7 @@ export function Money({ onBack }: { onBack: () => void }) {
         <h2>{t('ui.money.entries')}</h2>
         {live.map((e) => <ListRow key={e.id} testid="money-entry" heading={`${signed(e)} · ${t(CAT_KEYS[e.category])}`} meta={[formatDate(e.day), cropName(e.crop), e.note].filter((x) => x !== '').join(' · ')} onClick={() => setView({ kind: 'entry', id: e.id })} />)}
       </>}
-      <small class="muted" data-testid="money-local">{t('ui.money.local')}</small>
+      <p class="muted" data-testid="money-local">{t('ui.money.local')}</p>
       {open && <DetailSheet heading={signed(open)} testid="money-sheet" onClose={() => setView({ kind: 'main' })}>
         <SheetFact name={t('ui.money.category')} value={t(CAT_KEYS[open.category])} />
         <SheetFact name={t('ui.money.date')} value={formatDate(open.day)} />
