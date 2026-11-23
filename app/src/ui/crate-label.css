@@ -6,7 +6,7 @@
 .crate-qr { width: min(60vw, 220px); height: auto; }
 .crate-code { word-break: break-all; }
 @media print {
-  body * { visibility: hidden; }
-  .crate-label, .crate-label * { visibility: visible; }
+  body:has(.crate-label) * { visibility: hidden; }          /* only while a label is open: other printable screens (register, weekly report) print as before */
+  body:has(.crate-label) .crate-label, body:has(.crate-label) .crate-label * { visibility: visible; }
   .crate-label { position: fixed; inset-block-start: 0; inset-inline-start: 0; width: 100%; border-width: 3px; }
 }
