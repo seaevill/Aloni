@@ -27,7 +27,7 @@ export const toWire = (o: OutboxRow): Record<string, unknown> => ({
 });
 
 /** On the same instant a parent goes before its children (a parcel before its planting, a job before its spray): the server checks references. */
-const RANK = ['media', 'parcels', 'crops', 'products', 'workers', 'label_uses', 'stock_lots', 'plantings', 'jobs', 'job_plantings', 'job_spray', 'stock_movements', 'job_harvest', 'soil_tests', 'water_tests', 'observations', 'farm_settings'];
+const RANK = ['media', 'parcels', 'crops', 'products', 'workers', 'label_uses', 'stock_lots', 'plantings', 'jobs', 'job_plantings', 'job_spray', 'stock_movements', 'job_harvest', 'soil_tests', 'water_tests', 'observations', 'farm_settings', 'worker_cards', 'customers', 'customer_orders'];
 const rankOf = (table: string): number => RANK.indexOf(table);   // a table not listed (none exists) sorts first
 
 /** Pending ops in the order they were written, cut into batches that NEVER split a group (a group is sent whole or not at all). */

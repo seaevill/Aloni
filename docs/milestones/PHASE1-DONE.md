@@ -13,6 +13,8 @@ Phase 1 = Bora (owner) + his workers, his own farm. Each line says what is PROVE
 - The agronomist is not a user: Bora records the sign-off («Έγκριση γεωπόνου» on the label, name + date); the Demo shows signed and deliberately unsigned examples (`app/src/db/demo-extra.ts`).
 - No path lifts the lock without an approval: the harvest gate reads only signed label data or a typed value that does not open it before the period has run out (tests above).
 
+- ✅ A new version reaches the phone and the old one does not stay: `update-real-sw.spec` (the worker file changes, the bar appears by itself, the half-typed form stays, the button applies it) and `update-bar.spec`.
+
 ## c) Harvest with store / direct dispatch; store and «Αύριο φεύγουν» agree with customer orders; text for the driver — 🟡
 - ✅ Worker tiles «Αποθήκη» / «Απευθείας φόρτωση» + optional receiver (`harvest-destination.spec`), «Συγκομιδή στην αποθήκη» on Αποθήκη (`store-stock.spec`, `store-stock.test.ts`), customers + typed orders feeding «Αύριο φεύγουν» (`customers.spec`, `customer-orders.test.ts`), the tomorrow row opens per-customer orders, the store against them and «Αντιγραφή κειμένου» (`tomorrow-sheet.spec`), the Κλούβες backup import and its dispatch text (`dispatch.test.ts`, `dispatch.spec`).
 - Held or old (no destination) crates are never added to the store (tests).
@@ -33,6 +35,9 @@ Phase 1 = Bora (owner) + his workers, his own farm. Each line says what is PROVE
 ## g) Bora's R1–R30 PASS on the live site — 🟡
 - Local evidence and honest PASS / PARTIAL per row: `docs/STATUS.md` (R-table). The live acceptance is Codex's (`docs/morning/2026-11-22-live/`).
 - Known partial rows: R12 / R21–R23 / R25 (phone-only until 0036–0038), R15 (strips by area, not real positions), R18 / R30 (only spinach has sourced pH; EC and organic matter have none), R4 (daily weather only).
+
+## Server files written after the 0036/0037 pair (SQL only, NOT merged, Codex reviews, Bora applies in number order)
+0038 job board (#427), 0039 notes for the next days (#429), 0040 planting outline (#430), 0041 season target (#431): each with real-role tests; MUSTs of the Codex reviews are fixed and re-checks are requested. The phone side of each (contract, local stores, screens) ships after the file is applied.
 
 ## Still needed from Bora (single steps)
 1. Apply 0036 and 0037 when «main yeşil» is written (workflow «Supabase migrate (manual)»). 2. Weather: RUNBOOK §14a, say «tamam» first. 3. LIVE opening and the worker try-out on two phones. 4. The agronomist's visit (sign the real labels). 5. Lawyer's answers for the privacy notice.

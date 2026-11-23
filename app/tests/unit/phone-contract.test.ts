@@ -13,6 +13,7 @@ import { buildSpray, buildWaitEntry } from '../../src/spray/spray';
 import { buildAdjustment, buildReceipt } from '../../src/stock/stock';
 import { buildObservation, completeSprayJob } from '../../src/worker/jobs';
 import { buildWorker } from '../../src/workers/worker';
+import { buildCustomer, buildCustomerOrder, buildWorkerCard } from '../../src/owner-records/records';
 import type { Row } from '../../src/db/schema';
 import { TEST_FARM_ID as F, newDb } from '../helpers/factories';
 
@@ -47,6 +48,9 @@ describe('phone ↔ server contract', () => {
       { label: undefined, plantings: [{ ...planting, crop_id: crop.id }], lot: undefined, lotBalance: undefined, today: '2026-11-10' }, F, now, { job: id(22), spray: id(23), movement: id(24), plantingLinks: [id(25)] }));
     const wait = ok(buildWaitEntry(bare.spray, '7', '24', now, id(15), 'label values entered'));
     const harvest = ok(buildHarvest({ plantingId: id(2), crates: '12', harvestedAt: '2026-11-10T09:00:00Z', note: 'n', cutBy: id(10) }, [], [], F, now, id(16), [], [])).row;
+    const customer = ok(buildCustomer({ name: 'Μαρία', phone: '69', note: 'n' }, F, now, id(30))).row;
+    const card = ok(buildWorkerCard({ workerId: id(10), surname: 'Π', phone: '69' }, F, now, id(31))).row;
+    const order = ok(buildCustomerOrder({ customerId: id(30), cropId: String(crop.id), crates: '12', day: '2026-11-12', note: 'n' }, F, now, id(32))).row;
     const obs = buildObservation(id(1), 'pest', 'aphids', worker, F, now, id(17)) as Row;
     const planned: Row = { id: id(18), farm_id: F, kind: 'spray', status: 'planned', product_id: id(3), label_use_id: id(5), worker_id: id(10), planned_for: '2026-11-11', dose_str: '0.025', dose_unit: 'ml/str', created_at: now, updated_at: now, deleted_at: null };
     const done = completeSprayJob(planned, label, [planting], worker, '2026-11-10T08:00:00Z', 'n', now, id(20), undefined, '2026-11-10T07:30:00Z');
@@ -59,6 +63,7 @@ describe('phone ↔ server contract', () => {
       { table: 'job_plantings', row: spray.jobPlantings[0], op: 'insert' }, { table: 'job_spray', row: spray.spray, op: 'insert' },
       { table: 'jobs', row: bare.job, op: 'insert' }, { table: 'job_plantings', row: bare.jobPlantings[0], op: 'insert' }, { table: 'job_spray', row: bare.spray, op: 'insert' }, { table: 'job_spray', row: wait.row, op: 'insert' },
       { table: 'job_harvest', row: harvest, op: 'insert' }, { table: 'observations', row: obs, op: 'insert' },
+      { table: 'customers', row: customer, op: 'insert' }, { table: 'worker_cards', row: card, op: 'insert' }, { table: 'customer_orders', row: order, op: 'insert' },
       { table: 'job_plantings', row: { ...spray.jobPlantings[0], id: id(26), job_id: id(18) }, op: 'insert' },   // the planned job has its planting (the label of a spray must be of a crop of the job)
       ...(done.ok ? [{ table: 'jobs', row: done.job, op: 'update' as const }, { table: 'job_spray', row: done.spray, op: 'insert' as const }] : []),
     ] as const;
@@ -78,7 +83,7 @@ describe('phone ↔ server contract', () => {
     const stable = (text: string) => ops.reduce((t, o) => t.split(o.device_id).join('phone-device').split(o.actor_id).join('phone-actor'), text); // random ids of this run → fixed text
     const opsFile = (JSON.parse(stable(JSON.stringify(ordered))) as Array<Record<string, unknown>>).map(({ status: _status, ...o }, i) => ({ ...o, op_id: id(1000 + i), at: now }));
     out.__op_fields = [...new Set(ops.flatMap((o) => Object.keys(o)))].sort();
-    expect(Object.keys(out).sort()).toEqual(['__op_fields', 'crops', 'job_harvest', 'job_plantings', 'job_spray', 'jobs', 'label_uses', 'media', 'observations', 'parcels', 'plantings', 'products', 'settings', 'soil_tests', 'stock_lots', 'stock_movements', 'workers']);
+    expect(Object.keys(out).sort()).toEqual(['__op_fields', 'crops', 'customer_orders', 'customers', 'job_harvest', 'job_plantings', 'job_spray', 'jobs', 'label_uses', 'media', 'observations', 'parcels', 'plantings', 'products', 'settings', 'soil_tests', 'stock_lots', 'stock_movements', 'worker_cards', 'workers']);
     // the contract file has one line per table, so a change shows as one changed line
     if (process.env.UPDATE_CONTRACT) { writeFileSync(FILE, `{\n${Object.entries(out).map(([k, v]) => `  ${JSON.stringify(k)}: ${JSON.stringify(v)}`).join(',\n')}\n}\n`);  writeFileSync(OPS, `${JSON.stringify(opsFile)}\n`); }
     expect(opsFile).toEqual(JSON.parse(readFileSync(OPS, 'utf8')));
