@@ -14,7 +14,7 @@ const SEEN = (port: number) => ({ cookies: [], origins: [{ origin: `http://local
 
 export default defineConfig({
   testDir: 'tests/e2e',
-  reporter: 'list',
+  reporter: process.env.CI ? [['list'], ['./tests/e2e/helpers/failure-context-reporter.ts']] : 'list',   // CI: the list, plus the page snapshot of every failed attempt in the log
   // The WebKit runner is slower than it was and a DIFFERENT single test failed on identical code in each run (2026-11-20): a failed test is retried ONCE in CI and reported as «flaky» (it is never hidden:
   // a deterministic failure fails twice), and the default 5 s for an expectation is doubled. Nothing is skipped or loosened in the tests themselves.
   timeout: process.env.CI ? 60_000 : 30_000,   // the CI runner (arm64) is slow: a test that took 30 s there failed on the clock, not on an assertion (hardening.spec, 2026-11-20)
