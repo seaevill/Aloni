@@ -368,5 +368,18 @@
   "ui.own.from": "{k} kayıttan",
   "ui.own.few": "az veri – yalnızca {k} kayıt",
   "ui.own.none": "henüz yeterli kayıt yok",
-  "ui.own.unusable": "{k} kayıt sayılmadı (sayı okunamıyor ya da alan yok)"
+  "ui.own.unusable": "{k} kayıt sayılmadı (sayı okunamıyor ya da alan yok)",
+  "ui.cut.title": "Kesim / temizlik",
+  "ui.cut.method": "Yöntem",
+  "ui.cut.method.shredder": "parçalayıcı (καταστροφέας)",
+  "ui.cut.method.hand": "elle",
+  "ui.cut.method.other": "diğer",
+  "ui.cut.date": "Tarih",
+  "ui.cut.add": "Kesim kaydet",
+  "ui.cut.save": "Kaydet",
+  "ui.cut.undo": "Son kaydı geri al",
+  "ui.cut.none": "Bu tarlada kayıtlı kesim yok.",
+  "ui.cut.sprout": "yeni sürgün: gün {n}",
+  "ui.cut.local": "Yalnızca bu telefonda saklanır; henüz sunucuya gönderilmiyor.",
+  "ui.cut.sep": " · {method}"
 }
