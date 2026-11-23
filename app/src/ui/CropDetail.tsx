@@ -10,6 +10,7 @@ import { CropIcon, DetailSheet, ListRow } from './ds';
 import { TapNum } from './cx/TapNum';
 import { Icon } from './icons/Icon';
 import { CropTips } from './CropTips';
+import { FertPlanCard } from './FertPlanCard';
 import { CropPace } from './CropPace';
 import { CropGuide } from './CropGuide';
 import { ParcelSketch } from './ParcelSketch';
@@ -72,6 +73,7 @@ export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) 
           <details class="card crop-planting" key={p.id} open={i === 0} data-testid="detail-planting">
             <summary><strong>{parcelName(p)}</strong><small>{line(p)}</small></summary>
             <div data-testid="crop-sketch">{sketchOf(p)}</div>
+            <FertPlanCard plantingId={String(p.id)} sownOn={text(p.sown_on)} />
             <section data-testid="crop-weather">
               <h3>{t('today.weather')}</h3>
               {days.length === 0 && <p class="muted">{t('today.weather.none')}</p>}
