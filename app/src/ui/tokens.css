@@ -2,7 +2,7 @@
   /* ONE place for every colour, size, space, corner and shadow of the screens. The values are the ones the app has always had; a new look changes only this file. */
   --bg:#f5f2e9; --fg:#15251b; --green:#0b3525; --card:#fffefa; --line:#d9d6c8; --field:#6b7062; --warn:#6e1708;
   --white:#fff; --muted:#2d4033; --tab:#2d4033; --amber-bg:#ffedc2; --amber-fg:#432c00; --danger:#6e1708; --calm-bg:#dce6d8; --calm-fg:#0e2a16;
-  --forest-2:#0b3525; --card-on-dark:#174b37; --lime:#d5f36b; --on-lime:#0e2a16; --bar:rgba(245,242,233,.97); --sage:#dce6d8; --leaf:#4f8a35; --nav-bar-w:28px; --wx-day-min:3.6rem; --pair-min:10rem; --nav-bar-h:3px;    /* theme 2026-11 (docs/design/theme-2026-11): lime only as a FILL behind dark text, never as text */
+  --forest-2:#0b3525; --card-on-dark:#174b37; --lime:#d5f36b; --on-lime:#0e2a16; --bar:rgba(245,242,233,.97); --sage:#dce6d8; --leaf:#4f8a35; --nav-bar-w:28px; --wx-day-min:3.6rem; --pair-min:10rem; --step-min:4.5rem; --nav-bar-h:3px;    /* theme 2026-11 (docs/design/theme-2026-11): lime only as a FILL behind dark text, never as text */
   --font:"Commissioner",system-ui,-apple-system,"Segoe UI",sans-serif; --lh:1.4;
   --fs-14:.875rem; --fs-16:1rem; --fs-18:1.125rem; --fs-20:1.25rem; --fs-22:1.375rem; --fs-30:1.875rem; --icon:24px; --ls-title:-.025em; --ls-h2:-.015em; --fs-count:2.5rem;
   --font-hi:"Commissioner","Noto Sans Devanagari",system-ui,-apple-system,"Segoe UI",sans-serif;

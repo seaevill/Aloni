@@ -236,3 +236,7 @@ nav.tabs button[aria-current="page"]::before { content:""; position:absolute; in
 /* the two capture buttons stack when the text is enlarged (a long Greek word did not fit half the screen at 200 % text) and a word may break instead of leaving its button */
 .pair { grid-template-columns:repeat(auto-fit, minmax(min(100%, var(--pair-min)), 1fr)); }
 .pair .btn { overflow-wrap:anywhere; }
+
+/* crate quick steps (−1 +1 +5 +10): as many per row as fit, the rest wrap (large text) */
+.seg.steps { grid-template-columns:repeat(auto-fit, minmax(var(--step-min), 1fr)); }
+.seg.jumps button { min-height:var(--tap-big); font-size:var(--fs-22); font-weight:700; }   /* worker counter: the jump buttons are as tall as the +/- ones */
