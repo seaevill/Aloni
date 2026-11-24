@@ -560,5 +560,6 @@
   "ui.more.group.work": "Daily work",
   "ui.more.group.reports": "Reports and photos",
   "ui.more.group.info": "Information",
-  "ui.more.group.demo": "Demo (fictional data)"
+  "ui.more.group.demo": "Demo (fictional data)",
+  "ui.spray.more": "More details (optional)"
 }
