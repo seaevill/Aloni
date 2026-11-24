@@ -3,8 +3,8 @@
 ```
 LOCK: none            # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
 LAST_RUN: 2026-11-24 evening, interactive session (trial fires of both triggers verified; see REPORT.md)
-LAST_COMPLETED: queue item 3 (Αποθήκη product card header one line, balance emphasised) merged as #541; before that queue item 1 (double-submit guards: observation, field work, recurring rule, customer, order) merged as #537; #538 restored the safety test #537 overwrote by mistake
-NEXT_SAFE_ACTION: queue item 4 (Φυτά list: spacing/typography only, no extra lines per row)
+LAST_COMPLETED: #544 (Αποθήκη balance first), #545 (Φυτά search hint fully visible, calendar button below the list); both merged with full CI green
+NEXT_SAFE_ACTION: queue item 5 (parcel detail: three key facts first; keep every card). Items 3, 3b (#541, #544) and 4 (#545) are done.
 OPEN_BRANCHES: none owned by autopilot
 ```
 
