@@ -2,9 +2,9 @@
 
 ```
 LOCK: none            # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
-LAST_RUN: none yet
-LAST_COMPLETED: Field Atelier P1 step for Χωράφια (#534), search hints (#535); main green at f2e24c1 (2026-11-24)
-NEXT_SAFE_ACTION: queue item 1 (double-submit guard audit) — see QUEUE.md
+LAST_RUN: 2026-11-24 evening, interactive session (trial fires of both triggers verified; see REPORT.md)
+LAST_COMPLETED: queue item 1 (double-submit guards: observation, field work, recurring rule, customer, order) merged as #537; #538 restored the safety test #537 overwrote by mistake
+NEXT_SAFE_ACTION: queue item 3 (Αποθήκη hierarchy / touch targets / feedback; zero feature loss, feature map + before/after)
 OPEN_BRANCHES: none owned by autopilot
 ```
 
