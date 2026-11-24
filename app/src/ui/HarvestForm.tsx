@@ -73,7 +73,7 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
   ));
   const cratesError = failed > 0 ? (!cratesN.known ? t('harvest.error.crates') : cratesN.value < 1 ? t('harvest.error.zero') : cratesN.value > MAX_CRATES ? t('harvest.error.max', { max: MAX_CRATES }) : '') : '';
   useEffect(() => { if (failed > 0) document.querySelector<HTMLElement>('main [data-error]')?.focus(); }, [failed]);
-  const step = (d: 1 | -1) => { const n = parseWhole<'Crates'>(crates); const cur = n.known ? n.value : 0; setCrates(cur + d < 1 ? '' : `${Math.min(cur + d, MAX_CRATES)}`); }; // the counter buttons: +1 / −1, never below 1
+  const step = (d: 1 | -1 | 5 | 10) => { const n = parseWhole<'Crates'>(crates); const cur = n.known ? n.value : 0; setCrates(cur + d < 1 ? '' : `${Math.min(cur + d, MAX_CRATES)}`); }; // the counter buttons: +1 / −1, never below 1
   const save = async () => {
     const r = buildHarvest({ plantingId: planting, crates, harvestedAt: at, note, cutBy }, links.rows ?? [], sprays.rows ?? [], farmId, new Date().toISOString(), crypto.randomUUID(), plantings.rows ?? [], labelRows.rows ?? []);
     if (!r.ok || (big && dest === undefined)) { setFailed((n) => n + 1); return; }
@@ -103,6 +103,10 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
             <output data-testid="harvest-count" aria-live="polite">{shown}</output>
             <button data-testid="harvest-more" aria-label={t('harvest.more')} onClick={() => step(1)}>{t('harvest.plus')}</button>
           </div>
+          <div class="seg two jumps" data-testid="harvest-jumps">
+            <button class="big" data-testid="harvest-more5" onClick={() => step(5)}>{t('harvest.more5')}</button>
+            <button class="big" data-testid="harvest-more10" onClick={() => step(10)}>{t('harvest.more10')}</button>
+          </div>
           <p class="caption muted">{t('harvest.counter')}</p>
         </>
       ) : (
@@ -110,9 +114,11 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
           <label class="field">{t('harvest.crates')}
             <input class="input" value={crates} inputMode="numeric" autoComplete="off" data-testid="harvest-crates" onInput={(e) => setCrates((e.target as HTMLInputElement).value)} />
           </label>
-          <div class="seg two">
+          <div class="seg steps">
             <button onClick={() => step(-1)}>{t('harvest.less')}</button>
             <button data-testid="harvest-more" onClick={() => step(1)}>{t('harvest.more')}</button>
+            <button data-testid="harvest-more5" onClick={() => step(5)}>{t('harvest.more5')}</button>
+            <button data-testid="harvest-more10" onClick={() => step(10)}>{t('harvest.more10')}</button>
           </div>
         </>
       )}

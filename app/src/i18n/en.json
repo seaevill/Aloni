@@ -792,5 +792,7 @@
   "tomorrow.covered": "Covered",
   "tomorrow.surplus": "{n} extra",
   "tomorrow.supply": "Ready plantings: {free} · on hold (not counted): {held} · unknown (not counted): {unknown}",
-  "tomorrow.unmapped": "{n} products not linked to a crop are not shown above."
+  "tomorrow.unmapped": "{n} products not linked to a crop are not shown above.",
+  "harvest.more5": "+5",
+  "harvest.more10": "+10"
 }
