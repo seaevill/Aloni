@@ -19,7 +19,7 @@ import { JobForm } from './JobForm';
 import { ObservationForm } from './ObservationForm';
 import { QuickAdd } from './QuickAdd';
 import { SprayForm } from './SprayForm';
-import { EmptyState, ErrorState } from './states';
+import { EmptyState, ErrorState, SavedWhere } from './states';
 import { Title, nameOf, retry } from './screens';
 import { useRows, type Rows } from './useRows';
 import { dayOf, farmDay, parseDays, provenance, type Day } from '../weather/strip';
@@ -323,10 +323,14 @@ export function Today() {
       {loaded && has && <WeatherStrip perParcel={[...weatherOf.values()]} />}
       {loaded && has && <TomorrowSection rows={{ crops: crops.rows ?? [], plantings: plantings.rows ?? [], links: links.rows ?? [], sprays: sprays.rows ?? [], harvests: harvestRows.rows ?? [], labels: labelRows.rows ?? [] }} />}
       {observed && <p class="msg" role="status" data-testid="observe-saved">{t('ui.quick.saved')}</p>}
+      {observed && <SavedWhere testid="observe-saved-where" />}
       {loaded && has && <QuickAdd onSpray={() => setSpraying(true)} onHarvest={() => setHarvesting(true)} onObserve={() => setObserving(true)} onJob={() => { setPlannedDay(nextDay(athensToday(new Date()) ?? '')); setPlanning(true); }} />}
       {planned && <p class="msg" role="status" data-testid="job-saved">{t('job.saved')}</p>}
+      {planned && <SavedWhere testid="job-saved-where" />}
       {harvested && <p class="msg" role="status" data-testid="harvest-saved">{t('harvest.saved')}</p>}
+      {harvested && <SavedWhere testid="harvest-saved-where" />}
       {recorded && <p class="msg" role="status" data-testid="spray-saved">{t('spray.saved')}</p>}
+      {recorded && <SavedWhere testid="spray-saved-where" />}
       {loaded && has && (
         <section class="kpis" data-testid="today-kpis">
           <button type="button" class="kpi" data-testid="kpi-parcels" onClick={() => openSheet('parcels', 'all')}><small>{t('today.kpi.parcels')}</small><strong>{formatQty(live(parcels).length)}</strong></button>

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
-import { SYNC_CONNECTED } from '../config';
-import { db } from '../db';
+import { DEMO_FARM_ID, SYNC_CONNECTED } from '../config';
 import { pendingOps, rejectedOps, syncMarks } from '../repo';
 import { Icon } from './icons/Icon';
 import { openSheet } from './nav';
@@ -10,6 +9,8 @@ import { t, tn, type I18nKey } from '../i18n';
 import { lastSyncOk, syncError } from '../sync/run';
 import { syncChip } from '../sync/chip';
 import { syncEnabled } from '../sync/golive';
+import { savedWhere } from '../sync/saved-where';
+import { activeFarm, db } from '../db';
 import { online } from './sync';
 
 /**
@@ -38,6 +39,13 @@ export function SyncChip() {
 
 /** The wording under a saved worker record: with a live sync «saved, will be sent when there is signal»; without it the older, calmer line. */
 export function queuedKey(live: boolean): I18nKey { if (live) return 'sync.queuedSignal'; return 'worker.queued'; }
+
+/** Under an owner's «saved» confirmation (queue item 6): where the record is now («on the phone, it will be sent …»). Nothing for the Demo farm (never sent) or once sync has emptied the outbox. */
+export function SavedWhere({ testid }: { testid: string }) {
+  const key = savedWhere({ connected: SYNC_CONNECTED, enabled: syncEnabled.value, pending: pendingOps.value, demo: activeFarm.value === DEMO_FARM_ID });
+  if (key === undefined) return null;
+  return <p class="muted" data-testid={testid}>{t(key)}</p>;
+}
 
 /** The marker on a record (E3): «on the phone» (a dot AND a word), «sent» (a tick AND a word), «refused» (a button that opens the plain explanation). Colour is never the only signal; a record the outbox does not hold has no mark. */
 export function UnsyncedMark({ id }: { id: string }) {
