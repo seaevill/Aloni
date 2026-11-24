@@ -1,7 +1,7 @@
 # Autopilot state (updated by every run; read it first)
 
 ```
-LOCK: none            # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
+LOCK: autopilot-20261125-02 2026-11-24T23:10Z autopilot/20261125-02-offline-saved-where   # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
 LAST_RUN: 2026-11-25 01:00 Istanbul, night shift (autopilot/20261125-01-parcel-key-facts)
 LAST_COMPLETED: #547 (parcel detail: area, harvest wait, last spray first; queue item 5)
 NEXT_SAFE_ACTION: queue item 6 (offline write path audit). Items 1, 3, 3b, 4, 5 are done.
