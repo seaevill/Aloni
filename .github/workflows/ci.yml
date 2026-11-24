@@ -64,6 +64,11 @@ jobs:
     if: needs.changes.outputs.code == 'true'
     name: e2e (shard ${{ matrix.shard }}/3)
     runs-on: ubuntu-latest
+    # WebKit and its system packages are already in this image (no apt-get at run time); keep the tag equal to playwright-core in package-lock.json
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
+    env:
+      PLAYWRIGHT_IMAGE_VERSION: 1.65.1
     timeout-minutes: 20
     strategy:
       fail-fast: false
@@ -76,20 +81,19 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Install WebKit only (browser binaries are not cached, restoring takes as long as downloading); 5 minutes per try, one retry
-        # this step hung for the full 20 minutes of the job three times on the same commit (2026-11-20); a hung try is stopped after 5 minutes and tried once more
-        # 2026-11-23: try 1 is stopped by `timeout`, but the apt-get it started keeps running and keeps the dpkg lock, so try 2 failed at once with
-        # «Could not get lock /var/lib/dpkg/lock-frontend … held by process (apt-get)» (job logs of runs 45169432774, 45254265117, 45270201156). Now a try that ends takes its apt-get with it,
-        # and the next try waits (at most two minutes) until nothing holds the lock.
+      - name: WebKit comes with the container image; check the image matches the locked Playwright version
+        # 2026-11-24 (night watch): on three of the last five main commits (8333d6a, a13f26f, 531e006) BOTH install tries timed out while apt-get
+        # was still downloading WebKit's system packages from the Ubuntu mirror (~290 kB/s). The job now runs in Playwright's own image, which
+        # already holds WebKit and every system package, so nothing is installed with apt. When Playwright is upgraded in package-lock.json,
+        # this step fails with a clear message until the image tag above is changed to the same version.
         run: |
-          for try in 1 2; do
-            if timeout --kill-after=15 300 npx playwright install --with-deps webkit; then exit 0; fi
-            echo "WebKit install try $try did not finish in 5 minutes or failed"
-            sudo pkill -x apt-get || true
-            sudo pkill -x dpkg || true
-            for wait in $(seq 1 24); do sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 || break; sleep 5; done
-          done
-          exit 1
+          want="$(node -p "require('../package-lock.json').packages['node_modules/playwright-core'].version")"
+          have="$(npx playwright --version | awk '{print $2}')"
+          echo "locked: $want, in image: $PLAYWRIGHT_IMAGE_VERSION, npx: $have"
+          if [ "$want" != "$PLAYWRIGHT_IMAGE_VERSION" ]; then
+            echo "::error::Playwright in package-lock.json is $want but the e2e container image is v$PLAYWRIGHT_IMAGE_VERSION: change both 'image:' and PLAYWRIGHT_IMAGE_VERSION in ci.yml to v$want"
+            exit 1
+          fi
         working-directory: app
       - name: E2E at 375 px (WebKit), one third of the files
         run: npx playwright test --trace off --shard=${{ matrix.shard }}/3
