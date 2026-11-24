@@ -8,6 +8,11 @@ NEXT_SAFE_ACTION: queue item 3 (Αποθήκη hierarchy / touch targets / feedb
 OPEN_BRANCHES: none owned by autopilot
 ```
 
+## Recovery after a failed or interrupted run
+- A run that dies leaves (a) its `autopilot/*` / `night/*` branch and PR on GitHub and (b) possibly a LOCK line. Next run: read LOCK → if older than 90 minutes it is STALE: note it in REPORT.md, take over. Look for an open PR on that branch: if CI is green and QUALITY.md holds → finish it (merge, update QUEUE/STATE); if red → read the FAILURE CONTEXT, fix or write the blocker; never start the same item again from scratch while its PR exists.
+- Max 2 attempts per failing step; the failure goes to BLOCKERS.md with evidence and the run switches to the next independent `todo` item.
+- Hour-07 (Istanbul) run = MORNING VERIFICATION only: facts → Turkish REPORT.md section → docs-only PR; no development, no merging of other PRs.
+
 ## Protocol (every scheduled run)
 1. Read `CLAUDE.md`, this file, `QUEUE.md`, `QUALITY.md`, `BLOCKERS.md`.
 2. `gh api` (REST only): latest `main` commit + its check runs; open PRs; commits/PR updates in the last 45 minutes by anyone else. If another agent (the interactive Claude Code session, Codex, Dependabot) changed the same files in the last 45 minutes → skip that item, take the next one. If the interactive session is clearly active (commit on main or PR update < 45 min, not authored by autopilot) → **do nothing**, write one line in REPORT.md «interactive session active».
