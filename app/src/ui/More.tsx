@@ -21,6 +21,7 @@ import { SignIn } from './SignIn';
 import { showUndo } from './Toast';
 import { weeklyCopy } from '../content/weekly-report';
 import { WeeklyReport } from './cx/WeeklyReport';
+import { setSun, sunMode } from './sunmode';
 import './more-v2.css';
 
 const MENU_ICONS = {
@@ -77,6 +78,13 @@ export function More() {
           <button key={l} aria-pressed={lang.value === l} onClick={() => setLang(l)}>{LANG_META[l].label}</button>
         ))}
       </div>
+
+      <h2>{t('ui.sun.title')}</h2>
+      <div class="seg two" role="group" aria-label={t('ui.sun.title')} data-testid="sun-toggle">
+        <button aria-pressed={!sunMode.value} data-testid="sun-off" onClick={() => void setSun(false)}>{t('ui.sun.off')}</button>
+        <button aria-pressed={sunMode.value} data-testid="sun-on" onClick={() => void setSun(true)}>{t('ui.sun.on')}</button>
+      </div>
+      <p class="muted">{t('ui.sun.note')}</p>
 
       <h2>{t('more.activeFarm')}</h2>
       <div class="seg two">

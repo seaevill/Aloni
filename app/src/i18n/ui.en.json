@@ -561,5 +561,9 @@
   "ui.more.group.reports": "Reports and photos",
   "ui.more.group.info": "Information",
   "ui.more.group.demo": "Demo (fictional data)",
-  "ui.spray.more": "More details (optional)"
+  "ui.spray.more": "More details (optional)",
+  "ui.sun.title": "Screen",
+  "ui.sun.off": "Normal",
+  "ui.sun.on": "Daylight",
+  "ui.sun.note": "Daylight: black on white, larger text and buttons for work in the sun or with gloves. Only the look changes; it stays on this phone."
 }

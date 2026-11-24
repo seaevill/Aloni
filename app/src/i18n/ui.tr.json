@@ -561,5 +561,9 @@
   "ui.more.group.reports": "Raporlar ve fotoğraflar",
   "ui.more.group.info": "Bilgi",
   "ui.more.group.demo": "Demo (kurgusal veri)",
-  "ui.spray.more": "Daha fazla bilgi (isteğe bağlı)"
+  "ui.spray.more": "Daha fazla bilgi (isteğe bağlı)",
+  "ui.sun.title": "Ekran",
+  "ui.sun.off": "Normal",
+  "ui.sun.on": "Gün ışığı",
+  "ui.sun.note": "Gün ışığı: beyaz üzerine siyah, güneşte veya eldivenle çalışmak için daha büyük yazı ve düğmeler. Yalnızca görünüm değişir; bu telefonda kalır."
 }
