@@ -5,6 +5,17 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-25 01:00 (gece vardiyası, otomatik) — Χωράφια parsel detayı
+- **Tamamlanan iyileştirme:** QUEUE #5 — parsel detayı artık adın hemen altında üç ana bilgiyle açılıyor: **Εμβαδόν**, hasat bekleme satırı (**Κοπή από …**; bilinmiyorsa kırmızı çerçeve aynen duruyor) ve **Τελευταίος ψεκασμός** (ürün · tarih). Önceden bekleme ve son ilaçlama çizimin, bitki etiketlerinin ve bilgi kartının altında, ilk ekranın dışındaydı.
+- **PR:** #547 — uygulandı, test edildi. Birleşme durumu bir sonraki bölümde/STATE.md'de.
+- **Özellik kaybı yok:** çizim, bitki etiketleri, Τοπογραφία/Υψόμετρο/ΟΣΔΕ, ΚΑΕΚ, kesim kayıtları, hava, ekimler, tarla işleri, su, «Τελευταίοι ψεκασμοί» listesi, geçmiş, analizler, düzenleme yerinde. Εμβαδόν alttaki karttan üste taşındı (iki kez görünmüyor). Yeni çeviri anahtarı yok.
+- **Önce/sonra (320/375/390 px, Demo çiftliği, Κάτω Κάμπος):** `docs/design/screenshots-2026-11-25/parcel-detail-{before,after}-*.png`. Yatay kaydırma yok.
+- **Testler (yerel):** yeni e2e önce kırmızı, sonra yeşil (3/3); tsc, vitest tamamı (806), eslint temiz; ilgili 42 Playwright testi geçti (chromium). WebKit yalnızca CI'da.
+- **Cloudflare önizleme:** herkese açık adres doğrulanamıyor; panel bağlantısı PR'ın «Workers Builds» kontrolünde.
+- **Kalan sorun (eski):** 320 px'te alt menüde «Χωράφια» yazısı iki satıra kayıyor (bu PR'dan önce de vardı).
+- **Sıradaki öncelik:** QUEUE #6 — çevrimdışı yazma denetimi.
+- **Bora'dan karar:** yok.
+
 ## 2026-11-24 gece (etkileşimli oturum) — ALONI NIGHT SHIFT, ilk iki ekran
 - **Birleşti (canlıda DEĞİL):** #544 Αποθήκη — «Υπόλοιπο» artık her ürün kartında adın hemen altındaki ilk satır, başlık boyutunda (22 px). #545 Φυτά — arama kutusunun ipucu yazısı telefonda kesiliyordu; arama tam satır aldı, ipucu kısaldı, «Ημερολόγιο σεζόν» düğmesi listenin sonuna taşındı. İlk ekranda hâlâ 6 bitki satırı.
 - **Önce/sonra (320/375/390 px, Demo çiftliği):** `docs/design/screenshots-2026-11-24/stock-p3/` ve `crops-p3/`. Üç genişlikte de yatay kaydırma yok.
