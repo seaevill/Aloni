@@ -5,6 +5,14 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-24 gece — Αποθήκη ve simülasyonlar
+- **Birleşti (canlıda DEĞİL):** #541 — Αποθήκη ürün kartında başlık tek satır (ad + ⓘ), bakiye en güçlü satır. CI tamamen yeşil (check, sql, static, 3 WebKit e2e, pr-size, Workers Builds). Özellik kaybı yok; Demo sayfası 8293 → 7219 px.
+- **Simülasyon A (saat 07 dalı) — doğrulandı:** geliştirme yapmadan Türkçe rapor üretti, kilit almadı, yalnızca docs PR'ı planladı, QUEUE'daki done/monitor satırlarını tekrar etmedi.
+- **Simülasyon B (çökmüş koşu, eski kilit) — doğrulandı:** 90 dakikadan genç kilitte durdu; eski olsaydı kırmızı PR'ın FAILURE CONTEXT'ini okuyup devam edecekti, sıfırdan başlamayacaktı. Not: kilit adındaki saat ile zaman damgası tutarsız olabilir; kural gereği ISO zaman geçerli.
+- **Hâlâ gerçek kanıt bekleyen:** bu gece 00:00 ve yarın 07:00 koşuları.
+- **Önizleme adresi:** hâlâ doğrulanamadı (yalnızca panel bağlantıları).
+- **Sıradaki:** QUEUE #4 — Φυτά listesi (yalnızca boşluk/yazı düzeni).
+
 ## 2026-11-24 akşam — otomasyon kurulumu ve ilk iş
 - **Otomasyon (doğrulandı):** bulut zamanlayıcı VAR ve çalışıyor: «Aloni autopilot (gece vardiyası)», her gece İstanbul 00:00–07:00 saatlik. Deneme ateşlemesi (18:15 UTC) yeni kurallarla GitHub'ı okudu, açık PR listesini aldı, etkileşimli oturumu doğru algılayıp «müdahale yok» dedi. Kayıtlı durum depodan okundu (`STATE.md`). Gerçek yazma (push/PR) gece koşusunun daha önceki PR'larıyla (#518–#520) kanıtlı; yeni kurallarla ilk gerçek gece koşusu bu gece 00:00.
 - **Sabah raporu:** ayrı «sabah doğrulaması» rutini kuruldu ama GitHub erişimi alamadı (403) → KAPATILDI. İşi gece vardiyasının 07:00 koşusuna taşıdım. İlk gerçek sabah raporu yarın 07:00 (İstanbul).
