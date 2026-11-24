@@ -48,9 +48,9 @@ test('surfaces: no nested cards, flat 56 px rows, hero is forest, title on sage,
   expect(rows[0]!.divider).toBe('1px');
   expect(rows[3]!.divider).toBe('0px');                                                  // the last row of a card has no divider
   const hero = await page.getByTestId('ds-hero').evaluate((e) => getComputedStyle(e).backgroundColor);
-  expect(hero).toBe('rgb(19, 74, 43)');
+  expect(hero).toBe('rgb(11, 53, 37)');
   const titleBg = await page.locator('.ds-title').evaluate((e) => { let n: Element | null = e; while (n && getComputedStyle(n).backgroundColor === 'rgba(0, 0, 0, 0)') n = n.parentElement; return n ? getComputedStyle(n).backgroundColor : ''; });
-  expect(titleBg).toBe('rgb(237, 242, 232)');                                           // sage page, not a forest band
+  expect(titleBg).toBe('rgb(245, 242, 233)');                                           // sage page, not a forest band
   const bar = page.getByTestId('ds-topbar');
   await expect(bar).toHaveAttribute('data-shown', 'no');
   await page.evaluate(() => window.scrollTo(0, 400));
@@ -108,7 +108,7 @@ test('17 crop illustrations: aria-hidden, sized, one fill colour and one stroke 
   const sizes = await svgs.evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().width)));
   expect(new Set(sizes)).toEqual(new Set([40, 96]));
   const paint = await page.locator('.ds-crop-fill').first().evaluate((e) => { const cs = getComputedStyle(e); return [cs.fill, cs.stroke]; });
-  expect(paint).toEqual(['rgb(234, 248, 196)', 'rgb(19, 74, 43)']);
+  expect(paint).toEqual(['rgb(234, 248, 196)', 'rgb(11, 53, 37)']);
   await expect(rows.first()).toContainText('Σπανάκι');
 });
 

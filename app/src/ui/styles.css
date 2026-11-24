@@ -222,3 +222,12 @@ h3 .count { display:inline-block; min-width:var(--sp-24); padding:0 var(--sp-6);
 
 /* «ready offline»: floats over the top of the screen (no layout shift under a tap that is already on its way), does not take taps, goes away by itself */
 .offline-note { position:fixed; inset-block-start:calc(env(safe-area-inset-top) + var(--sp-8)); inset-inline:var(--sp-16); margin:0 auto; inline-size:fit-content; max-inline-size:calc(100% - 2 * var(--sp-16)); z-index:10; pointer-events:none; box-shadow:var(--shadow-card); }
+
+/* ── Field Atelier P0 (2026-11-24): ivory canvas, warm-white cards, the bottom bar with a leaf-green marker, and the weather as a quiet card BELOW the day's work (the first screen is about what needs attention today) ── */
+nav.tabs { background:var(--card); border-top-color:var(--line); }
+nav.tabs button { position:relative; }
+nav.tabs button[aria-current="page"]::before { content:""; position:absolute; inset-block-start:0; inset-inline-start:50%; transform:translateX(-50%); inline-size:var(--nav-bar-w); block-size:var(--nav-bar-h); border-radius:var(--r-pill); background:var(--leaf); }
+.wx.dark { background:var(--card); color:var(--fg); border:var(--bw-1) solid var(--line); }
+.wx.dark h2, .wx.dark .wx-row, .wx.dark .wx-none, .wx.dark .wx-source { color:var(--fg); }
+.wx.dark .tile { background:var(--sage); }
+.wx.dark .tile small { color:var(--muted); }
