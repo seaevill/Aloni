@@ -2,9 +2,9 @@
 
 ```
 LOCK: none            # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
-LAST_RUN: 2026-11-24 evening, interactive session (trial fires of both triggers verified; see REPORT.md)
-LAST_COMPLETED: #544 (Αποθήκη balance first), #545 (Φυτά search hint fully visible, calendar button below the list); both merged with full CI green
-NEXT_SAFE_ACTION: queue item 5 (parcel detail: three key facts first; keep every card). Items 3, 3b (#541, #544) and 4 (#545) are done.
+LAST_RUN: 2026-11-25 01:00 Istanbul, night shift (autopilot/20261125-01-parcel-key-facts)
+LAST_COMPLETED: #547 (parcel detail: area, harvest wait, last spray first; queue item 5)
+NEXT_SAFE_ACTION: queue item 6 (offline write path audit). Items 1, 3, 3b, 4, 5 are done.
 OPEN_BRANCHES: none owned by autopilot
 ```
 
