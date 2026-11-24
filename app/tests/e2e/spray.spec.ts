@@ -126,8 +126,11 @@ test('a spraying entered 10 days late: refused without «Λόγος καθυστ
   await page.getByTestId('spray-save').click();
   await expect(page.getByTestId('spray-late-error')).toBeVisible(); // nothing saved without the reason
   await page.getByTestId('spray-late-reason').fill('Ξέχασα να το γράψω');
+  await expect(page.getByTestId('spray-flags').getByText('καθυστερημένη καταχώριση')).toBeVisible();   // the flag is shown in the form BEFORE saving
   await page.getByTestId('spray-save').click();
-  await expect(page.getByText('καθυστερημένη καταχώριση')).toBeVisible();
+  await expect(page.getByTestId('spray-saved')).toBeVisible();                                         // the form closes on save: the flag is not on Σήμερα any more (the old check raced that)
+  const stored = await page.evaluate(() => new Promise<Array<{ late_reason?: string }>>((res) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const q = r.result.transaction('job_spray').objectStore('job_spray').getAll(); q.onsuccess = () => res(q.result as Array<{ late_reason?: string }>); }; }));
+  expect(stored.map((x) => x.late_reason)).toEqual(['Ξέχασα να το γράψω']);                            // the record carries the reason: it is marked late
 });
 
 test('a label an UNSIGNED spray used is not edited in place: a change makes a NEW label with a reason; editing that replacement keeps the link', async ({ page }) => {
