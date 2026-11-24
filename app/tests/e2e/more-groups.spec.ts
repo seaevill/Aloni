@@ -3,7 +3,7 @@ import { fixClock } from './helpers/clock';
 
 // Άλλα is grouped by job (work and team · reports and history · information). Every entry that existed is still there and opens (zero feature loss); the Demo block has its own heading.
 const SHOTS = '../docs/design/screenshots-2026-11-24';
-test('Άλλα: eight entries in three labelled groups, each still opens; the Demo block is labelled', async ({ page }) => {
+test('Άλλα: the same eight entries, in the same order, under three group headings, each still opens; the Demo block is labelled', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await fixClock(page);
   await page.goto('/');
@@ -11,7 +11,9 @@ test('Άλλα: eight entries in three labelled groups, each still opens; the De
   await expect(page.getByTestId('today-counts')).toBeVisible();
   await page.locator('nav.tabs [data-tab="more"]').click();
   const menu = page.getByTestId('more-menu');
-  await expect(menu.locator('h2.menu-group')).toHaveText(['Εργασία και ομάδα', 'Αναφορές και ιστορικό', 'Πληροφορίες']);
+  await expect(menu.locator('h2.menu-group')).toHaveText(['Καθημερινή δουλειά', 'Αναφορές και φωτογραφίες', 'Πληροφορίες']);
+  const order = await menu.locator('button.row').evaluateAll((els) => els.map((e) => e.getAttribute('data-testid')));
+  expect(order).toEqual(['open-register', 'open-orders', 'open-worker-view', 'open-customers', 'open-workers', 'open-weekly-report', 'open-photos', 'open-info']);   // the order the earlier tests fixed: nothing moved, only headings were added
   for (const id of ['open-workers', 'open-customers', 'open-orders', 'open-worker-view', 'open-register', 'open-weekly-report', 'open-photos', 'open-info']) await expect(menu.getByTestId(id), id).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Επίδειξη (φανταστικά στοιχεία)' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);

@@ -557,8 +557,8 @@
   "ui.job.kind.sow": "Σπορά",
   "ui.job.kind.harvest": "Συγκομιδή",
   "ui.job.kind.other": "Άλλη εργασία",
-  "ui.more.group.work": "Εργασία και ομάδα",
-  "ui.more.group.reports": "Αναφορές και ιστορικό",
+  "ui.more.group.work": "Καθημερινή δουλειά",
+  "ui.more.group.reports": "Αναφορές και φωτογραφίες",
   "ui.more.group.info": "Πληροφορίες",
   "ui.more.group.demo": "Επίδειξη (φανταστικά στοιχεία)"
 }
