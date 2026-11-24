@@ -38,3 +38,6 @@
 .stock-v2 .product-card > [data-testid="product-source-open"] { grid-column: 1; grid-row: 1; }
 .stock-v2 .product-card > .product-info { grid-column: 2; grid-row: 1; }
 .stock-v2 .product-card [data-testid="product-stock"] { color: var(--fg); font-size: var(--fs-16); font-weight: 800; }
+
+/* Αποθήκη second pass (night mission A): the balance is the FIRST line under the name (it used to sit below tags, warning and pack size), at heading size, so the farmer reads «how much is left» without searching. Only the visual order changes; the DOM order and every id stay. */
+.stock-v2 .product-card [data-testid="product-stock"] { order: -1; font-size: var(--fs-h2); line-height: 1.2; margin-block: 0 var(--sp-4); }

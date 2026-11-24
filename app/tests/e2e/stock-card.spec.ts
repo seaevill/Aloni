@@ -18,7 +18,10 @@ test('Demo Αποθήκη (375 px): name and ⓘ share one line, both open the s
   expect(b!.x).toBeGreaterThan(a!.x + a!.width - 2);                          // ⓘ to the right of the name
   expect(a!.height).toBeGreaterThanOrEqual(56); expect(b!.height).toBeGreaterThanOrEqual(56); expect(b!.width).toBeGreaterThanOrEqual(56);
   const font = await card.getByTestId('product-stock').evaluate((e) => ({ size: parseFloat(getComputedStyle(e).fontSize), weight: Number(getComputedStyle(e).fontWeight) }));
-  expect(font.size).toBeGreaterThanOrEqual(16);
+  expect(font.size).toBeGreaterThanOrEqual(22);                               // heading size
+  const [nb, bal, tags] = [await name.boundingBox(), await card.getByTestId('product-stock').boundingBox(), await card.locator('.tags').first().boundingBox()];
+  expect(bal!.y).toBeGreaterThan(nb!.y + nb!.height - 2);                      // balance directly under the name…
+  expect(bal!.y).toBeLessThan(tags!.y);                                        // …and above the tags, warning and pack size
   expect(font.weight).toBeGreaterThanOrEqual(700);
   for (const id of ['stock-open', 'labeluse-open']) await expect(card.getByTestId(id), id).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
