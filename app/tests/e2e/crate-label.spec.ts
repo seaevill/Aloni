@@ -21,8 +21,10 @@ test('a harvest of today opens its crate label: crop, day, parcel, crates, lot a
     };
   }));
   // the sheet rides on the address: open the label of that harvest directly (clicking through two rows was flaky in WebKit CI)
+  // a COLD start on the address (not a same-page hash change followed by a reload): the CI failure context showed Σήμερα with the harvest recorded but no sheet, i.e. the address had been
+  // rewritten by a startup effect that was still pending when the hash changed. A cold start is also what a shared link does.
+  await page.goto('about:blank');
   await page.goto('/#/own/today/sheet/crate/3f2a9c1e-7b44-4d0a-8c11-aa00bb22cc33');
-  await page.reload();
   const label = page.getByTestId('crate-label');
   await expect(label).toBeVisible();
   await expect(label.getByTestId('crate-crop')).toHaveText('Σπανάκι');
