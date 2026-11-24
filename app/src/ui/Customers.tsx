@@ -1,3 +1,4 @@
+import { useSubmit } from './useSubmit';
 import { useEffect, useState } from 'preact/hooks';
 import { activeFarm, dataVersion, db } from '../db';
 import { formatDate, t } from '../i18n';
@@ -58,6 +59,7 @@ export function Customers({ onBack }: { onBack: () => void }) {
 
 function NewCustomer({ onBack, onSave }: { onBack: () => void; onSave: (c: Customer) => Promise<void> }) {
   const [name, setName] = useState(''); const [phone, setPhone] = useState(''); const [note, setNote] = useState(''); const [bad, setBad] = useState(false);
+  const { busy, submit: guard } = useSubmit();
   const submit = async () => { if (name.trim() === '') { setBad(true); return; } await onSave({ id: crypto.randomUUID(), name: name.trim(), phone: phone.trim(), note: note.trim() }); };
   return (
     <section data-testid="customer-new">
@@ -67,7 +69,7 @@ function NewCustomer({ onBack, onSave }: { onBack: () => void; onSave: (c: Custo
       {bad && <p class="msg error" role="alert" data-testid="customer-name-error">{t('ui.cust.err.name')}</p>}
       <label class="field">{t('ui.cust.phone')}<input class="input" type="tel" value={phone} autoComplete="off" data-testid="customer-phone" onInput={(e) => setPhone((e.target as HTMLInputElement).value)} /></label>
       <label class="field">{t('ui.cust.note')}<input class="input" value={note} autoComplete="off" data-testid="customer-note" onInput={(e) => setNote((e.target as HTMLInputElement).value)} /></label>
-      <button class="btn" data-testid="customer-save" onClick={() => void submit()}>{t('ui.cust.save')}</button>
+      <button class="btn" data-testid="customer-save" disabled={busy} onClick={() => void guard(submit)}>{t('ui.cust.save')}</button>
     </section>
   );
 }
@@ -79,6 +81,7 @@ function CustomerPage({ customer, orders, map, onBack, onSaved, server, cropRows
   const cid = clientIdOf(customer.id);
   const cropName = (s: string): string => CATALOG.find((c) => c.slug === s)?.el ?? s;
   const mine = Object.entries(orders.days ?? {}).flatMap(([d, byClient]) => Object.entries(byClient[cid] ?? {}).map(([product, n]) => ({ d, slug: map[product] ?? '', n }))).filter((x) => x.slug !== '').sort((a, b) => b.d.localeCompare(a.d));
+  const { busy, submit: guard } = useSubmit();
   const submit = async () => {
     setSaved(false);
     if (slug === '') { setErr('crop'); return; }
@@ -113,7 +116,7 @@ function CustomerPage({ customer, orders, map, onBack, onSaved, server, cropRows
       {err === 'crates' && <p class="msg error" role="alert" data-testid="order-error">{t('ui.cust.err.crates')}</p>}
       {err === 'day' && <p class="msg error" role="alert" data-testid="order-error">{t('ui.cust.err.day')}</p>}
       {saved && <p class="msg" role="status" data-testid="order-saved">{t('ui.cust.saved')}</p>}
-      <button class="btn" data-testid="order-save" onClick={() => void submit()}>{t('ui.cust.save')}</button>
+      <button class="btn" data-testid="order-save" disabled={busy} onClick={() => void guard(submit)}>{t('ui.cust.save')}</button>
     </section>
   );
 }
