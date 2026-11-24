@@ -231,3 +231,8 @@ nav.tabs button[aria-current="page"]::before { content:""; position:absolute; in
 .wx.dark h2, .wx.dark .wx-row, .wx.dark .wx-none, .wx.dark .wx-source { color:var(--fg); }
 .wx.dark .tile { background:var(--sage); }
 .wx.dark .tile small { color:var(--muted); }
+/* the five weather days wrap into rows when the text is enlarged (200 % text made this row 190 px wider than the screen once the weather had loaded) */
+.wx-row { display:grid; grid-template-columns:repeat(auto-fit, minmax(var(--wx-day-min), 1fr)); gap:var(--sp-8) var(--sp-4); }
+/* the two capture buttons stack when the text is enlarged (a long Greek word did not fit half the screen at 200 % text) and a word may break instead of leaving its button */
+.pair { grid-template-columns:repeat(auto-fit, minmax(min(100%, var(--pair-min)), 1fr)); }
+.pair .btn { overflow-wrap:anywhere; }

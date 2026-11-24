@@ -556,5 +556,9 @@
   "ui.job.kind.irrigate": "Irrigation",
   "ui.job.kind.sow": "Sowing",
   "ui.job.kind.harvest": "Harvest",
-  "ui.job.kind.other": "Other job"
+  "ui.job.kind.other": "Other job",
+  "ui.more.group.work": "Daily work",
+  "ui.more.group.reports": "Reports and photos",
+  "ui.more.group.info": "Information",
+  "ui.more.group.demo": "Demo (fictional data)"
 }
