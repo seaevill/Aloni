@@ -75,3 +75,7 @@
   align-content: center;
   min-block-size: var(--tap);
 }
+
+/* Field Atelier: the menu is grouped by job (work and team · reports and history · information); the group headings sit inside the same list */
+.more-v2 .menu h2.menu-group { margin:var(--sp-16) var(--sp-16) var(--sp-4); font-size:var(--fs-14); font-weight:800; letter-spacing:var(--ls-h2); color:var(--muted); }
+.more-v2 .menu h2.menu-group:first-child { margin-top:var(--sp-12); }

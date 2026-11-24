@@ -56,13 +56,16 @@ export function More() {
     <section class="more-v2">
       <header class="today-head band"><h1>{t('more.title')}</h1></header>
       <nav class="menu" data-testid="more-menu" aria-label={t('more.menu')}>
-        <button class="row" data-testid="open-register" onClick={() => setView('register')}><MenuIcon name="register" /><span>{t('register.open')}</span><span aria-hidden="true" class="chev" /></button>
+        <h2 class="menu-group">{t('ui.more.group.work')}</h2>
+        <button class="row" data-testid="open-workers" onClick={() => setView('workers')}><MenuIcon name="workers" /><span>{t('workers.open')}</span><span aria-hidden="true" class="chev" /></button>
+        <button class="row" data-testid="open-customers" onClick={() => setView('customers')}><MenuIcon name="workers" /><span>{t('ui.cust.open')}</span><span aria-hidden="true" class="chev" /></button>
         <button class="row" data-testid="open-orders" onClick={() => setView('orders')}><MenuIcon name="orders" /><span>{t('orders.open')}</span><span aria-hidden="true" class="chev" /></button>
         {activeFarm.value === DEMO_FARM_ID && <button class="row" data-testid="open-worker-view" onClick={() => { workerView.value = ''; }}><MenuIcon name="worker" /><span>{t('more.workerView')}</span><span aria-hidden="true" class="chev" /></button>}
-        <button class="row" data-testid="open-customers" onClick={() => setView('customers')}><MenuIcon name="workers" /><span>{t('ui.cust.open')}</span><span aria-hidden="true" class="chev" /></button>
-        <button class="row" data-testid="open-workers" onClick={() => setView('workers')}><MenuIcon name="workers" /><span>{t('workers.open')}</span><span aria-hidden="true" class="chev" /></button>
+        <h2 class="menu-group">{t('ui.more.group.reports')}</h2>
+        <button class="row" data-testid="open-register" onClick={() => setView('register')}><MenuIcon name="register" /><span>{t('register.open')}</span><span aria-hidden="true" class="chev" /></button>
         <button class="row" data-testid="open-weekly-report" onClick={() => setView('weekly')}><MenuIcon name="register" /><span>{weeklyCopy[lang.value].title}</span><span aria-hidden="true" class="chev" /></button>
         <button class="row" data-testid="open-photos" onClick={() => setView('photos')}><MenuIcon name="photos" /><span>{t('photos.title')}</span><span aria-hidden="true" class="chev" /></button>
+        <h2 class="menu-group">{t('ui.more.group.info')}</h2>
         <button class="row" data-testid="open-info" onClick={() => setView('info')}><MenuIcon name="info" /><span>{t('more.info')}</span><span aria-hidden="true" class="chev" /></button>
       </nav>
 
@@ -82,6 +85,7 @@ export function More() {
         ))}
       </div>
 
+      <h2>{t('ui.more.group.demo')}</h2>
       <button class="btn" data-testid="demo-load" onClick={async () => { await loadDemo(); setMsg(t('more.demoLoaded')); }}>{demoLabel}</button>
       {hasDemo.value && (
         <button class="btn danger" onClick={async () => { await deleteDemo(); showUndo(t('more.demoRemoved'), loadDemo); }}>{t('more.removeDemo')}</button>

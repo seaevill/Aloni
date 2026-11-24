@@ -556,5 +556,9 @@
   "ui.job.kind.irrigate": "Sulama",
   "ui.job.kind.sow": "Ekim",
   "ui.job.kind.harvest": "Hasat",
-  "ui.job.kind.other": "Diğer iş"
+  "ui.job.kind.other": "Diğer iş",
+  "ui.more.group.work": "İş ve ekip",
+  "ui.more.group.reports": "Raporlar ve geçmiş",
+  "ui.more.group.info": "Bilgi",
+  "ui.more.group.demo": "Demo (kurgusal veri)"
 }
