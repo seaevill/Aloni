@@ -5,6 +5,17 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-25 02:00 (gece vardiyası, otomatik) — çevrimdışı kayıt ifadesi
+- **Tamamlanan iyileştirme:** QUEUE #6 (ilk dilim) — Σήμερα ekranında ilaçlama, hasat, iş ve gözlem kaydedildiğinde mevcut onay yazısının altına kaydın **nerede** olduğu yazılıyor: «Αποθηκεύτηκε στο τηλέφωνο. Θα σταλεί όταν συνδεθεί λογαριασμός.» Eşitleme açıkken ve kayıt bekliyorsa «Αποθηκεύτηκε · θα σταλεί όταν έχει σήμα»; gönderildiyse ek satır yok. Demo çiftliğinde bu satır hiç çıkmıyor (Demo hiçbir yere gönderilmez).
+- **PR:** #548 — uygulandı, test edildi. Birleşme durumu PR'da (CI bekleniyor).
+- **Özellik kaybı yok:** eski onay yazıları aynen duruyor; yeni çeviri anahtarı yok (var olanlar kullanıldı).
+- **Önce/sonra (320/375/390 px, gerçek çiftlik, uçak modu, hasat sonrası):** `docs/design/screenshots-2026-11-25/saved-where/`. Yatay kaydırma yok.
+- **Testler (yerel):** yeni birim testi önce kırmızı sonra yeşil; vitest tamamı 810 geçti; tsc, eslint temiz; ilgili 21 Playwright testi geçti. 2 çevrimdışı test yerelde yalnızca bilinen `icon-192` ortam hatasıyla düşüyor (tüm kontrolleri geçtikten sonra); karar CI'da (WebKit).
+- **Cloudflare önizleme:** herkese açık adres doğrulanamıyor; panel bağlantısı PR'ın «Workers Builds» kontrolünde.
+- **Kalan sorun:** geri-al bildirimleri (parsel, ekim, ürün, etiket, işçi, analiz), hasat formundaki «N κλούβες» satırı ve fotoğraflar henüz bu satırı göstermiyor → QUEUE #6b.
+- **Sıradaki öncelik:** QUEUE #6b.
+- **Bora'dan karar:** yok.
+
 ## 2026-11-25 01:00 (gece vardiyası, otomatik) — Χωράφια parsel detayı
 - **Tamamlanan iyileştirme:** QUEUE #5 — parsel detayı artık adın hemen altında üç ana bilgiyle açılıyor: **Εμβαδόν**, hasat bekleme satırı (**Κοπή από …**; bilinmiyorsa kırmızı çerçeve aynen duruyor) ve **Τελευταίος ψεκασμός** (ürün · tarih). Önceden bekleme ve son ilaçlama çizimin, bitki etiketlerinin ve bilgi kartının altında, ilk ekranın dışındaydı.
 - **PR:** #547 — uygulandı, test edildi. Birleşme durumu bir sonraki bölümde/STATE.md'de.

@@ -27,6 +27,7 @@ test('a spray with a SIGNED label: recorded with «Ψέκασε», the exact wai
   await expect(page.getByTestId('spray-flags')).toHaveCount(0); // signed, in range, in date, stock enough
   await page.getByTestId('spray-save').click();
   await expect(page.getByTestId('spray-saved')).toHaveText('Ο ψεκασμός καταγράφηκε.');
+  await expect(page.getByTestId('spray-saved-where')).toHaveText('Αποθηκεύτηκε στο τηλέφωνο. Θα σταλεί όταν συνδεθεί λογαριασμός.');   // offline: it says where the record is (queue item 6)
   await expect(page.getByTestId('today-done-row')).toContainText('Ψεκασμός · Σπανάκι · Kocide 2000');   // «who did what today» for the owner
   await openHistory(page);
   const card = page.getByTestId('spray');
