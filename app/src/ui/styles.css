@@ -161,6 +161,8 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 .facts { display:grid; gap:var(--sp-8); }
 .fact { display:flex; justify-content:space-between; gap:var(--sp-12); }
 .fact span { color:var(--muted); }
+/* parcel detail: a long value (product · date) goes under its label instead of squeezing into the right column */
+.fact.stack { flex-direction:column; gap:var(--sp-2); }
 
 /* a dark header band on a detail screen (prototype) */
 .detail .band { background:var(--forest-2); color:var(--white); margin:0 calc(-1 * var(--sp-16)) var(--sp-12); padding:var(--sp-4) var(--sp-16) var(--sp-14); border-radius:0 0 var(--r-card) var(--r-card); }
