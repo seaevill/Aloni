@@ -135,6 +135,7 @@ test('approval: only a complete label can be signed (name + real date); editing 
 
   await card.getByRole('button', { name: 'Επεξεργασία' }).click();
   await inputs(page).nth(3).fill('3');
+  console.log('DIAG labeluse edit inputs', JSON.stringify(await inputs(page).evaluateAll((els) => els.map((e) => [(e as HTMLInputElement).value, (e as HTMLInputElement).disabled, e.closest('label')?.textContent?.slice(0, 30) ?? '']))));
   await page.getByTestId('labeluse-save').click();
   await expect(card.getByTestId('labeluse-status')).toHaveText('Χωρίς υπογραφή γεωπόνου');
   await expect(card.getByTestId('labeluse-why')).toContainText('η συγκομιδή μένει κλειστή');   // unsigned: the card says WHY harvest is closed
