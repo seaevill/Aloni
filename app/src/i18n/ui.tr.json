@@ -565,5 +565,6 @@
   "ui.sun.title": "Ekran",
   "ui.sun.off": "Normal",
   "ui.sun.on": "Gün ışığı",
-  "ui.sun.note": "Gün ışığı: beyaz üzerine siyah, güneşte veya eldivenle çalışmak için daha büyük yazı ve düğmeler. Yalnızca görünüm değişir; bu telefonda kalır."
+  "ui.sun.note": "Gün ışığı: beyaz üzerine siyah, güneşte veya eldivenle çalışmak için daha büyük yazı ve düğmeler. Yalnızca görünüm değişir; bu telefonda kalır.",
+  "ui.search.hint": "Bir ad yazın (Latin harfleriyle de olur)"
 }
