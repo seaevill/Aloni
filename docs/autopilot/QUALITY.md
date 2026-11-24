@@ -2,7 +2,8 @@
 
 1. GitHub checks on the PR head: `check`, `sql`, `static`, `e2e (shard 1/3, 2/3, 3/3)`, `pr-size` green; `Workers Builds` green or explained (preview build). A rerun that turns red→green is NOT proof of a fix: say so in the PR and in REPORT.md.
 2. No supabase/** change (those PRs stay open for Bora's «Supabase migrate (manual)» workflow), no applied migration edited, no RLS/safety rule weakened.
-3. No test skipped, deleted, loosened or retried more; flaky tests are explained with evidence (CI failure context) or left in BLOCKERS.md.
+3. **Before creating ANY test or source file run `git ls-files <path>`**: never overwrite an existing file with `cat >` (2026-11-24: PR #537 replaced the existing harvest/worker/parcel double-tap safety test by accident; restored in the next PR). Review `git diff --stat` for unexpected deletions before every push.
+3b. No test skipped, deleted, loosened or retried more; flaky tests are explained with evidence (CI failure context) or left in BLOCKERS.md.
 4. Full local `vitest` + `eslint . --max-warnings 0` + `tsc --noEmit` pass BEFORE pushing (CI `static` runs the tokens/contrast/i18n tests: no lengths/colours outside tokens.css, no JSX text without t()).
 5. Zero feature loss: every existing test id/route/translation key still present; the PR body lists what was verified.
 6. Mobile: no horizontal scroll at 320/375/390/768 (widths-scan spec), touch targets ≥ 56×44, text ≥ 14 px, axe serious/critical = 0.
