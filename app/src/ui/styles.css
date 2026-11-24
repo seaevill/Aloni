@@ -238,3 +238,7 @@ nav.tabs button[aria-current="page"]::before { content:""; position:absolute; in
 .pair .btn { overflow-wrap:anywhere; }
 html[data-sun] * { box-shadow:none !important; }
 html[data-sun] .card, html[data-sun] .row { border-color:var(--fg); }
+
+/* crate quick steps (−1 +1 +5 +10): as many per row as fit, the rest wrap (large text) */
+.seg.steps { grid-template-columns:repeat(auto-fit, minmax(var(--step-min), 1fr)); }
+.seg.jumps button { min-height:var(--tap-big); font-size:var(--fs-22); font-weight:700; }   /* worker counter: the jump buttons are as tall as the +/- ones */

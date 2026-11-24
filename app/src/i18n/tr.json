@@ -792,5 +792,7 @@
   "tomorrow.covered": "Karşılanıyor",
   "tomorrow.surplus": "{n} fazla",
   "tomorrow.supply": "Hazır ekim: {free} · beklemede (sayılmaz): {held} · bilinmeyen (sayılmaz): {unknown}",
-  "tomorrow.unmapped": "Ürüne bağlanmamış {n} ürün yukarıda görünmüyor."
+  "tomorrow.unmapped": "Ürüne bağlanmamış {n} ürün yukarıda görünmüyor.",
+  "harvest.more5": "+5",
+  "harvest.more10": "+10"
 }
