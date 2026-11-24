@@ -1,7 +1,7 @@
 # Autopilot state (updated by every run; read it first)
 
 ```
-LOCK: none            # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
+LOCK: night-20261125-01 2026-11-24T22:10Z autopilot/20261125-01-parcel-key-facts # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
 LAST_RUN: 2026-11-24 evening, interactive session (trial fires of both triggers verified; see REPORT.md)
 LAST_COMPLETED: #544 (Αποθήκη balance first), #545 (Φυτά search hint fully visible, calendar button below the list); both merged with full CI green
 NEXT_SAFE_ACTION: queue item 5 (parcel detail: three key facts first; keep every card). Items 3, 3b (#541, #544) and 4 (#545) are done.
