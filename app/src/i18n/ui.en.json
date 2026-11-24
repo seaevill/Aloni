@@ -565,5 +565,6 @@
   "ui.sun.title": "Screen",
   "ui.sun.off": "Normal",
   "ui.sun.on": "Daylight",
-  "ui.sun.note": "Daylight: black on white, larger text and buttons for work in the sun or with gloves. Only the look changes; it stays on this phone."
+  "ui.sun.note": "Daylight: black on white, larger text and buttons for work in the sun or with gloves. Only the look changes; it stays on this phone.",
+  "ui.search.hint": "Type a name (Latin letters work too)"
 }

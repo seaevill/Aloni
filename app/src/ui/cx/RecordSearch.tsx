@@ -1,6 +1,6 @@
 import { useId } from 'preact/hooks';
 import { recordSearchCopy } from '../../content/record-search';
-import { lang } from '../../i18n';
+import { lang, t } from '../../i18n';
 import './record-search-v2.css';
 
 const greek: Readonly<Record<string, string>> = {
@@ -24,7 +24,7 @@ export function RecordSearch({ query, onQuery, empty }: { query: string; onQuery
   const words = recordSearchCopy[lang.value];
   return <div class="record-search">
     <label for={id}>{words.caption}</label>
-    <input id={id} type="search" class="input" data-testid="record-search" value={query}
+    <input id={id} type="search" class="input" data-testid="record-search" placeholder={t('ui.search.hint')} value={query}
       onInput={(event) => onQuery(event.currentTarget.value)} />
     {empty && <p role="status">{words.empty}</p>}
   </div>;
