@@ -5,6 +5,14 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-24 gece (etkileşimli oturum) — ALONI NIGHT SHIFT, ilk iki ekran
+- **Birleşti (canlıda DEĞİL):** #544 Αποθήκη — «Υπόλοιπο» artık her ürün kartında adın hemen altındaki ilk satır, başlık boyutunda (22 px). #545 Φυτά — arama kutusunun ipucu yazısı telefonda kesiliyordu; arama tam satır aldı, ipucu kısaldı, «Ημερολόγιο σεζόν» düğmesi listenin sonuna taşındı. İlk ekranda hâlâ 6 bitki satırı.
+- **Önce/sonra (320/375/390 px, Demo çiftliği):** `docs/design/screenshots-2026-11-24/stock-p3/` ve `crops-p3/`. Üç genişlikte de yatay kaydırma yok.
+- **Testler:** CI tamamen yeşil (check, sql, static, 3 WebKit e2e, pr-size, Workers Builds) her iki PR'da. Yerelde stock.spec/products.spec offline testleri `icon-192.png` hatasıyla düşüyor; temiz main'de de aynı (ortam sorunu, CI yeşil).
+- **Cloudflare:** derleme başarılı; herkese açık önizleme adresi alınamadı (doğrulanmadı). Panel bağlantıları: #544 https://dash.cloudflare.com/95b3c021891c1ac025fc5a028ac5a2b7/workers/services/view/aloni/production/previews/claude-stock-balance-first/builds/10a19ee1-8ce6-4d70-ae1a-3bb529af0f62 · #545 https://dash.cloudflare.com/95b3c021891c1ac025fc5a028ac5a2b7/workers/services/view/aloni/production/previews/claude-crops-rhythm/builds/ae3f3123-f09a-486d-9767-2cc9cd9dfbd0
+- **Telefonda önce bak:** Αποθήκη (kart başına büyük «Υπόλοιπο»), Φυτά (arama ipucu tam görünüyor).
+- **Sıradaki:** QUEUE #5 Χωράφια parsel detayı (üç ana bilgi önce), sonra Σήμερα incelemesi. Gece rutini 00:00'dan itibaren devam eder.
+
 ## 2026-11-24 gece — Αποθήκη ve simülasyonlar
 - **Birleşti (canlıda DEĞİL):** #541 — Αποθήκη ürün kartında başlık tek satır (ad + ⓘ), bakiye en güçlü satır. CI tamamen yeşil (check, sql, static, 3 WebKit e2e, pr-size, Workers Builds). Özellik kaybı yok; Demo sayfası 8293 → 7219 px.
 - **Simülasyon A (saat 07 dalı) — doğrulandı:** geliştirme yapmadan Türkçe rapor üretti, kilit almadı, yalnızca docs PR'ı planladı, QUEUE'daki done/monitor satırlarını tekrar etmedi.
