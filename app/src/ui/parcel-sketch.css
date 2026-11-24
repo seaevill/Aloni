@@ -42,3 +42,4 @@
 /* a <button> does not inherit the page font: its text came out at 13.3 px / 11.1 px (below the 14 px floor) once the tiles had loaded */
 .parcel-sketch-tile { font: inherit; }
 .parcel-sketch-tile small { font-size: var(--fs-14); }
+.parcel-sketch-state { display:flex; justify-content:flex-start; }
