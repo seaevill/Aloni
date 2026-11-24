@@ -20,6 +20,8 @@ import type { Row } from '../db/schema';
 import { useRows } from './useRows';
 import { matchesRecord, RecordSearch } from './cx/RecordSearch';
 import { Status, Title } from './screens';
+import type { I18nKey } from '../i18n';
+import { Chip } from './ds';
 
 export function Parcels() {
   const [query, setQuery] = useState('');
@@ -54,10 +56,11 @@ export function Parcels() {
         <div class="parcel-sketch-grid">
           {live.map((r) => {
             const wait = parcelWait(String(r.id), instantOf(new Date()) ?? '', plantings.rows ?? [], links.rows ?? [], sprays.rows ?? [], labels.rows ?? []);
+            const short = SHORT[wait.state];
             return <button type="button" class="parcel-sketch-tile" key={r.id} data-testid="parcel-sketch-open" data-wait={wait.state} onClick={() => setShownId(String(r.id))}>
               <ParcelSketch boundary={r.boundary} sample={demo ? r.sketch : undefined} decorative />
               <strong>{String(r.name)}</strong>
-              <small data-testid="parcel-sketch-status">{waitLine(wait)}</small>
+              <span class="parcel-sketch-state" data-testid="parcel-sketch-status"><Chip tone={short.tone}>{t(short.key)}</Chip></span>
             </button>;
           })}
         </div>
@@ -74,3 +77,10 @@ export function Parcels() {
     </section>
   );
 }
+
+/** the short state of a field on its sketch tile (the full sentence is on the row below): the same three words the crop chips use */
+const SHORT = {
+  free: { tone: 'ready', key: 'ui.crops.chip.free' },
+  running: { tone: 'hold', key: 'ui.crops.chip.wait' },
+  unknown: { tone: 'unknown', key: 'ui.crops.chip.unknown' },
+} as const satisfies Record<string, { tone: 'ready' | 'hold' | 'unknown'; key: I18nKey }>;
