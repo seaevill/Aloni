@@ -1,6 +1,9 @@
 # ALONI — AUTOPILOT RAPORU (Türkçe, Bora için)
 
-Her koşu en üste yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
+**Adresler (Cloudflare hesabından Bora'nın doğrulaması):** hesap alt alanı `ormanbora`; Worker `aloni`; canlı adres https://aloni.ormanbora.workers.dev ; Worker önizleme özelliği açık.
+**PR önizleme adresleri — durum:** bu ortamdan `workers.dev` adreslerine erişilemiyor (çıkış vekili reddediyor) ve Cloudflare API/CLI anahtarı yok; bu yüzden herhangi bir PR önizleme adresini **doğrulayamadım**. Her PR'ın «Workers Builds: aloni» kontrolü (başarılı/başarısız) ve panel bağlantısı (`details_url`, biçim: `https://dash.cloudflare.com/<hesap>/workers/services/view/aloni/production/previews/<dal-adı>/builds/<derleme-no>`) rapora yazılır. **Tahmini** önizleme adresi biçimi (Cloudflare'in belgelenmiş dal-takma-adı kuralı, DOĞRULANMADI): `https://<dal-adı-küçük-harf-tire>-aloni.ormanbora.workers.dev`. Ana adres önizleme DEĞİL, canlıdır. Doğru önizleme adresini görmek için Bora bir PR'ın panel bağlantısını açıp «Preview URL»ü bir kez bu satıra yapıştırırsa biçim doğrulanmış olur.
+
+Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
 ## 2026-11-24 akşam — otomasyon kurulumu ve ilk iş
 - **Otomasyon (doğrulandı):** bulut zamanlayıcı VAR ve çalışıyor: «Aloni autopilot (gece vardiyası)», her gece İstanbul 00:00–07:00 saatlik. Deneme ateşlemesi (18:15 UTC) yeni kurallarla GitHub'ı okudu, açık PR listesini aldı, etkileşimli oturumu doğru algılayıp «müdahale yok» dedi. Kayıtlı durum depodan okundu (`STATE.md`). Gerçek yazma (push/PR) gece koşusunun daha önceki PR'larıyla (#518–#520) kanıtlı; yeni kurallarla ilk gerçek gece koşusu bu gece 00:00.
