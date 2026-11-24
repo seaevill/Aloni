@@ -80,6 +80,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Let git read the checkout inside the container (the build id in Άλλα comes from `git rev-parse HEAD`)
+        # without this, git refuses the repo (dubious ownership) and the build id falls back to «local», which greek-ui.spec reports as an English word
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - run: npm ci
       - name: WebKit comes with the container image; check the image matches the locked Playwright version
         # 2026-11-24 (night watch): on three of the last five main commits (8333d6a, a13f26f, 531e006) BOTH install tries timed out while apt-get
