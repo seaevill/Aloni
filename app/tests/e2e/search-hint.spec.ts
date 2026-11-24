@@ -11,7 +11,7 @@ test('search fields carry a hint and still filter (Greek name by Latin letters)'
   for (const tab of ['crops', 'parcels']) {
     await page.locator(`nav.tabs [data-tab="${tab}"]`).click();
     const box = page.getByTestId('record-search');
-    await expect(box).toHaveAttribute('placeholder', 'Πληκτρολογήστε ένα όνομα (και λατινικά)');
+    await expect(box).toHaveAttribute('placeholder', 'Όνομα (και λατινικά)');
     await box.fill('xyz-nothing');
     await expect(page.getByRole('status').filter({ hasText: 'Δεν βρέθηκε' })).toBeVisible();
     await box.fill('');
