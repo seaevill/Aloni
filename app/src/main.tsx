@@ -10,6 +10,7 @@ import { App } from './ui/App';
 import { db, initDb } from './db';
 import { ensureAllLangs, ensureLang, lang } from './i18n';
 import { bootSync } from './sync/boot';
+import { loadSun } from './ui/sunmode';
 import { onNeedRefresh, onOfflineReady, setApply, watchDirty, watchForUpdates } from './pwa/update';
 
 document.documentElement.lang = lang.value;
@@ -17,6 +18,7 @@ setApply(registerSW({ immediate: true, onNeedRefresh, onOfflineReady, onRegister
 watchDirty();
 installErrorLog(db);      // the app's own errors are kept on this phone only (Info → «Αναφορά σφάλματος»); nothing is sent
 void initDb().finally(async () => {
+  await loadSun().catch(() => undefined);      // «Φως ημέρας» before the first screen: no flash of the normal look
   await ensureLang(lang.value).catch(() => undefined);      // the phone's language (not Greek) is loaded before the first screen
 
   if (import.meta.env.VITE_DS_GALLERY === 'true' && location.search.includes('ds-gallery')) { const { Gallery } = await import('./ui/ds/Gallery'); render(<Gallery />, document.getElementById('app')!); return; }   // never in production

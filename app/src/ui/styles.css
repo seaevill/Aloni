@@ -236,3 +236,5 @@ nav.tabs button[aria-current="page"]::before { content:""; position:absolute; in
 /* the two capture buttons stack when the text is enlarged (a long Greek word did not fit half the screen at 200 % text) and a word may break instead of leaving its button */
 .pair { grid-template-columns:repeat(auto-fit, minmax(min(100%, var(--pair-min)), 1fr)); }
 .pair .btn { overflow-wrap:anywhere; }
+html[data-sun] * { box-shadow:none !important; }
+html[data-sun] .card, html[data-sun] .row { border-color:var(--fg); }
