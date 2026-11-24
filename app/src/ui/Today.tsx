@@ -296,7 +296,6 @@ export function Today() {
           <button class="btn lime" data-testid="urgent-action" onClick={() => { const id = urgentPlanting(urgent.p); if (id) openSheet('wait', id); else setHistory(true); }}>{t('today.urgent.action')}</button>
         </section>
       )}
-      {loaded && has && <WeatherStrip perParcel={[...weatherOf.values()]} />}
       {loaded && has && <TodayNumbers ct={ct} harvests={harvestRows.rows ?? []} />}
       {loaded && has && (
         <div class="pair">
@@ -321,6 +320,7 @@ export function Today() {
         </section>
       )}
       {loaded && has && <button class="btn" data-testid="job-open" onClick={() => setPlanning(true)}>{t('job.add.plus')}</button>}
+      {loaded && has && <WeatherStrip perParcel={[...weatherOf.values()]} />}
       {loaded && has && <TomorrowSection rows={{ crops: crops.rows ?? [], plantings: plantings.rows ?? [], links: links.rows ?? [], sprays: sprays.rows ?? [], harvests: harvestRows.rows ?? [], labels: labelRows.rows ?? [] }} />}
       {observed && <p class="msg" role="status" data-testid="observe-saved">{t('ui.quick.saved')}</p>}
       {loaded && has && <QuickAdd onSpray={() => setSpraying(true)} onHarvest={() => setHarvesting(true)} onObserve={() => setObserving(true)} onJob={() => { setPlannedDay(nextDay(athensToday(new Date()) ?? '')); setPlanning(true); }} />}
