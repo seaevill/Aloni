@@ -43,6 +43,7 @@ export function parcelTimeline(
 ): TimelineEvent[] {
   // a harvest WITHOUT a readable date is still listed (after the dated events, its date shown as unknown): the productivity counts it, so the history must show it too.
   // archived plantings stay in the history (what happened, happened); the same set the parcel productivity counts. Deleted HARVEST rows never show.
+  // A planting belongs to the parcel of its CURRENT plantings.parcel_id: if it is moved to another parcel, its sowing, sprayings and harvests move with it (pinned by test).
   const mine = plantings.filter((p) => p.parcel_id === parcelId);
   const archivedIds = new Set(mine.filter((p) => p.deleted_at).map((p) => String(p.id)));
   const ids = new Set(mine.map((p) => String(p.id)));
@@ -70,4 +71,16 @@ export function parcelTimeline(
   }
   dated.sort((a, b) => a.instant === b.instant ? compareTie(a.event, b.event) : b.instant - a.instant);
   return [...dated.map(({ event }) => event), ...undated.sort(compareTie)].slice(Number('0'), TIMELINE_MAX);
+}
+
+/** Dated sprayings that the timeline lists ONLY because of an archived planting of this parcel: the «last sprayings» list (current plantings) leaves them out,
+ * so the screen says how many there are and where they are. `sprays` must already be the EFFECTIVE ones. A count, nothing decided. */
+export function archivedOnlySprays(parcelId: unknown, plantings: readonly Row[], links: readonly Row[], sprays: readonly Row[]): number {
+  const mine = plantings.filter((p) => p.parcel_id === parcelId);
+  const jobsOf = (archived: boolean) => {
+    const ids = new Set(mine.filter((p) => Boolean(p.deleted_at) === archived).map((p) => String(p.id)));
+    return new Set(links.filter((l) => ids.has(String(l.planting_id))).map((l) => String(l.job_id)));
+  };
+  const currentJobs = jobsOf(false); const oldJobs = jobsOf(true);
+  return sprays.filter((s) => oldJobs.has(String(s.job_id)) && !currentJobs.has(String(s.job_id)) && text(s.sprayed_at) !== '').length;
 }

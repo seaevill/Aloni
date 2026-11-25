@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parcelTimeline, TIMELINE_MAX } from '../../src/summary/timeline';
+import { archivedOnlySprays, parcelTimeline, TIMELINE_MAX } from '../../src/summary/timeline';
 import type { Row } from '../../src/db/schema';
 import { parcelYield } from '../../src/summary/parcel-yield';
 
@@ -113,5 +113,29 @@ describe('the timeline and the parcel productivity read the SAME harvest records
     expect(harvestEvents.map((e) => e.id).sort()).toEqual(y.sources.map((s) => s.id).sort());
     expect(events.at(-1)).toMatchObject({ kind: 'harvest', id: 'hu', at: '', crates: '5' });   // undated events come after every dated one
     expect(y.crates).toBe(55);
+  });
+});
+
+// Review follow-ups S6 + S7 (docs/reviews/team/2026-11-25-independent-504-507.md).
+describe('«Τελευταίοι ψεκασμοί» vs the timeline: one stated difference, and the history follows the planting', () => {
+  const plantings = [planting('p1', 'A', 'c1', '2026-10-01'), { ...planting('p0', 'A', 'c2', '2026-03-01'), deleted_at: '2026-06-01T00:00:00Z' }, planting('px', 'B', 'c1', '2026-10-01')];
+  const links = [link('j1', 'p1'), link('j0', 'p0'), link('jb', 'p0'), link('jb', 'p1'), link('jx', 'px')];
+  const sprays = [spray('s1', 'j1', '2026-11-10T08:00:00.000Z', 'x'), spray('s0', 'j0', '2026-05-10T08:00:00.000Z', 'y'), spray('sb', 'jb', '2026-05-12T08:00:00.000Z', 'z'), spray('sx', 'jx', '2026-11-11T08:00:00.000Z', 'w'), spray('su', 'j0', '', 'v')];
+  it('S6: counts the dated sprayings the timeline lists only because of an ARCHIVED planting of this parcel (the «last sprayings» list leaves them out)', () => {
+    expect(archivedOnlySprays('A', plantings, links, sprays)).toBe(1);                      // s0: only the archived p0; sb also touches the current p1; su has no date (not in the timeline)
+    const inTimeline = parcelTimeline('A', plantings, links, sprays, [], names).filter((e) => e.kind === 'spray').map((e) => e.id);
+    expect(inTimeline).toEqual(['s1', 'sb', 's0']);
+    expect(archivedOnlySprays('B', plantings, links, sprays)).toBe(0);
+    expect(archivedOnlySprays('A', plantings.map((p) => ({ ...p, deleted_at: undefined })), links, sprays)).toBe(0);
+  });
+  it('S7: a planting moved to another parcel takes its whole history with it (the CURRENT plantings.parcel_id decides)', () => {
+    const moved = plantings.map((p) => (p.id === 'p1' ? { ...p, parcel_id: 'B' } : p));
+    const harvests = [harvest('h1', 'p1', '2026-11-20T06:00:00.000Z', '3')];
+    const onA = parcelTimeline('A', moved, links, sprays, harvests, names).map((e) => `${e.kind}:${e.id}`);
+    const onB = parcelTimeline('B', moved, links, sprays, harvests, names).map((e) => `${e.kind}:${e.id}`);
+    expect(onA).not.toContain('sown:p1');
+    expect(onA).not.toContain('harvest:h1');
+    expect(onA).not.toContain('spray:s1');
+    expect(onB).toEqual(expect.arrayContaining(['sown:p1', 'harvest:h1', 'spray:s1', 'spray:sb']));
   });
 });

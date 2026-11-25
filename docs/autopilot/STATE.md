@@ -2,9 +2,9 @@
 
 ```
 LOCK: none            # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
-LAST_RUN: 2026-11-26 00:00 Istanbul, night shift (autopilot/20261126-00-timeline-undated)
-LAST_COMPLETED: queue item 17 first slice (timeline: undated harvests listed, newest-20 cap stated) (PR #572)
-NEXT_SAFE_ACTION: next dev run: queue item 17b (S6/S7). Item 14 waits for Bora («yükleme tamam» for 0042). Hour-07 run = MORNING VERIFICATION only.
+LAST_RUN: 2026-11-26 01:00 Istanbul, night shift (autopilot/20261126-01-archived-sprays)
+LAST_COMPLETED: queue item 17b (S6 archived-planting sprayings stated under «Τελευταίοι ψεκασμοί»; S7 moved planting history pinned) (PR #573)
+NEXT_SAFE_ACTION: next dev run: no `todo` item left in QUEUE.md except ongoing #9 → docs/maintenance only or stop; item 14 waits for Bora («yükleme tamam» for 0042). Hour-07 run = MORNING VERIFICATION only.
 OPEN_BRANCHES: none owned by autopilot
 ```
 
