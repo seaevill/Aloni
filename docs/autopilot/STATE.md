@@ -1,7 +1,7 @@
 # Autopilot state (updated by every run; read it first)
 
 ```
-LOCK: none            # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
+LOCK: night-20261126-01 2026-11-25T22:10Z autopilot/20261126-01-archived-sprays            # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
 LAST_RUN: 2026-11-26 00:00 Istanbul, night shift (autopilot/20261126-00-timeline-undated)
 LAST_COMPLETED: queue item 17 first slice (timeline: undated harvests listed, newest-20 cap stated) (PR #572)
 NEXT_SAFE_ACTION: next dev run: queue item 17b (S6/S7). Item 14 waits for Bora («yükleme tamam» for 0042). Hour-07 run = MORNING VERIFICATION only.
