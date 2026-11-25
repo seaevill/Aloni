@@ -5,6 +5,17 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-25 04:00 (gece vardiyası, otomatik) — ilk açılış daha hafif
+- **Tamamlanan iyileştirme:** QUEUE #7 — uygulamanın ilk indirilen kodu küçüldü: Άλλα içindeki Μητρώο, Παραγγελίες, Πελάτες, Εργάτες, Πληροφορίες ve Εβδομαδιαία αναφορά ekranları ilk paketten çıkarıldı (ana paket gzip 199,6 kB → 188,2 kB, yaklaşık −11 kB). Bu ekranlar ilk ekran açıldıktan hemen sonra, internet varken arka planda yükleniyor; böylece sonra sinyal gitse de açılıyorlar.
+- **PR:** #550 — uygulandı, test edildi. Birleşme durumu STATE.md'de.
+- **Görünen değişiklik:** yok (ekranlar aynı). İlk açılış yavaş bağlantıda biraz daha hızlı olmalı; ölçüm yalnızca dosya boyutu, telefonda süre ölçülmedi.
+- **Özellik kaybı yok:** hiçbir ekran, düğme, test kimliği veya çeviri silinmedi; yeni çeviri anahtarı yok. Bütçe sınırı değiştirilmedi.
+- **Testler (yerel):** yeni e2e (servis çalışanı kapalı = ilk oturum, sonra uçak modu, altı ekran açılıyor) ön-yükleme kapalıyken kırmızı, açıkken yeşil; vitest tamamı 810 geçti; tsc, eslint temiz; ilgili 20 Playwright testi geçti; `workers.spec` yerelde yalnızca bilinen `icon-192` ortam hatasıyla düştü. Karar CI'da (WebKit).
+- **Cloudflare önizleme:** herkese açık adres doğrulanamıyor; panel bağlantısı PR'ın «Workers Builds» kontrolünde.
+- **Kalan sorun:** ilk oturumda ön-yükleme bitmeden (ilk ekrandan 1–2 saniye sonra) sinyal giderse bu altı ekran açılmaz, «Δοκιμή ξανά» düğmesi çıkar; sinyal gelince açılır.
+- **Sıradaki öncelik:** QUEUE #8 — işçi ekranı (72 px düğmeler, dil, sahip verisi görünmemesi).
+- **Bora'dan karar:** yok.
+
 ## 2026-11-25 03:00 (gece vardiyası, otomatik) — geri-al bildirimleri de «telefonda» diyor
 - **Tamamlanan iyileştirme:** QUEUE #6b — yeni bir χωράφι, φύτευση, προϊόν, ετικέτα, εργάτης veya ανάλυση kaydedilince alttaki siyah «Αναίρεση» bildiriminde, eski yazının altına kaydın nerede olduğu yazılıyor: «Αποθηκεύτηκε στο τηλέφωνο. Θα σταλεί όταν συνδεθεί λογαριασμός.» Άλλα → Φωτογραφίες ekranında da «Η φωτογραφία αποθηκεύτηκε.» altında aynı satır var. Demo çiftliğinde satır yok.
 - **PR:** #549 — uygulandı, test edildi. Birleşme durumu PR'da (CI kapıları).
