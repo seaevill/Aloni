@@ -52,7 +52,7 @@ export function PlantingForm({ parcels, onDone, existing }: { parcels: Row[]; on
     const newCrop = cropRowValue && !(await db.crops.get(cropRowValue.id)) ? [{ table: 'crops', row: cropRowValue, op: 'insert' as const }] : [];
     await putMany(db, [...newCrop, { table: 'plantings', row: r.row, op: 'insert' }]);
     dataVersion.value++;
-    showUndo(t('planting.saved'), async () => { await put(db, 'plantings', archived(r.row, new Date().toISOString())); dataVersion.value++; });
+    showUndo(t('planting.saved'), async () => { await put(db, 'plantings', archived(r.row, new Date().toISOString())); dataVersion.value++; }, { where: true });
     onDone();
   };
 

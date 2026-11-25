@@ -21,7 +21,7 @@ test('worker harvest picker: unique chips, error with focus, filled chosen chip'
   await free.click({ force: true });
   const bg = await free.evaluate((e) => getComputedStyle(e).backgroundColor);
   expect(await chips.nth(1).evaluate((e) => getComputedStyle(e).backgroundColor)).not.toBe(bg); // the chosen chip differs from the others
-  expect(bg).toBe(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--green').trim().length > 0 ? 'rgb(19, 74, 43)' : ''));
+  expect(bg).toBe(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--green').trim().length > 0 ? 'rgb(11, 53, 37)' : ''));
   await expect(page.getByTestId('harvest-chosen')).toBeVisible();
   expect(errors).toEqual([]);
 });

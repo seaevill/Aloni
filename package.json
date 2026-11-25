@@ -16,6 +16,6 @@
     "lint": "eslint . --max-warnings 0"
   },
   "devDependencies": {
-    "wrangler": "4.164.0"
+    "wrangler": "4.165.0"
   }
 }

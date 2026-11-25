@@ -3,7 +3,7 @@ import { activeFarm, dataVersion, db, realFarmId } from '../db';
 import type { MediaRow } from '../db/schema';
 import { formatDateTime, t, tn, type I18nKey } from '../i18n';
 import { storePhoto } from '../media/photo';
-import { EmptyState } from './states';
+import { EmptyState, SavedWhere } from './states';
 import { BackBar } from './BackBar';
 
 const MSG_KEYS: Record<'saved' | 'duplicate' | 'error', I18nKey> = { saved: 'photos.saved', duplicate: 'photos.duplicate', error: 'photos.error' };
@@ -68,6 +68,7 @@ export function Photos({ onBack }: { onBack: () => void }) {
       {demo ? <p class="muted" data-testid="photos-demo-note">{t('photos.demoActive')}</p>
         : rows && rows.length > 0 && <button class="btn" data-testid="photo-add" onClick={add}>{t('photos.add')}</button>}
       {msg && <p class="msg" role="status" data-testid="photo-msg">{t(MSG_KEYS[msg])}</p>}
+      {msg === 'saved' && <SavedWhere testid="photo-saved-where" />}
       {rows && rows.length === 0 && !demo && <EmptyState art="photos" message={t('photos.empty')} actionLabel={t('photos.add')} onAction={add} />}
       {rows && rows.length > 0 && <p class="muted" data-testid="photo-count">{tn('photos.count', rows.length)}</p>}
       <div class="photos">

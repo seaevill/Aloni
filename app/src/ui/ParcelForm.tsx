@@ -51,7 +51,7 @@ export function ParcelForm({ onDone, existing }: { onDone: () => void; existing?
     }
     await put(db, 'parcels', r.row, 'insert');
     dataVersion.value++;
-    showUndo(t('parcel.saved'), async () => { await put(db, 'parcels', archived(r.row, new Date().toISOString())); dataVersion.value++; }); // undo = archive it again
+    showUndo(t('parcel.saved'), async () => { await put(db, 'parcels', archived(r.row, new Date().toISOString())); dataVersion.value++; }, { where: true }); // undo = archive it again
     onDone();
   };
 

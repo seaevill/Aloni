@@ -11,6 +11,7 @@ import { RecurringJobs } from './RecurringJobs';
 import { nameOf } from './screens';
 import { registerSheet, type SheetProps } from './sheets';
 import { useRows } from './useRows';
+import { kindTitle } from './jobkind';
 import type { Row } from '../db/schema';
 
 // Σήμερα → «Εργασίες»: which jobs, for whom, when. The open jobs in their groups (late, today, tomorrow, later) and the ones done today with the time they were done. Every row says the product, the plantings (crop · field), the worker and the day;
@@ -24,7 +25,7 @@ function JobsSheet({ close }: SheetProps) {
   const where = (j: Row): string => [...new Set((links.rows ?? []).filter((l) => l.job_id === j.id).map((l) => (plantings.rows ?? []).find((p) => p.id === l.planting_id)).filter((p): p is Row => !!p).map((p) => t('spray.planting', { crop: nameOf((crops.rows ?? []).find((c) => c.id === p.crop_id) ?? {}), parcel: text((parcels.rows ?? []).find((x) => x.id === p.parcel_id)?.name) })))].join(', ');
   const who = (j: Row): string => text((workers.rows ?? []).find((w) => w.id === j.worker_id)?.name) || t('ui.jobs.worker.none');
   const lateText = (j: Row): string | undefined => { const n = daysLate(text(j.planned_for), athensToday(new Date()) ?? ''); return n === undefined ? undefined : t('ui.job.late', { n }); };
-  const row = (j: Row, when: string) => <ListRow key={String(j.id)} heading={nameOf((products.rows ?? []).find((p) => p.id === j.product_id) ?? {}) || t('ui.unknown')} meta={[where(j) || t('ui.jobs.where.none'), who(j), lateText(j)].filter((x) => x !== undefined).join(' · ')} trailing={<strong>{when}</strong>} onClick={() => openSheet('job', String(j.id))} testid="job-row" />;
+  const row = (j: Row, when: string) => <ListRow key={String(j.id)} heading={kindTitle(j as { kind?: unknown }) ?? (nameOf((products.rows ?? []).find((p) => p.id === j.product_id) ?? {}) || t('ui.unknown'))} meta={[where(j) || t('ui.jobs.where.none'), who(j), lateText(j)].filter((x) => x !== undefined).join(' · ')} trailing={<strong>{when}</strong>} onClick={() => openSheet('job', String(j.id))} testid="job-row" />;
   const empty = GROUPS.every(([k]) => hub.open[k].length === 0) && hub.doneToday.length === 0;
   return (
     <DetailSheet heading={t('tasks.title')} icon={<Icon name="calendar" />} onClose={close} testid="sheet-jobs">

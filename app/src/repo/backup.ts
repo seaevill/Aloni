@@ -7,7 +7,10 @@ import { actorId, deviceId, isAppendOnly, put, putLocal, putSetting, refreshPend
 
 export const BACKUP_FORMAT = 'aloni-backup';
 export const BACKUP_VERSION = 1;
-const DEVICE_ONLY = new Set(['device_id', 'actor_id', 'last_backup_at', 'auth_session', 'worker_view', 'sync_enabled', 'push_subscription', 'persist_standalone', 'ui_state']); // never part of a backup (the sign-in session holds tokens: it must NEVER leave the phone in a file)
+const DEVICE_ONLY = new Set(['device_id', 'actor_id', 'last_backup_at', 'auth_session', 'worker_view', 'sync_enabled', 'push_subscription', 'persist_standalone', 'ui_state', 'ui_sun']); // never part of a backup (the sign-in session holds tokens: it must NEVER leave the phone in a file)
+/** The Ταμείο ledger lives on the phone only (no server table yet): it is backed up and restored, but NEVER queued for the server, and the Demo farm's fictional ledger never travels in a real backup. */
+const isLedgerKey = (key: string): boolean => key.startsWith('money:');
+const isDemoLedger = (key: string): boolean => key === `money:${DEMO_FARM_ID}`;
 export const isDeviceOnlyKey = (key: string): boolean => DEVICE_ONLY.has(key) || key.startsWith('sync_cursor:') || key.startsWith('held_action:') || key.startsWith('media_up:') || key.startsWith('notice_seen_at:');
 export type BackupErrorCode = 'format' | 'version' | 'sha256' | 'demo' | 'conflict';
 export class BackupError extends Error { constructor(readonly code: BackupErrorCode) { super(code); } }
@@ -22,7 +25,7 @@ export interface Backup {
 export async function makeBackup(db: AppDB, farm: { id: string; name: string }, appVersion: string): Promise<Backup> {
   const tables: Record<string, Row[]> = {};
   for (const t of FARM_TABLES) tables[t] = await db[t].where('farm_id').equals(farm.id).toArray();
-  const settings = (await db.settings.toArray()).filter((s) => !isDeviceOnlyKey(s.key));
+  const settings = (await db.settings.toArray()).filter((s) => !isDeviceOnlyKey(s.key) && !isDemoLedger(s.key));
   const media: MediaEntry[] = [];
   for (const { data, ...meta } of await db.media.where('farm_id').equals(farm.id).toArray()) {
     media.push({ ...meta, data_base64: await blobToBase64(new Blob([data], { type: meta.mime })) });
@@ -68,7 +71,7 @@ export async function restoreBackup(db: AppDB, backup: Backup, localFarmId: stri
   let rows = 0; let added = 0; let updated = 0; let same = 0;
   await db.transaction('rw', db.tables, async () => {
     if (backup.farm.id !== localFarmId) {
-      const mine = (await db.settings.toArray()).filter((s) => !isDeviceOnlyKey(s.key));
+      const mine = (await db.settings.toArray()).filter((s) => !isDeviceOnlyKey(s.key) && !isLedgerKey(s.key));   // the ledger is never queued for the server
       await db.farms.delete(localFarmId);
       await db.outbox.where('farm_id').equals(localFarmId).delete(); // nothing may stay queued under the farm id that is gone...
       await db.farms.put({ id: backup.farm.id, name: backup.farm.name, is_demo: false });
@@ -85,6 +88,7 @@ export async function restoreBackup(db: AppDB, backup: Backup, localFarmId: stri
       }
     }
     for (const s of backup.settings) {
+      if (isDemoLedger(s.key)) continue;   // a fictional Demo ledger must not land on the real phone
       const local = await db.settings.get(s.key);
       if (!local) await db.settings.put(s);
       else if (stable(local.value) !== stable(s.value)) skipped.push({ table: 'settings', id: s.key, label: s.key });

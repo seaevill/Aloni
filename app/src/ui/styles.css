@@ -40,6 +40,7 @@ nav.tabs .ico { font-size:var(--fs-20); line-height:1; }
 .empty { text-align:center; padding:var(--sp-24) var(--sp-8); }
 .toast { position:fixed; left:var(--sp-16); right:var(--sp-16); bottom:calc(var(--nav-h) + env(safe-area-inset-bottom)); z-index:10; display:flex; gap:var(--sp-12); align-items:center; justify-content:space-between; padding:var(--sp-8) var(--sp-8) var(--sp-8) var(--sp-16); background:var(--fg); color:var(--white); border-radius:var(--r-md); }
 .toast .btn { width:auto; min-width:var(--btn-min-w); margin:0; }
+.toast .toast-where { display:block; font-size:var(--fs-14); }
 .msg.warn { color:var(--amber-fg); }
 .line { display:flex; flex-direction:column; gap:var(--sp-4); padding:var(--sp-8) 0; border-top:var(--bw-1) solid var(--line); }
 .photos { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--sp-8); margin:0 0 var(--sp-12); }
@@ -161,6 +162,8 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 .facts { display:grid; gap:var(--sp-8); }
 .fact { display:flex; justify-content:space-between; gap:var(--sp-12); }
 .fact span { color:var(--muted); }
+/* parcel detail: a long value (product · date) goes under its label instead of squeezing into the right column */
+.fact.stack { flex-direction:column; gap:var(--sp-2); }
 
 /* a dark header band on a detail screen (prototype) */
 .detail .band { background:var(--forest-2); color:var(--white); margin:0 calc(-1 * var(--sp-16)) var(--sp-12); padding:var(--sp-4) var(--sp-16) var(--sp-14); border-radius:0 0 var(--r-card) var(--r-card); }
@@ -217,5 +220,29 @@ h3 .count { display:inline-block; min-width:var(--sp-24); padding:0 var(--sp-6);
 
 .worker-tray button { display:grid; justify-items:center; align-content:center; gap:var(--sp-4); min-height:var(--tile-row); }
 .worker-tray button:active { transform:scale(.96); }
+.worker-data > summary { min-height:var(--tap-big); line-height:var(--tap-big); font-weight:700; cursor:pointer; }   /* «Τα δεδομένα σας»: a 72 px row (keeps its ▸ marker), not a 22 px line of text */
 
 .pick { display:inline-flex; align-items:center; gap:var(--sp-8); text-align:start; }
+
+/* «ready offline»: floats over the top of the screen (no layout shift under a tap that is already on its way), does not take taps, goes away by itself */
+.offline-note { position:fixed; inset-block-start:calc(env(safe-area-inset-top) + var(--sp-8)); inset-inline:var(--sp-16); margin:0 auto; inline-size:fit-content; max-inline-size:calc(100% - 2 * var(--sp-16)); z-index:10; pointer-events:none; box-shadow:var(--shadow-card); }
+
+/* ── Field Atelier P0 (2026-11-24): ivory canvas, warm-white cards, the bottom bar with a leaf-green marker, and the weather as a quiet card BELOW the day's work (the first screen is about what needs attention today) ── */
+nav.tabs { background:var(--card); border-top-color:var(--line); }
+nav.tabs button { position:relative; }
+nav.tabs button[aria-current="page"]::before { content:""; position:absolute; inset-block-start:0; inset-inline-start:50%; transform:translateX(-50%); inline-size:var(--nav-bar-w); block-size:var(--nav-bar-h); border-radius:var(--r-pill); background:var(--leaf); }
+.wx.dark { background:var(--card); color:var(--fg); border:var(--bw-1) solid var(--line); }
+.wx.dark h2, .wx.dark .wx-row, .wx.dark .wx-none, .wx.dark .wx-source { color:var(--fg); }
+.wx.dark .tile { background:var(--sage); }
+.wx.dark .tile small { color:var(--muted); }
+/* the five weather days wrap into rows when the text is enlarged (200 % text made this row 190 px wider than the screen once the weather had loaded) */
+.wx-row { display:grid; grid-template-columns:repeat(auto-fit, minmax(var(--wx-day-min), 1fr)); gap:var(--sp-8) var(--sp-4); }
+/* the two capture buttons stack when the text is enlarged (a long Greek word did not fit half the screen at 200 % text) and a word may break instead of leaving its button */
+.pair { grid-template-columns:repeat(auto-fit, minmax(min(100%, var(--pair-min)), 1fr)); }
+.pair .btn { overflow-wrap:anywhere; }
+html[data-sun] * { box-shadow:none !important; }
+html[data-sun] .card, html[data-sun] .row { border-color:var(--fg); }
+
+/* crate quick steps (−1 +1 +5 +10): as many per row as fit, the rest wrap (large text) */
+.seg.steps { grid-template-columns:repeat(auto-fit, minmax(var(--step-min), 1fr)); }
+.seg.jumps button { min-height:var(--tap-big); font-size:var(--fs-22); font-weight:700; }   /* worker counter: the jump buttons are as tall as the +/- ones */

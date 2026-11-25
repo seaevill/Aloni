@@ -104,6 +104,11 @@ export function formatDateLong(iso: string): string {
     .format(new Date(`${iso}T12:00:00Z`));
 }
 
+/** «2026-11» -> «Νοέμβριος 2026» (the ledger's month rows) */
+export function formatMonth(yearMonth: string): string {
+  return new Intl.DateTimeFormat(LOCALES[lang.value], { month: 'long', year: 'numeric', timeZone: TZ }).format(new Date(`${yearMonth}-15T12:00:00Z`));
+}
+
 /** ISO date -> "Δευ 16 Νοε" in Europe/Athens */
 export function formatDate(iso: string): string {
   return new Intl.DateTimeFormat(LOCALES[lang.value], { weekday: 'short', day: 'numeric', month: 'short', timeZone: TZ })

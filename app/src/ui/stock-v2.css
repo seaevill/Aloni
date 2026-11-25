@@ -31,3 +31,13 @@
   font-size: var(--fs-h2);
   font-weight: 800;
 }
+
+/* Field Atelier: the product card header is ONE line (name + the ⓘ button that opens the same sheet) instead of two stacked 56 px rows, and the balance is the first thing the eye finds */
+.stock-v2 .product-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--sp-8); align-items: center; }
+.stock-v2 .product-card > * { grid-column: 1 / -1; }
+.stock-v2 .product-card > [data-testid="product-source-open"] { grid-column: 1; grid-row: 1; }
+.stock-v2 .product-card > .product-info { grid-column: 2; grid-row: 1; }
+.stock-v2 .product-card [data-testid="product-stock"] { color: var(--fg); font-size: var(--fs-16); font-weight: 800; }
+
+/* Αποθήκη second pass (night mission A): the balance is the FIRST line under the name (it used to sit below tags, warning and pack size), at heading size, so the farmer reads «how much is left» without searching. Only the visual order changes; the DOM order and every id stay. */
+.stock-v2 .product-card [data-testid="product-stock"] { order: -1; font-size: var(--fs-h2); line-height: 1.2; margin-block: 0 var(--sp-4); }

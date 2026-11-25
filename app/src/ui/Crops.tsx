@@ -111,7 +111,6 @@ export function Crops() {
         action={canAdd ? { label: t('planting.add'), run: () => setAdding(true) } : undefined} />
       {shown && <div class="season-list-tools">
         {shown.length > 0 && <RecordSearch query={query} onQuery={setQuery} empty={filtered?.length === 0} />}
-        {calendarButton}
       </div>}
       {filtered?.map((c) => {
         const chip = chipOf(c);
@@ -123,6 +122,7 @@ export function Crops() {
           </button>
         </div>;
       })}
+      {shown && <div class="season-list-foot">{calendarButton}</div>}
     </section>
   );
 }

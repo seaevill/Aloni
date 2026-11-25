@@ -67,6 +67,7 @@ test('while the demo farm is active no photo can be added', async ({ page }) => 
   await iphone(page);
   await page.locator('nav.tabs [data-tab="more"]').click();
   await page.locator('main button.btn').first().click();
+  await expect(page.getByTestId('demo-banner')).toBeVisible();      // wait until the demo is loaded: its banner pushes the page down, a tap sent before it lands on the wrong spot
   await page.getByTestId('open-photos').click();
   await expect(page.getByTestId('photos-demo-note')).toBeVisible();
   await expect(page.getByTestId('photo-add')).toHaveCount(0);

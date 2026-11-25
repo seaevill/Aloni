@@ -14,3 +14,4 @@
 .season-calendar-month { margin: 0; overflow-wrap: anywhere; }
 .season-calendar-month h2 { font-size: var(--fs-row); margin: 0; }
 .season-calendar-month p { margin-block: var(--sp-4); }
+.season-list-foot { margin-top: var(--sp-12); }
