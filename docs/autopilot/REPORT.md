@@ -5,6 +5,17 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-25 06:00 (gece vardiyası, otomatik) — Σήμερα: kayıt onayı ilk ekranda
+- **Tamamlanan iyileştirme:** QUEUE #8b (ilk dilim) — ilaçlama, hasat, iş veya gözlem kaydedip Σήμερα'ya dönünce «Η συγκομιδή καταγράφηκε.» gibi onay yazısı (ve altındaki «telefonda» satırı) artık başlığın hemen altında, ilk ekranda. Önceden hava durumu ve «Αύριο φεύγουν» bölümünün altında, ekranın çok aşağısındaydı; kaydırmadan görünmüyordu.
+- **PR:** #552 — uygulandı, test edildi. Birleşme durumu PR'da (CI kapıları).
+- **Önce/sonra (375 px, gerçek çiftlik, hasat + gözlem sonrası, sayfa başı):** `docs/design/today-feedback-before-375.png` → `docs/design/today-feedback-after-375.png`. 320/375/390'da yatay kaydırma yok.
+- **Özellik kaybı yok:** yazılar, test kimlikleri aynen; yalnızca yerleri değişti; yeni çeviri anahtarı yok.
+- **Testler (yerel):** yeni e2e `today-feedback.spec.ts` önce kırmızı, sonra yeşil; vitest tamamı 810 geçti; tsc, eslint temiz; Σήμερα/hasat/ilaçlama/iş ile ilgili 22 Playwright testinden 19'u geçti, 3'ü (çevrimdışı) yalnızca bilinen `icon-192` ortam hatasıyla, tüm kontrolleri geçtikten sonra düştü. Karar CI'da (WebKit).
+- **Cloudflare önizleme:** herkese açık adres doğrulanamıyor; panel bağlantısı PR'ın «Workers Builds» kontrolünde.
+- **Kalan sorun:** kayıttan sonra ilk ekranda «Αποθηκεύτηκε στο τηλέφωνο…» cümlesi iki kez görünüyor (üstteki genel durum şeridi + onayın altı) → QUEUE #8c.
+- **Sıradaki öncelik:** 07:00 sabah doğrulaması; sonra QUEUE #8c.
+- **Bora'dan karar:** yok.
+
 ## 2026-11-25 05:00 (gece vardiyası, otomatik) — işçi ekranında büyük düğmeler
 - **Tamamlanan iyileştirme:** QUEUE #8 — işçi ekranında (Άλλα → Προβολή εργάτη) eldivenle basılacak düğmeler 72 px'e çıktı: «Τα δεδομένα σας» başlığı (önceden 22 px'lik ince bir yazı satırıydı, şimdi 72 px'lik basılabilir satır, ▼ işareti duruyor), Συγκομιδή sekmesindeki «Αποθήκη / Απευθείας φόρτωση» seçimi ve «Ακύρωση», ve en alttaki «Έξοδος από την προβολή εργάτη» (hepsi 56 → 72 px). Sahibin kendi hasat formu değişmedi.
 - **PR:** #551 — uygulandı, test edildi. Birleşme durumu PR'da (CI kapıları).
