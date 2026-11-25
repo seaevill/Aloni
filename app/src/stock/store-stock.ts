@@ -1,5 +1,6 @@
 import { parseWhole } from '@aloni/rules-core';
 import type { Row } from '../db/schema';
+import { isDispatch } from './destination-words';
 
 // «Συγκομιδή στην αποθήκη»: the crates cut, by where the record says they went (store / direct dispatch). A harvest without a destination is OLD or unknown: it is counted apart and never added to the store.
 // Whole crates only (as logged); an unreadable crate number is counted apart, never as 0. Nothing is estimated and nothing is decided here.
@@ -24,7 +25,7 @@ export function storeStock(today: string, harvests: readonly Row[], plantings: r
     let line = by.get(slug);
     if (line === undefined) line = { slug, store: Number('0'), out: Number('0'), left: Number('0'), dispatch: Number('0'), unknown: Number('0'), unreadable: Number('0'), oldestStoreDay: undefined, ageDays: undefined };
     const n = parseWhole<'Crates'>(text(h.crates_str));
-    const where = h.destination === 'store' || h.destination === 'dispatch' ? h.destination : dest[text(h.id)]?.d;
+    const where = h.destination === 'store' ? 'store' : isDispatch(h.destination) ? 'dispatch' : dest[text(h.id)]?.d;
     if (!n.known) line.unreadable += 1;
     else if (where === 'store') { line.store += n.value; if (line.oldestStoreDay === undefined || day < line.oldestStoreDay) line.oldestStoreDay = day; }
     else if (where === 'dispatch') line.dispatch += n.value;

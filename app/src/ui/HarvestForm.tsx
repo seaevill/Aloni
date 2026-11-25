@@ -5,6 +5,8 @@ import { formatDate, formatDateTime, t, tn, ts } from '../i18n';
 import { formatArea } from '../i18n/format';
 import { put } from '../repo';
 import { saveDestination, type Destination } from '../stock/destination';
+import { serverDestination } from '../stock/destination-words';
+import { serverRecordsOn } from '../owner-records/mode';
 import { buildHarvest, harvestGate } from '../spray/harvest';
 import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
 import { useSubmit } from './useSubmit';
@@ -77,7 +79,8 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
   const save = async () => {
     const r = buildHarvest({ plantingId: planting, crates, harvestedAt: at, note, cutBy }, links.rows ?? [], sprays.rows ?? [], farmId, new Date().toISOString(), crypto.randomUUID(), plantings.rows ?? [], labelRows.rows ?? []);
     if (!r.ok || (big && dest === undefined)) { setFailed((n) => n + 1); return; }
-    await put(db, 'job_harvest', actorId ? { ...r.row, actor_id: actorId } : r.row, 'insert');
+    const where = dest !== undefined && await serverRecordsOn(db) ? { destination: serverDestination(dest) } : {};   // the server column exists (0036) once the owner confirmed it; before that the answer stays on this phone
+    await put(db, 'job_harvest', { ...r.row, ...(actorId ? { actor_id: actorId } : {}), ...where }, 'insert');
     if (dest !== undefined) await saveDestination(db, farmId, String(r.row.id), { d: dest, name: recvName, phone: recvPhone });
     dataVersion.value++;
     if (big) { setSavedLine(cratesN.known ? tn('harvest.saved.line', cratesN.value, { crop: chosen ? cropOf(chosen) : '' }) : ''); setPlanting(''); setCrates(''); setNote(''); setDest(undefined); setRecvName(''); setRecvPhone(''); setWhen(athensLocalNow(new Date()) ?? ''); setFailed(0); }
