@@ -69,3 +69,16 @@ describe('SQL 0042 field records (owner only), dormant until the readiness card 
     expect(JSON.parse(readFileSync(PENDING, 'utf8'))).toEqual(out);
   });
 });
+
+describe('two screens loading the work records at the same moment', () => {
+  it('the one-time move up runs once: no record exists both on the phone and on the server', async () => {
+    const db = await newDb();
+    await addWork(db, F, { parcel_id: 'p', kind: 'irrigate', day: '2026-11-20', minutes: '60' }, 'w-race', '2026-11-25');
+    await putLocal(db, READINESS_KEY, { migration: '0042' });
+    const [a, b] = await Promise.all([loadWork(db, F), loadWork(db, F)]);
+    expect(a.map((w) => w.id)).toEqual(['w-race']);
+    expect(b.map((w) => w.id)).toEqual(['w-race']);
+    expect(await db.field_work.count()).toBe(1);
+    expect(await db.settings.get(`field_work:${F}`)).toBeUndefined();
+  });
+});

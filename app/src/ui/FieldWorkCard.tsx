@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
-import { activeFarm, db } from '../db';
+import { activeFarm, dataVersion, db } from '../db';
 import { formatDate, t } from '../i18n';
 import { formatQty } from '../i18n/format';
 import { athensToday } from '../plantings/planting';
@@ -31,6 +31,7 @@ export function FieldWorkCard({ parcelId, days }: { parcelId: string; days: read
   const [all, setAll] = useState<Work[]>([]); const [kind, setKind] = useState<'fertilise' | 'irrigate'>(); const [bad, setBad] = useState(false);
   const [day, setDay] = useState(today); const [nForm, setNForm] = useState(''); const [nKg, setNKg] = useState(''); const [minutes, setMinutes] = useState(''); const [m3, setM3] = useState('');
   const load = async () => setAll(await loadWork(db, farm));
+  const changed = async () => { await load(); dataVersion.value++; };   // the recorded-water figure on the same screen reads the same records
   useEffect(() => { void load(); }, [farm]);
   const mine = all.filter((w) => w.parcel_id === parcelId).sort((a, b) => b.day.localeCompare(a.day)).slice(0, MAX_SHOWN);
   const open = (k: 'fertilise' | 'irrigate') => { setKind(k); setBad(false); setDay(today); setNForm(''); setNKg(''); setMinutes(''); setM3(''); };
@@ -38,7 +39,7 @@ export function FieldWorkCard({ parcelId, days }: { parcelId: string; days: read
     if (kind === undefined) return;
     try {
       await addWork(db, farm, { parcel_id: parcelId, kind, day, n_form: nForm, n_kg_per_str: nKg, minutes, m3 }, crypto.randomUUID(), today, snapshotOf(days, day));
-      setKind(undefined); await load();
+      setKind(undefined); await changed();
     } catch { setBad(true); }
   };
   const errorText = t(kind === 'fertilise' ? 'ui.work.err.fertilise' : 'ui.work.err.irrigate');
@@ -51,7 +52,7 @@ export function FieldWorkCard({ parcelId, days }: { parcelId: string; days: read
           <strong>{formatDate(w.day)}</strong>
           <span>{lineOf(w)}</span>
           <small data-testid="work-wx">{weatherLine(w.weather)}</small>
-          <button type="button" class="btn quiet" data-testid="work-remove" onClick={() => void removeWork(db, farm, w.id).then(load)}>{t('ui.work.remove')}</button>
+          <button type="button" class="btn quiet" data-testid="work-remove" onClick={() => void removeWork(db, farm, w.id).then(changed)}>{t('ui.work.remove')}</button>
         </div>
       ))}
       {kind === undefined && <div class="fieldwork-buttons">

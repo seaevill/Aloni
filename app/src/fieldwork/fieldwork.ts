@@ -20,7 +20,16 @@ const DAY = /^\d{4}-\d{2}-\d{2}$/;
 const localWork = async (db: AppDB, farm: string): Promise<Work[]> => ((await db.settings.get(key(farm)))?.value as Work[] | undefined) ?? [];
 const ownRow = (w: Work, farm: string, now: string) => workRow({ parcel_id: w.parcel_id, kind: w.kind, day: w.day, n_form: w.n_form, n_kg_per_str: w.n_kg_per_str, minutes: w.minutes, m3: w.m3 }, farm, w.id, now, w.weather);
 /** SQL 0042 (owner only): once the owner confirmed it the records are server rows; those typed on this phone before move up ONCE (same id), then the phone copy is removed. A local record the server would refuse stays on the phone. */
-export async function loadWork(db: AppDB, farm: string): Promise<Work[]> {
+const running = new Map<string, Promise<Work[]>>();
+/** Two screens asking at the same moment share ONE run: the one-time move up must never run twice (a record would exist on the phone AND on the server). */
+export function loadWork(db: AppDB, farm: string): Promise<Work[]> {
+  const k = `${db.name}:${farm}`; const going = running.get(k);
+  if (going) return going;
+  const p = loadWorkOnce(db, farm).finally(() => running.delete(k));
+  running.set(k, p);
+  return p;
+}
+async function loadWorkOnce(db: AppDB, farm: string): Promise<Work[]> {
   if (!(await serverFieldOn(db, farm))) return localWork(db, farm);
   const old = await localWork(db, farm); const kept: Work[] = [];
   for (const w of old) { try { await put(db, 'field_work', ownRow(w, farm, new Date().toISOString()), 'insert'); } catch { kept.push(w); } }
