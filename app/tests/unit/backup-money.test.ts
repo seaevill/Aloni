@@ -13,8 +13,7 @@ describe('Ταμείο ledger and backups', () => {
     await putLocal(a, `money:${TEST_FARM_ID}`, [entry]);
     await putLocal(a, `money:${DEMO_FARM_ID}`, [{ ...entry, id: 'demo-money-1' }]);
     const keys = (await makeBackup(a, farm, 'test')).settings.map((s) => s.key);
-    expect(keys).toContain(`money:${TEST_FARM_ID}`);
-    expect(keys).not.toContain(`money:${DEMO_FARM_ID}`);
+    expect([keys.includes(`money:${TEST_FARM_ID}`), keys.includes(`money:${DEMO_FARM_ID}`)]).toEqual([true, false]);
   });
   it('a restore onto a phone with another farm id queues NO money row for the server and ignores a demo ledger inside the file', async () => {
     const a = await newDb();
