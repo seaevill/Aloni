@@ -8,6 +8,10 @@
 5. **Senden tek adımlar:** (a) 0036–0042'yi «Supabase migrate (manual)» ile sırayla yükle (0036+0037 önce, sonra «Yükleme tamam» yaz; 0042'den ÖNCE telefon tarafını yayınlayacağım, bu yüzden 0042'yi en son yükle); (b) Codex'in 4 işi (ilaçlama defteri PDF, GPS sınır, sezon takvimi, More menüsü) merge ediliyor, telefonda dene; (c) **para defteri PR'ları #484/#485** (F1 Ταμείο) başka bir ekipten geldi, onayın olmadan merge etmiyorum: «evet/hayır» de.
 6. **Açık PR'lar:** #500 (SQL, bekliyor) · #460 (0037 yüklenince) · #484/#485 (para defteri, onayını bekliyor) · #471/#480/#481/#488 (yalnızca belge) · Dependabot #306 (testleri kırmızı).
 
+## Güncel (2026-11-25 öğleden sonra)
+- **Production 0001–0041; sırada yalnızca 0042 (#500).** Bugün birleşenler: #460 + hasat varış yeri senkronu (#555) · Ταμείο çekirdek (#484) ve ekran (#557, bağımsız inceleme: 2 MUST düzeltildi) · bağımlılık paketi TypeScript ve preact 11 HARİÇ (#556; preact 11 altı testi kırıyor) · maplibre 5'e sabitlendi (#558, main'i kırmızı yapan buydu) · sezon hedefi senkronu (#559) · iş panosu «Το αναλαμβάνω» senkronu (#560).
+- **Sırada:** yarın notları (0039), ekim sınırı (0040), sonra 0042'nin telefon tarafı, #504/#507.
+
 ## Güncel (2026-11-25 öğlen)
 - **Production: 0001–0041 yüklü** (run 45359016038, verify_applied: 41 tabloda RLS, sorun yok). Sırada yalnızca **0042** (#500).
 - Dondurma kalktı. Sıra: #460 + müşteri/sipariş/çalışan/hasat-varış senkronu → Ταμείο (#484/#485) → #512 (TypeScript hariç) → 0038–0041 telefon senkronu → 0042 telefon tarafı → #504/#507.
