@@ -131,9 +131,9 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
         </>
       )}
       <h2>{t('ui.dest.title')}</h2>
-      <div class="seg two" role="group" aria-label={t('ui.dest.title')} data-testid="harvest-dest">
-        <button class={big ? 'big' : undefined} aria-pressed={dest === 'store'} data-testid="harvest-dest-store" onClick={() => setDest('store')}>{t('ui.dest.store')}</button>
-        <button class={big ? 'big' : undefined} aria-pressed={dest === 'dispatch'} data-testid="harvest-dest-dispatch" onClick={() => setDest('dispatch')}>{t('ui.dest.dispatch')}</button>
+      <div class={big ? 'seg two big' : 'seg two'} role="group" aria-label={t('ui.dest.title')} data-testid="harvest-dest">
+        <button aria-pressed={dest === 'store'} data-testid="harvest-dest-store" onClick={() => setDest('store')}>{t('ui.dest.store')}</button>
+        <button aria-pressed={dest === 'dispatch'} data-testid="harvest-dest-dispatch" onClick={() => setDest('dispatch')}>{t('ui.dest.dispatch')}</button>
       </div>
       {big && failed > 0 && dest === undefined && <p class="msg error" role="alert" tabIndex={-1} data-error data-testid="harvest-dest-error">{t('ui.dest.error')}</p>}
       {dest === 'dispatch' && (
@@ -151,7 +151,7 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
         <input class="input" value={note} autoComplete="off" onInput={(e) => setNote((e.target as HTMLInputElement).value)} />
       </label>
       <button class={big ? 'btn big' : 'btn'} data-testid="harvest-save" disabled={busy || blocked !== undefined} onClick={() => void submit(save)}>{t('harvest.save')}</button>
-      <button class="btn secondary" onClick={() => onDone(false)}>{t('product.cancel')}</button>
+      <button class={big ? 'btn secondary big' : 'btn secondary'} data-testid="harvest-cancel" onClick={() => onDone(false)}>{t('product.cancel')}</button>
     </section>
   );
 }
