@@ -682,6 +682,7 @@
   "detail.weather": "Bugünkü hava",
   "detail.plantings": "Ekimler",
   "detail.sprays": "Son ilaçlamalar",
+  "detail.sprays.archived": "Arşivlenmiş ekimlerdeki ilaçlamalar ({n}) burada görünmez; zaman çizgisinde yer alır.",
   "timeline.title": "Zaman çizgisi",
   "timeline.empty": "Henüz kayıt yok.",
   "timeline.cut": "Kesim ({method})",

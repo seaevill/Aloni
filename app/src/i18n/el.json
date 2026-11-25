@@ -682,6 +682,7 @@
   "detail.weather": "Καιρός σήμερα",
   "detail.plantings": "Φυτείες",
   "detail.sprays": "Τελευταίοι ψεκασμοί",
+  "detail.sprays.archived": "Ψεκασμοί σε αρχειοθετημένες φυτεύσεις ({n}) δεν εμφανίζονται εδώ· είναι στο Χρονολόγιο.",
   "timeline.title": "Χρονολόγιο",
   "timeline.empty": "Δεν υπάρχουν ακόμη καταγραφές.",
   "timeline.cut": "Κοπή ({method})",

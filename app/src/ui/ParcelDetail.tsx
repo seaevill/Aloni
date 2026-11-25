@@ -9,7 +9,7 @@ import { athensToday, validDate } from '../plantings/planting';
 import { cutFromParcel } from '../spray/harvest';
 import { effectiveSprays } from '../spray/spray';
 import { instantOf } from '../spray/time';
-import { parcelTimeline, TIMELINE_MAX, type TimelineEvent } from '../summary/timeline';
+import { archivedOnlySprays, parcelTimeline, TIMELINE_MAX, type TimelineEvent } from '../summary/timeline';
 import { dayOf, parseDays, provenance } from '../weather/strip';
 import type { Row } from '../db/schema';
 import { BackBar } from './BackBar';
@@ -50,6 +50,7 @@ export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: {
   const stream = parcelTimeline(parcel.id, plantings.rows ?? [], links.rows ?? [], effectiveSprays(sprays.rows ?? []), harvests.rows ?? [],
     { crop: (id) => nameOf(crops.rows?.find((c) => c.id === id) ?? {}), product: (id) => nameOf(products.rows?.find((p) => p.id === id) ?? {}) },
     cuts.filter((c) => c.parcel_id === parcel.id), { work, observations: observations.rows ?? [] });
+  const sprayedArchived = archivedOnlySprays(parcel.id, plantings.rows ?? [], links.rows ?? [], effectiveSprays(sprays.rows ?? []));
   const eventLine = (e: TimelineEvent): string => (e.kind === 'sown' ? [t('timeline.sown', { crop: e.crop }), e.archived ? t('ui.yield.archived.tag') : ''].filter(Boolean).join(' · ')
     : e.kind === 'cut' ? t('timeline.cut', { method: t(METHOD_KEYS[e.method]) })
     : e.kind === 'fertilise' ? [t('timeline.fertilise', { form: e.nForm }), e.kgPerStr ? t('timeline.fertilise.kg', { n: formatQty(e.kgPerStr.replace(',', '.')) }) : ''].filter(Boolean).join(' · ')
@@ -131,6 +132,7 @@ export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: {
       <h2>{t('detail.sprays')}</h2>
       {last.length === 0 && <p class="muted">{t('spray.empty')}</p>}
       {last.map((s) => <div class="card" key={s.id} data-testid="detail-spray">{nameOf(products.rows?.find((p) => p.id === s.product_id) ?? {})}<small>{formatDateTime(text(s.sprayed_at))}</small></div>)}
+      {sprayedArchived > 0 && <p class="muted" data-testid="detail-sprays-archived">{t('detail.sprays.archived', { n: sprayedArchived })}</p>}
       <h2>{t('timeline.title')}</h2>
       <div data-testid="timeline">
         {stream.length === 0 && <p class="muted">{t('timeline.empty')}</p>}

@@ -682,6 +682,7 @@
   "detail.weather": "Weather today",
   "detail.plantings": "Plantings",
   "detail.sprays": "Last sprayings",
+  "detail.sprays.archived": "Sprayings on archived plantings ({n}) are not shown here; they are in the timeline.",
   "timeline.title": "Timeline",
   "timeline.empty": "Nothing recorded yet.",
   "timeline.cut": "Cut ({method})",
