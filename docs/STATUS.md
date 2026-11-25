@@ -8,6 +8,13 @@
 5. **Senden tek adımlar:** (a) 0036–0042'yi «Supabase migrate (manual)» ile sırayla yükle (0036+0037 önce, sonra «Yükleme tamam» yaz; 0042'den ÖNCE telefon tarafını yayınlayacağım, bu yüzden 0042'yi en son yükle); (b) Codex'in 4 işi (ilaçlama defteri PDF, GPS sınır, sezon takvimi, More menüsü) merge ediliyor, telefonda dene; (c) **para defteri PR'ları #484/#485** (F1 Ταμείο) başka bir ekipten geldi, onayın olmadan merge etmiyorum: «evet/hayır» de.
 6. **Açık PR'lar:** #500 (SQL, bekliyor) · #460 (0037 yüklenince) · #484/#485 (para defteri, onayını bekliyor) · #471/#480/#481/#488 (yalnızca belge) · Dependabot #306 (testleri kırmızı).
 
+## Güncel (2026-11-25 akşam) — 5 satır
+1. **Canlıda (main'e girdi, CI yeşil; canlı doğrulama sende):** Ταμείο (para defteri) · hasat varış yeri senkronu · sezon hedefi senkronu · iş panosu «Το αναλαμβάνω» (sunucu kimin önce aldığına karar verir) · yarın notları (usta/işçi arasında paylaşılır, «από εργάτη» etiketini sunucu koyar) · ekim sınırı alanı güvenle taşınıyor (çizim aracı henüz kullanıcıya açık değil).
+2. **Önce yapman gereken tek adım:** Άλλα → «Σύνδεση λογαριασμού: τι λείπει» → **«Επιβεβαιώνω: εφαρμόστηκαν οι αλλαγές έως 0041»** (üretim 0001–0041 olduğu için doğru). Bu tek onay tüm sunucu modlarını açar; öncesinde her şey eskisi gibi.
+3. **Telefonda dene:** (a) Άλλα → Ταμείο: bir gider ekle, düzelt, iptal et (çift dokunuş tek kayıt); (b) Φυτά → bir bitki → sezon hedefi gir; (c) iki telefonla: işçi «Το αναλαμβάνω», aynı anda ikinci işçi → «Την πήρε ήδη κάποιος άλλος»; (d) usta ve işçi birbirinin «yarın notu»nu görsün.
+4. **Bora'dan beklenen:** 0042 (#500) için telefon tarafı sırada, SQL'i yine yalnızca sen yüklersin · #504/#507 için Codex sonucu repoda yok: bağımsız alt-ajan incelemesi kabul mü? · Ταμείο'daki «Επιστροφή ΦΠΑ» (KDV iadesi) kategorisi kalsın mı?
+5. **Önizleme:** PR'ların Cloudflare yorumunda gerçek önizleme adresi çıkıyor (`https://<dal-adı>-aloni.ormanbora.workers.dev`, örn. #563); bu ortamdan açıp doğrulayamıyorum, telefonda aç.
+
 ## Güncel (2026-11-25 öğleden sonra)
 - **Production 0001–0041; sırada yalnızca 0042 (#500).** Bugün birleşenler: #460 + hasat varış yeri senkronu (#555) · Ταμείο çekirdek (#484) ve ekran (#557, bağımsız inceleme: 2 MUST düzeltildi) · bağımlılık paketi TypeScript ve preact 11 HARİÇ (#556; preact 11 altı testi kırıyor) · maplibre 5'e sabitlendi (#558, main'i kırmızı yapan buydu) · sezon hedefi senkronu (#559) · iş panosu «Το αναλαμβάνω» senkronu (#560).
 - **Sırada:** yarın notları (0039), ekim sınırı (0040), sonra 0042'nin telefon tarafı, #504/#507.
