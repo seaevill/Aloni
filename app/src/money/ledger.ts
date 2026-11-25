@@ -41,10 +41,13 @@ export function validDay(day: string): boolean {
   return DAY.test(day) && Number.isFinite(Date.parse(`${day}T12:00:00Z`)) && new Date(`${day}T12:00:00Z`).toISOString().startsWith(day);
 }
 
+export const FIRST_DAY = '2000-01-01';                          // earlier than this is a typing error
+const dayAfter = (iso: string, days: number): string => { const t = Date.parse(`${iso.slice(0, 10)}T12:00:00Z`); return Number.isFinite(t) ? new Date(t + days * 86_400_000).toISOString().slice(0, 10) : '9999-12-31'; };   // an unreadable clock sets no upper bound
+
 export function buildEntry(input: EntryInput, id: string, nowIso: string, amends?: string): BuildResult {
   const amount = parseCents(input.amount);
   if (!amount.known) return { ok: false, reason: 'amount' };
-  if (!validDay(input.day)) return { ok: false, reason: 'day' };
+  if (!validDay(input.day) || input.day < FIRST_DAY || input.day > dayAfter(nowIso, 366)) return { ok: false, reason: 'day' };   // a typo like 2062 must not open a new year
   if (!(categoriesOf(input.dir) as readonly string[]).includes(input.category)) return { ok: false, reason: 'category' };
   const entry: MoneyEntry = { id, day: input.day, dir: input.dir, category: input.category as Category, cents: amount.value, note: input.note.trim(), at: nowIso };
   if (input.crop !== undefined && input.crop !== '') entry.crop = input.crop;
@@ -128,14 +131,25 @@ export function yearsOf(rows: readonly MoneyEntry[], thisYear: string): string[]
 }
 
 const key = (farm: string): string => `money:${farm}`;
+/** A row read back from the phone (or a restored backup) must have the exact shape; anything else is left out instead of crashing the screen. */
+export function isEntry(r: unknown): r is MoneyEntry {
+  if (typeof r !== 'object' || r === null) return false;
+  const e = r as Record<string, unknown>;
+  return typeof e.id === 'string' && typeof e.day === 'string' && validDay(e.day) && (e.dir === 'in' || e.dir === 'out')
+    && typeof e.category === 'string' && (categoriesOf(e.dir) as readonly string[]).includes(e.category)
+    && typeof e.cents === 'number' && Number.isSafeInteger(e.cents) && e.cents > 0 && e.cents <= MAX_CENTS
+    && typeof e.note === 'string' && typeof e.at === 'string' && (e.amends === undefined || typeof e.amends === 'string');
+}
 export async function loadMoney(db: AppDB, farm: string): Promise<MoneyEntry[]> {
   const v = (await db.settings.get(key(farm)))?.value;
-  return Array.isArray(v) ? (v as MoneyEntry[]) : [];
+  return Array.isArray(v) ? v.filter(isEntry) : [];
 }
 /** Appends one row. There is deliberately no update or delete function. */
 export async function appendMoney(db: AppDB, farm: string, entry: MoneyEntry): Promise<void> {
-  const rows = await loadMoney(db, farm);
-  if (rows.some((r) => r.id === entry.id)) throw new Error('duplicate id');
-  if (entry.amends !== undefined && !rows.some((r) => r.id === entry.amends)) throw new Error('amends a missing row');
-  await putLocal(db, key(farm), [...rows, entry]);
+  await db.transaction('rw', db.settings, async () => {          // read + write in ONE transaction: two quick appends can never overwrite each other
+    const rows = await loadMoney(db, farm);
+    if (rows.some((r) => r.id === entry.id)) throw new Error('duplicate id');
+    if (entry.amends !== undefined && !rows.some((r) => r.id === entry.amends)) throw new Error('amends a missing row');
+    await putLocal(db, key(farm), [...rows, entry]);
+  });
 }
