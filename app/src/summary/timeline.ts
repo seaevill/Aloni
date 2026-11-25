@@ -41,6 +41,7 @@ export function parcelTimeline(
   /** the owner's fertilising / irrigation records (kept on the phone) and the observations (rows) – only the ones of THIS parcel are used */
   more: { work?: readonly Work[]; observations?: readonly Row[] } = {},
 ): TimelineEvent[] {
+  // a harvest WITHOUT a readable date is still listed (after the dated events, its date shown as unknown): the productivity counts it, so the history must show it too.
   // archived plantings stay in the history (what happened, happened); the same set the parcel productivity counts. Deleted HARVEST rows never show.
   const mine = plantings.filter((p) => p.parcel_id === parcelId);
   const archivedIds = new Set(mine.filter((p) => p.deleted_at).map((p) => String(p.id)));
@@ -58,7 +59,7 @@ export function parcelTimeline(
       kind: 'spray', id: String(s.id), at: text(s.sprayed_at), product: names.product(s.product_id),
       ...(text(s.phi_until) !== '' ? { phiUntil: text(s.phi_until) } : {}), ...(text(s.rei_until) !== '' ? { reiUntil: text(s.rei_until) } : {}),
     })),
-    ...harvests.filter((h) => !h.deleted_at && ids.has(String(h.planting_id)) && text(h.harvested_at) !== '').map((h): TimelineEvent => ({ kind: 'harvest', id: String(h.id), at: text(h.harvested_at), crop: cropOf(h.planting_id), crates: text(h.crates_str), ...(archivedIds.has(String(h.planting_id)) ? { archived: true as const } : {}) })),
+    ...harvests.filter((h) => !h.deleted_at && ids.has(String(h.planting_id))).map((h): TimelineEvent => ({ kind: 'harvest', id: String(h.id), at: text(h.harvested_at), crop: cropOf(h.planting_id), crates: text(h.crates_str), ...(archivedIds.has(String(h.planting_id)) ? { archived: true as const } : {}) })),
   ];
   const dated: { event: TimelineEvent; instant: number }[] = [];
   const undated: TimelineEvent[] = [];

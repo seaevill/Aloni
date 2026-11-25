@@ -9,7 +9,7 @@ import { athensToday, validDate } from '../plantings/planting';
 import { cutFromParcel } from '../spray/harvest';
 import { effectiveSprays } from '../spray/spray';
 import { instantOf } from '../spray/time';
-import { parcelTimeline, type TimelineEvent } from '../summary/timeline';
+import { parcelTimeline, TIMELINE_MAX, type TimelineEvent } from '../summary/timeline';
 import { dayOf, parseDays, provenance } from '../weather/strip';
 import type { Row } from '../db/schema';
 import { BackBar } from './BackBar';
@@ -136,6 +136,7 @@ export function ParcelDetail({ parcel, onBack, onEdit, onAnalyses, readOnly }: {
         {stream.length === 0 && <p class="muted">{t('timeline.empty')}</p>}
         {stream.map((e) => <div class="card" key={`${e.kind}-${e.id}`} data-testid="timeline-event" data-kind={e.kind} data-at={e.at}>{eventLine(e)}<small>{eventDate(e)}</small></div>)}
       </div>
+      {stream.length === TIMELINE_MAX && <p class="muted" data-testid="timeline-cap">{t('timeline.cap', { n: TIMELINE_MAX })}</p>}
       <button class="row" data-testid="analysis-open" onClick={onAnalyses}><span>{t('analysis.open')}</span><span aria-hidden="true" class="chev" /></button>
       {!readOnly && <button class="row" data-testid="parcel-edit" onClick={onEdit}><span>{t('edit.open')}</span><span aria-hidden="true" class="chev" /></button>}
       <EditTrail row={parcel} />

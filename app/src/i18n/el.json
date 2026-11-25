@@ -802,5 +802,6 @@
   "timeline.irrigate": "Άρδευση",
   "timeline.irrigate.m3": "{n} m³",
   "timeline.irrigate.min": "{n} λεπτά",
-  "timeline.observation": "Παρατήρηση: {what}"
+  "timeline.observation": "Παρατήρηση: {what}",
+  "timeline.cap": "Εμφανίζονται οι {n} πιο πρόσφατες καταγραφές."
 }

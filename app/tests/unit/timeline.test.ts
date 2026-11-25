@@ -103,4 +103,15 @@ describe('the timeline and the parcel productivity read the SAME harvest records
     expect(events.reduce((a, e) => a + (e.kind === 'harvest' ? parseFloat(e.crates) : Number('0')), Number('0'))).toBe(y.crates);
     expect(y.crates).toBe(50);
   });
+  it('a harvest without a date is counted by the productivity AND listed in the timeline (last, its date unknown): never silently left out', () => {
+    const withUndated = [...harvests, harvest('hu', 'p1', '', '5')];
+    const y = parcelYield(parcel, plantings, withUndated);
+    const events = parcelTimeline('A', plantings, [], [], withUndated, names);
+    const harvestEvents = events.filter((e) => e.kind === 'harvest');
+    expect(y.known).toBe(true);
+    if (!y.known) return;
+    expect(harvestEvents.map((e) => e.id).sort()).toEqual(y.sources.map((s) => s.id).sort());
+    expect(events.at(-1)).toMatchObject({ kind: 'harvest', id: 'hu', at: '', crates: '5' });   // undated events come after every dated one
+    expect(y.crates).toBe(55);
+  });
 });
