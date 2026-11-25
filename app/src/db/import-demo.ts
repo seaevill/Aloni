@@ -17,7 +17,7 @@ export interface PrototypeData {
 
 /** Which fields point at which table (prototype ids like "P1" become UUIDs, references are rewritten with them). */
 const REFS: Record<FarmTable, Record<string, FarmTable>> = {
-  parcels: {}, crops: {}, products: {}, label_uses: {}, stock_lots: {}, stock_movements: {}, soil_tests: {}, water_tests: {}, workers: {}, job_plantings: {}, job_spray: {}, job_harvest: {}, observations: {}, worker_cards: {}, customers: {}, customer_orders: {}, crop_targets: {}, day_notes: {}, // the prototype's `registered[]` stays inside its product; the real farm's label uses are entered by hand
+  parcels: {}, crops: {}, products: {}, label_uses: {}, stock_lots: {}, stock_movements: {}, soil_tests: {}, water_tests: {}, workers: {}, job_plantings: {}, job_spray: {}, job_harvest: {}, observations: {}, worker_cards: {}, customers: {}, customer_orders: {}, crop_targets: {}, day_notes: {}, field_cuts: {}, field_work: {}, // the prototype's `registered[]` stays inside its product; the real farm's label uses are entered by hand
   plantings: { parcel_id: 'parcels', crop_id: 'crops' },
   jobs: { parcel_id: 'parcels', planting_id: 'plantings', product_id: 'products' },
   orders_weekly: { crop_id: 'crops' },
