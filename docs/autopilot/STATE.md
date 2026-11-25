@@ -1,7 +1,7 @@
 # Autopilot state (updated by every run; read it first)
 
 ```
-LOCK: none            # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
+LOCK: night-20261126-00 2026-11-25T21:04Z autopilot/20261126-00-timeline-undated            # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
 LAST_RUN: 2026-11-25 06:00 Istanbul, night shift (autopilot/20261125-06-today-audit)
 LAST_COMPLETED: queue item 8b first slice (Σήμερα: saved-record confirmations on the first screen) (PR #552)
 NEXT_SAFE_ACTION: hour-07 run = MORNING VERIFICATION only. Next dev run: if PR #552 is still open, finish it first; then queue item 8c (Σήμερα second slice). Items 1, 3, 3b, 4, 5, 6, 6b, 7, 8, 8b done or in PR.
