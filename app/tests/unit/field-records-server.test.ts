@@ -64,7 +64,7 @@ describe('SQL 0042 field records (owner only), dormant until the readiness card 
   it('the phone fields match the pending contract file (folded into phone-columns.json when #500 is merged)', () => {
     const cut = Object.keys(cutRow({ parcel_id: 'p', day: '2026-11-01', method: 'hand' }, F, 'i', NOW)).sort();
     const work = Object.keys(workRow({ parcel_id: 'p', kind: 'fertilise', day: '2026-11-01', n_form: 'x', n_kg_per_str: '1,5' }, F, 'i', NOW, { rain: 1 })).concat(['minutes_str', 'm3_str']).sort();
-    const out = { field_cuts: [...cut, 'actor_id', 'device_id'].sort(), field_work: [...work, 'actor_id', 'device_id'].sort() };
+    const out = { parcels_extra: ['kaek'], field_cuts: [...cut, 'actor_id', 'device_id'].sort(), field_work: [...work, 'actor_id', 'device_id'].sort() };
     if (process.env.UPDATE_CONTRACT) writeFileSync(PENDING, `${JSON.stringify(out, null, 1)}\n`);
     expect(JSON.parse(readFileSync(PENDING, 'utf8'))).toEqual(out);
   });
