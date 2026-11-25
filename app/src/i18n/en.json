@@ -541,7 +541,7 @@
   "today.urgent": "Most important today",
   "today.urgent.unknown": "Unknown waiting period · {parcel}",
   "today.urgent.wait": "Waiting ends {d} · {crop} · {parcel}",
-  "today.urgent.action": "See the sprayings",
+  "today.urgent.action": "See why",
   "history.title": "History",
   "job.add.plus": "+ Assign a job",
   "today.jobs.none": "No jobs today.",
@@ -792,5 +792,7 @@
   "tomorrow.covered": "Covered",
   "tomorrow.surplus": "{n} extra",
   "tomorrow.supply": "Ready plantings: {free} · on hold (not counted): {held} · unknown (not counted): {unknown}",
-  "tomorrow.unmapped": "{n} products not linked to a crop are not shown above."
+  "tomorrow.unmapped": "{n} products not linked to a crop are not shown above.",
+  "harvest.more5": "+5",
+  "harvest.more10": "+10"
 }

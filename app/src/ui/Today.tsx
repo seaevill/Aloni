@@ -19,7 +19,7 @@ import { JobForm } from './JobForm';
 import { ObservationForm } from './ObservationForm';
 import { QuickAdd } from './QuickAdd';
 import { SprayForm } from './SprayForm';
-import { EmptyState, ErrorState } from './states';
+import { EmptyState, ErrorState, SavedWhere } from './states';
 import { Title, nameOf, retry } from './screens';
 import { useRows, type Rows } from './useRows';
 import { dayOf, farmDay, parseDays, provenance, type Day } from '../weather/strip';
@@ -41,7 +41,8 @@ import './WaitSheet';
 import './WeatherSheet';
 import './JobsSheet';
 import { WaitRing } from './ds/WaitRing';
-import { runningSince, waitRing } from '../summary/wait';
+import { plantingWait, runningSince, waitRing } from '../summary/wait';
+import { kindTitle } from './jobkind';
 import type { Row } from '../db/schema';
 
 // Σήμερα (Design 2): the date and the farm, ONE big card for the most urgent thing, the weather strip (empty until the data exists), a card per field with its cut counter,
@@ -238,7 +239,12 @@ export function Today() {
   const weatherOf = new Map(weatherRows.map((w) => [w.parcel_id, parseDays(w.days)] as const));
   const harvestRows = useRows('job_harvest');
   const summary = todaySummary(athensToday(new Date()) ?? '', sprays.rows ?? [], harvestRows.rows ?? [], jobs.rows ?? [], (id) => text(workers.rows?.find((w) => w.id === id)?.name), (id) => nameOf(products.rows?.find((p) => p.id === id) ?? {}));
-  const jobLine = (j: Row): string => [...new Set(links.rows?.filter((l) => l.job_id === j.id).map((l) => plantings.rows?.find((p) => p.id === l.planting_id)).filter((p): p is Row => !!p).map((p) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) })) ?? [])].concat(text(workers.rows?.find((w) => w.id === j.worker_id)?.name), typeof j.planned_for === 'string' && j.planned_for !== '' ? formatDate(j.planned_for) : '').filter(Boolean).join(' · ');
+  const jobLineBase = (j: Row): string => [...new Set(links.rows?.filter((l) => l.job_id === j.id).map((l) => plantings.rows?.find((p) => p.id === l.planting_id)).filter((p): p is Row => !!p).map((p) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) })) ?? [])].concat(text(workers.rows?.find((w) => w.id === j.worker_id)?.name), typeof j.planned_for === 'string' && j.planned_for !== '' ? formatDate(j.planned_for) : '').filter(Boolean).join(' · ');
+  const jobLine = (j: Row): string => [kindTitle(j as { kind?: unknown }), jobLineBase(j)].filter((x) => x !== undefined && x !== '').join(' · ');
+  const urgentPlanting = (p: Row): string | undefined => {          // the planting on that parcel whose waiting period is the reason (unknown first, then the earliest running one)
+    const waits = live(plantings).filter((x) => x.parcel_id === p.id).map((x) => ({ id: String(x.id), w: plantingWait(String(x.id), now, links.rows ?? [], sprays.rows ?? [], plantings.rows ?? [], labelRows.rows ?? []) }));
+    return (waits.find((x) => x.w.state === 'unknown') ?? waits.find((x) => x.w.state === 'running'))?.id;
+  };
   const hub = jobHub(jobs.rows ?? [], athensToday(new Date()) ?? '');
   const jobGroups = hub.open;
   const lateLine = (j: Row): string => { const n = daysLate(text(j.planned_for), athensToday(new Date()) ?? ''); return n === undefined ? '' : t('ui.job.late', { n }); };
@@ -279,6 +285,15 @@ export function Today() {
       </header>
       {showInstall && <ListRow icon={<Icon name="share" />} heading={t('ui.install.card')} meta={t('ui.install.card.meta')} onClick={() => openSheet('install', 'all')} testid="install-open" />}
       {rows.some((q) => q.failed) && <ErrorState onRetry={retry} />}
+      {/* the confirmation of the record just saved sits on the FIRST screen (queue item 8b): the farmer comes back here at the top and must see it without scrolling */}
+      {observed && <p class="msg" role="status" data-testid="observe-saved">{t('ui.quick.saved')}</p>}
+      {observed && <SavedWhere testid="observe-saved-where" />}
+      {planned && <p class="msg" role="status" data-testid="job-saved">{t('job.saved')}</p>}
+      {planned && <SavedWhere testid="job-saved-where" />}
+      {harvested && <p class="msg" role="status" data-testid="harvest-saved">{t('harvest.saved')}</p>}
+      {harvested && <SavedWhere testid="harvest-saved-where" />}
+      {recorded && <p class="msg" role="status" data-testid="spray-saved">{t('spray.saved')}</p>}
+      {recorded && <SavedWhere testid="spray-saved-where" />}
       {loaded && !has && <Welcome />}
       {loaded && !has && (
         <EmptyState art="parcels" message={t('welcome.start')} actionLabel={t('parcel.add')} onAction={() => { openParcelForm.value = true; tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
@@ -287,10 +302,9 @@ export function Today() {
         <section class="hero" data-testid="urgent" aria-label={t('today.urgent')}>
           <span class="kicker"><span aria-hidden="true"><Icon name={BADGE[urgent.state].mark} /></span>{SP}{t('today.urgent')}</span>
           <h2>{urgent.state === 'unknown' ? t('today.urgent.unknown', { parcel: text(urgent.p.name) }) : t('today.urgent.wait', { d: formatDate(urgent.at.slice(0, 10)), crop: urgent.crops.split(', ')[0] ?? '', parcel: text(urgent.p.name) })}</h2>
-          <button class="btn lime" data-testid="urgent-action" onClick={() => setHistory(true)}>{t('today.urgent.action')}</button>
+          <button class="btn lime" data-testid="urgent-action" onClick={() => { const id = urgentPlanting(urgent.p); if (id) openSheet('wait', id); else setHistory(true); }}>{t('today.urgent.action')}</button>
         </section>
       )}
-      {loaded && has && <WeatherStrip perParcel={[...weatherOf.values()]} />}
       {loaded && has && <TodayNumbers ct={ct} harvests={harvestRows.rows ?? []} />}
       {loaded && has && (
         <div class="pair">
@@ -315,12 +329,9 @@ export function Today() {
         </section>
       )}
       {loaded && has && <button class="btn" data-testid="job-open" onClick={() => setPlanning(true)}>{t('job.add.plus')}</button>}
+      {loaded && has && <WeatherStrip perParcel={[...weatherOf.values()]} />}
       {loaded && has && <TomorrowSection rows={{ crops: crops.rows ?? [], plantings: plantings.rows ?? [], links: links.rows ?? [], sprays: sprays.rows ?? [], harvests: harvestRows.rows ?? [], labels: labelRows.rows ?? [] }} />}
-      {observed && <p class="msg" role="status" data-testid="observe-saved">{t('ui.quick.saved')}</p>}
       {loaded && has && <QuickAdd onSpray={() => setSpraying(true)} onHarvest={() => setHarvesting(true)} onObserve={() => setObserving(true)} onJob={() => { setPlannedDay(nextDay(athensToday(new Date()) ?? '')); setPlanning(true); }} />}
-      {planned && <p class="msg" role="status" data-testid="job-saved">{t('job.saved')}</p>}
-      {harvested && <p class="msg" role="status" data-testid="harvest-saved">{t('harvest.saved')}</p>}
-      {recorded && <p class="msg" role="status" data-testid="spray-saved">{t('spray.saved')}</p>}
       {loaded && has && (
         <section class="kpis" data-testid="today-kpis">
           <button type="button" class="kpi" data-testid="kpi-parcels" onClick={() => openSheet('parcels', 'all')}><small>{t('today.kpi.parcels')}</small><strong>{formatQty(live(parcels).length)}</strong></button>

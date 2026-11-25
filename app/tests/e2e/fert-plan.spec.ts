@@ -19,11 +19,17 @@ test('the agronomist\'s line is kept exactly as written, with its day; reminders
   await card.getByTestId('fert-save').click();
   await expect(card.getByTestId('fert-error')).toBeVisible();                       // not a whole number of days
   await card.getByTestId('fert-day').fill('20');
+  await card.getByTestId('fert-kg').fill('abc');
+  await card.getByTestId('fert-save').click();
+  await expect(card.getByTestId('fert-error')).toBeVisible();                       // an amount that is not a number is refused
+  await card.getByTestId('fert-kg').fill('4,5');
+  await card.getByTestId('fert-bag').fill('25');
   await card.getByTestId('fert-save').click();
   const item = card.getByTestId('fert-item');
   await expect(item).toContainText('Ημέρα 20');
   await expect(item).toContainText('όπως το έγραψε ο γεωπόνος');
   await expect(item).toContainText('Ουρία 20 kg/στρ.');                            // his words, untouched
+  await expect(item.getByTestId('fert-calc')).toHaveText('Για την έκταση της φυτείας: 6,75 kg = τουλάχιστον 1 σακιά');   // 4,5 kg × 1,5 στρ. ÷ a 25 kg bag, counted up
   await page.reload();
   await page.locator('nav.tabs [data-tab="crops"]').click();
   await page.getByTestId('crop-open').filter({ hasText: 'Σπανάκι' }).click();

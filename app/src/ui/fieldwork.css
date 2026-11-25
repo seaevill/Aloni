@@ -1,0 +1,6 @@
+/* Χωράφι › Λίπανση / Άρδευση */
+.fieldwork { display: grid; gap: var(--sp-2); margin-block: var(--sp-3); }
+.fieldwork small { display: block; }
+.fieldwork-buttons { display: grid; gap: var(--sp-2); }
+.fieldwork-form { display: grid; gap: var(--sp-2); }
+.work-item { display: grid; gap: var(--sp-1); }

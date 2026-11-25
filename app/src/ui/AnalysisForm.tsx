@@ -33,7 +33,7 @@ export function AnalysisForm({ parcel, kind, onDone }: { parcel: Row; kind: Kind
     if (!r.ok) { setBad({ date: r.date, ph: r.ph, ec: r.ec, ecUnit: r.ecUnit }); return; }
     await put(db, TABLES[kind], r.row, 'insert');
     dataVersion.value++;
-    showUndo(t('analysis.saved'), async () => { await put(db, TABLES[kind], archived(r.row, new Date().toISOString())); dataVersion.value++; });
+    showUndo(t('analysis.saved'), async () => { await put(db, TABLES[kind], archived(r.row, new Date().toISOString())); dataVersion.value++; }, { where: true });
     onDone();
   };
   const titleKey: I18nKey = kind === 'soil' ? 'analysis.add.soil' : 'analysis.add.water';

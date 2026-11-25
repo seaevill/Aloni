@@ -1,3 +1,4 @@
+import { useSubmit } from './useSubmit';
 import { useEffect, useState } from 'preact/hooks';
 import { activeFarm, db } from '../db';
 import { formatDate, t } from '../i18n';
@@ -10,6 +11,7 @@ const WEEK = ['2026-11-23', '2026-11-24', '2026-11-25', '2026-11-26', '2026-11-2
 export const weekdayName = (weekday: number): string => formatDate(WEEK[weekday - 1] as string).split(' ')[0] as string;
 
 export function RecurringJobs() {
+  const { busy, submit } = useSubmit();
   const farm = activeFarm.value;
   const [rules, setRules] = useState<Rule[]>([]); const [adding, setAdding] = useState(false); const [weekday, setWeekday] = useState(1); const [title, setTitle] = useState(''); const [bad, setBad] = useState(false);
   const load = async () => setRules(await loadRules(db, farm));
@@ -38,7 +40,7 @@ export function RecurringJobs() {
         </div>
         <label class="field"><span class="ds-muted">{t('ui.rec.what')}</span><input class="input" value={title} autoComplete="off" data-testid="rec-title" onInput={(e) => setTitle((e.target as HTMLInputElement).value)} /></label>
         {bad && <p class="msg error" role="alert" data-testid="rec-error">{t('ui.rec.err')}</p>}
-        <button type="button" class="btn" data-testid="rec-save" onClick={() => void save()}>{t('ui.rec.save')}</button>
+        <button type="button" class="btn" data-testid="rec-save" disabled={busy} onClick={() => void submit(save)}>{t('ui.rec.save')}</button>
       </div>}
       <small data-testid="rec-local">{t('ui.rec.local')}</small>
     </section>

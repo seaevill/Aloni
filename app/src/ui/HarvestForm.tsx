@@ -5,6 +5,8 @@ import { formatDate, formatDateTime, t, tn, ts } from '../i18n';
 import { formatArea } from '../i18n/format';
 import { put } from '../repo';
 import { saveDestination, type Destination } from '../stock/destination';
+import { serverDestination } from '../stock/destination-words';
+import { serverRecordsOn } from '../owner-records/mode';
 import { buildHarvest, harvestGate } from '../spray/harvest';
 import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
 import { useSubmit } from './useSubmit';
@@ -73,11 +75,12 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
   ));
   const cratesError = failed > 0 ? (!cratesN.known ? t('harvest.error.crates') : cratesN.value < 1 ? t('harvest.error.zero') : cratesN.value > MAX_CRATES ? t('harvest.error.max', { max: MAX_CRATES }) : '') : '';
   useEffect(() => { if (failed > 0) document.querySelector<HTMLElement>('main [data-error]')?.focus(); }, [failed]);
-  const step = (d: 1 | -1) => { const n = parseWhole<'Crates'>(crates); const cur = n.known ? n.value : 0; setCrates(cur + d < 1 ? '' : `${Math.min(cur + d, MAX_CRATES)}`); }; // the counter buttons: +1 / −1, never below 1
+  const step = (d: 1 | -1 | 5 | 10) => { const n = parseWhole<'Crates'>(crates); const cur = n.known ? n.value : 0; setCrates(cur + d < 1 ? '' : `${Math.min(cur + d, MAX_CRATES)}`); }; // the counter buttons: +1 / −1, never below 1
   const save = async () => {
     const r = buildHarvest({ plantingId: planting, crates, harvestedAt: at, note, cutBy }, links.rows ?? [], sprays.rows ?? [], farmId, new Date().toISOString(), crypto.randomUUID(), plantings.rows ?? [], labelRows.rows ?? []);
     if (!r.ok || (big && dest === undefined)) { setFailed((n) => n + 1); return; }
-    await put(db, 'job_harvest', actorId ? { ...r.row, actor_id: actorId } : r.row, 'insert');
+    const where = dest !== undefined && await serverRecordsOn(db) ? { destination: serverDestination(dest) } : {};   // the server column exists (0036) once the owner confirmed it; before that the answer stays on this phone
+    await put(db, 'job_harvest', { ...r.row, ...(actorId ? { actor_id: actorId } : {}), ...where }, 'insert');
     if (dest !== undefined) await saveDestination(db, farmId, String(r.row.id), { d: dest, name: recvName, phone: recvPhone });
     dataVersion.value++;
     if (big) { setSavedLine(cratesN.known ? tn('harvest.saved.line', cratesN.value, { crop: chosen ? cropOf(chosen) : '' }) : ''); setPlanting(''); setCrates(''); setNote(''); setDest(undefined); setRecvName(''); setRecvPhone(''); setWhen(athensLocalNow(new Date()) ?? ''); setFailed(0); }
@@ -103,6 +106,10 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
             <output data-testid="harvest-count" aria-live="polite">{shown}</output>
             <button data-testid="harvest-more" aria-label={t('harvest.more')} onClick={() => step(1)}>{t('harvest.plus')}</button>
           </div>
+          <div class="seg two jumps" data-testid="harvest-jumps">
+            <button class="big" data-testid="harvest-more5" onClick={() => step(5)}>{t('harvest.more5')}</button>
+            <button class="big" data-testid="harvest-more10" onClick={() => step(10)}>{t('harvest.more10')}</button>
+          </div>
           <p class="caption muted">{t('harvest.counter')}</p>
         </>
       ) : (
@@ -110,9 +117,11 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
           <label class="field">{t('harvest.crates')}
             <input class="input" value={crates} inputMode="numeric" autoComplete="off" data-testid="harvest-crates" onInput={(e) => setCrates((e.target as HTMLInputElement).value)} />
           </label>
-          <div class="seg two">
+          <div class="seg steps">
             <button onClick={() => step(-1)}>{t('harvest.less')}</button>
             <button data-testid="harvest-more" onClick={() => step(1)}>{t('harvest.more')}</button>
+            <button data-testid="harvest-more5" onClick={() => step(5)}>{t('harvest.more5')}</button>
+            <button data-testid="harvest-more10" onClick={() => step(10)}>{t('harvest.more10')}</button>
           </div>
         </>
       )}
@@ -125,9 +134,9 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
         </>
       )}
       <h2>{t('ui.dest.title')}</h2>
-      <div class="seg two" role="group" aria-label={t('ui.dest.title')} data-testid="harvest-dest">
-        <button class={big ? 'big' : undefined} aria-pressed={dest === 'store'} data-testid="harvest-dest-store" onClick={() => setDest('store')}>{t('ui.dest.store')}</button>
-        <button class={big ? 'big' : undefined} aria-pressed={dest === 'dispatch'} data-testid="harvest-dest-dispatch" onClick={() => setDest('dispatch')}>{t('ui.dest.dispatch')}</button>
+      <div class={big ? 'seg two big' : 'seg two'} role="group" aria-label={t('ui.dest.title')} data-testid="harvest-dest">
+        <button aria-pressed={dest === 'store'} data-testid="harvest-dest-store" onClick={() => setDest('store')}>{t('ui.dest.store')}</button>
+        <button aria-pressed={dest === 'dispatch'} data-testid="harvest-dest-dispatch" onClick={() => setDest('dispatch')}>{t('ui.dest.dispatch')}</button>
       </div>
       {big && failed > 0 && dest === undefined && <p class="msg error" role="alert" tabIndex={-1} data-error data-testid="harvest-dest-error">{t('ui.dest.error')}</p>}
       {dest === 'dispatch' && (
@@ -145,7 +154,7 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
         <input class="input" value={note} autoComplete="off" onInput={(e) => setNote((e.target as HTMLInputElement).value)} />
       </label>
       <button class={big ? 'btn big' : 'btn'} data-testid="harvest-save" disabled={busy || blocked !== undefined} onClick={() => void submit(save)}>{t('harvest.save')}</button>
-      <button class="btn secondary" onClick={() => onDone(false)}>{t('product.cancel')}</button>
+      <button class={big ? 'btn secondary big' : 'btn secondary'} data-testid="harvest-cancel" onClick={() => onDone(false)}>{t('product.cancel')}</button>
     </section>
   );
 }

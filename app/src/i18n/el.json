@@ -541,7 +541,7 @@
   "today.urgent": "Το πιο σημαντικό σήμερα",
   "today.urgent.unknown": "Άγνωστη αναμονή · {parcel}",
   "today.urgent.wait": "Αναμονή λήγει {d} · {crop} · {parcel}",
-  "today.urgent.action": "Δείτε τους ψεκασμούς",
+  "today.urgent.action": "Δείτε γιατί",
   "history.title": "Ιστορικό",
   "job.add.plus": "+ Ανάθεση δουλειάς",
   "today.jobs.none": "Σήμερα δεν υπάρχουν δουλειές.",
@@ -792,5 +792,7 @@
   "tomorrow.covered": "Καλύπτεται",
   "tomorrow.surplus": "Περισσεύουν {n}",
   "tomorrow.supply": "Έτοιμες φυτεύσεις: {free} · σε αναμονή (δεν μετρούν): {held} · άγνωστες (δεν μετρούν): {unknown}",
-  "tomorrow.unmapped": "{n} προϊόντα χωρίς αντιστοίχιση καλλιέργειας δεν εμφανίζονται παραπάνω."
+  "tomorrow.unmapped": "{n} προϊόντα χωρίς αντιστοίχιση καλλιέργειας δεν εμφανίζονται παραπάνω.",
+  "harvest.more5": "+5",
+  "harvest.more10": "+10"
 }
