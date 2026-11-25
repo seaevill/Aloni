@@ -1,7 +1,7 @@
 # Autopilot state (updated by every run; read it first)
 
 ```
-LOCK: none            # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
+LOCK: night-0500 2026-11-25T02:05Z autopilot/20261125-05-worker-targets   # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
 LAST_RUN: 2026-11-25 04:00 Istanbul, night shift (autopilot/20261125-04-lazy-screens)
 LAST_COMPLETED: #550 (Άλλα sub-screens lazy + warmed; first-load index gzip 199.6 → 188.2 kB; queue item 7)
 NEXT_SAFE_ACTION: queue item 8 (worker app: 72 px targets, language switch, no owner data; axe + layout specs). Items 1, 3, 3b, 4, 5, 6, 6b, 7 are done.
