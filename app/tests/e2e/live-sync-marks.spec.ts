@@ -28,7 +28,7 @@ async function addParcel(page: Page, name: string) {
 async function goLive(page: Page) {
   await page.goto('/');
   await addParcel(page, 'Κάτω Κάμπος');
-  await page.evaluate(() => new Promise<void>((done) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const tx = r.result.transaction('settings', 'readwrite'); const s = tx.objectStore('settings'); s.put({ key: 'controller', value: { name: 'Bora', address: 'Megara', phone: '210' } }); s.put({ key: 'business', value: { vat_id: '123456789', farm_name: 'Bora farm' } }); s.put({ key: 'readiness', value: { migration: '0034', advisor: true } }); s.put({ key: 'last_backup_at', value: new Date().toISOString() }); tx.oncomplete = () => done(); }; }));
+  await page.evaluate(() => new Promise<void>((done) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const tx = r.result.transaction('settings', 'readwrite'); const s = tx.objectStore('settings'); s.put({ key: 'controller', value: { name: 'Bora', address: 'Megara', phone: '210' } }); s.put({ key: 'business', value: { vat_id: '123456789', farm_name: 'Bora farm' } }); s.put({ key: 'readiness', value: { migration: '0037', advisor: true } }); s.put({ key: 'last_backup_at', value: new Date().toISOString() }); tx.oncomplete = () => done(); }; }));
   await page.waitForLoadState('networkidle');      // the first load (and its service worker) is finished before the page is loaded again
   await page.goto('/');
   await page.locator('nav.tabs [data-tab="more"]').click();

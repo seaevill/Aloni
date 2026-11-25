@@ -228,7 +228,7 @@ rollback;
 
 ## 13. Senkronu açma – 8 satır (her adımı sen yaparsın; gizli anahtar yazma)
 1. **Yedek:** Άλλα → **Αντίγραφο** (ya da sihirbazda **Αντίγραφο τώρα**) → dosya telefona iner. Doğru: «Αντίγραφο δεδομένων» satırında «τελευταίο αντίγραφο: …» bugünün saati.
-2. **Hazırlık kartı:** Άλλα → **Σύνδεση λογαριασμού: τι λείπει**. **«Επιβεβαιώνω: εφαρμόστηκαν οι αλλαγές έως 0034»** düğmesine bir kez bas; Advisor için Supabase → **Advisors → Security / Performance → Refresh** («RLS Disabled in Public» yok) sonra onayla. Doğru: bütün satırlar **«Έτοιμο»**.
+2. **Hazırlık kartı:** Άλλα → **Σύνδεση λογαριασμού: τι λείπει**. **«Επιβεβαιώνω: εφαρμόστηκαν οι αλλαγές έως 0037»** düğmesine bir kez bas; Advisor için Supabase → **Advisors → Security / Performance → Refresh** («RLS Disabled in Public» yok) sonra onayla. Doğru: bütün satırlar **«Έτοιμο»**.
 3. **Giriş:** Άλλα → **Σύνδεση** → «Συνδεδεμένος: …». (Giriş tek başına hiçbir şey göndermez.)
 4. **Aç:** Άλλα → **Άνοιγμα συγχρονισμού** (düğme yalnızca her satır yeşilken açılır) → bas. Doğru: «Ανεβαίνουν τα στοιχεία…», sonra **«Ο συγχρονισμός είναι ανοιχτός.»**
 5. **Çip:** üstte **«Ο συγχρονισμός δουλεύει · τελευταίος: SS:DD»** (bir tur başarılı olunca; önce «Αναμονή πρώτου συγχρονισμού»). **«N μη συγχρονισμένα»** = bekleyen kayıt; **«Εκτός σύνδεσης»** = sinyal yok; **«Δεν στάλθηκε. Θα ξαναδοκιμάσουμε.»** = son tur olmadı, kendiliğinden dener.
