@@ -5,6 +5,17 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-25 03:00 (gece vardiyası, otomatik) — geri-al bildirimleri de «telefonda» diyor
+- **Tamamlanan iyileştirme:** QUEUE #6b — yeni bir χωράφι, φύτευση, προϊόν, ετικέτα, εργάτης veya ανάλυση kaydedilince alttaki siyah «Αναίρεση» bildiriminde, eski yazının altına kaydın nerede olduğu yazılıyor: «Αποθηκεύτηκε στο τηλέφωνο. Θα σταλεί όταν συνδεθεί λογαριασμός.» Άλλα → Φωτογραφίες ekranında da «Η φωτογραφία αποθηκεύτηκε.» altında aynı satır var. Demo çiftliğinde satır yok.
+- **PR:** #549 — uygulandı, test edildi. Birleşme durumu PR'da (CI kapıları).
+- **Özellik kaybı yok:** bildirim yazıları ve «Αναίρεση» aynen; arşivleme bildirimleri değişmedi; yeni çeviri anahtarı yok.
+- **Önce/sonra (375 px, uçak modu, parsel kaydı):** `docs/design/offline-undo-where-before-375.png` → `docs/design/offline-undo-where-after-375.png`. 320/375/390'da yatay kaydırma yok.
+- **Testler (yerel):** yeni e2e önce kırmızı, sonra tüm kontrolleri geçti; vitest tamamı 810 geçti; tsc, eslint temiz. Çevrimdışı testler yerelde yalnızca bilinen `icon-192` ortam hatasıyla düşüyor; karar CI'da (WebKit).
+- **Cloudflare önizleme:** herkese açık adres doğrulanamıyor; panel bağlantısı PR'ın «Workers Builds» kontrolünde.
+- **Kalan sorun:** hasat formundaki «N κλούβες» satırı değişmedi (bu satır yalnızca işçi ekranında çıkıyor ve orada «telefonda» satırı zaten var).
+- **Sıradaki öncelik:** QUEUE #7 — ilk açılış boyutu.
+- **Bora'dan karar:** yok.
+
 ## 2026-11-25 02:00 (gece vardiyası, otomatik) — çevrimdışı kayıt ifadesi
 - **Tamamlanan iyileştirme:** QUEUE #6 (ilk dilim) — Σήμερα ekranında ilaçlama, hasat, iş ve gözlem kaydedildiğinde mevcut onay yazısının altına kaydın **nerede** olduğu yazılıyor: «Αποθηκεύτηκε στο τηλέφωνο. Θα σταλεί όταν συνδεθεί λογαριασμός.» Eşitleme açıkken ve kayıt bekliyorsa «Αποθηκεύτηκε · θα σταλεί όταν έχει σήμα»; gönderildiyse ek satır yok. Demo çiftliğinde bu satır hiç çıkmıyor (Demo hiçbir yere gönderilmez).
 - **PR:** #548 — uygulandı, test edildi. Birleşme durumu PR'da (CI bekleniyor).

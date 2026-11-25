@@ -42,9 +42,14 @@ export function queuedKey(live: boolean): I18nKey { if (live) return 'sync.queue
 
 /** Under an owner's «saved» confirmation (queue item 6): where the record is now («on the phone, it will be sent …»). Nothing for the Demo farm (never sent) or once sync has emptied the outbox. */
 export function SavedWhere({ testid }: { testid: string }) {
-  const key = savedWhere({ connected: SYNC_CONNECTED, enabled: syncEnabled.value, pending: pendingOps.value, demo: activeFarm.value === DEMO_FARM_ID });
+  const key = savedWhereNow();
   if (key === undefined) return null;
   return <p class="muted" data-testid={testid}>{t(key)}</p>;
+}
+
+/** The same «where» key, read from the live signals (the undo toast uses it too, queue item 6b). */
+export function savedWhereNow(): I18nKey | undefined {
+  return savedWhere({ connected: SYNC_CONNECTED, enabled: syncEnabled.value, pending: pendingOps.value, demo: activeFarm.value === DEMO_FARM_ID });
 }
 
 /** The marker on a record (E3): «on the phone» (a dot AND a word), «sent» (a tick AND a word), «refused» (a button that opens the plain explanation). Colour is never the only signal; a record the outbox does not hold has no mark. */

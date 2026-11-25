@@ -60,13 +60,13 @@ export function LabelUseForm({ productId, taken, existing, onDone }: { productId
       if (!sup) { setReasonMissing(true); return; }
       await putMany(db, [{ table: 'label_uses', row: sup.archivedOld, op: 'update' }, { table: 'label_uses', row: sup.replacement, op: 'insert' }]); // old archived + new, ONE transaction
       dataVersion.value++;
-      showUndo(t('labeluse.saved'), async () => { await putMany(db, [{ table: 'label_uses', row: archived(sup.replacement, new Date().toISOString()), op: 'update' }, { table: 'label_uses', row: existing, op: 'update' }]); dataVersion.value++; });
+      showUndo(t('labeluse.saved'), async () => { await putMany(db, [{ table: 'label_uses', row: archived(sup.replacement, new Date().toISOString()), op: 'update' }, { table: 'label_uses', row: existing, op: 'update' }]); dataVersion.value++; }, { where: true });
       onDone();
       return;
     }
     await putMany(db, [...newCrop, { table: 'label_uses', row: existing ? keepLinks(existing, r.row) : r.row, op: existing ? 'update' : 'insert' }]); // the crop and its label details together
     dataVersion.value++;
-    showUndo(t('labeluse.saved'), async () => { await put(db, 'label_uses', existing ?? archived(r.row, new Date().toISOString())); dataVersion.value++; });
+    showUndo(t('labeluse.saved'), async () => { await put(db, 'label_uses', existing ?? archived(r.row, new Date().toISOString())); dataVersion.value++; }, { where: true });
     onDone();
   };
 
