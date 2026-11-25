@@ -13,6 +13,11 @@
 - **«0042 yüklemeye hazır» için kalan tek şey:** #500'ü sen yüklemelisin; ardından tek bir küçük PR sözleşme dosyasını birleştirir ve onay düğmesini 0042'ye çevirir.
 - #504/#507: Codex sonucu yok, bekliyor. #508 açık.
 
+## Güncel (2026-11-25 gece, son)
+- **main yeşil (sha 6b52949c), 0042 yüklemeye hazır.** #500 birleşti (uygulanmadı). Telefon tarafı hazır ve uykuda (#566, #567). #504 (#569 ile) ve zaman çizelgesi (#570 öncesi #569) birleşti; bağımsız inceleme `docs/reviews/team/2026-11-25-independent-504-507.md` (2 MUST bulundu ve düzeltildi). #508 açık.
+- Para defteri «Επιστροφή ΦΠΑ» kategorisi kalıyor (nötr gelir etiketi).
+- Aşağıdaki «LIVE açma kontrol listesi» güncellendi.
+
 ## Güncel (2026-11-25 akşam) — 5 satır
 1. **Canlıda (main'e girdi, CI yeşil; canlı doğrulama sende):** Ταμείο (para defteri) · hasat varış yeri senkronu · sezon hedefi senkronu · iş panosu «Το αναλαμβάνω» (sunucu kimin önce aldığına karar verir) · yarın notları (usta/işçi arasında paylaşılır, «από εργάτη» etiketini sunucu koyar) · ekim sınırı alanı güvenle taşınıyor (çizim aracı henüz kullanıcıya açık değil).
 2. **Önce yapman gereken tek adım:** Άλλα → «Σύνδεση λογαριασμού: τι λείπει» → **«Επιβεβαιώνω: εφαρμόστηκαν οι αλλαγές έως 0041»** (üretim 0001–0041 olduğu için doğru). Bu tek onay tüm sunucu modlarını açar; öncesinde her şey eskisi gibi.
@@ -36,20 +41,29 @@
 - **0035 production'da** (workflow «Supabase migrate (manual)», commit d17f739, verify_applied yeşil). 0036 (#362) ve 0037 (#368): Codex yeniden-kontrolünü bekliyor; hükümden sonra aynı yükleme yolu.
 - Faz 1 durumu: `docs/milestones/PHASE1-DONE.md` (a–g, her madde kanıtlı).
 
-## LIVE açma – 6 adım (senkron; ayrıntı RUNBOOK §13)
-1. **Yedek:** Άλλα → **Αντίγραφο δεδομένων** → **Εξαγωγή αντιγράφου** → dosya iner; satırda «τελευταίο αντίγραφο: …» bugünün saatini göstermeli.
-2. **Hazırlık kartı:** Άλλα → **Σύνδεση λογαριασμού: τι λείπει** → her satır yeşil olmalı (Supabase → Advisors'ı yenile, «RLS Disabled in Public» yok).
-3. **Giriş:** Άλλα → **Σύνδεση** → e-posta kodu → «Συνδεδεμένος: …».
-4. **Aç:** Άλλα → **Άνοιγμα συγχρονισμού** → «Ο συγχρονισμός είναι ανοιχτός.»
-5. **Çip:** Σήμερα'nın üstünde «Ο συγχρονισμός δουλεύει · τελευταίος: SS:DD».
-6. **Kontrol:** Supabase → Table Editor → `parcels`, `job_spray`: sayılar telefonla aynı. Kırmızı kutu çıkarsa ekrandaki metni bana yaz.
+## LIVE açma kontrol listesi (2026-11-25 akşam; ayrıntı RUNBOOK §12c ve §13)
+**Şu an:** main yeşil (sha 6b52949c), **0042 yüklemeye hazır** (SQL #500 birleşti, UYGULANMADI; yalnızca sen yüklersin).
 
-## İşçiyi davet et – 5 adım (RUNBOOK §12c)
-1. Άλλα → **Εργάτες** → işçinin satırı → **Email του εργάτη** → **Αποθήκευση πρόσκλησης** (ya da QR/bağlantı: işçinin satırında davet düğmesi).
-2. İşçi telefonunda: Safari → adres → **Ana Ekrana Ekle** → aç → **Άλλα → Σύνδεση** → e-posta kodu.
-3. Sen: Σήμερα → **+ Ανάθεση δουλειάς** → işçiye bir ilaçlama işi ata.
-4. İşçi: **Δουλειές → Έγινε** → başlangıç saati → onay; sonra **Συγκομιδή**: bitki, **+**, **Αποθήκη** ya da **Απευθείας φόρτωση**, **Καταγραφή**.
-5. Sen: Σήμερα → **Σήμερα έγιναν**: işi ve kasaları görürsün (satıra dokununca ayrıntı açılır). (Hasat varış yeri ve müşteri/çalışan kartı senin telefonuna 0036/0037 yüklenince gelir.)
+**A. Önce SQL (GitHub → Actions → «Supabase migrate (manual)»)**
+1. 0042'yi yükle (ortam onayı + `verify_applied` yeşil olmalı). Bitince bana «yükleme tamam» yaz → ben tek küçük PR ile sözleşme dosyasını katar ve onay düğmesini 0042'ye çeviririm (o PR birleşip Cloudflare derleyene kadar A.2'yi bekle).
+
+**B. Telefonunda (ustabaşı)**
+2. **Yedek:** Άλλα → Αντίγραφο δεδομένων → Εξαγωγή αντιγράφου → «τελευταίο αντίγραφο: …» bugünün saati olmalı.
+3. **Hazırlık kartı:** Άλλα → Σύνδεση λογαριασμού: τι λείπει → satırlar yeşil (Supabase → Advisors yenile, «RLS Disabled in Public» yok).
+4. **Giriş:** Άλλα → Σύνδεση → e-posta kodu → «Συνδεδεμένος: …».
+5. **Migration onayı (tek düğme):** aynı kartta **«Επιβεβαιώνω: εφαρμόστηκαν οι αλλαγές έως 0041»** (0042 PR'ı birleşince düğme «…έως 0042» der; ona bas). Bu tek onay müşteri/sipariş/çalışan kartı, sezon hedefi, yarın notları, kesim/gübreleme/sulama kaydı ve ΚΑΕΚ'in sunucu modunu açar; önceden telefonda yazdıkların bir kez sunucuya taşınır (ΚΑΕΚ hariç: onu bir neden yazarak kendin kaydedersin).
+6. **Aç:** Άλλα → Άνοιγμα συγχρονισμού → «Ο συγχρονισμός είναι ανοιχτός.» · Σήμερα'da çip: «Ο συγχρονισμός δουλεύει · τελευταίος: SS:DD».
+7. **Kontrol:** Supabase → Table Editor → `parcels`, `job_spray`, `customers`: sayılar telefonla aynı; kırmızı kutu çıkarsa ekrandaki metni yaz.
+
+**C. İşçi telefonuyla ilk deneme**
+8. Άλλα → Εργάτες → işçi satırı → **Email του εργάτη** → Αποθήκευση πρόσκλησης (ya da QR).
+9. **İşçi telefonunda:** Safari → adres → Ana Ekrana Ekle → aç → Άλλα → Σύνδεση → e-posta kodu → yalnızca işçi ekranı (3 sekme) görünmeli; müşteri, para, stok, fiyat YOK.
+10. **Sen:** Σήμερα → + Ανάθεση δουλειάς → işçiye bir ilaçlama işi ata. **İşçi:** Δουλειές'te işi görür → Έγινε → başlangıç saati → onay.
+11. **İş panosu:** sen bir ilaçlama işini işçisiz (boş) bırak → işçi **Ελεύθερες δουλειές**'te «Το αναλαμβάνω» → «Το αίτημα στάλθηκε…» → iş «Δουλειές»ine geçer. İkinci bir işçi telefonu varsa aynı işi aynı anda almayı dene: biri «Την πήρε ήδη κάποιος άλλος» görmeli.
+12. **Hasat:** işçi Συγκομιδή → bitki → + → Αποθήκη/Απευθείας → Καταγραφή. Sen: Σήμερα → Σήμερα έγιναν'da kasaları ve varış yerini gör.
+13. **Yarın notu:** işçi «Σημείωση για αύριο» yazar; sen Εργασίες'te «από εργάτη» etiketiyle görürsün; sen de bir not yaz, işçi görsün.
+14. **Ταμείο:** Άλλα → Ταμείο: bir gider ekle, düzelt, iptal et; «Αποθήκευση»e çift dokun → tek kayıt (defter yalnızca bu telefonda; sunucuya gitmez).
+15. **Sorun olursa:** Άλλα → Σύνδεση → sync'i kapat (veriler telefonda kalır); ekrandaki kırmızı metni bana yaz. Geri alma yolu: RUNBOOK §13 (yedeği geri yükle).
 
 ## R1–R30 tablosu
 | R | İstek | Durum | Kanıt | Not |
