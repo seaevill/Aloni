@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
+import { signal } from '@preact/signals';
 import { DEMO_FARM_ID, SYNC_CONNECTED } from '../config';
 import { pendingOps, rejectedOps, syncMarks } from '../repo';
 import { Icon } from './icons/Icon';
@@ -20,6 +21,9 @@ import { online } from './sync';
 const CLOCK = new Intl.DateTimeFormat('el-GR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Athens' });
 const athensClock = (iso: string): string => CLOCK.format(new Date(iso));
 
+/** How many «where» lines (under a «saved» confirmation) are on screen: while one says the same sentence as the global chip, the chip stays quiet (queue item 8c: the same sentence twice on the first screen). */
+const whereOnScreen = signal(0);
+
 export function SyncChip() {
   const [now, setNow] = useState(Date.now());
   useEffect(() => { const id = setInterval(() => setNow(Date.now()), 30_000); return () => clearInterval(id); }, []);   // «works» ages out by itself
@@ -33,6 +37,8 @@ export function SyncChip() {
   if (SYNC_CONNECTED && syncError.value) text = [text, t('sync.error')].filter(Boolean).join(' · ');
   const live = syncChip({ connected: SYNC_CONNECTED, enabled: syncEnabled.value, online: online.value, pending: n, rejected: rejectedOps.value.length, failed: syncError.value !== undefined, lastOk: lastSyncOk.value, now }, athensClock);
   if (live) text = live.keys.map((k) => (k.key === 'sync.pending' ? tn('sync.pending', k.n) : k.key === 'sync.refused' ? tn('sync.refused', k.n) : k.key === 'sync.last' ? t('sync.last', k.vars) : t(k.key))).join(' · ');
+  const where = savedWhereNow();
+  if (whereOnScreen.value > 0 && where !== undefined && text === t(where)) return null;
   if (!text) return null;
   return <p class={live ? `chip ${live.tone}` : SYNC_CONNECTED ? 'chip' : 'chip calm'} role="status" data-testid="sync-chip">{text}</p>;
 }
@@ -43,6 +49,8 @@ export function queuedKey(live: boolean): I18nKey { if (live) return 'sync.queue
 /** Under an owner's «saved» confirmation (queue item 6): where the record is now («on the phone, it will be sent …»). Nothing for the Demo farm (never sent) or once sync has emptied the outbox. */
 export function SavedWhere({ testid }: { testid: string }) {
   const key = savedWhereNow();
+  const shown = key !== undefined;
+  useEffect(() => { if (!shown) return undefined; whereOnScreen.value += 1; return () => { whereOnScreen.value -= 1; }; }, [shown]);
   if (key === undefined) return null;
   return <p class="muted" data-testid={testid}>{t(key)}</p>;
 }
