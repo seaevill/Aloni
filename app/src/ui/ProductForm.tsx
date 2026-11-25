@@ -40,7 +40,7 @@ export function ProductForm({ onDone }: { onDone: () => void }) {
     if (!r.ok) { setErrors({ name: r.name, type: r.type, unit: r.unit }); return; }
     await put(db, 'products', r.row, 'insert');
     dataVersion.value++;
-    showUndo(t('product.saved'), async () => { await put(db, 'products', archived(r.row, new Date().toISOString())); dataVersion.value++; });
+    showUndo(t('product.saved'), async () => { await put(db, 'products', archived(r.row, new Date().toISOString())); dataVersion.value++; }, { where: true });
     onDone();
   };
 

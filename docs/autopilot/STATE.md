@@ -1,7 +1,7 @@
 # Autopilot state (updated by every run; read it first)
 
 ```
-LOCK: none            # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
+LOCK: night-20261125-03 2026-11-25T00:05Z autopilot/20261125-03-offline-undo-where  # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
 LAST_RUN: 2026-11-25 02:00 Istanbul, night shift (autopilot/20261125-02-offline-saved-where)
 LAST_COMPLETED: #548 (Σήμερα: saved records say «on the phone»; queue item 6, first slice)
 NEXT_SAFE_ACTION: queue item 6b (offline wording for undo toasts / HarvestForm line / Photos). Items 1, 3, 3b, 4, 5, 6 are done.
