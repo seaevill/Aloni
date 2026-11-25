@@ -1,5 +1,6 @@
 import { addDecimal, parseDecimal, parseWhole, type Decimal } from '@aloni/rules-core';
 import type { Row } from '../db/schema';
+import { isDispatch } from '../stock/destination-words';
 import { effectiveSprays } from '../spray/spray';
 
 // «Who did what today» for the owner: the sprayings finished today (by whom), the crates cut today (exact sum, as typed), and the jobs that were planned for an earlier day and are still open.
@@ -77,7 +78,7 @@ export function doneRecords(
   for (const h of harvests.filter((x) => !x.deleted_at && dayOf(x.harvested_at) === today)) {
     const p = planting(h.planting_id); const n = parseWhole<'Crates'>(typeof h.crates_str === 'string' ? h.crates_str : '');
     const job = jobs.find((j) => j.id === h.job_id);
-    out.push({ kind: 'harvest', id: String(h.id), at: String(h.harvested_at), cropId: String(p?.crop_id ?? ''), parcelId: String(p?.parcel_id ?? ''), worker: workerName(h.cut_by ?? job?.worker_id), product: '', productId: '', crates: n.known ? String(n.value) : undefined, destination: h.destination === 'store' || h.destination === 'dispatch' ? h.destination : undefined });
+    out.push({ kind: 'harvest', id: String(h.id), at: String(h.harvested_at), cropId: String(p?.crop_id ?? ''), parcelId: String(p?.parcel_id ?? ''), worker: workerName(h.cut_by ?? job?.worker_id), product: '', productId: '', crates: n.known ? String(n.value) : undefined, destination: h.destination === 'store' ? 'store' : isDispatch(h.destination) ? 'dispatch' : undefined });
   }
   return out.sort((a, b) => a.at.localeCompare(b.at));
 }
