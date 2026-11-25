@@ -5,13 +5,9 @@ import { APP_NAME_EL, DEMO_FARM_ID } from '../config';
 import { APP_VERSION } from '../version';
 import { LANGS, LANG_META, lang, setLang, t } from '../i18n';
 
-import { Info } from './Info';
 import { Photos } from './Photos';
 import { SettingsBox } from './SettingsBox';
-import { Orders } from './Orders';
-import { Customers } from './Customers';
-import { Register } from './Register';
-import { Workers } from './Workers';
+import { lazyScreen } from './lazyScreen';
 import { workerView } from './nav';
 import { Backup } from './Backup';
 import { GoLive } from './GoLive';
@@ -20,9 +16,16 @@ import { Readiness } from './Readiness';
 import { SignIn } from './SignIn';
 import { showUndo } from './Toast';
 import { weeklyCopy } from '../content/weekly-report';
-import { WeeklyReport } from './cx/WeeklyReport';
 import { setSun, sunMode } from './sunmode';
 import './more-v2.css';
+
+// Opened from Άλλα only, never in a first visit's first seconds: kept out of the first-load JavaScript (warmed after the first screen, see lazyScreen.tsx).
+const Orders = lazyScreen(() => import('./Orders').then((m) => m.Orders));
+const Customers = lazyScreen(() => import('./Customers').then((m) => m.Customers));
+const Register = lazyScreen(() => import('./Register').then((m) => m.Register));
+const Info = lazyScreen(() => import('./Info').then((m) => m.Info));
+const Workers = lazyScreen(() => import('./Workers').then((m) => m.Workers));
+const WeeklyReport = lazyScreen(() => import('./cx/WeeklyReport').then((m) => m.WeeklyReport));
 
 const MENU_ICONS = {
   register: 'M6 3h12v18H6zM9 8h6M9 12h6M9 16h4',
