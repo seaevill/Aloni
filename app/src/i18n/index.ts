@@ -79,8 +79,8 @@ export type I18nKey = keyof typeof el | keyof typeof uiEl;
 
 const lookup = (key: string) => dictionaries[lang.value][key] ?? dictionaries.el[key] ?? key;
 
-export function t(key: I18nKey, params?: Params): string {
-  return fill(lookup(key), params);
+export function t(key: I18nKey, params?: Params, locale?: Lang): string {
+  return fill(locale === undefined ? lookup(key) : dictionaries[locale][key] ?? dictionaries.el[key] ?? key, params);
 }
 
 /** A SAFETY message (a lock, a waiting period): in Hindi it is shown TOGETHER with the Greek text until a native speaker has approved the translation, so a mistranslation is never the only thing a worker reads. */
@@ -102,6 +102,11 @@ export function tn(base: PluralBase, n: number, params?: Params): string {
 export function formatDateLong(iso: string): string {
   return new Intl.DateTimeFormat(LOCALES[lang.value], { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: TZ })
     .format(new Date(`${iso}T12:00:00Z`));
+}
+
+/** «2026-11» -> «Νοέμβριος 2026» (the ledger's month rows) */
+export function formatMonth(yearMonth: string): string {
+  return new Intl.DateTimeFormat(LOCALES[lang.value], { month: 'long', year: 'numeric', timeZone: TZ }).format(new Date(`${yearMonth}-15T12:00:00Z`));
 }
 
 /** ISO date -> "Δευ 16 Νοε" in Europe/Athens */

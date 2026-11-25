@@ -24,3 +24,58 @@
 
 .fw-grid { display:grid; gap:var(--sp-8); }
 .fw-row { display:grid; grid-template-columns:minmax(0,2fr) repeat(4, minmax(0,1fr)); gap:var(--sp-8); align-items:center; min-height:var(--tap); }
+
+/* Keep the menu's tab order aligned with its visual order. */
+.more-v2 .menu {
+  background: var(--card);
+  border: var(--bw-1) solid var(--line);
+  border-radius: var(--r-btn);
+  padding-inline: var(--sp-8);
+}
+
+.more-v2 .menu .row {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  gap: var(--sp-12);
+  margin: 0;
+}
+
+.more-v2 .menu .row + .row {
+  border-block-start: var(--bw-1) solid var(--line);
+}
+
+.more-v2 .menu .row:focus-visible {
+  outline-offset: calc(0px - var(--bw-2));
+}
+
+.more-v2 .more-menu-icon {
+  border-radius: var(--r-btn);
+}
+
+.more-v2 .menu [data-testid="open-worker-view"] {
+  background: var(--bg);
+  border-radius: var(--r-btn);
+}
+
+.more-v2 .menu [data-testid="open-worker-view"] .more-menu-icon {
+  background: var(--card);
+}
+
+.more-v2 [data-testid="demo-load"] {
+  margin-block-start: var(--sp-12);
+}
+
+.more-v2 [data-testid="dev-section"] {
+  margin-block-start: var(--sp-24);
+}
+
+.more-v2 [data-testid="dev-section"] > summary {
+  align-content: center;
+  min-block-size: var(--tap);
+}
+
+/* Field Atelier: the menu is grouped by job (work and team · reports and history · information); the group headings sit inside the same list */
+.more-v2 .menu h2.menu-group { margin:var(--sp-16) var(--sp-16) var(--sp-4); font-size:var(--fs-14); font-weight:800; letter-spacing:var(--ls-h2); color:var(--muted); }
+.more-v2 .menu h2.menu-group:first-child { margin-top:var(--sp-12); }

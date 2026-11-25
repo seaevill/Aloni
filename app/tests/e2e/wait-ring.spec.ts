@@ -30,7 +30,7 @@ test('signed label: the cut card has a small ring; its sheet shows the big ring,
   expect(await big.locator('.ds-ring-days').evaluate((e) => parseFloat(getComputedStyle(e).fontSize))).toBe(44);   // BigNum size
   await expect(big.locator('.ds-ring-pct')).toContainText('%');
   if (process.env.SHOTS) await page.screenshot({ path: '../docs/design/compare/sprint/cc-wait-sheet.png' });
-  expect(await big.locator('.ds-ring-fill').evaluate((e) => getComputedStyle(e).stroke)).toBe('rgb(19, 74, 43)');    // forest
+  expect(await big.locator('.ds-ring-fill').evaluate((e) => getComputedStyle(e).stroke)).toBe('rgb(11, 53, 37)');    // forest
   expect(await big.locator('.ds-ring-track').evaluate((e) => getComputedStyle(e).stroke)).toBe('rgb(234, 248, 196)');  // lime-soft
   await expect(sheet.locator('.ds-chip')).toContainText('Κοπή από');
   await expect(sheet).toContainText('Τελευταίος ψεκασμός');

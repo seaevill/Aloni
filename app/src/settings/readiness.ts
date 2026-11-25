@@ -3,7 +3,7 @@ import { isComplete } from '../legal/controller';
 
 // What must be true BEFORE sign-in and sync are switched on. The phone cannot see the server, so the migration and the Supabase Advisor check are confirmed by the owner (a recorded statement).
 // This only LISTS what is missing. It never opens anything: the switch is a separate, deliberate step (RUNBOOK §12).
-export const EXPECTED_MIGRATION = '0034';   // production is 0001–0034 (2026-11-20); the app relies on 0034 (the first-farm wizard) and 0033 (the approval ledger)
+export const EXPECTED_MIGRATION = '0041';   // production is 0001–0041 (run 45359016038, 2026-11-25); the app relies on 0041 (season target, notes, job board, outlines, harvest destination) and 0037 (owner-only customers, orders and worker cards), 0036 (harvest destination), 0034 (the first-farm wizard) and 0033 (the approval ledger)
 export const READINESS_KEY = 'readiness';
 export const BUSINESS_KEY = 'business';
 

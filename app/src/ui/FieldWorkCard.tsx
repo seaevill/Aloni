@@ -3,6 +3,7 @@ import { activeFarm, db } from '../db';
 import { formatDate, t } from '../i18n';
 import { formatQty } from '../i18n/format';
 import { athensToday } from '../plantings/planting';
+import { useSubmit } from './useSubmit';
 import { addWork, loadWork, removeWork, snapshotOf, type Snapshot, type Work } from '../fieldwork/fieldwork';
 import type { Day } from '../weather/strip';
 import './fieldwork.css';
@@ -25,6 +26,7 @@ const lineOf = (w: Work): string => {
 };
 
 export function FieldWorkCard({ parcelId, days }: { parcelId: string; days: readonly Day[] }) {
+  const { busy, submit } = useSubmit();
   const farm = activeFarm.value; const today = athensToday(new Date()) ?? '1970-01-01';
   const [all, setAll] = useState<Work[]>([]); const [kind, setKind] = useState<'fertilise' | 'irrigate'>(); const [bad, setBad] = useState(false);
   const [day, setDay] = useState(today); const [nForm, setNForm] = useState(''); const [nKg, setNKg] = useState(''); const [minutes, setMinutes] = useState(''); const [m3, setM3] = useState('');
@@ -67,7 +69,7 @@ export function FieldWorkCard({ parcelId, days }: { parcelId: string; days: read
           <label class="field"><span class="ds-muted">{t('ui.work.m3.label')}</span><input class="input" inputMode="decimal" value={m3} autoComplete="off" data-testid="work-m3" onInput={(e) => setM3((e.target as HTMLInputElement).value)} /></label>
         </>}
         {bad && <p class="msg error" role="alert" data-testid="work-error">{errorText}</p>}
-        <button type="button" class="btn" data-testid="work-save" onClick={() => void save()}>{t('ui.work.save')}</button>
+        <button type="button" class="btn" data-testid="work-save" disabled={busy} onClick={() => void submit(save)}>{t('ui.work.save')}</button>
         <button type="button" class="btn quiet" data-testid="work-cancel" onClick={() => setKind(undefined)}>{t('ui.work.cancel')}</button>
       </div>}
       <small data-testid="work-local">{t('ui.work.local')}</small>

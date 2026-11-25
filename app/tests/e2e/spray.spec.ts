@@ -27,6 +27,7 @@ test('a spray with a SIGNED label: recorded with «Ψέκασε», the exact wai
   await expect(page.getByTestId('spray-flags')).toHaveCount(0); // signed, in range, in date, stock enough
   await page.getByTestId('spray-save').click();
   await expect(page.getByTestId('spray-saved')).toHaveText('Ο ψεκασμός καταγράφηκε.');
+  await expect(page.getByTestId('spray-saved-where')).toHaveText('Αποθηκεύτηκε στο τηλέφωνο. Θα σταλεί όταν συνδεθεί λογαριασμός.');   // offline: it says where the record is (queue item 6)
   await expect(page.getByTestId('today-done-row')).toContainText('Ψεκασμός · Σπανάκι · Kocide 2000');   // «who did what today» for the owner
   await openHistory(page);
   const card = page.getByTestId('spray');
@@ -126,8 +127,11 @@ test('a spraying entered 10 days late: refused without «Λόγος καθυστ
   await page.getByTestId('spray-save').click();
   await expect(page.getByTestId('spray-late-error')).toBeVisible(); // nothing saved without the reason
   await page.getByTestId('spray-late-reason').fill('Ξέχασα να το γράψω');
+  await expect(page.getByTestId('spray-flags').getByText('καθυστερημένη καταχώριση')).toBeVisible();   // the flag is shown in the form BEFORE saving
   await page.getByTestId('spray-save').click();
-  await expect(page.getByText('καθυστερημένη καταχώριση')).toBeVisible();
+  await expect(page.getByTestId('spray-saved')).toBeVisible();                                         // the form closes on save: the flag is not on Σήμερα any more (the old check raced that)
+  const stored = await page.evaluate(() => new Promise<Array<{ late_reason?: string }>>((res) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const q = r.result.transaction('job_spray').objectStore('job_spray').getAll(); q.onsuccess = () => res(q.result as Array<{ late_reason?: string }>); }; }));
+  expect(stored.map((x) => x.late_reason)).toEqual(['Ξέχασα να το γράψω']);                            // the record carries the reason: it is marked late
 });
 
 test('a label an UNSIGNED spray used is not edited in place: a change makes a NEW label with a reason; editing that replacement keeps the link', async ({ page }) => {

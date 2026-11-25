@@ -4,9 +4,10 @@ export interface Explained { what: string | undefined; why: string; fix: string;
 
 const WHAT: Record<string, string> = {
   parcels: 'rejected.what.parcels', plantings: 'rejected.what.plantings', job_spray: 'rejected.what.job_spray', job_harvest: 'rejected.what.job_harvest', jobs: 'rejected.what.jobs',
-  stock_movements: 'rejected.what.stock_movements', label_uses: 'rejected.what.label_uses', observations: 'rejected.what.observations', 'rpc:complete_spray_job': 'rejected.what.rpc_complete_spray_job',
+  stock_movements: 'rejected.what.stock_movements', label_uses: 'rejected.what.label_uses', observations: 'rejected.what.observations', 'rpc:complete_spray_job': 'rejected.what.rpc_complete_spray_job', 'rpc:claim_job': 'rejected.what.rpc_claim_job',
 };
 const REASONS: Array<[RegExp, string, string]> = [
+  [/^taken$/i, 'rejected.why.taken', 'rejected.fix.none'],
   [/harvest blocked/i, 'rejected.why.harvest_blocked', 'rejected.fix.wait_or_sign'],
   [/in the future/i, 'rejected.why.future', 'rejected.fix.clock'],
   [/more than 7 days back|reason for the delay/i, 'rejected.why.late', 'rejected.fix.reason'],

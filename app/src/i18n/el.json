@@ -455,6 +455,8 @@
   "rejected.what.stock_movements": "Κίνηση αποθήκης",
   "rejected.what.label_uses": "Ετικέτα προϊόντος",
   "rejected.what.observations": "Παρατήρηση",
+  "rejected.what.rpc_claim_job": "Ανάληψη ελεύθερης δουλειάς («Το αναλαμβάνω»)",
+  "rejected.why.taken": "Την πήρε ήδη κάποιος άλλος.",
   "rejected.what.rpc_complete_spray_job": "Ολοκλήρωση δουλειάς («Έγινε»)",
   "rejected.why.harvest_blocked": "Η συγκομιδή είναι κλειστή: υπάρχει ψεκασμός με άγνωστη ή ακόμη τρέχουσα αναμονή.",
   "rejected.why.future": "Η ώρα που καταχωρήθηκε είναι στο μέλλον.",
@@ -541,7 +543,7 @@
   "today.urgent": "Το πιο σημαντικό σήμερα",
   "today.urgent.unknown": "Άγνωστη αναμονή · {parcel}",
   "today.urgent.wait": "Αναμονή λήγει {d} · {crop} · {parcel}",
-  "today.urgent.action": "Δείτε τους ψεκασμούς",
+  "today.urgent.action": "Δείτε γιατί",
   "history.title": "Ιστορικό",
   "job.add.plus": "+ Ανάθεση δουλειάς",
   "today.jobs.none": "Σήμερα δεν υπάρχουν δουλειές.",
@@ -792,5 +794,7 @@
   "tomorrow.covered": "Καλύπτεται",
   "tomorrow.surplus": "Περισσεύουν {n}",
   "tomorrow.supply": "Έτοιμες φυτεύσεις: {free} · σε αναμονή (δεν μετρούν): {held} · άγνωστες (δεν μετρούν): {unknown}",
-  "tomorrow.unmapped": "{n} προϊόντα χωρίς αντιστοίχιση καλλιέργειας δεν εμφανίζονται παραπάνω."
+  "tomorrow.unmapped": "{n} προϊόντα χωρίς αντιστοίχιση καλλιέργειας δεν εμφανίζονται παραπάνω.",
+  "harvest.more5": "+5",
+  "harvest.more10": "+10"
 }

@@ -94,6 +94,8 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
     // tank mix: the plantings, the times and the applicator stay; the next product starts empty (its own label, dose, lot and waiting periods)
     setInMix(inMix + 1); setProductId(''); setDose(''); setUnit(undefined); setLotKey(undefined); setQty(''); setQtyUnknown(false); setWater(''); setNote(''); setPrescription(''); setFailed(false);
   };
+  const [moreOpen, setMoreOpen] = useState(false);
+  const hasOptional = [water, note, bbch, prescription].some((v) => v.trim() !== '') || (failed && !r.ok && Boolean(r.errors.bbch || r.errors.water));    // never hidden while it holds something or has an error
   const toggle = (id: string) => setSel(sel.includes(id) ? sel.filter((x) => x !== id) : [...sel, id]);
   const unitText = text(product?.unit);
   const needs = live(plantings).length === 0 || live(products).length === 0 || live(workers).length === 0;
@@ -163,12 +165,17 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
         </label>
       )}
       {lotKey && <label class="field check"><input type="checkbox" checked={qtyUnknown} data-testid="spray-qty-unknown" onChange={(e) => { const on = (e.target as HTMLInputElement).checked; setQtyUnknown(on); if (on) setQty(''); }} />{t('spray.qty.unknown')}</label>}
-      <label class="field">{t('spray.water')}
-        <input class="input" value={water} inputMode="decimal" autoComplete="off" onInput={(e) => setWater((e.target as HTMLInputElement).value)} />
-      </label>
-      <label class="field">{t('spray.note')}
-        <input class="input" value={note} autoComplete="off" onInput={(e) => setNote((e.target as HTMLInputElement).value)} />
-      </label>
+      <details class="fold spray-more" data-testid="spray-more" open={moreOpen || hasOptional} onToggle={(e) => setMoreOpen((e.target as HTMLDetailsElement).open)}>
+        <summary>{t('ui.spray.more')}</summary>
+        <label class="field">{t('spray.water')}
+          <input class="input" value={water} inputMode="decimal" autoComplete="off" onInput={(e) => setWater((e.target as HTMLInputElement).value)} />
+        </label>
+        <label class="field">{t('spray.note')}
+          <input class="input" value={note} autoComplete="off" onInput={(e) => setNote((e.target as HTMLInputElement).value)} />
+        </label>
+        <label class="field">{t('spray.bbch')}<input class="input" value={bbch} inputMode="numeric" autoComplete="off" data-testid="spray-bbch" onInput={(e) => setBbch((e.target as HTMLInputElement).value)} /></label>
+        <label class="field">{t('spray.prescription')}<input class="input" value={prescription} autoComplete="off" data-testid="spray-prescription" onInput={(e) => setPrescription((e.target as HTMLInputElement).value)} /></label>
+      </details>
       {r.ok && r.flags.length > 0 && (
         <div class="card" data-testid="spray-flags">
           {r.flags.map((f) => <span key={f} class={RED.includes(f) ? 'badge blocked' : 'badge warn'}>{t(FLAG_KEYS[f])}</span>)}
@@ -178,9 +185,7 @@ export function SprayForm({ onDone }: { onDone: (saved: boolean) => void }) {
       {failed && !r.ok && (r.errors.plantings || r.errors.product || r.errors.applicator) && <p class="msg error" role="alert" tabIndex={-1} data-testid="spray-error">{t('spray.error.fill')}</p>}
       {failed && !r.ok && r.errors.dose && dose.trim() !== '' && <p class="msg error" role="alert" tabIndex={-1}>{t('spray.error.dose')}</p>}
       {failed && !r.ok && r.errors.mixedCrops && <p class="msg error" role="alert" tabIndex={-1} data-testid="spray-mixed-error">{t('spray.error.mixed')}</p>}
-      <label class="field">{t('spray.bbch')}<input class="input" value={bbch} inputMode="numeric" autoComplete="off" data-testid="spray-bbch" onInput={(e) => setBbch((e.target as HTMLInputElement).value)} /></label>
       {failed && !r.ok && r.errors.bbch && <p class="msg error" role="alert" tabIndex={-1}>{t('spray.bbch.error')}</p>}
-      <label class="field">{t('spray.prescription')}<input class="input" value={prescription} autoComplete="off" data-testid="spray-prescription" onInput={(e) => setPrescription((e.target as HTMLInputElement).value)} /></label>
       {failed && !r.ok && r.errors.qty && <p class="msg error" role="alert" tabIndex={-1}>{t('spray.error.qty')}</p>}
       {failed && !r.ok && r.errors.lateReason && <p class="msg error" role="alert" tabIndex={-1} data-testid="spray-late-error">{t('spray.late.error')}</p>}
       {failed && !r.ok && r.errors.overReason && <p class="msg error" role="alert" tabIndex={-1} data-testid="spray-over-error">{t('spray.over.error')}</p>}

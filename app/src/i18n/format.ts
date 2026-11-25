@@ -53,6 +53,17 @@ export function formatArea(v: string | number | null | undefined): string {
   return `${localise(s)}\u00A0${unit}`; // one line: the number never separates from the unit
 }
 
+/** Money from whole euro CENTS: 4550 → «45,50 €», −120000 → «−1200,00 €» (English: «45.50 €»). Integer in, text out: nothing is rounded. A non-integer or unsafe value prints «— άγνωστο». */
+export function formatMoney(cents: number): string {
+  if (!Number.isSafeInteger(cents)) return t('value.unknown');
+  const s = numberToPlain(cents);
+  if (s === null || !/^-?\d+$/.test(s)) return t('value.unknown');
+  const neg = s.startsWith('-');
+  const digits = (neg ? s.slice(1) : s).padStart(3, '0');
+  const whole = digits.slice(0, digits.length - 2); const frac = digits.slice(digits.length - 2);
+  return `${neg ? '−' : ''}${whole}${separator()}${frac} €`;
+}
+
 /** A DERIVED number for the eye (the area computed from a drawing, a percentage): the decimal text is CUT after `digits` decimals (cut, not rounded), trailing zeros dropped. Never for a dose or a stored value. */
 export function formatDerived(n: number, digits: number): string {
   const s = numberToPlain(n);

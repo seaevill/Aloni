@@ -68,7 +68,7 @@ export function Workers({ onBack }: { onBack: () => void }) {
     await put(db, 'workers', r.row, 'insert');
     dataVersion.value++;
     setName(''); setBad(false);
-    showUndo(t('workers.saved'), async () => { await put(db, 'workers', archived(r.row, new Date().toISOString())); dataVersion.value++; });
+    showUndo(t('workers.saved'), async () => { await put(db, 'workers', archived(r.row, new Date().toISOString())); dataVersion.value++; }, { where: true });
   };
   const archive = async (w: Row) => {
     await put(db, 'workers', archived(w, new Date().toISOString()));

@@ -9,6 +9,7 @@ import { Icon } from './icons/Icon';
 import { nameOf } from './screens';
 import { registerSheet, type SheetProps } from './sheets';
 import { useRows } from './useRows';
+import { kindTitle } from './jobkind';
 
 // Εργασίες → a job opens here: the day (and «late»), the crop · field it covers, the product, who it was given to, the spray record made for it and the harvests logged on the same plantings since the planned day.
 // Read-only. Unknown is written with its reason (a missing day, worker or record is never blank and never 0).
@@ -24,7 +25,7 @@ function JobDetailSheet({ id, close }: SheetProps) {
   const product = nameOf((products.rows ?? []).find((p) => p.id === d.productId) ?? {});
   const worker = nameOf((workers.rows ?? []).find((w) => w.id === d.workerId) ?? {});
   return (
-    <DetailSheet heading={product || t('ui.unknown')} icon={<Icon name="calendar" />} onClose={close} testid="sheet-job">
+    <DetailSheet heading={kindTitle(d) ?? (product || t('ui.unknown'))} icon={<Icon name="calendar" />} onClose={close} testid="sheet-job">
       {d.late && <Chip tone="blocked">{t('jobs.group.overdue')}</Chip>}
       {lateDays !== undefined && <p class="ds-muted" data-testid="job-late-days">{t('ui.job.late', { n: lateDays })}</p>}
       <SheetFact name={t('ui.job.day')} value={d.plannedFor === undefined ? undefined : formatDate(d.plannedFor)} unknown={t('ui.jobs.day.none')} />

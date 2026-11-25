@@ -1,0 +1,34 @@
+{
+ "parcels_extra": [
+  "kaek"
+ ],
+ "field_cuts": [
+  "actor_id",
+  "created_at",
+  "day",
+  "deleted_at",
+  "device_id",
+  "farm_id",
+  "id",
+  "method",
+  "parcel_id",
+  "updated_at"
+ ],
+ "field_work": [
+  "actor_id",
+  "created_at",
+  "day",
+  "deleted_at",
+  "device_id",
+  "farm_id",
+  "id",
+  "kind",
+  "m3_str",
+  "minutes_str",
+  "n_form",
+  "n_kg_per_str",
+  "parcel_id",
+  "updated_at",
+  "weather"
+ ]
+}

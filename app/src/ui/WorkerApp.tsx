@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { activeFarm, dataVersion, db } from '../db';
 import { AUTH_ENABLED, DEMO_FARM_ID, SYNC_CONNECTED } from '../config';
 import { session } from '../auth/gotrue';
-import { pendingOps } from '../repo';
+import { pendingOps, putRpc, rejectedOps } from '../repo';
 import { groupJobs } from '../summary/jobs';
 import { athensToday } from '../plantings/planting';
 import { COMPLETE } from '../worker/remote';
@@ -69,6 +69,9 @@ export function WorkerApp() {
   const [photoId, setPhotoId] = useState<string | undefined>(undefined); const [photoAt, setPhotoAt] = useState(''); const [photoFailed, setPhotoFailed] = useState(false); const photoFile = useRef<HTMLInputElement>(null);
   const [lockMsg, setLockMsg] = useState<{ job: string; text: string } | undefined>(undefined); // what a press on a CLOSED «Έγινε» answers
   const [queued, setQueued] = useState<string[]>([]); // jobs whose «Έγινε» waits in the outbox for the signal
+  const [claiming, setClaiming] = useState<string[]>([]); // open jobs whose «Το αναλαμβάνω» waits in the outbox for the signal (the SERVER decides who is first)
+  useEffect(() => { void db.outbox.where('status').equals('pending').toArray().then((r) => setClaiming(r.filter((o) => o.table === `${RPC_PREFIX}claim_job`).map((o) => o.row_id))); }, [pendingOps.value, dataVersion.value]);
+  const lostClaims = new Set(rejectedOps.value.filter((o) => o.table === `${RPC_PREFIX}claim_job` && o.reason === 'taken').map((o) => o.row_id));   // the server said «taken»: someone else was first
   useEffect(() => { void db.outbox.where('status').equals('pending').toArray().then((r) => setQueued(r.filter((o) => o.table === `${RPC_PREFIX}${COMPLETE}`).map((o) => o.row_id))); }, [pendingOps.value, dataVersion.value]);
   const [when, setWhen] = useState(athensLocalNow(new Date()) ?? ''); const [startWhen, setStartWhen] = useState(''); const [startError, setStartError] = useState(false);   // the start is REQUIRED (the server asks for it) and never pre-filled
   const [note, setNote] = useState('');
@@ -79,8 +82,9 @@ export function WorkerApp() {
   const mine = (jobs.rows ?? []).filter((j) => j.kind === 'spray' && j.worker_id === me.id && !held.includes(j.id));
   const open_ = mine.filter((j) => j.status === 'planned' && !queued.includes(j.id));
   // the shared board (Demo practice view): an open job nobody has yet. Taking it sets the worker on the job; the first to take it wins (the job is read again right before the write).
-  const free = real ? [] : (jobs.rows ?? []).filter((j) => j.kind === 'spray' && j.status === 'planned' && !j.deleted_at && !j.worker_id);
+  const free = (jobs.rows ?? []).filter((j) => j.kind === 'spray' && j.status === 'planned' && !j.deleted_at && !j.worker_id);
   const take = async (job: Row) => {
+    if (real) { if (!claiming.includes(String(job.id))) { await putRpc(db, farm, 'claim_job', String(job.id), { p_job: job.id }); dataVersion.value++; } return; }   // real farm: the server alone decides who was first; the job moves to «mine» when the answer comes back
     const now = (await db.jobs.get(job.id));
     if (!now || now.worker_id) { setTakenMsg(job.id); return; }
     await put(db, 'jobs', { ...now, worker_id: me.id });
@@ -143,8 +147,8 @@ export function WorkerApp() {
       {lang.value === 'hi' && <p class="badge warn bi" data-testid="hi-review">{ts('lang.review')}</p>}
       <div class="seg big" data-testid="worker-lang">{LANGS.map((l) => <button key={l} lang={l} aria-label={t(LANG_NAME[l])} aria-pressed={lang.value === l} onClick={() => setWorkerLang(l)}>{LANG_META[l].label}</button>)}</div>
       <div class="worker-head"><h1>{t('worker.title')}</h1><Bell id={`worker-${text(me.id)}`} /></div>
-      <details class="card" data-testid="worker-data" open={!noticeSeen}>
-        <summary>{t('worker.data.title')}</summary>
+      <details class="card worker-data" data-testid="worker-data" open={!noticeSeen}>
+        <summary data-testid="worker-data-summary">{t('worker.data.title')}</summary>
         {DATA_LINES.map((k) => <p key={k}>{t(k)}</p>)}
         {!noticeSeen && <button class="btn big" data-testid="worker-data-ack" onClick={() => void ackNotice()}>{t('worker.data.ack')}</button>}
       </details>
@@ -157,12 +161,13 @@ export function WorkerApp() {
         <>
           {free.length > 0 && <section data-testid="worker-board"><h2>{t('ui.board.title')}</h2>
             {free.map((j) => <div class="card job" key={j.id} data-testid="worker-free-job"><strong class="job-title">{nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {})}</strong>
-              <button class="btn big" data-testid="worker-take" onClick={() => void take(j)}>{t('ui.board.take')}</button>
-              {takenMsg === j.id && <p class="msg error" role="alert">{t('ui.board.taken')}</p>}
+              <button class="btn big" data-testid="worker-take" disabled={claiming.includes(String(j.id))} onClick={() => void take(j)}>{t('ui.board.take')}</button>
+              {claiming.includes(String(j.id)) && <p class="msg" role="status" data-testid="worker-take-pending">{t('ui.board.pending')}</p>}
+              {(takenMsg === j.id || lostClaims.has(String(j.id))) && <p class="msg error" role="alert">{t('ui.board.taken')}</p>}
             </div>)}
           </section>}
           <RecurringToday />
-          {!real && <TomorrowNotes byWorker />}
+          <TomorrowNotes byWorker workerOnRealFarm={real} />
           <h2>{t('worker.jobs')}</h2>
           {open_.length === 0 && <p class="muted" data-testid="worker-nojobs">{t('worker.noJobs')}</p>}
           {JOB_GROUPS.map(([gk, glabel]) => groups[gk].length > 0 && (<section key={gk}><h3 class={gk === 'overdue' ? 'late' : undefined} data-testid={`worker-group-${gk}`}>{t(glabel)} <span class="count">{groups[gk].length}</span></h3>
@@ -232,7 +237,7 @@ export function WorkerApp() {
         </>
       )}
       <div class="seg big worker-tray" data-testid="worker-tray">{TABS.map(([id, k]) => <button key={id} aria-pressed={tabId === id} data-testid={`worker-tab-${id}`} onClick={() => { setHarvestSaved(false); setTabId(id); }}><Icon name={TAB_ICON[id]} /><span>{t(k)}</span></button>)}</div>
-      <button class="btn secondary" data-testid="worker-exit" onClick={() => { workerView.value = undefined; }}>{t('worker.exit')}</button>
+      <button class="btn secondary big" data-testid="worker-exit" onClick={() => { workerView.value = undefined; }}>{t('worker.exit')}</button>
     </main>
   );
 }

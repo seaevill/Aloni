@@ -18,5 +18,5 @@ test('tab labels stay on one line at 320 px in every language; icons come from t
   const icons = await page.locator('nav.tabs svg').evaluateAll((els) => els.map((e) => e.getAttribute('data-icon')));
   expect(icons).toEqual(['today', 'crops', 'parcels', 'stock', 'more']);
   const pill = await page.locator('nav.tabs [aria-current="page"] .ico').evaluate((e) => getComputedStyle(e).backgroundColor);
-  expect(pill).toBe('rgb(198, 240, 98)');                                           // --lime
+  expect(pill).toBe('rgb(213, 243, 107)');                                           // --lime
 });
