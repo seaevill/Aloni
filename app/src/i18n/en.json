@@ -455,6 +455,8 @@
   "rejected.what.stock_movements": "Stock movement",
   "rejected.what.label_uses": "Product label",
   "rejected.what.observations": "Observation",
+  "rejected.what.rpc_claim_job": "Taking an open job («I take it»)",
+  "rejected.why.taken": "Someone else already took it.",
   "rejected.what.rpc_complete_spray_job": "Finishing a job («Έγινε»)",
   "rejected.why.harvest_blocked": "Harvest is closed: a spraying has an unknown or still running waiting period.",
   "rejected.why.future": "The time that was entered is in the future.",

@@ -287,6 +287,7 @@
   "ui.store.unreadable": "{n} records with an unreadable number are not added",
   "ui.store.note": "Only records with a destination are counted. Old records are not added to the store.",
   "ui.board.title": "Open jobs",
+  "ui.board.pending": "Request sent; waiting for signal.",
   "ui.board.take": "I take it",
   "ui.board.taken": "Someone else already took it.",
   "ui.dest.title": "Where did the crates go?",

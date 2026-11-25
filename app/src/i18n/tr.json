@@ -455,6 +455,8 @@
   "rejected.what.stock_movements": "Depo hareketi",
   "rejected.what.label_uses": "Ürün etiketi",
   "rejected.what.observations": "Gözlem",
+  "rejected.what.rpc_claim_job": "Boş işi alma («Ben alıyorum»)",
+  "rejected.why.taken": "Bu işi başkası almış.",
   "rejected.what.rpc_complete_spray_job": "İşi bitirme («Έγινε»)",
   "rejected.why.harvest_blocked": "Hasat kapalı: bekleme süresi bilinmeyen ya da hâlâ süren bir ilaçlama var.",
   "rejected.why.future": "Kaydedilen saat gelecekte.",

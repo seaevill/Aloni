@@ -10,7 +10,8 @@ export class Server {
   put(table: string, row: Row): void { this.rows.set(`${table}:${String(row.id)}`, { table, row, seq: (this.seq += 1) }); }
   all(table: string): Row[] { return [...this.rows.values()].filter((r) => r.table === table).map((r) => r.row); }
   visibleTo(role: 'owner' | 'worker', workerId: string | undefined) {
-    const mine = new Set(this.all('jobs').filter((j) => j.worker_id === workerId).map((j) => String(j.id)));
+    // SQL 0038: a worker also sees the OPEN spray jobs of the farm (nobody on them yet) and their plantings
+    const mine = new Set(this.all('jobs').filter((j) => j.worker_id === workerId || (!j.worker_id && j.kind === 'spray' && j.status === 'planned')).map((j) => String(j.id)));
     const WORKER_TABLES = new Set(['workers', 'parcels', 'crops', 'plantings', 'products', 'jobs', 'job_plantings', 'job_harvest']);
     return [...this.rows.values()].filter((r) => role === 'owner' || (WORKER_TABLES.has(r.table) && (r.table !== 'jobs' || mine.has(String(r.row.id))) && (r.table !== 'job_plantings' || mine.has(String(r.row.job_id)))));
   }
@@ -42,6 +43,14 @@ export async function mockFor(page: Page, srv: Server, role: 'owner' | 'worker',
     srv.put('jobs', { ...job, status: 'done', done_at: a.p_ended_at });
     srv.put('job_spray', { id: `spray-${a.p_job}`, farm_id: job.farm_id, job_id: a.p_job, sprayed_at: a.p_ended_at, started_at: a.p_started_at });
     return r.fulfill(json({ spray_id: `spray-${a.p_job}` }));
+  });
+  await page.route('**/mock/rest/v1/rpc/claim_job', (r) => {         // SQL 0038: the first claim wins, the loser is told «taken»
+    const a = JSON.parse(r.request().postData() ?? '{}') as { p_job: string };
+    const job = srv.all('jobs').find((j) => j.id === a.p_job); const me = srv.all('workers').find((x) => x.user_id === 'u-worker');
+    if (!job || !me) return r.fulfill(json({ code: '42501', message: 'this job is not available to you' }, 403));
+    if (job.worker_id && job.worker_id !== me.id) return r.fulfill(json({ status: 'taken' }));
+    srv.put('jobs', { ...job, worker_id: me.id, assigned_to: 'u-worker' });
+    return r.fulfill(json({ status: 'claimed', job: a.p_job, worker: me.id }));
   });
   await page.route('**/mock/rest/v1/rpc/pull', (r) => {
     const wid = srv.all('workers').find((x) => x.user_id === 'u-worker')?.id as string | undefined;

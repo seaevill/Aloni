@@ -455,6 +455,8 @@
   "rejected.what.stock_movements": "Κίνηση αποθήκης",
   "rejected.what.label_uses": "Ετικέτα προϊόντος",
   "rejected.what.observations": "Παρατήρηση",
+  "rejected.what.rpc_claim_job": "Ανάληψη ελεύθερης δουλειάς («Το αναλαμβάνω»)",
+  "rejected.why.taken": "Την πήρε ήδη κάποιος άλλος.",
   "rejected.what.rpc_complete_spray_job": "Ολοκλήρωση δουλειάς («Έγινε»)",
   "rejected.why.harvest_blocked": "Η συγκομιδή είναι κλειστή: υπάρχει ψεκασμός με άγνωστη ή ακόμη τρέχουσα αναμονή.",
   "rejected.why.future": "Η ώρα που καταχωρήθηκε είναι στο μέλλον.",
