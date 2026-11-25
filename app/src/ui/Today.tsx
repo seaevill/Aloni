@@ -285,6 +285,15 @@ export function Today() {
       </header>
       {showInstall && <ListRow icon={<Icon name="share" />} heading={t('ui.install.card')} meta={t('ui.install.card.meta')} onClick={() => openSheet('install', 'all')} testid="install-open" />}
       {rows.some((q) => q.failed) && <ErrorState onRetry={retry} />}
+      {/* the confirmation of the record just saved sits on the FIRST screen (queue item 8b): the farmer comes back here at the top and must see it without scrolling */}
+      {observed && <p class="msg" role="status" data-testid="observe-saved">{t('ui.quick.saved')}</p>}
+      {observed && <SavedWhere testid="observe-saved-where" />}
+      {planned && <p class="msg" role="status" data-testid="job-saved">{t('job.saved')}</p>}
+      {planned && <SavedWhere testid="job-saved-where" />}
+      {harvested && <p class="msg" role="status" data-testid="harvest-saved">{t('harvest.saved')}</p>}
+      {harvested && <SavedWhere testid="harvest-saved-where" />}
+      {recorded && <p class="msg" role="status" data-testid="spray-saved">{t('spray.saved')}</p>}
+      {recorded && <SavedWhere testid="spray-saved-where" />}
       {loaded && !has && <Welcome />}
       {loaded && !has && (
         <EmptyState art="parcels" message={t('welcome.start')} actionLabel={t('parcel.add')} onAction={() => { openParcelForm.value = true; tab.value = 'parcels'; }} secondLabel={t('more.loadDemo')} onSecond={() => void loadDemo()} />
@@ -322,15 +331,7 @@ export function Today() {
       {loaded && has && <button class="btn" data-testid="job-open" onClick={() => setPlanning(true)}>{t('job.add.plus')}</button>}
       {loaded && has && <WeatherStrip perParcel={[...weatherOf.values()]} />}
       {loaded && has && <TomorrowSection rows={{ crops: crops.rows ?? [], plantings: plantings.rows ?? [], links: links.rows ?? [], sprays: sprays.rows ?? [], harvests: harvestRows.rows ?? [], labels: labelRows.rows ?? [] }} />}
-      {observed && <p class="msg" role="status" data-testid="observe-saved">{t('ui.quick.saved')}</p>}
-      {observed && <SavedWhere testid="observe-saved-where" />}
       {loaded && has && <QuickAdd onSpray={() => setSpraying(true)} onHarvest={() => setHarvesting(true)} onObserve={() => setObserving(true)} onJob={() => { setPlannedDay(nextDay(athensToday(new Date()) ?? '')); setPlanning(true); }} />}
-      {planned && <p class="msg" role="status" data-testid="job-saved">{t('job.saved')}</p>}
-      {planned && <SavedWhere testid="job-saved-where" />}
-      {harvested && <p class="msg" role="status" data-testid="harvest-saved">{t('harvest.saved')}</p>}
-      {harvested && <SavedWhere testid="harvest-saved-where" />}
-      {recorded && <p class="msg" role="status" data-testid="spray-saved">{t('spray.saved')}</p>}
-      {recorded && <SavedWhere testid="spray-saved-where" />}
       {loaded && has && (
         <section class="kpis" data-testid="today-kpis">
           <button type="button" class="kpi" data-testid="kpi-parcels" onClick={() => openSheet('parcels', 'all')}><small>{t('today.kpi.parcels')}</small><strong>{formatQty(live(parcels).length)}</strong></button>
