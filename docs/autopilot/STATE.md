@@ -1,7 +1,7 @@
 # Autopilot state (updated by every run; read it first)
 
 ```
-LOCK: none            # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
+LOCK: autopilot-20261125-04 2026-11-25T01:10Z autopilot/20261125-04-lazy-screens   # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
 LAST_RUN: 2026-11-25 03:00 Istanbul, night shift (autopilot/20261125-03-offline-undo-where)
 LAST_COMPLETED: #549 (undo toasts + Photos say where a new record is; queue item 6b)
 NEXT_SAFE_ACTION: queue item 7 (first-load budget: lazy routes + measure gzip). Items 1, 3, 3b, 4, 5, 6, 6b are done.
