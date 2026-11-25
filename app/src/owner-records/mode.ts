@@ -11,3 +11,13 @@ export function serverRecordsOf(confirmed: Confirmed | undefined): boolean {
 export async function serverRecordsOn(db: AppDB): Promise<boolean> {
   return serverRecordsOf((await db.settings.get(READINESS_KEY))?.value as Confirmed | undefined);
 }
+
+// The season target lives on the server (SQL 0041) only after the owner confirmed a migration ≥ 0041; before that it stays on this phone exactly as before.
+export const CROP_TARGET_MIGRATION = '0041';
+export function serverTargetsOf(confirmed: Confirmed | undefined): boolean {
+  const m = confirmed?.migration;
+  return typeof m === 'string' && /^\d{4}$/.test(m) && m >= CROP_TARGET_MIGRATION;
+}
+export async function serverTargetsOn(db: AppDB): Promise<boolean> {
+  return serverTargetsOf((await db.settings.get(READINESS_KEY))?.value as Confirmed | undefined);
+}
