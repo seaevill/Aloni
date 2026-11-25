@@ -1,3 +1,4 @@
+import { DEMO_FARM_ID } from '../config';
 import type { AppDB } from '../db/schema';
 import { READINESS_KEY, type Confirmed } from '../settings/readiness';
 
@@ -30,4 +31,14 @@ export function serverNotesOf(confirmed: Confirmed | undefined): boolean {
 }
 export async function serverNotesOn(db: AppDB, workerOnRealFarm: boolean): Promise<boolean> {
   return workerOnRealFarm || serverNotesOf((await db.settings.get(READINESS_KEY))?.value as Confirmed | undefined);
+}
+
+// Cut records and fertilise / irrigate records live on the server (SQL 0042, OWNER ONLY) once the owner confirmed a migration ≥ 0042 — never on the Demo farm. Dormant until the readiness card asks for 0042.
+export const FIELD_RECORDS_MIGRATION = '0042';
+export function serverFieldOf(confirmed: Confirmed | undefined): boolean {
+  const m = confirmed?.migration;
+  return typeof m === 'string' && /^\d{4}$/.test(m) && m >= FIELD_RECORDS_MIGRATION;
+}
+export async function serverFieldOn(db: AppDB, farm: string): Promise<boolean> {
+  return farm !== DEMO_FARM_ID && serverFieldOf((await db.settings.get(READINESS_KEY))?.value as Confirmed | undefined);
 }
