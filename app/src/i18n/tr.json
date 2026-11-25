@@ -802,5 +802,6 @@
   "timeline.irrigate": "Sulama",
   "timeline.irrigate.m3": "{n} m³",
   "timeline.irrigate.min": "{n} dk",
-  "timeline.observation": "Gözlem: {what}"
+  "timeline.observation": "Gözlem: {what}",
+  "timeline.cap": "En yeni {n} kayıt gösteriliyor."
 }

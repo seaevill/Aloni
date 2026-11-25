@@ -802,5 +802,6 @@
   "timeline.irrigate": "Irrigation",
   "timeline.irrigate.m3": "{n} m³",
   "timeline.irrigate.min": "{n} min",
-  "timeline.observation": "Observation: {what}"
+  "timeline.observation": "Observation: {what}",
+  "timeline.cap": "Showing the {n} most recent records."
 }
