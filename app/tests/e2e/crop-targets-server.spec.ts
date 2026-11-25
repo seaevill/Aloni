@@ -9,9 +9,13 @@ const confirm = (page: Page) => page.evaluate(() => new Promise<void>((ok) => { 
 const all = <T,>(page: Page, store: string) => page.evaluate((s) => new Promise<T[]>((res) => { const r = indexedDB.open('aloni'); r.onsuccess = () => { const q = r.result.transaction(s).objectStore(s).getAll(); q.onsuccess = () => res(q.result as T[]); }; }), store);
 const openCrop = async (page: Page) => {
   const crops = await all<{ id: string; slug: string }>(page, 'crops');
-  await page.evaluate((id) => { location.hash = `#/own/today/sheet/crop/${id}`; }, crops.find((c) => c.slug === 'spinach')!.id);
-  await page.reload();
-  return page.getByTestId('sheet-crop');
+  // a COLD start on the address, not a same-page hash change + reload: CI (PR #572, run 45703117051) showed Σήμερα with no sheet, i.e. a pending startup effect had rewritten the
+  // address before the reload (the same race crate-label.spec.ts documents). The sheet must be open before any assertion about what it does NOT show.
+  await page.goto('about:blank');
+  await page.goto(`/#/own/today/sheet/crop/${crops.find((c) => c.slug === 'spinach')!.id}`);
+  const sheet = page.getByTestId('sheet-crop');
+  await expect(sheet).toBeVisible();
+  return sheet;
 };
 
 test('after the owner confirmed 0041: the target is an insert-only server row; a change is a new row; no «only on this phone» line, no remove button', async ({ page }) => {
