@@ -7,3 +7,5 @@
   min-inline-size: 0;
   width: 100%;
 }
+
+.record-search input::placeholder { color: var(--muted); opacity: 1; }

@@ -17,7 +17,7 @@ test('a late job opens its detail with every fact or the reason it is missing', 
       tx.oncomplete = () => ok();
       pl.onsuccess = () => pr.onsuccess = () => {
         const p = (pl.result as Array<{ id: string; farm_id: string }>)[0]!; const prod = (pr.result as Array<{ id: string }>)[0]!;
-        const day = new Date(Date.now() - 3 * 86_400_000).toISOString().slice(0, 10);
+        const day = new Date(Date.now() - 3 * 86_400_000).toLocaleDateString('sv-SE', { timeZone: 'Europe/Athens' });   // the farm's calendar day (UTC differs from Athens after 22:00 UTC)
         tx.objectStore('jobs').put({ id: 'job-late-1', farm_id: p.farm_id, kind: 'spray', status: 'planned', planned_for: day, product_id: prod.id });
         tx.objectStore('job_plantings').put({ id: 'jp-late-1', farm_id: p.farm_id, job_id: 'job-late-1', planting_id: p.id });
       };

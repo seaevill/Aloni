@@ -8,7 +8,13 @@ import type { Row } from '../db/schema';
 import { BackBar } from './BackBar';
 import { CropIcon, DetailSheet, ListRow } from './ds';
 import { TapNum } from './cx/TapNum';
+import { Icon } from './icons/Icon';
 import { CropTips } from './CropTips';
+import { FertPlanCard } from './FertPlanCard';
+import { CropPace } from './CropPace';
+import { YearCompare } from './YearCompare';
+import { SeedCard } from './SeedCard';
+import { CropGuide } from './CropGuide';
 import { ParcelSketch } from './ParcelSketch';
 import { plantingMarks } from '../plantings/marks';
 import { STATUS_KEYS } from './PlantingForm';
@@ -23,10 +29,11 @@ const DASH = '—';
 
 /** Tapped from the crops list (prototype «Crop detail»): the crop, its plantings per parcel, and the LAST spraying on it with the waiting period read from the record. Information only. */
 export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) {
-  const plantings = useRows('plantings'); const parcels = useRows('parcels'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const products = useRows('products');
+  const plantings = useRows('plantings'); const parcels = useRows('parcels'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const products = useRows('products'); const harvests = useRows('job_harvest');
   const weather = useWeather();
   const [showPlantingSource, setShowPlantingSource] = useState(false);
   const [showTips, setShowTips] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const today = athensToday(new Date());
   const mine = (plantings.rows ?? []).filter((p) => p.crop_id === crop.id && !p.deleted_at);
   const jobIds = new Set((links.rows ?? []).filter((l) => mine.some((p) => p.id === l.planting_id)).map((l) => l.job_id));
@@ -48,7 +55,12 @@ export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) 
         <h1 class="ds-title" tabIndex={-1}>{nameOf(crop)}</h1>
         {typeof crop.latin === 'string' && crop.latin !== '' && <p class="latin" lang="la">{crop.latin}</p>}
       </header>
-      <button type="button" class="btn secondary crop-tips-open" data-testid="crop-tips-open" onClick={() => setShowTips(true)}>{t('ui.crop.tips')}</button>
+      <button type="button" class="btn secondary crop-tips-open" data-testid="crop-tips-open" onClick={() => setShowTips(true)}><Icon name="bulb" /><span>{t('ui.crop.tips')}</span></button>
+      <CropPace crop={crop} plantings={plantings.rows ?? []} harvests={harvests.rows ?? []} />
+      <SeedCard crop={crop} plantings={mine} parcels={parcels.rows ?? []} />
+      <YearCompare cropId={String(crop.id)} plantings={plantings.rows ?? []} harvests={harvests.rows ?? []} />
+      <button type="button" class="btn secondary" data-testid="crop-guide-open" onClick={() => setShowGuide(true)}><Icon name="info" /><span>{t('ui.guide.open')}</span></button>
+      {showGuide && <CropGuide crop={crop} onClose={() => setShowGuide(false)} />}
       {showTips && <CropTips slug={text(crop.slug)} onClose={() => setShowTips(false)} />}
       {mine.length > 0 && <div class="crop-detail-source">
         <TapNum caption={t('detail.plantings')} source={{ value: formatQty(mine.length), count: mine.length }} onOpen={() => setShowPlantingSource(true)} />
@@ -65,6 +77,7 @@ export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) 
           <details class="card crop-planting" key={p.id} open={i === 0} data-testid="detail-planting">
             <summary><strong>{parcelName(p)}</strong><small>{line(p)}</small></summary>
             <div data-testid="crop-sketch">{sketchOf(p)}</div>
+            <FertPlanCard plantingId={String(p.id)} sownOn={text(p.sown_on)} areaStr={text(p.area_str)} />
             <section data-testid="crop-weather">
               <h3>{t('today.weather')}</h3>
               {days.length === 0 && <p class="muted">{t('today.weather.none')}</p>}

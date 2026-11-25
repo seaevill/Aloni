@@ -15,13 +15,13 @@ describe('jobHub: the «Εργασίες» summary of Σήμερα', () => {
   ];
   it('counts overdue, today, upcoming (tomorrow and later) and done today on the ATHENS day', () => {
     const h = jobHub(jobs, '2026-11-21');
-    expect([h.counts.overdue, h.counts.today, h.counts.upcoming, h.counts.doneToday]).toEqual([1, 2, 2, 2]);
+    expect([h.counts.overdue, h.counts.today, h.counts.upcoming, h.counts.doneToday]).toEqual([1, 3, 2, 2]);
     expect(h.doneToday.map((j) => j.id)).toEqual(['d3', 'd1']);                                                          // oldest first within the day
   });
-  it('removed jobs and jobs that are not sprayings never count; open groups stay as before', () => {
+  it('removed jobs never count, a non-spray job (harvest, fertilise …) does count; open groups stay as before', () => {
     const h = jobHub(jobs, '2026-11-21');
     expect(h.open.overdue.map((j) => j.id)).toEqual(['late']);
-    expect(h.open.today.map((j) => j.id).sort()).toEqual(['t1', 't2']);
+    expect(h.open.today.map((j) => j.id).sort()).toEqual(['harvest', 't1', 't2']);
     expect(h.open.tomorrow.map((j) => j.id)).toEqual(['tom']);
   });
   it('an empty farm gives zeros', () => {

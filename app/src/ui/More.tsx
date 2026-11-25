@@ -5,13 +5,9 @@ import { APP_NAME_EL, DEMO_FARM_ID } from '../config';
 import { APP_VERSION } from '../version';
 import { LANGS, LANG_META, lang, setLang, t } from '../i18n';
 
-import { Info } from './Info';
 import { Photos } from './Photos';
 import { SettingsBox } from './SettingsBox';
-import { Orders } from './Orders';
-import { Customers } from './Customers';
-import { Register } from './Register';
-import { Workers } from './Workers';
+import { lazyScreen } from './lazyScreen';
 import { workerView } from './nav';
 import { Backup } from './Backup';
 import { GoLive } from './GoLive';
@@ -20,8 +16,16 @@ import { Readiness } from './Readiness';
 import { SignIn } from './SignIn';
 import { showUndo } from './Toast';
 import { weeklyCopy } from '../content/weekly-report';
-import { WeeklyReport } from './cx/WeeklyReport';
+import { setSun, sunMode } from './sunmode';
 import './more-v2.css';
+
+// Opened from Άλλα only, never in a first visit's first seconds: kept out of the first-load JavaScript (warmed after the first screen, see lazyScreen.tsx).
+const Orders = lazyScreen(() => import('./Orders').then((m) => m.Orders));
+const Customers = lazyScreen(() => import('./Customers').then((m) => m.Customers));
+const Register = lazyScreen(() => import('./Register').then((m) => m.Register));
+const Info = lazyScreen(() => import('./Info').then((m) => m.Info));
+const Workers = lazyScreen(() => import('./Workers').then((m) => m.Workers));
+const WeeklyReport = lazyScreen(() => import('./cx/WeeklyReport').then((m) => m.WeeklyReport));
 
 const MENU_ICONS = {
   register: 'M6 3h12v18H6zM9 8h6M9 12h6M9 16h4',
@@ -56,14 +60,17 @@ export function More() {
     <section class="more-v2">
       <header class="today-head band"><h1>{t('more.title')}</h1></header>
       <nav class="menu" data-testid="more-menu" aria-label={t('more.menu')}>
+        <h2 class="menu-group">{t('ui.more.group.work')}</h2>
         <button class="row" data-testid="open-register" onClick={() => setView('register')}><MenuIcon name="register" /><span>{t('register.open')}</span><span aria-hidden="true" class="chev" /></button>
         <button class="row" data-testid="open-orders" onClick={() => setView('orders')}><MenuIcon name="orders" /><span>{t('orders.open')}</span><span aria-hidden="true" class="chev" /></button>
         {activeFarm.value === DEMO_FARM_ID && <button class="row" data-testid="open-worker-view" onClick={() => { workerView.value = ''; }}><MenuIcon name="worker" /><span>{t('more.workerView')}</span><span aria-hidden="true" class="chev" /></button>}
         <button class="row" data-testid="open-customers" onClick={() => setView('customers')}><MenuIcon name="workers" /><span>{t('ui.cust.open')}</span><span aria-hidden="true" class="chev" /></button>
         <button class="row" data-testid="open-workers" onClick={() => setView('workers')}><MenuIcon name="workers" /><span>{t('workers.open')}</span><span aria-hidden="true" class="chev" /></button>
-        <button class="row" data-testid="open-photos" onClick={() => setView('photos')}><MenuIcon name="photos" /><span>{t('photos.title')}</span><span aria-hidden="true" class="chev" /></button>
-        <button class="row" data-testid="open-info" onClick={() => setView('info')}><MenuIcon name="info" /><span>{t('more.info')}</span><span aria-hidden="true" class="chev" /></button>
+        <h2 class="menu-group">{t('ui.more.group.reports')}</h2>
         <button class="row" data-testid="open-weekly-report" onClick={() => setView('weekly')}><MenuIcon name="register" /><span>{weeklyCopy[lang.value].title}</span><span aria-hidden="true" class="chev" /></button>
+        <button class="row" data-testid="open-photos" onClick={() => setView('photos')}><MenuIcon name="photos" /><span>{t('photos.title')}</span><span aria-hidden="true" class="chev" /></button>
+        <h2 class="menu-group">{t('ui.more.group.info')}</h2>
+        <button class="row" data-testid="open-info" onClick={() => setView('info')}><MenuIcon name="info" /><span>{t('more.info')}</span><span aria-hidden="true" class="chev" /></button>
       </nav>
 
       <h2>{t('more.settings')}</h2>
@@ -75,6 +82,13 @@ export function More() {
         ))}
       </div>
 
+      <h2>{t('ui.sun.title')}</h2>
+      <div class="seg two" role="group" aria-label={t('ui.sun.title')} data-testid="sun-toggle">
+        <button aria-pressed={!sunMode.value} data-testid="sun-off" onClick={() => void setSun(false)}>{t('ui.sun.off')}</button>
+        <button aria-pressed={sunMode.value} data-testid="sun-on" onClick={() => void setSun(true)}>{t('ui.sun.on')}</button>
+      </div>
+      <p class="muted">{t('ui.sun.note')}</p>
+
       <h2>{t('more.activeFarm')}</h2>
       <div class="seg two">
         {[realFarmId.value, ...(hasDemo.value ? [DEMO_FARM_ID] : [])].map((id) => (
@@ -82,6 +96,7 @@ export function More() {
         ))}
       </div>
 
+      <h2>{t('ui.more.group.demo')}</h2>
       <button class="btn" data-testid="demo-load" onClick={async () => { await loadDemo(); setMsg(t('more.demoLoaded')); }}>{demoLabel}</button>
       {hasDemo.value && (
         <button class="btn danger" onClick={async () => { await deleteDemo(); showUndo(t('more.demoRemoved'), loadDemo); }}>{t('more.removeDemo')}</button>

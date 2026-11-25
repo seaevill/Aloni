@@ -9,6 +9,7 @@ import { cutTodayBySlug, nextDay, tomorrowBoard } from '../orders/tomorrow';
 import { athensToday } from '../plantings/planting';
 import { storeStock, type StoreLine } from '../stock/store-stock';
 import { loadDestinations } from '../stock/destination';
+import { loadOuts, outBySlug } from '../stock/store-out';
 import { Chip, CropIcon, DetailSheet, ListRow, SheetFact } from './ds';
 import { openSheet } from './nav';
 import { nameOf } from './screens';
@@ -22,7 +23,9 @@ function useHarvestData() {
   const today = athensToday(new Date()) ?? '';
   const [dest, setDest] = useState<Awaited<ReturnType<typeof loadDestinations>>>({});
   useEffect(() => { void loadDestinations(db, activeFarm.value).then(setDest); }, [activeFarm.value, dataVersion.value]);
-  const lines = harvests.rows && plantings.rows && crops.rows ? storeStock(today, harvests.rows, plantings.rows, crops.rows, dest) : undefined;
+  const [outs, setOuts] = useState<Record<string, number>>({});
+  useEffect(() => { void loadOuts(db, activeFarm.value).then((o) => setOuts(outBySlug(o))); }, [activeFarm.value, dataVersion.value]);
+  const lines = harvests.rows && plantings.rows && crops.rows ? storeStock(today, harvests.rows, plantings.rows, crops.rows, dest, outs) : undefined;
   return { lines, crops: crops.rows ?? [], today };
 }
 
@@ -50,7 +53,7 @@ export function StoreStock() {
     <section data-testid="store-stock">
       <h2>{t('ui.store.title')}</h2>
       {lines !== undefined && shown.length === 0 && <p class="muted" data-testid="store-none">{t('ui.store.none')}</p>}
-      {shown.map((l) => <ListRow key={l.slug} testid="store-row" icon={<CropIcon slug={l.slug} size="var(--icon-sm)" />} heading={cropName(crops, l.slug)} meta={t('ui.store.crates', { n: formatQty(l.store) })} trailing={ageChip(l)} onClick={() => openSheet('store', l.slug)} />)}
+      {shown.map((l) => <ListRow key={l.slug} testid="store-row" icon={<CropIcon slug={l.slug} size="calc(var(--tile) - var(--sp-8))" />} heading={cropName(crops, l.slug)} meta={l.out === 0 ? t('ui.store.crates', { n: formatQty(l.store) }) : l.left < 0 ? t('ui.out.over', { out: formatQty(l.out) }) : t('ui.out.left', { n: formatQty(l.left), out: formatQty(l.out) })} trailing={ageChip(l)} onClick={() => openSheet('store', l.slug)} />)}
       {tomorrow !== undefined && <p class="muted" data-testid="store-tomorrow">{tomorrow}</p>}
       <p class="muted">{t('ui.store.note')}</p>
     </section>

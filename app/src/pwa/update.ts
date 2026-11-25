@@ -39,10 +39,10 @@ export function watchDirty(): void {
   effect(() => { void tab.value; void dataVersion.value; dirty.value = false; typed.value = false; });          // leaving the tab or saving something clears it
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') dbBlocked.value = undefined; if (needRefresh.value && mayApplyByItself({ dirty: dirty.value, hidden: document.visibilityState === 'hidden' })) applyNow(); });
   // the test hook (Playwright fires «a new version is waiting» without a real deploy)
-  window.__aloniTest = { needRefresh: onNeedRefresh };
+  window.__aloniTest = { needRefresh: onNeedRefresh, offlineReady: onOfflineReady };
 }
 
-declare global { interface Window { __aloniTest?: { needRefresh: () => void } } }
+declare global { interface Window { __aloniTest?: { needRefresh: () => void; offlineReady: () => void } } }
 
 /** Asks the browser for a newer service worker every hour and whenever the app comes back to the screen (a PWA resumed from the background on iOS would otherwise never look). */
 export function watchForUpdates(reg: ServiceWorkerRegistration | undefined): void {

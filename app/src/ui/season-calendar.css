@@ -1,0 +1,17 @@
+.season-list-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-8);
+}
+.season-list-tools .record-search { flex: 1; min-width: 0; }
+.season-list-tools .btn { align-self: end; width: auto; margin-block-end: var(--sp-12); }
+.season-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-8);
+}
+.season-calendar-month { margin: 0; overflow-wrap: anywhere; }
+.season-calendar-month h2 { font-size: var(--fs-row); margin: 0; }
+.season-calendar-month p { margin-block: var(--sp-4); }
+.season-list-foot { margin-top: var(--sp-12); }

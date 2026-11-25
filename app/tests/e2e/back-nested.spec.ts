@@ -10,8 +10,11 @@ async function openProductFromHistory(page: import('@playwright/test').Page) {
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-counts')).toBeVisible();
   await page.getByTestId('history-open').click();
+  const before = await page.evaluate(() => history.length);
   await page.getByTestId('spray-product-open').first().click();
   await expect(page.getByTestId('product-source')).toBeVisible();
+  // the sheet's history entry is pushed in an effect AFTER it is painted: a Back sent in between (the slow WebKit runner) would leave the sheet open. A person cannot tap that fast: wait for the entry.
+  await page.waitForFunction((n) => history.length > n, before);
 }
 
 test('closing a sheet with its ✕ leaves the screen under it open (Ιστορικό stays)', async ({ page }) => {

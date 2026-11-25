@@ -21,6 +21,7 @@ import { Chip } from './ds/Chip';
 import { CheckDraw } from './ds/CheckDraw';
 import { Icon } from './icons/Icon';
 import { TomorrowNotes } from './TomorrowNotes';
+import { RecurringToday } from './RecurringJobs';
 import { buildObservation, completeSprayJob, OBSERVATION_KINDS, SKIP_REASONS, skipSprayJob, type ObservationKind, type SkipReason } from '../worker/jobs';
 import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
 import { doneBlocked, reiLockJob, type Lock } from '../spray/harvest';
@@ -142,8 +143,8 @@ export function WorkerApp() {
       {lang.value === 'hi' && <p class="badge warn bi" data-testid="hi-review">{ts('lang.review')}</p>}
       <div class="seg big" data-testid="worker-lang">{LANGS.map((l) => <button key={l} lang={l} aria-label={t(LANG_NAME[l])} aria-pressed={lang.value === l} onClick={() => setWorkerLang(l)}>{LANG_META[l].label}</button>)}</div>
       <div class="worker-head"><h1>{t('worker.title')}</h1><Bell id={`worker-${text(me.id)}`} /></div>
-      <details class="card" data-testid="worker-data" open={!noticeSeen}>
-        <summary>{t('worker.data.title')}</summary>
+      <details class="card worker-data" data-testid="worker-data" open={!noticeSeen}>
+        <summary data-testid="worker-data-summary">{t('worker.data.title')}</summary>
         {DATA_LINES.map((k) => <p key={k}>{t(k)}</p>)}
         {!noticeSeen && <button class="btn big" data-testid="worker-data-ack" onClick={() => void ackNotice()}>{t('worker.data.ack')}</button>}
       </details>
@@ -160,6 +161,7 @@ export function WorkerApp() {
               {takenMsg === j.id && <p class="msg error" role="alert">{t('ui.board.taken')}</p>}
             </div>)}
           </section>}
+          <RecurringToday />
           {!real && <TomorrowNotes byWorker />}
           <h2>{t('worker.jobs')}</h2>
           {open_.length === 0 && <p class="muted" data-testid="worker-nojobs">{t('worker.noJobs')}</p>}
@@ -230,7 +232,7 @@ export function WorkerApp() {
         </>
       )}
       <div class="seg big worker-tray" data-testid="worker-tray">{TABS.map(([id, k]) => <button key={id} aria-pressed={tabId === id} data-testid={`worker-tab-${id}`} onClick={() => { setHarvestSaved(false); setTabId(id); }}><Icon name={TAB_ICON[id]} /><span>{t(k)}</span></button>)}</div>
-      <button class="btn secondary" data-testid="worker-exit" onClick={() => { workerView.value = undefined; }}>{t('worker.exit')}</button>
+      <button class="btn secondary big" data-testid="worker-exit" onClick={() => { workerView.value = undefined; }}>{t('worker.exit')}</button>
     </main>
   );
 }

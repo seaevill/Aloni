@@ -45,6 +45,7 @@ test('the worker screen has the bell: 56 px, no count at first, and a reason whe
   await iphone(page);
   await page.locator('nav.tabs [data-tab="more"]').click();
   await page.locator('main button.btn').first().click();          // the demo farm (it has the worker view)
+  await expect(page.getByTestId('demo-banner')).toBeVisible();      // wait until the demo is loaded: its banner pushes the page down, a tap sent before it lands on the wrong spot
   await page.getByTestId('open-worker-view').click();
   const bell = page.getByTestId('worker-app').getByTestId('bell');
   await expect(bell).toBeVisible();

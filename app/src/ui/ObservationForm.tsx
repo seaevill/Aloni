@@ -8,12 +8,14 @@ import { buildObservation, OBSERVATION_KINDS, type ObservationKind } from '../wo
 import { MediaThumb } from './Photos';
 import { nameOf } from './screens';
 import { useRows } from './useRows';
+import { useSubmit } from './useSubmit';
 
 const KIND_KEYS: Record<ObservationKind, I18nKey> = { dew: 'worker.kind.dew', frost_damage: 'worker.kind.frost_damage', disease: 'worker.kind.disease', pest: 'worker.kind.pest', other: 'worker.kind.other' };
 
 /** The owner writes down what he saw in a field (parcel, kind, a note, an optional photo). The same record a worker writes; the words are the owner's, nothing is diagnosed. */
 export function ObservationForm({ onDone }: { onDone: (saved: boolean) => void }) {
   const parcels = useRows('parcels');
+  const { busy, submit } = useSubmit();
   const [parcel, setParcel] = useState(''); const [kind, setKind] = useState<ObservationKind | undefined>(undefined); const [note, setNote] = useState('');
   const [photoId, setPhotoId] = useState<string | undefined>(undefined); const [photoFailed, setPhotoFailed] = useState(false); const [failed, setFailed] = useState(false);
   const file = useRef<HTMLInputElement>(null);
@@ -43,7 +45,7 @@ export function ObservationForm({ onDone }: { onDone: (saved: boolean) => void }
       {photoId && <div class="photos"><MediaThumb id={photoId} /></div>}
       {photoFailed && <p class="msg error" role="alert">{t('photos.error')}</p>}
       {failed && <p class="msg error" role="alert" data-testid="observe-error">{t('ui.quick.observe.error')}</p>}
-      <button class="btn" data-testid="observe-save" onClick={() => void save()}>{t('worker.observe.save')}</button>
+      <button class="btn" data-testid="observe-save" disabled={busy} onClick={() => void submit(save)}>{t('worker.observe.save')}</button>
       <button class="btn secondary" onClick={() => onDone(false)}>{t('worker.back')}</button>
     </section>
   );
