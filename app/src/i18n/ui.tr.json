@@ -287,6 +287,7 @@
   "ui.store.unreadable": "Sayısı okunamayan {n} kayıt toplanmadı",
   "ui.store.note": "Yalnızca gideceği yer yazılı kayıtlar sayılır. Eski kayıtlar depoya eklenmez.",
   "ui.board.title": "Boş işler",
+  "ui.board.pending": "İstek gönderildi; sinyal bekliyor.",
   "ui.board.take": "Ben alıyorum",
   "ui.board.taken": "Bu işi başkası almış.",
   "ui.dest.title": "Kasalar nereye gitti?",

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { activeFarm, dataVersion, db } from '../db';
 import { AUTH_ENABLED, DEMO_FARM_ID, SYNC_CONNECTED } from '../config';
 import { session } from '../auth/gotrue';
-import { pendingOps } from '../repo';
+import { pendingOps, putRpc, rejectedOps } from '../repo';
 import { groupJobs } from '../summary/jobs';
 import { athensToday } from '../plantings/planting';
 import { COMPLETE } from '../worker/remote';
@@ -69,6 +69,9 @@ export function WorkerApp() {
   const [photoId, setPhotoId] = useState<string | undefined>(undefined); const [photoAt, setPhotoAt] = useState(''); const [photoFailed, setPhotoFailed] = useState(false); const photoFile = useRef<HTMLInputElement>(null);
   const [lockMsg, setLockMsg] = useState<{ job: string; text: string } | undefined>(undefined); // what a press on a CLOSED «Έγινε» answers
   const [queued, setQueued] = useState<string[]>([]); // jobs whose «Έγινε» waits in the outbox for the signal
+  const [claiming, setClaiming] = useState<string[]>([]); // open jobs whose «Το αναλαμβάνω» waits in the outbox for the signal (the SERVER decides who is first)
+  useEffect(() => { void db.outbox.where('status').equals('pending').toArray().then((r) => setClaiming(r.filter((o) => o.table === `${RPC_PREFIX}claim_job`).map((o) => o.row_id))); }, [pendingOps.value, dataVersion.value]);
+  const lostClaims = new Set(rejectedOps.value.filter((o) => o.table === `${RPC_PREFIX}claim_job` && o.reason === 'taken').map((o) => o.row_id));   // the server said «taken»: someone else was first
   useEffect(() => { void db.outbox.where('status').equals('pending').toArray().then((r) => setQueued(r.filter((o) => o.table === `${RPC_PREFIX}${COMPLETE}`).map((o) => o.row_id))); }, [pendingOps.value, dataVersion.value]);
   const [when, setWhen] = useState(athensLocalNow(new Date()) ?? ''); const [startWhen, setStartWhen] = useState(''); const [startError, setStartError] = useState(false);   // the start is REQUIRED (the server asks for it) and never pre-filled
   const [note, setNote] = useState('');
@@ -79,8 +82,9 @@ export function WorkerApp() {
   const mine = (jobs.rows ?? []).filter((j) => j.kind === 'spray' && j.worker_id === me.id && !held.includes(j.id));
   const open_ = mine.filter((j) => j.status === 'planned' && !queued.includes(j.id));
   // the shared board (Demo practice view): an open job nobody has yet. Taking it sets the worker on the job; the first to take it wins (the job is read again right before the write).
-  const free = real ? [] : (jobs.rows ?? []).filter((j) => j.kind === 'spray' && j.status === 'planned' && !j.deleted_at && !j.worker_id);
+  const free = (jobs.rows ?? []).filter((j) => j.kind === 'spray' && j.status === 'planned' && !j.deleted_at && !j.worker_id);
   const take = async (job: Row) => {
+    if (real) { if (!claiming.includes(String(job.id))) { await putRpc(db, farm, 'claim_job', String(job.id), { p_job: job.id }); dataVersion.value++; } return; }   // real farm: the server alone decides who was first; the job moves to «mine» when the answer comes back
     const now = (await db.jobs.get(job.id));
     if (!now || now.worker_id) { setTakenMsg(job.id); return; }
     await put(db, 'jobs', { ...now, worker_id: me.id });
@@ -157,8 +161,9 @@ export function WorkerApp() {
         <>
           {free.length > 0 && <section data-testid="worker-board"><h2>{t('ui.board.title')}</h2>
             {free.map((j) => <div class="card job" key={j.id} data-testid="worker-free-job"><strong class="job-title">{nameOf(products.rows?.find((p) => p.id === j.product_id) ?? {})}</strong>
-              <button class="btn big" data-testid="worker-take" onClick={() => void take(j)}>{t('ui.board.take')}</button>
-              {takenMsg === j.id && <p class="msg error" role="alert">{t('ui.board.taken')}</p>}
+              <button class="btn big" data-testid="worker-take" disabled={claiming.includes(String(j.id))} onClick={() => void take(j)}>{t('ui.board.take')}</button>
+              {claiming.includes(String(j.id)) && <p class="msg" role="status" data-testid="worker-take-pending">{t('ui.board.pending')}</p>}
+              {(takenMsg === j.id || lostClaims.has(String(j.id))) && <p class="msg error" role="alert">{t('ui.board.taken')}</p>}
             </div>)}
           </section>}
           <RecurringToday />
