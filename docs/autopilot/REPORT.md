@@ -5,6 +5,16 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-26 01:00 — gece koşusu (otomatik)
+**Tamamlanan iyileştirmeler:** QUEUE 17b (bağımsız incelemenin S6 ve S7 maddeleri).
+**PR'lar:** #573 — uygulandı · test edildi (birleşme durumu PR'da; CI sonucuna bağlı).
+**CI:** yerelde tsc, tüm vitest (151 dosya, 857 geçti), eslint ve ilgili Playwright testleri (6/6) geçti; GitHub sonuçları PR #573'te.
+**Cloudflare önizleme:** adres yalnız botun PR yorumundan alınır; açılışı doğrulanmadı.
+**Görünen değişiklik:** Χωράφια → parsel → «Τελευταίοι ψεκασμοί»: arşivlenmiş bir ekimde yapılmış ilaçlamalar bu listede (önceden olduğu gibi) yok, ama altında artık kaç tane olduğu ve «Χρονολόγιο»da yer aldıkları yazıyor. Ekran görüntüleri: `docs/design/sprays-archived-before-375.png` → `docs/design/sprays-archived-after-375.png`. Taşınan bir ekimin geçmişinin yeni parsele gittiği test ile sabitlendi (ekranda değişiklik yok).
+**Kalan sorunlar:** tüm ilaçlamalar arşivlenmiş ekimlerdeyse liste hâlâ «Δεν υπάρχουν ψεκασμοί ακόμα.» diyor; yeni satır hemen altında açıklıyor. «Τελευταίος ψεκασμός» özet bilgisi değişmedi.
+**Sıradaki öncelik:** kuyrukta `todo` iş kalmadı (yalnız sürekli bakım #9). QUEUE 14 Bora'nın 0042 onayını bekliyor.
+**Bora'dan karar:** yok.
+
 ## 2026-11-26 00:00 — gece koşusu (otomatik)
 **Tamamlanan iyileştirmeler:** QUEUE 17 ilk dilim (bağımsız incelemenin S5 maddesi + liste sınırı notu).
 **PR'lar:** #572 — uygulandı · test edildi · birleşti · derlendi (Cloudflare build ok). Canlıda doğrulanmadı.
