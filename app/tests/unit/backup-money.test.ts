@@ -4,10 +4,8 @@ import { DEMO_FARM_ID } from '../../src/config';
 import { makeBackup, parseBackup, restoreBackup } from '../../src/repo/backup';
 import { putLocal, putSetting } from '../../src/repo';
 import { TEST_FARM_ID, newDb } from '../helpers/factories';
-
 const farm = { id: TEST_FARM_ID, name: 'Test farm' };
 const entry = { id: 'm1', day: '2026-11-01', dir: 'out', category: 'fuel', cents: 1000, note: '', at: 't' };
-
 // Independent review 2026-11-25, MUST 1: the Ταμείο ledger stays on the phone. It is in the backup, but never queued for the server on a restore, and the Demo ledger never travels in a real backup.
 describe('Ταμείο ledger and backups', () => {
   it('the real ledger is backed up, the fictional Demo ledger is not', async () => {
@@ -27,8 +25,7 @@ describe('Ταμείο ledger and backups', () => {
     await putLocal(b, 'money:old-farm', [{ ...entry, id: 'old' }]);          // this phone's own old ledger
     await putSetting(b, 'old-farm', 'controller', { name: 'x' });             // a normal synced setting: still re-queued
     await restoreBackup(b, backup, 'old-farm');
-    const queued = (await b.outbox.toArray()).map((o) => JSON.stringify(o));
-    expect(queued.some((q) => q.includes('money:'))).toBe(false);
+    expect((await b.outbox.toArray()).some((o) => JSON.stringify(o).includes('money:'))).toBe(false);
     expect(await b.settings.get(`money:${DEMO_FARM_ID}`)).toBeUndefined();
     expect((await b.settings.get(`money:${TEST_FARM_ID}`))?.value).toEqual([entry]);
   });

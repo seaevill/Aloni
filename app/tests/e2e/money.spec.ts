@@ -41,7 +41,7 @@ test('Άλλα → Ταμείο: add, refuse an ambiguous amount, correct, cance
   await expect(page.getByTestId('money-month')).toHaveCount(2);                   // October and November
 });
 
-// Independent review 2026-11-25: a double tap on «Αποθήκευση» writes ONE row; the note has a hint and a cap; no tax/invoice statement.
+// Independent review 2026-11-25: one row per double tap, note hint + cap, no myDATA claim.
 test('Ταμείο: a double tap on save writes one row, the note is capped and carries a hint, the page makes no myDATA claim', async ({ page }) => {
   await page.clock.setFixedTime(new Date('2026-11-16T10:00:00Z'));
   await page.goto('/');
