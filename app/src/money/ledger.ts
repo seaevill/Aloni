@@ -49,7 +49,7 @@ export function buildEntry(input: EntryInput, id: string, nowIso: string, amends
   if (!amount.known) return { ok: false, reason: 'amount' };
   if (!validDay(input.day) || input.day < FIRST_DAY || input.day > dayAfter(nowIso, 366)) return { ok: false, reason: 'day' };   // a typo like 2062 must not open a new year
   if (!(categoriesOf(input.dir) as readonly string[]).includes(input.category)) return { ok: false, reason: 'category' };
-  const entry: MoneyEntry = { id, day: input.day, dir: input.dir, category: input.category as Category, cents: amount.value, note: input.note.trim(), at: nowIso };
+  const entry: MoneyEntry = { id, day: input.day, dir: input.dir, category: input.category as Category, cents: amount.value, note: input.note.trim().slice(0, 80), at: nowIso };
   if (input.crop !== undefined && input.crop !== '') entry.crop = input.crop;
   if (amends !== undefined) entry.amends = amends;
   return { ok: true, entry };
@@ -60,6 +60,13 @@ export function voidOf(target: MoneyEntry, id: string, nowIso: string): MoneyEnt
   const v: MoneyEntry = { id, day: target.day, dir: target.dir, category: target.category, cents: target.cents, note: target.note, amends: target.id, void: true, at: nowIso };
   if (target.crop !== undefined) v.crop = target.crop;
   return v;
+}
+
+/** «Αναίρεση» of a cancel: a row that amends the void row with the original values, so the entry counts again (nothing is removed). */
+export function restoreOf(voidRow: MoneyEntry, id: string, nowIso: string): MoneyEntry {
+  const r: MoneyEntry = { id, day: voidRow.day, dir: voidRow.dir, category: voidRow.category, cents: voidRow.cents, note: voidRow.note, amends: voidRow.id, at: nowIso };
+  if (voidRow.crop !== undefined) r.crop = voidRow.crop;
+  return r;
 }
 
 /** The rows that count: every row nobody amended, minus void rows. A row amended twice: the newest amendment wins (by `at`, then id). */
@@ -105,7 +112,7 @@ export function rootOf(rows: readonly MoneyEntry[], entry: MoneyEntry): string {
 export interface Totals { inCents: number; outCents: number; netCents: number }
 export interface YearSummary extends Totals { year: string; months: Totals[]; byCategory: Array<{ dir: Direction; category: Category; cents: number }> }
 
-const MONTHS = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+export const MONTHS = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
 const totals = (inCents: number, outCents: number): Totals => ({ inCents, outCents, netCents: inCents - outCents });
 
 /** In, out and net of one calendar year, the 12 months (January first) and each category (biggest first). Integer sums only. */

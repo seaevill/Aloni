@@ -18,6 +18,10 @@
   padding: .5rem;
   text-align: start;
 }
+.parcel-sketch-tile small {
+  display: block;
+  font-size: var(--fs-14);
+}
 .parcel-sketch-tile .parcel-sketch {
   margin: 0;
 }
