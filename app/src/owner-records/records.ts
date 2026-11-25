@@ -34,3 +34,11 @@ export function buildCropTarget(input: { cropId: string; crates: string; since: 
   if (blank(input.cropId)) return { ok: false, reason: 'reference' };
   return { ok: true, row: { id, farm_id: farmId, crop_id: input.cropId, season_start: input.since, target_crates: n.value, created_at: nowIso, updated_at: nowIso, deleted_at: null } };
 }
+
+/** A note for a day (SQL 0039): text 1–280 characters, a real day. `from_worker` is NEVER sent: the server sets it from the writer's role. */
+export function buildDayNote(input: { day: string; text: string }, farmId: string, nowIso: string, id: string): Built {
+  const text = input.text.trim();
+  if (text === '' || text.length > 280) return { ok: false, reason: 'text' };
+  if (!isDay(input.day)) return { ok: false, reason: 'day' };
+  return { ok: true, row: { id, farm_id: farmId, for_day: input.day, text, status: 'open', created_at: nowIso, updated_at: nowIso, deleted_at: null } };
+}

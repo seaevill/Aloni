@@ -13,7 +13,7 @@ import { buildSpray, buildWaitEntry } from '../../src/spray/spray';
 import { buildAdjustment, buildReceipt } from '../../src/stock/stock';
 import { buildObservation, completeSprayJob } from '../../src/worker/jobs';
 import { buildWorker } from '../../src/workers/worker';
-import { buildCropTarget, buildCustomer, buildCustomerOrder, buildWorkerCard } from '../../src/owner-records/records';
+import { buildCropTarget, buildDayNote, buildCustomer, buildCustomerOrder, buildWorkerCard } from '../../src/owner-records/records';
 import type { Row } from '../../src/db/schema';
 import { TEST_FARM_ID as F, newDb } from '../helpers/factories';
 
@@ -51,6 +51,7 @@ describe('phone ↔ server contract', () => {
     const customer = ok(buildCustomer({ name: 'Μαρία', phone: '69', note: 'n' }, F, now, id(30))).row;
     const card = ok(buildWorkerCard({ workerId: id(10), surname: 'Π', phone: '69' }, F, now, id(31))).row;
     const target = ok(buildCropTarget({ cropId: String(crop.id), crates: '500', since: '2026-11-01' }, F, now, id(33))).row;
+    const note = ok(buildDayNote({ day: '2026-11-11', text: 'Να φέρουμε κλούβες' }, F, now, id(34))).row;
     const order = ok(buildCustomerOrder({ customerId: id(30), cropId: String(crop.id), crates: '12', day: '2026-11-12', note: 'n' }, F, now, id(32))).row;
     const obs = buildObservation(id(1), 'pest', 'aphids', worker, F, now, id(17)) as Row;
     const planned: Row = { id: id(18), farm_id: F, kind: 'spray', status: 'planned', product_id: id(3), label_use_id: id(5), worker_id: id(10), planned_for: '2026-11-11', dose_str: '0.025', dose_unit: 'ml/str', created_at: now, updated_at: now, deleted_at: null };
@@ -64,7 +65,7 @@ describe('phone ↔ server contract', () => {
       { table: 'job_plantings', row: spray.jobPlantings[0], op: 'insert' }, { table: 'job_spray', row: spray.spray, op: 'insert' },
       { table: 'jobs', row: bare.job, op: 'insert' }, { table: 'job_plantings', row: bare.jobPlantings[0], op: 'insert' }, { table: 'job_spray', row: bare.spray, op: 'insert' }, { table: 'job_spray', row: wait.row, op: 'insert' },
       { table: 'job_harvest', row: harvest, op: 'insert' }, { table: 'observations', row: obs, op: 'insert' },
-      { table: 'customers', row: customer, op: 'insert' }, { table: 'worker_cards', row: card, op: 'insert' }, { table: 'customer_orders', row: order, op: 'insert' }, { table: 'crop_targets', row: target, op: 'insert' },
+      { table: 'customers', row: customer, op: 'insert' }, { table: 'worker_cards', row: card, op: 'insert' }, { table: 'customer_orders', row: order, op: 'insert' }, { table: 'crop_targets', row: target, op: 'insert' }, { table: 'day_notes', row: note, op: 'insert' },
       { table: 'job_plantings', row: { ...spray.jobPlantings[0], id: id(26), job_id: id(18) }, op: 'insert' },   // the planned job has its planting (the label of a spray must be of a crop of the job)
       ...(done.ok ? [{ table: 'jobs', row: done.job, op: 'update' as const }, { table: 'job_spray', row: done.spray, op: 'insert' as const }] : []),
     ] as const;
@@ -84,7 +85,7 @@ describe('phone ↔ server contract', () => {
     const stable = (text: string) => ops.reduce((t, o) => t.split(o.device_id).join('phone-device').split(o.actor_id).join('phone-actor'), text); // random ids of this run → fixed text
     const opsFile = (JSON.parse(stable(JSON.stringify(ordered))) as Array<Record<string, unknown>>).map(({ status: _status, ...o }, i) => ({ ...o, op_id: id(1000 + i), at: now }));
     out.__op_fields = [...new Set(ops.flatMap((o) => Object.keys(o)))].sort();
-    expect(Object.keys(out).sort()).toEqual(['__op_fields', 'crop_targets', 'crops', 'customer_orders', 'customers', 'job_harvest', 'job_plantings', 'job_spray', 'jobs', 'label_uses', 'media', 'observations', 'parcels', 'plantings', 'products', 'settings', 'soil_tests', 'stock_lots', 'stock_movements', 'worker_cards', 'workers']);
+    expect(Object.keys(out).sort()).toEqual(['__op_fields', 'crop_targets', 'crops', 'customer_orders', 'customers', 'day_notes', 'job_harvest', 'job_plantings', 'job_spray', 'jobs', 'label_uses', 'media', 'observations', 'parcels', 'plantings', 'products', 'settings', 'soil_tests', 'stock_lots', 'stock_movements', 'worker_cards', 'workers']);
     // the contract file has one line per table, so a change shows as one changed line
     if (process.env.UPDATE_CONTRACT) { writeFileSync(FILE, `{\n${Object.entries(out).map(([k, v]) => `  ${JSON.stringify(k)}: ${JSON.stringify(v)}`).join(',\n')}\n}\n`);  writeFileSync(OPS, `${JSON.stringify(opsFile)}\n`); }
     expect(opsFile).toEqual(JSON.parse(readFileSync(OPS, 'utf8')));

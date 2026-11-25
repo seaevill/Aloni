@@ -21,3 +21,13 @@ export function serverTargetsOf(confirmed: Confirmed | undefined): boolean {
 export async function serverTargetsOn(db: AppDB): Promise<boolean> {
   return serverTargetsOf((await db.settings.get(READINESS_KEY))?.value as Confirmed | undefined);
 }
+
+// Notes for the next days live on the server (SQL 0039) once the owner confirmed a migration ≥ 0039; a SIGNED-IN WORKER's phone (a real farm) has no readiness card: it is on the server by definition.
+export const DAY_NOTES_MIGRATION = '0039';
+export function serverNotesOf(confirmed: Confirmed | undefined): boolean {
+  const m = confirmed?.migration;
+  return typeof m === 'string' && /^\d{4}$/.test(m) && m >= DAY_NOTES_MIGRATION;
+}
+export async function serverNotesOn(db: AppDB, workerOnRealFarm: boolean): Promise<boolean> {
+  return workerOnRealFarm || serverNotesOf((await db.settings.get(READINESS_KEY))?.value as Confirmed | undefined);
+}
