@@ -796,5 +796,11 @@
   "tomorrow.supply": "Έτοιμες φυτεύσεις: {free} · σε αναμονή (δεν μετρούν): {held} · άγνωστες (δεν μετρούν): {unknown}",
   "tomorrow.unmapped": "{n} προϊόντα χωρίς αντιστοίχιση καλλιέργειας δεν εμφανίζονται παραπάνω.",
   "harvest.more5": "+5",
-  "harvest.more10": "+10"
+  "harvest.more10": "+10",
+  "timeline.fertilise": "Λίπανση: {form}",
+  "timeline.fertilise.kg": "{n} kg N/στρ.",
+  "timeline.irrigate": "Άρδευση",
+  "timeline.irrigate.m3": "{n} m³",
+  "timeline.irrigate.min": "{n} λεπτά",
+  "timeline.observation": "Παρατήρηση: {what}"
 }

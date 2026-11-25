@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
-import { activeFarm, dataVersion, db } from '../db';
+import { activeFarm, db } from '../db';
 import { serverFieldOn } from '../owner-records/mode';
-import { loadWork, type Work } from '../fieldwork/fieldwork';
+import type { Work } from '../fieldwork/fieldwork';
 import { formatDateTime, t, type I18nKey } from '../i18n';
 import { formatArea, formatDerived, formatQty } from '../i18n/format';
 import { parcelWater, parcelYield } from '../summary/parcel-yield';
@@ -13,10 +13,10 @@ const YIELD_WHY: Record<string, I18nKey> = { 'no-area': 'ui.yield.why.area', 'no
 const WATER_WHY: Record<string, I18nKey> = { 'no-area': 'ui.yield.why.area', 'no-records': 'ui.water.why.records', 'missing-m3': 'ui.water.why.m3' };
 const one = (s: string): string => { const v = parseFloat(s); return v > 0 && v < 0.1 ? `<${formatDerived(0.1, 1)}` : formatDerived(v, 1); };   // a small non-zero value is never shown as 0
 
-export function ParcelYield({ parcel, plantings, harvests, cropName, cropById }: { parcel: Row; plantings: readonly Row[]; harvests: readonly Row[]; cropName: (plantingId: string) => string; cropById: (cropId: string) => string }) {
+export function ParcelYield({ parcel, plantings, harvests, work, cropName, cropById }: { parcel: Row; work: readonly Work[]; plantings: readonly Row[]; harvests: readonly Row[]; cropName: (plantingId: string) => string; cropById: (cropId: string) => string }) {
   const farm = activeFarm.value;
-  const [work, setWork] = useState<Work[]>([]); const [onServer, setOnServer] = useState(false);
-  useEffect(() => { void loadWork(db, farm).then(setWork); void serverFieldOn(db, farm).then(setOnServer); }, [farm, parcel.id, dataVersion.value]);
+  const [onServer, setOnServer] = useState(false);
+  useEffect(() => { void serverFieldOn(db, farm).then(setOnServer); }, [farm, parcel.id]);
   const y = parcelYield(parcel, plantings, harvests);
   const w = parcelWater(parcel, work);
   const waterWhy = w.known ? '' : t(WATER_WHY[w.reason] as I18nKey, { n: String(w.missing) });
