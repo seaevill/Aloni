@@ -17,8 +17,10 @@ const keyOf = (cropId: string): string => `season_target:${activeFarm.value}:${c
 /** On the server (0041) the target is insert-only: the newest row of the crop wins; «newest» = the highest server_seq (the phone's own clock can be set freely), a row not yet synced counts as the newest. */
 const newestOf = (rows: readonly Row[], cropId: string): SeasonTarget | undefined => {
   const mine = rows.filter((r) => r.crop_id === cropId && !r.deleted_at && typeof r.season_start === 'string' && Number.isInteger(r.target_crates));
-  const seq = (r: Row): number => (typeof r.server_seq === 'number' ? r.server_seq : Number.POSITIVE_INFINITY);
-  const top = [...mine].sort((a, b) => (seq(a) === seq(b) ? String(a.created_at).localeCompare(String(b.created_at)) : seq(a) < seq(b) ? -1 : 1)).pop();
+  const bySeq = (a: Row, b: Row): number => Number(a.server_seq) - Number(b.server_seq);
+  const synced = mine.filter((r) => typeof r.server_seq === 'number').sort(bySeq);
+  const unsynced = mine.filter((r) => typeof r.server_seq !== 'number').sort((a, b) => String(a.created_at).localeCompare(String(b.created_at)));
+  const top = unsynced.pop() ?? synced.pop();
   return top ? { crates: String(top.target_crates), since: String(top.season_start) } : undefined;
 };
 const isTarget = (v: unknown): v is SeasonTarget => typeof v === 'object' && v !== null && typeof (v as SeasonTarget).crates === 'string' && typeof (v as SeasonTarget).since === 'string';
