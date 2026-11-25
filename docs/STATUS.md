@@ -8,6 +8,11 @@
 5. **Senden tek adımlar:** (a) 0036–0042'yi «Supabase migrate (manual)» ile sırayla yükle (0036+0037 önce, sonra «Yükleme tamam» yaz; 0042'den ÖNCE telefon tarafını yayınlayacağım, bu yüzden 0042'yi en son yükle); (b) Codex'in 4 işi (ilaçlama defteri PDF, GPS sınır, sezon takvimi, More menüsü) merge ediliyor, telefonda dene; (c) **para defteri PR'ları #484/#485** (F1 Ταμείο) başka bir ekipten geldi, onayın olmadan merge etmiyorum: «evet/hayır» de.
 6. **Açık PR'lar:** #500 (SQL, bekliyor) · #460 (0037 yüklenince) · #484/#485 (para defteri, onayını bekliyor) · #471/#480/#481/#488 (yalnızca belge) · Dependabot #306 (testleri kırmızı).
 
+## Güncel (2026-11-25 gece)
+- **0042'nin telefon tarafı yazıldı ve main'de (uykuda):** kesim kaydı + gübreleme/sulama (#566), ΚΑΕΚ (#567; her değişiklikte senin yazdığın bir neden gerekir). Onay düğmesi hâlâ 0041'i soruyor, yani bu iş sen 0042'yi yükleyene kadar hiçbir şeyi değiştirmiyor.
+- **«0042 yüklemeye hazır» için kalan tek şey:** #500'ü sen yüklemelisin; ardından tek bir küçük PR sözleşme dosyasını birleştirir ve onay düğmesini 0042'ye çevirir.
+- #504/#507: Codex sonucu yok, bekliyor. #508 açık.
+
 ## Güncel (2026-11-25 akşam) — 5 satır
 1. **Canlıda (main'e girdi, CI yeşil; canlı doğrulama sende):** Ταμείο (para defteri) · hasat varış yeri senkronu · sezon hedefi senkronu · iş panosu «Το αναλαμβάνω» (sunucu kimin önce aldığına karar verir) · yarın notları (usta/işçi arasında paylaşılır, «από εργάτη» etiketini sunucu koyar) · ekim sınırı alanı güvenle taşınıyor (çizim aracı henüz kullanıcıya açık değil).
 2. **Önce yapman gereken tek adım:** Άλλα → «Σύνδεση λογαριασμού: τι λείπει» → **«Επιβεβαιώνω: εφαρμόστηκαν οι αλλαγές έως 0041»** (üretim 0001–0041 olduğu için doğru). Bu tek onay tüm sunucu modlarını açar; öncesinde her şey eskisi gibi.
