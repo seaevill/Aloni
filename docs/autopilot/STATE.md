@@ -3,7 +3,7 @@
 ```
 LOCK: none            # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
 LAST_RUN: 2026-11-25 05:00 Istanbul, night shift (autopilot/20261125-05-worker-targets)
-LAST_COMPLETED: queue item 8 (worker 72 px targets + worker-layout spec 320/375/390) — PR on autopilot/20261125-05-worker-targets
+LAST_COMPLETED: queue item 8 (worker 72 px targets + worker-layout spec 320/375/390) (PR #551)
 NEXT_SAFE_ACTION: queue item 8b (Σήμερα audit). Items 1, 3, 3b, 4, 5, 6, 6b, 7, 8 done or in PR. If the item-8 PR is still open: finish it first.
 OPEN_BRANCHES: none owned by autopilot
 ```

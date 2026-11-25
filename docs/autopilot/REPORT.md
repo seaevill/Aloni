@@ -7,7 +7,7 @@ Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygu
 
 ## 2026-11-25 05:00 (gece vardiyası, otomatik) — işçi ekranında büyük düğmeler
 - **Tamamlanan iyileştirme:** QUEUE #8 — işçi ekranında (Άλλα → Προβολή εργάτη) eldivenle basılacak düğmeler 72 px'e çıktı: «Τα δεδομένα σας» başlığı (önceden 22 px'lik ince bir yazı satırıydı, şimdi 72 px'lik basılabilir satır, ▼ işareti duruyor), Συγκομιδή sekmesindeki «Αποθήκη / Απευθείας φόρτωση» seçimi ve «Ακύρωση», ve en alttaki «Έξοδος από την προβολή εργάτη» (hepsi 56 → 72 px). Sahibin kendi hasat formu değişmedi.
-- **PR:** bu koşunun PR'ı (STATE.md'de numara) — uygulandı, test edildi. Birleşme durumu PR'da (CI kapıları).
+- **PR:** #551 — uygulandı, test edildi. Birleşme durumu PR'da (CI kapıları).
 - **Önce/sonra (375 px, Demo, işçi görünümü):** `docs/design/worker-targets-before-harvest-375.png` → `docs/design/worker-targets-after-harvest-375.png`, `docs/design/worker-targets-before-jobs-375.png` → `docs/design/worker-targets-after-jobs-375.png`.
 - **Yeni test:** 320/375/390 px'de, Yunanca ve Hintçe, üç sekmede: yatay kaydırma yok, işçinin düğmeleri ≥72 px, diğer tüm hedefler ≥56 px. Düzeltmeden önce kırmızıydı (22 px başlık), sonra yeşil.
 - **Testler (yerel):** vitest tamamı 810 geçti; tsc, eslint temiz; işçi/hasat/yarın notları dahil 29 Playwright testinden 28'i geçti, `workers.spec` yalnızca bilinen `icon-192` ortam hatasıyla düştü. Karar CI'da (WebKit).
