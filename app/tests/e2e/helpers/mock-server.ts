@@ -12,7 +12,7 @@ export class Server {
   visibleTo(role: 'owner' | 'worker', workerId: string | undefined) {
     // SQL 0038: a worker also sees the OPEN spray jobs of the farm (nobody on them yet) and their plantings
     const mine = new Set(this.all('jobs').filter((j) => j.worker_id === workerId || (!j.worker_id && j.kind === 'spray' && j.status === 'planned')).map((j) => String(j.id)));
-    const WORKER_TABLES = new Set(['workers', 'parcels', 'crops', 'plantings', 'products', 'jobs', 'job_plantings', 'job_harvest']);
+    const WORKER_TABLES = new Set(['workers', 'parcels', 'crops', 'plantings', 'products', 'jobs', 'job_plantings', 'job_harvest', 'day_notes']);
     return [...this.rows.values()].filter((r) => role === 'owner' || (WORKER_TABLES.has(r.table) && (r.table !== 'jobs' || mine.has(String(r.row.id))) && (r.table !== 'job_plantings' || mine.has(String(r.row.job_id)))));
   }
 }
@@ -33,7 +33,7 @@ export async function mockFor(page: Page, srv: Server, role: 'owner' | 'worker',
   });
   await page.route('**/mock/rest/v1/rpc/apply_ops', (r) => {
     const ops = (JSON.parse(r.request().postData() ?? '{}') as { p_ops: Array<{ op_id: string; table: string; row: Row }> }).p_ops;
-    for (const o of ops) srv.put(o.table === 'settings' ? 'farm_settings' : o.table, o.row);
+    for (const o of ops) srv.put(o.table === 'settings' ? 'farm_settings' : o.table, o.table === 'day_notes' ? { ...o.row, from_worker: role !== 'owner' } : o.row);   // SQL 0039: the SERVER sets from_worker from the writer's role
     return r.fulfill(json(ops.map((o) => ({ op_id: o.op_id, status: 'applied' }))));
   });
   await page.route('**/mock/rest/v1/rpc/complete_spray_job', (r) => {

@@ -167,7 +167,7 @@ export function WorkerApp() {
             </div>)}
           </section>}
           <RecurringToday />
-          {!real && <TomorrowNotes byWorker />}
+          <TomorrowNotes byWorker workerOnRealFarm={real} />
           <h2>{t('worker.jobs')}</h2>
           {open_.length === 0 && <p class="muted" data-testid="worker-nojobs">{t('worker.noJobs')}</p>}
           {JOB_GROUPS.map(([gk, glabel]) => groups[gk].length > 0 && (<section key={gk}><h3 class={gk === 'overdue' ? 'late' : undefined} data-testid={`worker-group-${gk}`}>{t(glabel)} <span class="count">{groups[gk].length}</span></h3>
