@@ -5,6 +5,48 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-25 07:00 — ALONI — NIGHT SHIFT RESULTS (sabah doğrulaması, otomatik)
+Kaynak: GitHub REST (07:03 İstanbul). Tahmin yok; «birleşti» ≠ «canlıda».
+
+**1. Neler somut olarak iyileşti** — Gece 6 iş birleşti (QUEUE #5, #6, #6b, #7, #8, #8b): Χωράφια parsel detayı ana bilgilerle açılıyor; kayıtlar «telefonda» olduğunu söylüyor; ilk açılış ~11 kB (gzip) daha hafif; işçi ekranında 72 px düğmeler; Σήμερα'da kayıt onayı ilk ekranda.
+
+**2. Görsel değişiklikler (önce → sonra, 375 px)**
+- Parsel detayı: `docs/design/screenshots-2026-11-25/parcel-detail-before-375.png` → `parcel-detail-after-375.png` (320/390 de var)
+- Hasat sonrası «telefonda» satırı: `docs/design/screenshots-2026-11-25/saved-where/harvest-saved-before-375.png` → `harvest-saved-after-375.png`
+- Geri-al bildirimi: `docs/design/offline-undo-where-before-375.png` → `offline-undo-where-after-375.png`
+- İşçi ekranı: `docs/design/worker-targets-before-harvest-375.png` → `worker-targets-after-harvest-375.png`; `worker-targets-before-jobs-375.png` → `worker-targets-after-jobs-375.png`
+- Σήμερα onayı: `docs/design/today-feedback-before-375.png` → `today-feedback-after-375.png`
+- #550 (ilk açılış): görsel değişiklik yok.
+
+**3. İşlevsel değişiklikler** — #550: Άλλα alt ekranları (Μητρώο, Παραγγελίες, Πελάτες, Εργάτες, Πληροφορίες, Εβδομαδιαία αναφορά) ayrı parçalar, ilk ekrandan sonra arka planda yükleniyor. Diğerleri yerleşim/yazı; yeni çeviri anahtarı yok, özellik silinmedi (PR açıklamalarına göre).
+
+**4. Birleşen PR'lar (son 14 saat)** — hepsinde check, sql, static, 3 e2e parçası, Workers Builds **yeşil**:
+- #547 Χωράφια parsel detayı · #548 Σήμερα «telefonda» satırı · #549 geri-al + Φωτογραφίες «telefonda» · #550 ilk açılış hafifledi · #551 işçi ekranı 72 px · #552 Σήμερα onayı ilk ekranda
+- Ana dal `5ef162c` (#552): check, sql, static, e2e 1/2/3, Workers Builds — **hepsi yeşil**.
+
+**5. Açık PR'lar** — #460, #484, #485, #500 (SQL), #504, #507, #508: bekletilenler (QUEUE), dokunulmadı. Hepsinde check/e2e yeşil, «Workers Builds: aloni» kırmızı (eski derlemeler, bu gece incelenmedi). #512 Dependabot (23 Kas): check/static/e2e **kırmızı** → aşağıda.
+
+**6. Testler** — Gece PR'larının ve ana dalın tüm CI işleri geçti; kırmızı e2e yok. Yerelde bilinen `icon-192` ortam hatası CI'da yok. Kırmızı tek PR #512:
+- `static` FAILURE CONTEXT: `tests/unit/cx-content-qa.test.ts(36,21): error TS2339: Property 'createSourceFile' does not exist on type 'typeof import(".../typescript/lib/version")'` (ve benzerleri).
+- `e2e (shard 2/3)`: `Error: Process from config.webServer was not able to start. Exit code: 1`.
+- Sınıf: **GERÇEK UYGULAMA/DERLEME HATASI** (altyapı değil): güncellemedeki yeni TypeScript sürümü, testin `typescript` içe aktarma biçimini bozuyor; derleme olmayınca e2e sunucusu da başlamıyor. Ana dalı etkilemiyor.
+
+**7. Cloudflare önizleme bağlantıları** — Cloudflare botunun PR yorumunda görünen adresler (bu ortamdan açılamadı, doğrulanmadı):
+- #548: https://autopilot-20261125-02-offline-saved-where-aloni.ormanbora.workers.dev
+- #552: https://autopilot-20261125-06-today-audit-aloni.ormanbora.workers.dev
+- #547, #549, #550, #551: herkese açık adres alınamadı; panel: https://dash.cloudflare.com/95b3c021891c1ac025fc5a028ac5a2b7/workers/services/view/aloni/production/previews/autopilot-20261125-01-parcel-key-facts/builds/beaaa3b8-4e35-402b-84f4-d5e8c20aa618 · …/previews/autopilot-20261125-03-offline-undo-where/builds/fdc8ed0a-9870-4882-b4bd-27d24cb94027 · …/previews/autopilot-20261125-04-lazy-screens/builds/50dec9c2-f2c2-4ea3-8074-21f84ab7b9bf · …/previews/autopilot-20261125-05-worker-targets/builds/bbbd7722-5490-44ab-9be3-361ae5e41df2
+- Adres biçimi `<dal-adı>-aloni.ormanbora.workers.dev` artık botun yorumuyla görülüyor. Canlı adres (önizleme DEĞİL): https://aloni.ormanbora.workers.dev
+
+**8. Engellenenler** — Kilit yok (eski kilit yok). #512 Dependabot TypeScript uyumsuzluğu (düzeltme gerek: test, `typescript` içe aktarmasını yeni sürüme uydurmalı; ya da TypeScript bu gruptan çıkarılmalı). Canlı doğrulama yalnızca Bora'da.
+
+**9. Bora telefonda önce neye baksın** (canlı adreste, yayın tamamlandıysa)
+1. Σήμερα: bir hasat kaydet → «Η συγκομιδή καταγράφηκε.» başlığın hemen altında mı?
+2. Χωράφια → bir parsel: Εμβαδόν, Κοπή από…, Τελευταίος ψεκασμός en üstte mi?
+3. Άλλα → Προβολή εργάτη: düğmeler eldivenle rahat mı?
+4. Uçak modunda bir kayıt: «Αποθηκεύτηκε στο τηλέφωνο…» yazıyor mu? (Bilinen: Σήμερα'da bu cümle iki kez görünebilir → QUEUE #8c.)
+
+**Sıradaki öncelik:** QUEUE #8c (çift «telefonda» cümlesi). **Bora'dan karar:** #512'nin (bağımlılık güncellemesi) düzeltilip düzeltilmeyeceği.
+
 ## 2026-11-25 06:00 (gece vardiyası, otomatik) — Σήμερα: kayıt onayı ilk ekranda
 - **Tamamlanan iyileştirme:** QUEUE #8b (ilk dilim) — ilaçlama, hasat, iş veya gözlem kaydedip Σήμερα'ya dönünce «Η συγκομιδή καταγράφηκε.» gibi onay yazısı (ve altındaki «telefonda» satırı) artık başlığın hemen altında, ilk ekranda. Önceden hava durumu ve «Αύριο φεύγουν» bölümünün altında, ekranın çok aşağısındaydı; kaydırmadan görünmüyordu.
 - **PR:** #552 — uygulandı, test edildi. Birleşme durumu PR'da (CI kapıları).
