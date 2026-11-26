@@ -5,6 +5,41 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-26 07:00 — ALONI — NIGHT SHIFT RESULTS (sabah doğrulaması, otomatik)
+Kaynak: GitHub REST (07:03 İstanbul). Tahmin yok; «birleşti» ≠ «canlıda».
+
+**1. Neler somut olarak iyileşti** — Gece 2 küçük iş birleşti (QUEUE 17 ve 17b, bağımsız incelemenin S5–S7 maddeleri): parsel «Χρονολόγιο»su tarihsiz hasatları da gösteriyor ve 20 kayıt sınırını ekranda söylüyor; «Τελευταίοι ψεκασμοί» altında arşivlenmiş ekimlerdeki ilaçlamaların nerede olduğu yazıyor. 02:00–06:00 arası yeni iş yapılmadı: kuyrukta `todo` iş kalmamıştı (QUEUE 14 Bora'yı bekliyor).
+
+**2. Görsel değişiklikler (375 px)**
+- Tarihsiz hasat: `docs/design/timeline-undated-after-375.png` (öncesi yok: önceden satır hiç görünmüyordu)
+- 20 kayıt sınırı notu: `docs/design/timeline-cap-after-375.png`
+- Arşiv ilaçlamaları satırı: `docs/design/sprays-archived-before-375.png` → `docs/design/sprays-archived-after-375.png`
+
+**3. İşlevsel değişiklikler** — #572: tarihsiz hasat «— άγνωστο» tarihiyle listenin sonunda; `crop-targets-server.spec.ts` soğuk açılışa geçti (yarış düzeltmesi, test gevşetilmedi). #573: yeni çeviri anahtarı `detail.sprays.archived` (el/tr/en); bekleme süresi hesabı değişmedi; taşınan ekimin geçmişinin onunla gittiği birim testiyle sabitlendi. Özellik silinmedi (PR açıklamalarına göre).
+
+**4. Birleşen PR'lar (son 14 saat)**
+- Gece (autopilot): #572, #573 — ikisinin de son commit'inde check, sql, static, e2e 1/2/3, pr-size, Workers Builds **yeşil**.
+- Akşam (etkileşimli oturum, 17:00–22:00 İstanbul): #566, #567, #568 (0042 telefon tarafı, uyuyan), #500 (SQL 0042 — **birleşti, UYGULANMADI**; yalnız Bora uygular), #504 (verimlilik), #569 (parsel zaman çizelgesi, #507'nin yerine), #570 (Σήμερα 8c), #571 (STATUS/kararlar).
+- Ana dal `b2a6646` (#573): check, sql, static, e2e 1/2/3, Workers Builds — **hepsi yeşil** (pr-size: atlandı, normal).
+
+**5. Açık PR'lar** — yalnız #508 (araştırma, açık kalıyor, dokunulmadı): check/sql/static/e2e yeşil; «Workers Builds: aloni» **kırmızı** (eski derleme; araştırma PR'ı, incelenmedi). #512 (Dependabot) 25 Kas 09:20 UTC'de birleşmeden kapatılmış.
+
+**6. Testler** — Gece PR'larının ve ana dalın tüm CI işleri geçti; kırmızı e2e iş yok, bu yüzden FAILURE CONTEXT sınıflandırması gerekmedi. Yerelde (01:00 koşusu): vitest 857 geçti, tsc/eslint temiz, ilgili Playwright 6/6.
+
+**7. Cloudflare önizleme bağlantıları** (açılışı doğrulanmadı; bu ortamdan workers.dev açılamıyor)
+- #572: https://autopilot-20261126-00-timeline-undated-aloni.ormanbora.workers.dev (botun PR yorumundan) · panel: https://dash.cloudflare.com/95b3c021891c1ac025fc5a028ac5a2b7/workers/services/view/aloni/production/previews/autopilot-20261126-00-timeline-undated/builds/95859a23-d172-4b95-a742-c7cae248e48b
+- #573: botun PR yorumunda adres yok · panel: https://dash.cloudflare.com/95b3c021891c1ac025fc5a028ac5a2b7/workers/services/view/aloni/production/previews/autopilot-20261126-01-archived-sprays/builds/71f14c09-02af-48e6-8508-0772c31e07d9
+- Canlı adres (önizleme DEĞİL): https://aloni.ormanbora.workers.dev
+
+**8. Engellenenler** — Kilit yok (eski kilit yok). QUEUE 14: Bora 0042'yi «Supabase migrate (manual)» ile uygulayıp «yükleme tamam» diyene kadar bekliyor. Kuyrukta başka `todo` yok → gece koşuları yeni iş bulamıyor; yeni öncelikler QUEUE.md'ye eklenmeli. Canlı doğrulama yalnızca Bora'da.
+
+**9. Bora telefonda önce neye baksın** (canlı adreste, yayın tamamlandıysa)
+1. Χωράφια → bir parsel → «Χρονολόγιο»: tarihsiz bir hasat «— άγνωστο» ile en altta mı? Uzun listede «Εμφανίζονται οι 20 πιο πρόσφατες καταγραφές.» yazıyor mu?
+2. Arşivlenmiş ekimi olan bir parselde «Τελευταίοι ψεκασμοί» altında «Ψεκασμοί σε αρχειοθετημένες φυτεύσεις (…) δεν εμφανίζονται εδώ· είναι στο Χρονολόγιο.» satırı var mı?
+3. Σήμερα: bir kayıttan sonra «Αποθηκεύτηκε στο τηλέφωνο…» artık bir kez mi görünüyor (#570)?
+
+**Sıradaki öncelik:** QUEUE 14 (0042 uygulandıktan sonra). **Bora'dan karar:** 0042'yi ne zaman uygulayacağı; gece için yeni iş listesi.
+
 ## 2026-11-26 01:00 — gece koşusu (otomatik)
 **Tamamlanan iyileştirmeler:** QUEUE 17b (bağımsız incelemenin S6 ve S7 maddeleri).
 **PR'lar:** #573 — uygulandı · test edildi (birleşme durumu PR'da; CI sonucuna bağlı).
