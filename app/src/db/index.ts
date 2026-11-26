@@ -1,3 +1,4 @@
+import { athensToday } from '../plantings/planting';
 import { signal } from '@preact/signals';
 import { AppDB, type FarmRow } from './schema';
 import { importDemo, removeDemo, type PrototypeData } from './import-demo';
@@ -53,6 +54,18 @@ export async function loadDemo() {
   await importDemo(db, data);
   await clearDemoGuide(db); await seedDemoGuide(db);      // the two farmer cases (parsley, wild chicory): phone-local, Demo farm only
   const sample = demoOrders(Date.now()); await saveOrders(db, DEMO_FARM_ID, sample.orders, sample.map);      // a fictional order list, in the demo farm only
+  hasDemo.value = true;
+  activeFarm.value = DEMO_FARM_ID;
+  dataVersion.value++;
+}
+
+/** The opt-in «full season» Demo (queue item 32): the classic Demo's crops, products and weather, with the season of docs/plan/DEMO-SEASON.md on seven fictional parcels. Demo farm only. */
+export async function loadDemoSeason() {
+  const data = (await import('../../../reference/prototype/data.json')).default as unknown as PrototypeData;
+  await importDemo(db, data);
+  await clearDemoGuide(db);                                                   // the classic guide cases are replaced by the season's own records
+  const { applySeason } = await import('./demo-season/load');
+  await applySeason(db, athensToday(new Date()) ?? '');
   hasDemo.value = true;
   activeFarm.value = DEMO_FARM_ID;
   dataVersion.value++;

@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks';
 import { useBack } from './backstack';
-import { activeFarm, dataVersion, deleteDemo, farmLabel, hasDemo, legacyKept, loadDemo, realFarmId } from '../db';
+import { activeFarm, dataVersion, deleteDemo, farmLabel, hasDemo, legacyKept, loadDemo, loadDemoSeason, realFarmId } from '../db';
 import { APP_NAME_EL, DEMO_FARM_ID } from '../config';
 import { APP_VERSION } from '../version';
 import { LANGS, LANG_META, lang, setLang, t } from '../i18n';
@@ -102,6 +102,7 @@ export function More() {
 
       <h2>{t('ui.more.group.demo')}</h2>
       <button class="btn" data-testid="demo-load" onClick={async () => { await loadDemo(); setMsg(t('more.demoLoaded')); }}>{demoLabel}</button>
+      <button class="btn secondary" data-testid="demo-season-load" onClick={async () => { await loadDemoSeason(); setMsg(t('more.demoLoaded')); }}>{t('more.demoSeason')}</button>
       {hasDemo.value && (
         <button class="btn danger" onClick={async () => { await deleteDemo(); showUndo(t('more.demoRemoved'), loadDemo); }}>{t('more.removeDemo')}</button>
       )}

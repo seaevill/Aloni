@@ -18,6 +18,7 @@
   "more.loadDemo": "Load demo farm",
   "more.removeDemo": "Remove demo farm",
   "more.demoNote": "Demo data is fictional and never mixed with your real data.",
+  "more.demoSeason": "Demo farm: full season (90 days)",
   "more.demoLoaded": "Demo farm loaded.",
   "more.demoRemoved": "Demo farm removed.",
   "more.version": "{name} · version {v}",
