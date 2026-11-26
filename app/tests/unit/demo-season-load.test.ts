@@ -11,6 +11,7 @@ import { FARM_TABLES } from '../../src/db/schema';
 import { areaM2, validBoundary } from '../../src/map/geo';
 import { parseWhole } from '@aloni/rules-core';
 import { putParcel, newDb, TEST_FARM_ID } from '../helpers/factories';
+import { effective, loadMoney, yearSummary } from '../../src/money/ledger';
 
 const TODAY = '2026-11-26';
 const load = async () => { const db = await newDb(); await importDemo(db, raw as unknown as PrototypeData); await applySeason(db, TODAY); return db; };
@@ -127,5 +128,28 @@ describe('Demo season people, orders, board, notes (queue item 32c)', () => {
     expect(((await db.settings.get(`recurring:${DEMO_FARM_ID}`))!.value as unknown[]).length).toBeGreaterThanOrEqual(2);
     const plan = JSON.stringify((await db.settings.get(`fert_plan:${DEMO_FARM_ID}`))!.value); expect(plan).toContain('επίδειξης');
     expect((await db.settings.toArray()).filter((s) => s.key.startsWith(`season_target:${DEMO_FARM_ID}:`))).toHaveLength(3);
+  });
+});
+
+describe('Demo season Ταμείο and observations (queue item 32d)', () => {
+  it('the book: whole cents, a correction and a cancel as NEW rows (nothing edited), one «Επιστροφή ΦΠΑ» line, no future day; the summary adds up', async () => {
+    const db = await load();
+    const rows = await loadMoney(db, DEMO_FARM_ID);
+    expect(rows.length).toBeGreaterThanOrEqual(25);
+    for (const r of rows) { expect(Number.isInteger(r.cents), r.id).toBe(true); expect(r.day <= TODAY, r.id).toBe(true); }
+    expect(rows.filter((r) => r.category === 'vat_refund')).toHaveLength(1);
+    expect(rows.filter((r) => r.amends !== undefined && !r.void)).toHaveLength(1); expect(rows.filter((r) => r.void)).toHaveLength(1);
+    const live = effective(rows);
+    expect(live.length).toBe(rows.length - 2 - 1);                                                // minus the amended original, the cancelled original and the cancel row itself
+    const y = yearSummary(rows, TODAY.slice(0, 4)); const sum = (d: 'in' | 'out') => live.filter((e) => e.dir === d && e.day.startsWith(TODAY.slice(0, 4))).reduce((a, e) => a + e.cents, 0);
+    expect(y.inCents).toBe(sum('in')); expect(y.outCents).toBe(sum('out')); expect(y.netCents).toBe(y.inCents - y.outCents);
+    await applySeason(db, TODAY);                                                                  // loading again: no duplicate error, same book
+    expect((await loadMoney(db, DEMO_FARM_ID)).length).toBe(rows.length);
+  });
+  it('five observations on the season parcels, kinds from the app\'s own list; nothing in the future', async () => {
+    const db = await load();
+    const obs = await db.observations.toArray();
+    expect(obs).toHaveLength(5);
+    for (const o of obs) { expect(['dew', 'frost_damage', 'disease', 'pest', 'other']).toContain(o.kind); expect(String(o.observed_at).slice(0, 10) <= TODAY).toBe(true); expect(o.farm_id).toBe(DEMO_FARM_ID); }
   });
 });
