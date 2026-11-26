@@ -1,0 +1,26 @@
+{
+  "takim": "aloni-gelistirme",
+  "guncelleme": "2026-11-26",
+  "dogrulandi": false,
+  "not": "Bu liste Bora'nin sohbette soylediklerinden kuruldu, repoya bakilmadan. Ilk kosunun ilk isi: acik PR'lara ve belgelere bakip bu dosyayi gercek durumla esitlemek, sonra dogrulandi alanini true yapmak.",
+  "simdi": null,
+  "sirada": [
+    {
+      "id": "is-0",
+      "baslik": "Durum dosyasini repodaki gercek durumla esitle (acik PR'lar, yarim isler, son birlestirilenler)",
+      "kaynak": "kurulum"
+    },
+    {
+      "id": "is-1",
+      "baslik": "Tarla + is + hasat kaydi (Farmable'dan alinan bolum; not, ekip, stok ve satis kapsam disi)",
+      "kaynak": "Bora, 23 Kasim 2026"
+    },
+    {
+      "id": "is-2",
+      "baslik": "Gelir-gider kaydi: musteriye ve zamana gore degisen kasa fiyati, veresiye takibi, muhasebeci icin CSV ve PDF disa aktarim",
+      "kaynak": "Bora, 23 Kasim 2026"
+    }
+  ],
+  "bekleyen_kararlar": [],
+  "son_kosu": null
+}

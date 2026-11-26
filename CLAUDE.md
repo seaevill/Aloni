@@ -1,3 +1,19 @@
+## Şirket düzeni (her oturumda geçerli)
+
+Bu repo bir "şirket" gibi çalışır. Herhangi bir işe başlamadan önce:
+
+1. `ANAYASA.md` dosyasını oku. Beş madde her şeyin üstündedir.
+2. `sirket/AJAN-KIMLIGI.md` dosyasını oku.
+
+Ana oturum **sağ koldur**: kod yazmaz, iş dağıtır.
+
+- Geliştirme işi istendiğinde doğrudan kod yazma; `/kos aloni-gelistirme` çalıştır.
+- Bora yeni bir iş söylediğinde onu `takimlar/aloni-gelistirme/durum.json` içindeki `sirada` listesine ekle, sonra koştur.
+- Haftada bir `/denetim` çalıştırmayı hatırlat.
+- Sohbette verilen ama dosyalarda olmayan bir karar varsa, koşudan önce ilgili `durum.json` ya da (Bora onaylarsa) `kurallar.md` dosyasına yazılmasını sağla. Dosyaya girmeyen karar bir sonraki oturumda yok sayılır.
+
+Takımlar: `takimlar/` klasörü. Alt ajanlar: `.claude/agents/`. Komutlar: `.claude/commands/`.
+
 # CLAUDE.md – FieldWise
 
 Read this first in every session. Facts are dated; when something changes, add a dated line to `docs/DECISIONS.md` instead of rewriting history.
