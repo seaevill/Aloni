@@ -1,7 +1,7 @@
 import { DEMO_FARM_ID, DEMO_NAMESPACE } from '../../config';
 import { areaM2 } from '../../map/geo';
 import { buildAnalysis } from '../../analyses/analysis';
-import { putLocal } from '../../repo';
+import { delLocal, putLocal } from '../../repo';
 import type { AppDB, FarmTable, Row } from '../schema';
 import { uuidv5 } from '../uuid';
 import { SEASON_CUTS, SEASON_HARVESTS, SEASON_PLANTINGS, SEASON_SOIL, SEASON_WORK } from './data';
@@ -10,6 +10,7 @@ import { strip } from './geometry';
 import { SEASON_PARCELS } from './parcels';
 import { sprayRows } from './sprays';
 import { boardRows, seedPeople } from './people';
+import { observationRows, seedMoney } from './money';
 
 // DEMO SEASON loader (queue item 32). An OPT-IN second Demo: the classic Demo is loaded first (crops, products with their label uses, weather), then everything that belongs to its five sample parcels is
 // replaced by the season below. EVERY row carries the Demo farm id and an id derived from the Demo namespace: nothing can touch a real farm, loading twice gives the same ids, `removeDemo` removes it all.
@@ -70,7 +71,8 @@ export async function applySeason(db: AppDB, today: string): Promise<void> {
   const rows = await loadSeasonRows(today);
   const sprays = await sprayRows(today, await db.products.where('farm_id').equals(DEMO_FARM_ID).toArray(), await db.label_uses.where('farm_id').equals(DEMO_FARM_ID).toArray(), rows.plantings ?? []);
   const board = await boardRows(today, await db.products.where('farm_id').equals(DEMO_FARM_ID).toArray(), await db.label_uses.where('farm_id').equals(DEMO_FARM_ID).toArray(), rows.plantings ?? [], sprays.workers.map((w) => String(w.id)));
-  for (const [t, list] of Object.entries({ ...sprays, jobs: [...sprays.jobs, ...board.jobs], job_plantings: [...sprays.job_plantings, ...board.job_plantings] })) rows[t as FarmTable] = [...(rows[t as FarmTable] ?? []), ...list];
+  const obs = await observationRows(today, (legacy) => String(rows.parcels?.find((p) => p.legacy_id === legacy)?.id), sprays.workers[0]!);
+  for (const [t, list] of Object.entries({ observations: obs, ...sprays, jobs: [...sprays.jobs, ...board.jobs], job_plantings: [...sprays.job_plantings, ...board.job_plantings] })) rows[t as FarmTable] = [...(rows[t as FarmTable] ?? []), ...list];
   const weatherDays = (await db.weather.where('farm_id').equals(DEMO_FARM_ID).toArray())[0]?.days ?? [];
   const weather = await Promise.all(SEASON_PARCELS.map(async (p) => ({ id: await u('weather', p.id), farm_id: DEMO_FARM_ID, parcel_id: await u('parcel', p.id), days: weatherDays })));   // ids first: nothing may be awaited from outside Dexie inside the transaction
   await db.transaction('rw', [...REPLACED.map((t) => db[t]), db.weather], async () => {
@@ -80,6 +82,8 @@ export async function applySeason(db: AppDB, today: string): Promise<void> {
     await db.weather.bulkPut(weather);
   });
   await seedSeasonLocal(db, today);
+  await delLocal(db, `money:${DEMO_FARM_ID}`);                                  // loading again starts the book afresh (the ledger itself only ever appends)
+  await seedMoney(db, today);
   await seedPeople(db, today, rows.plantings ?? [], sprays.workers.map((w) => String(w.id)));
 }
 export const seasonText = text;
