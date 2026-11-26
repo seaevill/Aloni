@@ -79,3 +79,15 @@ describe('Demo season integrity (queue item 34)', () => {
     expect((await db.plantings.toArray()).every((p) => String(p.legacy_id).startsWith('pl'))).toBe(true);
   });
 });
+
+describe('Demo season on any day of the year (queue item 34h)', () => {
+  it('loads on DST change days, the leap day, year ends and mid-season dates: the builders never refuse, every day is real, nothing lies in the future except the planned work', async () => {
+    for (const day of ['2026-03-29', '2026-10-25', '2027-01-01', '2027-12-31', '2028-02-29', '2028-03-01', '2026-07-14']) {
+      const db = await newDb(); await importDemo(db, raw as unknown as PrototypeData); await applySeason(db, day);
+      expect(await db.parcels.where('farm_id').equals(DEMO_FARM_ID).count(), day).toBe(7);
+      for (const h of await db.job_harvest.toArray()) expect(String(h.harvested_at).slice(0, 10) <= day, `${day} harvest`).toBe(true);
+      for (const s of await db.job_spray.toArray()) expect(String(s.sprayed_at).slice(0, 10) <= day, `${day} spray`).toBe(true);
+      expect((await db.jobs.toArray()).filter((j) => j.status === 'planned' && String(j.planned_for) > day).length, `${day} planned in the future`).toBe(4);
+    }
+  });
+});
