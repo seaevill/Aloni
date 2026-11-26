@@ -12,7 +12,7 @@ Priority classes: **P0** data integrity / sync / offline / permissions / agricul
 | 30 | P1 | Demo gerçek ilaçlar (resmî ΥΠΑΑΤ kaydı/etiket PDF, ~10 ürün, harfi harfine, kaynak URL + tarih `docs/content/demo-labels-sources.md`; bulunamayan = «άγνωστο») | blocked | ΥΠΑΑΤ sitesi bu ortamdan açılmıyor; BLOCKERS.md'de Bora'nın indireceği PDF listesi |
 | 31 | P1 | Demo parselleri: Megara'da 7 parsel, 2–25 στρ., ~70 στρ., elle çizilmiş şekiller, ΚΑΕΚ «99…» + Demo etiketi | in-progress (data + tests merged as PR; loader/wiring comes with item 32) | docs/plan/DEMO-SEASON.md |
 | 32 | P1 | Demo tam sezon (−90/+14 gün, her açılışta kaydırılır; ekim, ilaçlama, hasat, kesim, gübre/sulama, plan, analiz, depo, müşteri/sipariş, işçi, pano, notlar, tekrarlayan, hedef, Ταμείο, gözlem; zor durumlar) | todo | 30'a bağlı (etiketli ürünler) |
-| 33 | P2 | Demo fotoğrafları (Wikimedia CC0/CC-BY/CC-BY-SA, 10–15, küçültülmüş, tembel, kaynak satırı, `docs/content/photo-credits.md`) | todo | |
+| 33 | P2 | Demo fotoğrafları (Wikimedia CC0/CC-BY/CC-BY-SA, 10–15, küçültülmüş, tembel, kaynak satırı, `docs/content/photo-credits.md`) | in-progress (files + credits merged as PR; the on-screen source line comes with the item-32 loader) | |
 | 34 | P0 | Demo bütünlük testleri (a–f) | todo | |
 | 35 | P1 | Demo gezinti testi 320/375/390 + 30 ekran görüntüsü | todo | |
 | 36 | P4 | Yunanca test listesi `docs/milestones/DEMO-SEASON-TEST.md` + Türkçe REPORT özeti | todo | |
