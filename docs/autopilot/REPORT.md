@@ -207,6 +207,10 @@ Kaynak: GitHub REST (07:03 İstanbul). Tahmin yok; «birleşti» ≠ «canlıda�
 - **Sıradaki öncelik:** QUEUE #1 (çift gönderim koruması denetimi).
 - **Bora'dan karar/eylem:** önizleme adresi için workers.dev adresi (BLOCKERS).
 
+## 2026-11-26 öğleden sonra vardiyası — tur 6
+- **35 gezinti birleşti:** sezon Demosunda her sekme ve alt sayfa 320/375/390 px'te açılıyor (Σήμερα kaynakları, geçmiş, Φυτά + detay + ημερολόγιο, Χωράφια + detay, Αποθήκη + ürün + parti, Άλλα altındaki 8 sayfa + işçi görünümü); konsol hatası ve yatay kaydırma yok. 30 ekran görüntüsü `docs/design/demo-season-2026-11-26/`.
+- Görüntülere bakınca gerçekçilik hatası bulundu: depoda 40 gün önceki 69 kasa maydanoz görünüyordu; artık yalnızca son haftanın hasadı depoda.
+
 ## 2026-11-26 öğleden sonra vardiyası — tur 5
 - **34 bütünlük testleri birleşti (a–g):** gerçek çiftlik dokunulmuyor, PHI'deki ekim arza girmiyor (ρόκα «λείπουν» satırı), dozlar kaynak dosyayla bire bir, okunamayan kasa ne 0 ne sayı, Demo kaldırılınca her şey siliniyor, klasik/sezon Demo karışmıyor, her Σήμερα sayısı kaynağını açıyor.
 - **İki gerçek hata bulundu ve düzeltildi:** «Καλλιέργειες» sayısı Demo'da tüm bitkileri (10) sayıyordu, kaynak sayfa 9'u listeliyordu; Demo silinince sipariş listesi geride kalıyordu.

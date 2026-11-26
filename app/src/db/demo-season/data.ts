@@ -16,15 +16,15 @@ export const SEASON_PLANTINGS: readonly SeasonPlanting[] = [
   { id: 'pl12', area: '2.4', parcel: 'S7', crop: 'parsley', strip: [0, 1], sown: 4, status: 'planned' },
 ];
 
-// Harvest records: planting, day offset, crates as TYPED (a text the app must read; «δεκαπέντε» is deliberately unreadable → shown as «άγνωστο», never as 0), where it went.
+// Harvest records (older than a week left the farm directly; only the newest crates are still in the store): planting, day offset, crates as TYPED (a text the app must read; «δεκαπέντε» is deliberately unreadable → shown as «άγνωστο», never as 0), where it went.
 export interface SeasonHarvest { id: string; planting: string; day: number; crates: string; dest?: 'store' | 'dispatch' }
 export const SEASON_HARVESTS: readonly SeasonHarvest[] = [
-  { id: 'h1', planting: 'pl3', day: -40, crates: '14', dest: 'store' }, { id: 'h2', planting: 'pl3', day: -33, crates: '18', dest: 'dispatch' }, { id: 'h3', planting: 'pl3', day: -26, crates: '16', dest: 'store' },
-  { id: 'h4', planting: 'pl3', day: -19, crates: '20', dest: 'store' }, { id: 'h5', planting: 'pl3', day: -12, crates: '17', dest: 'dispatch' }, { id: 'h6', planting: 'pl3', day: -5, crates: '19', dest: 'store' },
-  { id: 'h7', planting: 'pl10', day: -21, crates: '30', dest: 'store' }, { id: 'h8', planting: 'pl10', day: -14, crates: '28', dest: 'dispatch' }, { id: 'h9', planting: 'pl10', day: -7, crates: '26', dest: 'store' },
-  { id: 'h10', planting: 'pl1', day: -4, crates: '22', dest: 'store' }, { id: 'h11', planting: 'pl1', day: -1, crates: '24', dest: 'dispatch' },
+  { id: 'h1', planting: 'pl3', day: -40, crates: '14', dest: 'dispatch' }, { id: 'h2', planting: 'pl3', day: -33, crates: '18', dest: 'dispatch' }, { id: 'h3', planting: 'pl3', day: -26, crates: '16', dest: 'dispatch' },
+  { id: 'h4', planting: 'pl3', day: -19, crates: '20', dest: 'dispatch' }, { id: 'h5', planting: 'pl3', day: -12, crates: '17', dest: 'dispatch' }, { id: 'h6', planting: 'pl3', day: -5, crates: '19', dest: 'store' },
+  { id: 'h7', planting: 'pl10', day: -21, crates: '30', dest: 'dispatch' }, { id: 'h8', planting: 'pl10', day: -14, crates: '28', dest: 'dispatch' }, { id: 'h9', planting: 'pl10', day: -7, crates: '26', dest: 'dispatch' },
+  { id: 'h10', planting: 'pl1', day: -4, crates: '22', dest: 'store' }, { id: 'h11', planting: 'pl1', day: -1, crates: '24', dest: 'store' },
   { id: 'h12', planting: 'pl5', day: -6, crates: '12', dest: 'store' }, { id: 'h13', planting: 'pl5', day: -2, crates: 'δεκαπέντε' },
-  { id: 'h14', planting: 'pl8', day: -45, crates: '40', dest: 'store' },
+  { id: 'h14', planting: 'pl8', day: -45, crates: '40', dest: 'dispatch' },
 ];
 
 // Soil analyses (typed values as a lab would give them; one parcel has none on purpose → «άγνωστο»).
