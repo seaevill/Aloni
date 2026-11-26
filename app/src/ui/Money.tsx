@@ -4,7 +4,7 @@ import { formatDate, formatMonth, lang, t, type I18nKey } from '../i18n';
 import { formatMoney } from '../i18n/format';
 import { athensToday } from '../plantings/planting';
 import { CATALOG } from '../crops/catalog';
-import { appendMoney, buildEntry, categoriesOf, effective, historyOf, loadMoney, restoreOf, rootOf, voidOf, MONTHS, yearSummary, yearsOf, type Category, type Direction, type MoneyEntry } from '../money/ledger';
+import { appendMoney, buildEntry, cancelled, categoriesOf, effective, historyOf, loadMoney, restoreOf, rootOf, voidOf, MONTHS, yearSummary, yearsOf, type Category, type Direction, type MoneyEntry } from '../money/ledger';
 import { BackBar } from './BackBar';
 import { useSubmit } from './useSubmit';
 import { BigNum, Card, DetailSheet, ListRow, SheetFact } from './ds';
@@ -37,6 +37,7 @@ export function Money({ onBack }: { onBack: () => void }) {
   const s = yearSummary(rows, year);
   const live = effective(rows).filter((e) => e.day.startsWith(`${year}-`));
   const months = s.months.map((m, i) => ({ m, ym: [year, MONTHS[i]].join('-') })).filter(({ m }) => m.inCents > 0 || m.outCents > 0).reverse();
+  const gone = cancelled(rows).filter((e) => e.day.startsWith(`${year}-`));
   const open = view.kind === 'entry' ? effective(rows).find((e) => e.id === view.id) : undefined;
   const cancel = async (e: MoneyEntry) => {
     const v = voidOf(e, crypto.randomUUID(), new Date().toISOString());
@@ -68,6 +69,17 @@ export function Money({ onBack }: { onBack: () => void }) {
         {s.byCategory.map((c) => <ListRow key={`${c.dir}:${c.category}`} testid="money-cat" heading={t(CAT_KEYS[c.category])} meta={formatMoney(c.dir === 'in' ? c.cents : -c.cents)} />)}
         <h2>{t('ui.money.entries')}</h2>
         {live.map((e) => <ListRow key={e.id} testid="money-entry" heading={`${signed(e)} · ${t(CAT_KEYS[e.category])}`} meta={[formatDate(e.day), cropName(e.crop), e.note].filter((x) => x !== '').join(' · ')} onClick={() => setView({ kind: 'entry', id: e.id })} />)}
+        {gone.length > 0 && (
+          <details class="fold" data-testid="money-cancelled">
+            <summary>{t('ui.money.cancelled.list', { n: String(gone.length) })}</summary>
+            {gone.map((e) => (
+              <div key={e.id}>
+                <ListRow testid="money-cancelled-entry" heading={`${signed(e)} · ${t(CAT_KEYS[e.category])}`} meta={formatDate(e.day)} />
+                <button class="btn secondary" data-testid="money-restore" onClick={() => void append(restoreOf(e, crypto.randomUUID(), new Date().toISOString()))}>{t('toast.undo')}</button>
+              </div>
+            ))}
+          </details>
+        )}
       </>}
       <p class="muted" data-testid="money-local">{t('ui.money.local')}</p>
       {open && <DetailSheet heading={signed(open)} testid="money-sheet" onClose={() => setView({ kind: 'main' })}>

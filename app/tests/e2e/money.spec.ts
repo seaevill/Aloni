@@ -60,3 +60,25 @@ test('Ταμείο: a double tap on save writes one row, the note is capped and 
   await page.getByTestId('money-save').dblclick();
   await expect(net).toHaveText('282,60 €');                                          // 292,60 − 10,00 once, not twice
 });
+
+// Review SHOULD 3: a cancelled entry stays listed and can be restored after the toast is gone.
+test('Ταμείο: a cancelled entry is listed under «Ακυρωμένες εγγραφές» and can be restored later', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-11-16T10:00:00Z'));
+  await page.goto('/');
+  await page.getByTestId('empty-state').locator('button').nth(1).click();
+  await expect(page.getByTestId('today-counts')).toBeVisible();
+  await page.locator('nav.tabs [data-tab="more"]').click();
+  await page.getByTestId('open-money').click();
+  const net = page.getByTestId('money-total').locator('.ds-bignum-value');
+  await expect(net).toHaveText('292,60 €');
+  await expect(page.getByTestId('money-cancelled')).toHaveCount(0);
+  await page.getByTestId('money-entry').first().click();
+  await page.getByTestId('money-cancel').click();
+  await expect(net).not.toHaveText('292,60 €');
+  await page.waitForTimeout(6000);                                                   // the undo toast is gone
+  await page.getByTestId('money-cancelled').locator('summary').click();
+  await expect(page.getByTestId('money-cancelled-entry')).toHaveCount(1);
+  await page.getByTestId('money-restore').click();
+  await expect(net).toHaveText('292,60 €');
+  await expect(page.getByTestId('money-cancelled')).toHaveCount(0);
+});
