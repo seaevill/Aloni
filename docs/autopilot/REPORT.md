@@ -207,6 +207,11 @@ Kaynak: GitHub REST (07:03 İstanbul). Tahmin yok; «birleşti» ≠ «canlıda�
 - **Sıradaki öncelik:** QUEUE #1 (çift gönderim koruması denetimi).
 - **Bora'dan karar/eylem:** önizleme adresi için workers.dev adresi (BLOCKERS).
 
+## 2026-11-26 öğleden sonra vardiyası — tur 5
+- **34 bütünlük testleri birleşti (a–g):** gerçek çiftlik dokunulmuyor, PHI'deki ekim arza girmiyor (ρόκα «λείπουν» satırı), dozlar kaynak dosyayla bire bir, okunamayan kasa ne 0 ne sayı, Demo kaldırılınca her şey siliniyor, klasik/sezon Demo karışmıyor, her Σήμερα sayısı kaynağını açıyor.
+- **İki gerçek hata bulundu ve düzeltildi:** «Καλλιέργειες» sayısı Demo'da tüm bitkileri (10) sayıyordu, kaynak sayfa 9'u listeliyordu; Demo silinince sipariş listesi geride kalıyordu.
+- Ayrıca istediğin şirket iskeleti PR'ı açıldı (#583, birleştirilmedi).
+
 ## 2026-11-26 öğleden sonra vardiyası — tur 4
 - **33b birleşti:** Άλλα → Φωτογραφίες'te (sezon Demosu açıkken) 10 fotoğraf, her birinin altında «yazar · lisans · Wikimedia Commons» satırı ve Commons sayfası bağlantısı; tembel yükleniyor. Klasik Demo'da görünmez.
 - Ek güvence: klasik Demo yüklenince/Demo silinince sezon kayıtları (müşteri, not, ΚΑΕΚ, hedef, işçi kartı…) geride kalmıyor (test).
