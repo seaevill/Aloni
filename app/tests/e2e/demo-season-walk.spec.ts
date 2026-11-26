@@ -13,6 +13,8 @@ for (const width of [320, 375, 390]) {
     const visit = async (name: string) => {
       await page.waitForTimeout(350);
       expect(await page.evaluate(() => document.documentElement.scrollWidth), `${name} at ${width}`).toBeLessThanOrEqual(width);
+      const body = await page.locator('body').innerText();
+      expect(body.match(/\bNaN\b|\bundefined\b|\bnull\b|\[object|Infinity|€ ?-?0,00 €/g), `${name}: placeholder garbage on screen`).toBeNull();      // an unknown value must read «άγνωστο», never NaN / undefined / null
       if (process.env.SHOTS === '1' && width === 375) await page.screenshot({ path: `${DIR}/${String(++n).padStart(2, '0')}-${name}.png`, fullPage: false });
     };
     const lower = async (name: string) => { await page.evaluate(() => window.scrollTo(0, 900)); await visit(name); await page.evaluate(() => window.scrollTo(0, 0)); };
