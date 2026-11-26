@@ -64,5 +64,5 @@ export const SEASON_SPRAYS: readonly SeasonSpray[] = [
   { id: 's6', planting: 'pl7', product: 'PR02', day: 0, worker: 2 },
   { id: 's8', planting: 'pl8', product: 'PR08', day: -8, worker: 1 },
   { id: 's9', planting: 'pl11', product: 'PR07', day: -4, worker: 2 },
-  { id: 's10', planting: 'pl1', product: 'PR03', day: -15, worker: 0, lotQty: '0.1' },
+  { id: 's10', planting: 'pl9', product: 'PR03', day: -15, worker: 0, lotQty: '0.1' },
 ];

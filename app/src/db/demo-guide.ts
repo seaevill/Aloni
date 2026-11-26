@@ -1,4 +1,5 @@
 import { DEMO_FARM_ID, DEMO_NAMESPACE } from '../config';
+import { mapKey, ordersKey } from '../orders/store';
 import { athensToday } from '../plantings/planting';
 import { delLocal, putLocal } from '../repo';
 import type { AppDB } from './schema';
@@ -40,5 +41,6 @@ export async function seedDemoGuide(db: AppDB): Promise<void> {
 
 export async function clearDemoGuide(db: AppDB): Promise<void> {
   for (const k of KEYS) await delLocal(db, `${k}:${DEMO_FARM_ID}`);
+  await delLocal(db, ordersKey(DEMO_FARM_ID)); await delLocal(db, mapKey(DEMO_FARM_ID));          // the Demo's order list and its crop map
   for (const s of await db.settings.toArray()) if (PREFIXES.some((p) => s.key.startsWith(`${p}:${DEMO_FARM_ID}:`))) await delLocal(db, s.key);
 }
