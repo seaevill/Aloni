@@ -98,6 +98,34 @@ describe('Demo season sprays and stock (queue item 32b)', () => {
     expect(empty).toBeDefined();
     const lot = await db.stock_lots.get(String(empty!.lot_key)); const mv = (await db.stock_movements.toArray()).filter((m) => m.lot_key === lot!.lot_key);
     expect(mv.map((m) => `${String(m.direction)}${String(m.qty_str)}`).sort()).toEqual(['in0.1', 'out0.1']);   // received 0,1 L, sprayed 0,1 L: balance exactly 0
-    expect(jobs.filter((j) => j.kind === 'spray')).toHaveLength(9);
+    expect(jobs.filter((j) => j.kind === 'spray' && j.status === 'done')).toHaveLength(9);
+  });
+});
+
+describe('Demo season people, orders, board, notes (queue item 32c)', () => {
+  it('six fictional customers with +30 690 000 phones; three workers with surname and phone and NO birth date; orders in quarters; yesterday spinach ordered > harvested', async () => {
+    const db = await load();
+    const customers = (await db.settings.get(`customers:${DEMO_FARM_ID}`))!.value as Array<{ id: string; name: string; phone: string }>;
+    expect(customers).toHaveLength(6); for (const c of customers) expect(c.phone).toMatch(/^\+30 690 000 \d{4}$/);
+    const workers = await db.workers.where('farm_id').equals(DEMO_FARM_ID).toArray();
+    for (const w of workers) { const card = (await db.settings.get(`worker_card:${DEMO_FARM_ID}:${w.id}`))!.value as Record<string, string>; expect(Object.keys(card).sort()).toEqual(['phone', 'surname']); expect(card.phone).toMatch(/^\+30 690 000 \d{4}$/); expect(card.surname).not.toBe(''); }
+    const orders = (await db.settings.get(`orders:${DEMO_FARM_ID}`) ?? await db.settings.get(`klouves_orders:${DEMO_FARM_ID}`))?.value as { days: Record<string, Record<string, Record<string, number>>>; weeks: Record<string, Record<string, number>> } | undefined;
+    expect(orders).toBeDefined();
+    for (const byClient of Object.values(orders!.days)) for (const q of Object.values(byClient)) for (const n of Object.values(q)) expect((n * 4) % 1, `${n}`).toBe(0);   // quarters only
+    expect(Object.keys(orders!.days).length).toBeGreaterThanOrEqual(24);                                                                      // four weeks of deliveries
+    const yesterday = orders!.days[dayAt(TODAY, -1)]!; const spinachOrdered = Object.values(yesterday).reduce((a, q) => a + (q['d-sp'] ?? 0), 0);
+    const spinachCrates = (await db.job_harvest.toArray()).filter((h) => String(h.harvested_at).slice(0, 10) === dayAt(TODAY, -1)).reduce((a, h) => a + Number(h.crates_str), 0);
+    expect(spinachOrdered).toBeGreaterThan(spinachCrates);
+  });
+  it('job board: two open, two taken, two overdue; notes for tomorrow include one «from a worker»; recurring jobs, season targets and a fertiliser plan in the agronomist\'s placeholder words', async () => {
+    const db = await load();
+    const planned = (await db.jobs.toArray()).filter((j) => j.status === 'planned');
+    expect(planned.filter((j) => !j.worker_id)).toHaveLength(2); expect(planned.filter((j) => j.worker_id && String(j.planned_for) >= TODAY)).toHaveLength(2); expect(planned.filter((j) => String(j.planned_for) < TODAY)).toHaveLength(2);
+    for (const j of planned) { const l = (await db.label_uses.toArray()).find((x) => x.id === j.label_use_id)!; expect(j.dose_str).toBe(l.dose_min); }
+    const notes = (await db.settings.get(`tomorrow_notes:${DEMO_FARM_ID}`))!.value as Array<{ byWorker: boolean }>;
+    expect(notes.some((n) => n.byWorker)).toBe(true); expect(notes.some((n) => !n.byWorker)).toBe(true);
+    expect(((await db.settings.get(`recurring:${DEMO_FARM_ID}`))!.value as unknown[]).length).toBeGreaterThanOrEqual(2);
+    const plan = JSON.stringify((await db.settings.get(`fert_plan:${DEMO_FARM_ID}`))!.value); expect(plan).toContain('επίδειξης');
+    expect((await db.settings.toArray()).filter((s) => s.key.startsWith(`season_target:${DEMO_FARM_ID}:`))).toHaveLength(3);
   });
 });

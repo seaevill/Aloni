@@ -207,6 +207,10 @@ Kaynak: GitHub REST (07:03 İstanbul). Tahmin yok; «birleşti» ≠ «canlıda�
 - **Sıradaki öncelik:** QUEUE #1 (çift gönderim koruması denetimi).
 - **Bora'dan karar/eylem:** önizleme adresi için workers.dev adresi (BLOCKERS).
 
+## 2026-11-26 öğleden sonra vardiyası — tur 2
+- **32c birleşti:** Demo sezonuna 6 kurgusal müşteri (+30 690 000 xxxx), 4 haftalık sipariş (dün ıspanak siparişi 32 > hasat 24), 3 işçi (ad/soyad/telefon, doğum tarihi yok), iş panosu (2 açık, 2 alınmış, 2 gecikmiş), yarın notları («από εργάτη» dahil), tekrarlayan işler, sezon hedefleri, gübre planı eklendi.
+- Sıradaki: 32d (Ταμείο, gözlemler).
+
 ## 2026-11-26 öğleden sonra vardiyası — tur 1
 - **32b birleşti:** Demo sezonunda 9 ilaçlama (uygulamanın kendi kurucusuyla, dozlar etiket kaydındaki metinle aynı), ürün başına parti, zor durumlar: bekleme süresindeki ρόκα, bugün REI süren parsel, imzasız/eksik etiketli ürünlerde bekleme süresi «άγνωστο», stoğu biten ürün.
 - Madde 30 ertelendi (Bora). Sıradaki: 32c (müşteri, sipariş, işçi, pano, notlar, tekrarlayan, hedef, gübre planı).
