@@ -92,7 +92,7 @@ export function Workers({ onBack }: { onBack: () => void }) {
       )}
       {q.rows && live.length === 0 && <p class="muted" data-testid="workers-empty">{t('workers.empty')}</p>}
       {live.map((w) => (
-        <div class="card" key={w.id} data-testid="worker"><button type="button" class="row" data-testid="worker-open" aria-label={t('ui.wcard.open')} onClick={() => openSheet('worker', String(w.id))}><strong>{String(w.name)}</strong><span aria-hidden="true" class="chev" /></button>
+        <div class="card" key={w.id} data-testid="worker"><button type="button" class="row" data-testid="worker-open" aria-label={t('ui.wcard.open', { name: String(w.name) })} onClick={() => openSheet('worker', String(w.id))}><strong>{String(w.name)}</strong><span aria-hidden="true" class="chev" /></button>
           {!demo && <Invite worker={w} controller={controller} />}
           {!demo && <button class="btn quiet" onClick={() => void archive(w)}>{t('product.archive')}</button>}
         </div>

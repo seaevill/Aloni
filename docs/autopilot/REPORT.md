@@ -207,6 +207,9 @@ Kaynak: GitHub REST (07:03 İstanbul). Tahmin yok; «birleşti» ≠ «canlıda�
 - **Sıradaki öncelik:** QUEUE #1 (çift gönderim koruması denetimi).
 - **Bora'dan karar/eylem:** önizleme adresi için workers.dev adresi (BLOCKERS).
 
+## 2026-11-26 öğleden sonra vardiyası — tur 8
+- **Erişilebilirlik taraması (axe) sezon gezintisine eklendi ve gerçek bir hata buldu:** Άλλα → Εργάτες'te işçi düğmesinin okunan adı («Άνοιγμα κάρτας») görünen metinle (işçi adı) uyuşmuyordu (WCAG 2.5.3). Artık «<ad> – άνοιγμα κάρτας». Ayrıca Ταμείο'da iptal edilen kayıtlar «Ακυρωμένες εγγραφές» listesinde kalıyor ve geri alınabiliyor (#589).
+
 ## 2026-11-26 öğleden sonra vardiyası — tur 7
 - **36 birleşti:** `docs/milestones/DEMO-SEASON-TEST.md` — Bora için 20 adımlık Yunanca telefon testi («Άλλα → Επίδειξη: πλήρης σεζόν → … → θα πρέπει να δείτε …»).
 - **Özet (Demo sezonu):** 7 parsel (70 στρ.), 12 ekim (sınırlı), 14 hasat, 9 ilaçlama (örnek ürünlerle), 6 müşteri + 4 haftalık sipariş, 3 işçi, 6 pano işi, Ταμείο 25 kayıt, 5 gözlem, 10 fotoğraf. Kaynaklar: ilaçlar = uygulamanın örnek ürünleri (resmî etiket DEĞİL, madde 30 ertelendi); fotoğraflar = Wikimedia Commons CC BY/BY-SA (`docs/content/photo-credits.md`). «άγνωστο» kalanlar: imzasız/eksik etiketli ilaçlamaların bekleme süresi, okunamayan bir kasa sayısı, ρόκα hasat ritmi (tahmin girilmedi). Bulunan hatalar: Καλλιέργειες sayısı≠kaynak (düzeltildi), Demo silinince sipariş listesi kalıyordu (düzeltildi), depoda 40 günlük kasa (düzeltildi).

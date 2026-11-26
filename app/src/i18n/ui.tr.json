@@ -273,7 +273,7 @@
   "ui.wcard.save": "Kaydet",
   "ui.wcard.saved": "Kaydedildi.",
   "ui.wcard.local": "Yalnızca bu telefonda saklanır. Yalnızca sahibi görür.",
-  "ui.wcard.open": "Kartı aç",
+  "ui.wcard.open": "{name} – kartı aç",
   "ui.store.title": "Depodaki hasat",
   "ui.store.crates": "{n} kasa",
   "ui.store.age": "depoda {n} gün",
