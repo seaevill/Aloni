@@ -252,7 +252,7 @@ export function Today() {
   const openJobs = [...jobGroups.overdue, ...jobGroups.today, ...jobGroups.tomorrow, ...jobGroups.later];
   const live = (q: Rows) => q.rows?.filter((r) => !r.deleted_at) ?? [];
   const demo = activeFarm.value !== realFarmId.value;
-  const cropsInUse = demo ? live(crops).length : new Set(live(plantings).map((p) => p.crop_id)).size;
+  const cropsInUse = demo && live(plantings).length === 0 ? live(crops).length : new Set(live(plantings).map((p) => p.crop_id)).size;   // the Demo counts the farm's crops only while it has no plantings: the same rule as the «Καλλιέργειες» source sheet (queue 34e)
   const loaded = rows.every((q) => q.rows);
   const has = live(parcels).length + live(plantings).length + live(products).length + live(lots).length + (demo ? live(crops).length : 0) > 0;
   if (sharing && Share) return <Share onClose={() => setSharing(false)} />;
