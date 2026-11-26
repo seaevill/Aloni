@@ -1,3 +1,10 @@
+# ALONI — Bora için 5 satır (2026-11-26 akşam vardiyası, 20:30)
+1. **Birleşenler (main yeşil, sha 76a522e4):** Demo sezonu eksiksiz (7 parsel, ekim/hasat/ilaçlama/stok, müşteri-sipariş-işçi-pano-notlar, Ταμείο, 10 fotoğraf kaynak satırlı), bütünlük testleri (a–g), gezinti testi (5 dil/genişlik + klasik Demo; axe + «NaN/undefined» koruması), Ταμείο'da «Ακυρωμένες εγγραφές» listesi, işçi kartı erişilebilirlik düzeltmesi, iki gerçek Demo hatası düzeltildi.
+2. **Telefonda önce bak:** Άλλα → **Επίδειξη: πλήρης σεζόν (90 ημέρες)** → `docs/milestones/DEMO-SEASON-TEST.md` içindeki 20 Yunanca adımı sırayla yap (en önemlisi 5–9, 13–14, 17). Sonra «Διαγραφή επίδειξης» ile temizle.
+3. **Engelli / ertelenen:** madde 30 (gerçek ilaç etiketleri) ertelendi — resmî site bu ortamdan açılmıyor; sezon ÖRNEK ürünlerle (resmî etiket değil). Şirket iskeleti #583 açık, birleştirilmedi; `labeluse:118` aralıklı hata «monitor» (yeni kanıt QUEUE satır 2).
+4. **Senden bekleyen kararlar:** (a) #583 şirket iskeleti: «sağ kol» düzeni birleşirse sonraki oturumlar kod yazmaz, `/kos` ile iş dağıtır — birleştirmek ister misin? (b) 0042'yi (#500) ne zaman yüklüyorsun; «yükleme tamam» deyince sözleşme + 0042 onay düğmesi PR'ı hazır. (c) Gerçek etiket PDF'leri gelecek mi, yoksa Demo örnek ürünlerle mi kalsın?
+5. **Dürüstlük notu:** hiçbir şey «canlıda doğrulandı» değil; Cloudflare önizleme adresleri PR yorumlarında (bu ortamdan açılmadı). Ortamda iki altyapı arızası görüldü ve tek seferlik yeniden tetikle geçti: Cloudflare derlemesi aynı saniyede düştü (log yok), bir PR çakışınca GitHub CI başlatmadı (artık araç bunu söylüyor).
+
 # ALONI — AUTOPILOT RAPORU (Türkçe, Bora için)
 
 **Adresler (Cloudflare hesabından Bora'nın doğrulaması):** hesap alt alanı `ormanbora`; Worker `aloni`; canlı adres https://aloni.ormanbora.workers.dev ; Worker önizleme özelliği açık.
