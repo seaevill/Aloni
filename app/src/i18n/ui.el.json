@@ -435,6 +435,8 @@
   "ui.rec.today": "Επαναλαμβανόμενες σήμερα",
   "ui.guide.source": "{source} ↗",
   "ui.kaek.demo": "Επίδειξη – φανταστικός αριθμός",
+  "ui.demophotos.title": "Φωτογραφίες επίδειξης",
+  "ui.demophotos.link": "Σελίδα της φωτογραφίας",
   "ui.kaek.title": "ΚΑΕΚ",
   "ui.kaek.none": "Δεν έχει καταχωριστεί ΚΑΕΚ.",
   "ui.kaek.edit": "Καταχώριση ΚΑΕΚ",

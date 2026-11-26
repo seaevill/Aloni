@@ -435,6 +435,8 @@
   "ui.rec.today": "Repeating jobs today",
   "ui.guide.source": "{source} ↗",
   "ui.kaek.demo": "Demo – fictional number",
+  "ui.demophotos.title": "Demo photos",
+  "ui.demophotos.link": "Photo page",
   "ui.kaek.title": "ΚΑΕΚ (cadastre no.)",
   "ui.kaek.none": "No ΚΑΕΚ entered.",
   "ui.kaek.edit": "Enter the ΚΑΕΚ",

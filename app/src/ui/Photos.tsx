@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { DemoPhotos } from './DemoPhotos';
 import { activeFarm, dataVersion, db, realFarmId } from '../db';
 import type { MediaRow } from '../db/schema';
 import { formatDateTime, t, tn, type I18nKey } from '../i18n';
@@ -71,6 +72,7 @@ export function Photos({ onBack }: { onBack: () => void }) {
       {msg === 'saved' && <SavedWhere testid="photo-saved-where" />}
       {rows && rows.length === 0 && !demo && <EmptyState art="photos" message={t('photos.empty')} actionLabel={t('photos.add')} onAction={add} />}
       {rows && rows.length > 0 && <p class="muted" data-testid="photo-count">{tn('photos.count', rows.length)}</p>}
+      <DemoPhotos />
       <div class="photos">
         {rows?.map((m) => <button key={m.id} class="thumb" data-testid="photo" onClick={() => setOpen(m)}><Picture m={m} /></button>)}
       </div>

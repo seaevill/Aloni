@@ -8,7 +8,8 @@ import { uuidv5 } from './uuid';
 //  - parsley: a planting with its harvest pace, a fertiliser plan «as the agronomist wrote it» (placeholder text), and a repeating job;
 //  - wild chicory: a field cleared with the shredder two days ago («νέα βλάστηση: ημέρα 2»).
 // They are phone-local records (settings keyed by the Demo farm) and go away with the Demo (`clearDemoGuide`).
-const KEYS = ['cuts', 'harvest_plan', 'fert_plan', 'recurring', 'kc', 'money'] as const;
+const KEYS = ['cuts', 'harvest_plan', 'fert_plan', 'recurring', 'kc', 'money', 'demo_season', 'customers', 'tomorrow_notes', 'field_work', 'kaek'] as const;   // the last five also belong to the Demo SEASON: loading the classic Demo (or removing the Demo) must never leave them behind
+const PREFIXES = ['worker_card', 'season_target'] as const;
 const id = (table: string, legacy: string): Promise<string> => uuidv5(`${table}:${legacy}`, DEMO_NAMESPACE);
 const DAY_MS = 86_400_000;
 const shift = (today: string, days: number): string => new Date(Date.parse(`${today}T12:00:00Z`) + days * DAY_MS).toISOString().slice(0, 10);
@@ -39,4 +40,5 @@ export async function seedDemoGuide(db: AppDB): Promise<void> {
 
 export async function clearDemoGuide(db: AppDB): Promise<void> {
   for (const k of KEYS) await delLocal(db, `${k}:${DEMO_FARM_ID}`);
+  for (const s of await db.settings.toArray()) if (PREFIXES.some((p) => s.key.startsWith(`${p}:${DEMO_FARM_ID}:`))) await delLocal(db, s.key);
 }

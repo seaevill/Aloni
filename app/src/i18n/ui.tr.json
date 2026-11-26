@@ -435,6 +435,8 @@
   "ui.rec.today": "Bugünün tekrarlayan işleri",
   "ui.guide.source": "{source} ↗",
   "ui.kaek.demo": "Demo – hayalî numara",
+  "ui.demophotos.title": "Demo fotoğrafları",
+  "ui.demophotos.link": "Fotoğraf sayfası",
   "ui.kaek.title": "ΚΑΕΚ (kadastro no.)",
   "ui.kaek.none": "ΚΑΕΚ girilmemiş.",
   "ui.kaek.edit": "ΚΑΕΚ gir",
