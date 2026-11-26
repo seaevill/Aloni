@@ -72,3 +72,32 @@ describe('Demo season (queue item 32a)', () => {
     expect(await db.settings.get(`kaek:${TEST_FARM_ID}`)).toBeUndefined();
   });
 });
+
+describe('Demo season sprays and stock (queue item 32b)', () => {
+  const NOWMS = Date.parse(`${TODAY}T14:00:00Z`);
+  it('nine sprays through the real builder; doses are the label records\' own text; one lot per product with a quantity', async () => {
+    const db = await load();
+    const sprays = await db.job_spray.toArray();
+    expect(sprays).toHaveLength(9);
+    const labels = await db.label_uses.toArray();
+    for (const s of sprays) { const l = labels.find((x) => x.id === s.label_use_id); expect(l, String(s.id)).toBeDefined(); expect(s.dose_str).toBe(l!.dose_min); expect(s.dose_unit).toBe(l!.dose_unit); }
+    expect((await db.workers.where('farm_id').equals(DEMO_FARM_ID).toArray()).map((w) => w.name)).toEqual(expect.arrayContaining(['Νίκος', 'Ελένη', 'Θεόδωρος']));
+    expect(await db.stock_lots.count()).toBeGreaterThanOrEqual(14);
+  });
+  it('hard cases: rocket in its waiting period, re-entry running today, unsigned and incomplete labels have an UNKNOWN waiting period (no date, never 0), the product is used up', async () => {
+    const db = await load();
+    const all = await db.job_spray.toArray(); const jobs = await db.jobs.toArray();
+    const inPhi = all.filter((s) => typeof s.phi_until === 'string' && Date.parse(String(s.phi_until)) > NOWMS);
+    expect(inPhi.length).toBeGreaterThanOrEqual(2);                                   // rocket (+2 days) and endive (+39 days)
+    const reiRunning = all.filter((s) => typeof s.rei_until === 'string' && Date.parse(String(s.rei_until)) > NOWMS);
+    expect(reiRunning.length).toBeGreaterThanOrEqual(1);
+    const unknown = all.filter((s) => s.phi_until === undefined);
+    expect(unknown.length).toBeGreaterThanOrEqual(2);                                 // unsigned + incomplete label
+    for (const s of unknown) { expect(s.phi_days, String(s.id)).toBeUndefined(); expect(['unsigned', 'blocked']).toContain(String(s.label_state)); }
+    const empty = all.find((s) => Array.isArray(s.flags) && (s.flags as string[]).includes('stock_negative') === false && s.lot_key);
+    expect(empty).toBeDefined();
+    const lot = await db.stock_lots.get(String(empty!.lot_key)); const mv = (await db.stock_movements.toArray()).filter((m) => m.lot_key === lot!.lot_key);
+    expect(mv.map((m) => `${String(m.direction)}${String(m.qty_str)}`).sort()).toEqual(['in0.1', 'out0.1']);   // received 0,1 L, sprayed 0,1 L: balance exactly 0
+    expect(jobs.filter((j) => j.kind === 'spray')).toHaveLength(9);
+  });
+});
