@@ -246,3 +246,10 @@ html[data-sun] .card, html[data-sun] .row { border-color:var(--fg); }
 /* crate quick steps (−1 +1 +5 +10): as many per row as fit, the rest wrap (large text) */
 .seg.steps { grid-template-columns:repeat(auto-fit, minmax(var(--step-min), 1fr)); }
 .seg.jumps button { min-height:var(--tap-big); font-size:var(--fs-22); font-weight:700; }   /* worker counter: the jump buttons are as tall as the +/- ones */
+
+/* Demo season photos (source line under each) */
+.demo-photo { margin: 0 0 var(--sp-16); }
+.demo-photo img { display: block; width: 100%; height: auto; border-radius: var(--r-md); background: var(--sage); }
+.demo-photo figcaption { display: grid; gap: var(--sp-2); padding-top: var(--sp-6); }
+.demo-photo figcaption small { color: var(--muted); font-size: var(--fs-14); }
+.demo-photo figcaption a { min-height: var(--tap); display: inline-flex; align-items: center; }

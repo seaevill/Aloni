@@ -153,3 +153,14 @@ describe('Demo season Ταμείο and observations (queue item 32d)', () => {
     for (const o of obs) { expect(['dew', 'frost_damage', 'disease', 'pest', 'other']).toContain(o.kind); expect(String(o.observed_at).slice(0, 10) <= TODAY).toBe(true); expect(o.farm_id).toBe(DEMO_FARM_ID); }
   });
 });
+
+describe('Demo season never lingers (queue item 34f/g, first part)', () => {
+  it('loading the classic Demo afterwards clears every season phone-local record; removing the Demo does too', async () => {
+    const { clearDemoGuide } = await import('../../src/db/demo-guide');
+    const db = await load();
+    expect((await db.settings.toArray()).filter((s) => s.key.includes(DEMO_FARM_ID)).length).toBeGreaterThan(10);
+    await clearDemoGuide(db);
+    expect((await db.settings.toArray()).filter((s) => s.key.includes(DEMO_FARM_ID)).map((s) => s.key)).toEqual(expect.not.arrayContaining([`customers:${DEMO_FARM_ID}`, `kaek:${DEMO_FARM_ID}`, `demo_season:${DEMO_FARM_ID}`, `tomorrow_notes:${DEMO_FARM_ID}`]));
+    expect((await db.settings.toArray()).filter((s) => s.key.startsWith('worker_card:') || s.key.startsWith('season_target:'))).toHaveLength(0);
+  });
+});

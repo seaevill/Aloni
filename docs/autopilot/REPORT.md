@@ -207,6 +207,10 @@ Kaynak: GitHub REST (07:03 İstanbul). Tahmin yok; «birleşti» ≠ «canlıda�
 - **Sıradaki öncelik:** QUEUE #1 (çift gönderim koruması denetimi).
 - **Bora'dan karar/eylem:** önizleme adresi için workers.dev adresi (BLOCKERS).
 
+## 2026-11-26 öğleden sonra vardiyası — tur 4
+- **33b birleşti:** Άλλα → Φωτογραφίες'te (sezon Demosu açıkken) 10 fotoğraf, her birinin altında «yazar · lisans · Wikimedia Commons» satırı ve Commons sayfası bağlantısı; tembel yükleniyor. Klasik Demo'da görünmez.
+- Ek güvence: klasik Demo yüklenince/Demo silinince sezon kayıtları (müşteri, not, ΚΑΕΚ, hedef, işçi kartı…) geride kalmıyor (test).
+
 ## 2026-11-26 öğleden sonra vardiyası — tur 3
 - **32d birleşti (madde 32 tamam):** Ταμείο (25 kayıt cent olarak, bir düzeltme + bir iptal satırı, «Επιστροφή ΦΠΑ»), 5 gözlem. Sezon Demosu veri olarak tamam.
 - Sıradaki: 33b (fotoğraf kaynak satırı), sonra 34 bütünlük testleri.

@@ -82,6 +82,7 @@ export async function applySeason(db: AppDB, today: string): Promise<void> {
     await db.weather.bulkPut(weather);
   });
   await seedSeasonLocal(db, today);
+  await putLocal(db, `demo_season:${DEMO_FARM_ID}`, true);
   await delLocal(db, `money:${DEMO_FARM_ID}`);                                  // loading again starts the book afresh (the ledger itself only ever appends)
   await seedMoney(db, today);
   await seedPeople(db, today, rows.plantings ?? [], sprays.workers.map((w) => String(w.id)));
