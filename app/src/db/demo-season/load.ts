@@ -7,6 +7,7 @@ import { uuidv5 } from '../uuid';
 import { SEASON_CUTS, SEASON_HARVESTS, SEASON_PLANTINGS, SEASON_SOIL, SEASON_WORK } from './data';
 import { strip } from './geometry';
 import { SEASON_PARCELS } from './parcels';
+import { sprayRows } from './sprays';
 
 // DEMO SEASON loader (queue item 32). An OPT-IN second Demo: the classic Demo is loaded first (crops, products with their label uses, weather), then everything that belongs to its five sample parcels is
 // replaced by the season below. EVERY row carries the Demo farm id and an id derived from the Demo namespace: nothing can touch a real farm, loading twice gives the same ids, `removeDemo` removes it all.
@@ -14,7 +15,7 @@ import { SEASON_PARCELS } from './parcels';
 const u = (kind: string, key: string): Promise<string> => uuidv5(`season:${kind}:${key}`, DEMO_NAMESPACE);
 const crop = (slug: string): Promise<string> => uuidv5(`crops:${slug}`, DEMO_NAMESPACE);
 export const dayAt = (today: string, offset: number): string => new Date(Date.parse(`${today}T12:00:00Z`) + offset * 86_400_000).toISOString().slice(0, 10);
-const REPLACED: readonly FarmTable[] = ['parcels', 'plantings', 'jobs', 'job_plantings', 'job_spray', 'job_harvest', 'observations', 'soil_tests', 'water_tests', 'alerts', 'recommendations', 'stock_lots', 'stock_movements'];
+const REPLACED: readonly FarmTable[] = ['workers', 'parcels', 'plantings', 'jobs', 'job_plantings', 'job_spray', 'job_harvest', 'observations', 'soil_tests', 'water_tests', 'alerts', 'recommendations', 'stock_lots', 'stock_movements'];
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
 
 /** The strip outline of a planting and its typed area (the typed area is derived from the drawn one to one decimal and stays the authority). */
@@ -65,6 +66,8 @@ export async function seedSeasonLocal(db: AppDB, today: string): Promise<void> {
 /** Replaces what belongs to the classic Demo's five sample parcels with the season. Call AFTER the classic Demo was loaded. */
 export async function applySeason(db: AppDB, today: string): Promise<void> {
   const rows = await loadSeasonRows(today);
+  const sprays = await sprayRows(today, await db.products.where('farm_id').equals(DEMO_FARM_ID).toArray(), await db.label_uses.where('farm_id').equals(DEMO_FARM_ID).toArray(), rows.plantings ?? []);
+  for (const [t, list] of Object.entries(sprays)) rows[t as FarmTable] = [...(rows[t as FarmTable] ?? []), ...list];
   const weatherDays = (await db.weather.where('farm_id').equals(DEMO_FARM_ID).toArray())[0]?.days ?? [];
   const weather = await Promise.all(SEASON_PARCELS.map(async (p) => ({ id: await u('weather', p.id), farm_id: DEMO_FARM_ID, parcel_id: await u('parcel', p.id), days: weatherDays })));   // ids first: nothing may be awaited from outside Dexie inside the transaction
   await db.transaction('rw', [...REPLACED.map((t) => db[t]), db.weather], async () => {

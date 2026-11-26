@@ -48,3 +48,21 @@ export const SEASON_WORK: ReadonlyArray<{ id: string; parcel: string; day: numbe
   { id: 'w6', parcel: 'S3', day: -3, kind: 'irrigate', m3: '9,5' },
   { id: 'w7', parcel: 'S5', day: -8, kind: 'irrigate', minutes: '75', m3: '6' },
 ];
+
+// Roster workers of the Demo season (FICTIONAL first names only; the roster holds a name and nothing else).
+export const SEASON_WORKERS = ['Νίκος', 'Ελένη', 'Θεόδωρος'] as const;
+
+// Sprays (queue item 32b), written through the app's OWN spray builder with the sample products of the Demo farm. Dose = the label record's own text, never typed here. Products: the sample ids PR01…PR17.
+// Deliberate hard cases: s4 leaves rocket (pl5) IN its waiting period (PHI 3 days, until +2); s6 sprays TODAY (re-entry period running on parcel S3); s8 uses the label that lacks its maximum number of applications (blocked: waiting period unknown); s9 an UNSIGNED label (waiting period unknown); s10 empties the product's stock.
+export interface SeasonSpray { id: string; planting: string; product: string; day: number; worker: number; lotQty?: string }
+export const SEASON_SPRAYS: readonly SeasonSpray[] = [
+  { id: 's1', planting: 'pl1', product: 'PR06', day: -20, worker: 0 },
+  { id: 's2', planting: 'pl3', product: 'PR02', day: -30, worker: 1 },
+  { id: 's3', planting: 'pl3', product: 'PR08', day: -10, worker: 1 },
+  { id: 's4', planting: 'pl5', product: 'PR08', day: -1, worker: 2 },
+  { id: 's5', planting: 'pl9', product: 'PR13', day: -3, worker: 0 },
+  { id: 's6', planting: 'pl7', product: 'PR02', day: 0, worker: 2 },
+  { id: 's8', planting: 'pl8', product: 'PR08', day: -8, worker: 1 },
+  { id: 's9', planting: 'pl11', product: 'PR07', day: -4, worker: 2 },
+  { id: 's10', planting: 'pl1', product: 'PR03', day: -15, worker: 0, lotQty: '0.1' },
+];
