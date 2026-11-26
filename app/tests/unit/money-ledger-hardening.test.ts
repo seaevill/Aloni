@@ -26,3 +26,15 @@ describe('Ταμείο hardening (independent review 2026-11-25)', () => {
     expect((await loadMoney(db, F)).map((r) => r.id).sort()).toEqual(['a', 'b', 'c']);
   });
 });
+
+describe('cancelled entries stay visible and can be restored (review SHOULD 3)', () => {
+  it('lists a void row nobody amended; once restored it is no longer listed and counts again', async () => {
+    const { cancelled, effective, restoreOf, voidOf } = await import('../../src/money/ledger');
+    const v = voidOf(good, 'v1', 't2');
+    expect(cancelled([good, v]).map((r) => r.id)).toEqual(['v1']);
+    expect(effective([good, v])).toEqual([]);
+    const back = restoreOf(v, 'r1', 't3');
+    expect(cancelled([good, v, back])).toEqual([]);
+    expect(effective([good, v, back]).map((r) => [r.id, r.cents])).toEqual([['r1', 1000]]);
+  });
+});

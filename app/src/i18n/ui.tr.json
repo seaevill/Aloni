@@ -594,6 +594,7 @@
   "ui.money.open": "Kasa",
   "ui.money.title": "Kasa",
   "ui.money.note.hint": "Ad veya telefon numarası yazmayın.",
+  "ui.money.cancelled.list": "İptal edilen kayıtlar ({n})",
   "ui.money.notbooks": "Kişisel gelir–gider defteri, resmî muhasebe değildir.",
   "ui.money.year": "Yıl",
   "ui.money.net": "{year} net",

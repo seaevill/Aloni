@@ -69,6 +69,12 @@ export function restoreOf(voidRow: MoneyEntry, id: string, nowIso: string): Mone
   return r;
 }
 
+/** The cancelled entries (a void row nobody amended after): they do not count, but they stay listed so a mistaken cancel can be undone later (independent review SHOULD 3). */
+export function cancelled(rows: readonly MoneyEntry[]): MoneyEntry[] {
+  const amended = new Set(rows.map((r) => r.amends).filter((x): x is string => typeof x === 'string'));
+  return rows.filter((r) => r.void === true && !amended.has(r.id)).sort((a, b) => b.at.localeCompare(a.at));
+}
+
 /** The rows that count: every row nobody amended, minus void rows. A row amended twice: the newest amendment wins (by `at`, then id). */
 export function effective(rows: readonly MoneyEntry[]): MoneyEntry[] {
   const replaced = new Map<string, MoneyEntry>();

@@ -594,6 +594,7 @@
   "ui.money.open": "Ταμείο",
   "ui.money.title": "Ταμείο",
   "ui.money.note.hint": "Μην γράφεις ονόματα ή τηλέφωνα.",
+  "ui.money.cancelled.list": "Ακυρωμένες εγγραφές ({n})",
   "ui.money.notbooks": "Προσωπικό βιβλίο εσόδων–εξόδων, όχι λογιστικά βιβλία.",
   "ui.money.year": "Έτος",
   "ui.money.net": "Καθαρό {year}",

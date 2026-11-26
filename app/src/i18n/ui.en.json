@@ -594,6 +594,7 @@
   "ui.money.open": "Money",
   "ui.money.title": "Money",
   "ui.money.note.hint": "Do not write names or phone numbers.",
+  "ui.money.cancelled.list": "Cancelled entries ({n})",
   "ui.money.notbooks": "Personal income–expense book, not official accounts.",
   "ui.money.year": "Year",
   "ui.money.net": "Net {year}",
