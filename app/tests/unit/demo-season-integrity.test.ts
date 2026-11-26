@@ -91,3 +91,12 @@ describe('Demo season on any day of the year (queue item 34h)', () => {
     }
   });
 });
+
+describe('Demo season wording (queue item 34i)', () => {
+  it('every product name in the season order list is the app\'s own Greek crop name (one word per concept)', async () => {
+    const db = await load();
+    const crops = new Map((await db.crops.toArray()).map((c) => [String(c.slug), String(c.name_el)]));
+    const orders = (await db.settings.get(ordersKey(DEMO_FARM_ID)))!.value as KlouvesOrders; const map = (await db.settings.get(mapKey(DEMO_FARM_ID)))!.value as Record<string, string>;
+    for (const p of orders.products) expect(p.name, p.id).toBe(crops.get(map[p.id]!));
+  });
+});

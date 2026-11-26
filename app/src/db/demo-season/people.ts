@@ -29,7 +29,7 @@ export function seasonOrders(today: string): { orders: KlouvesOrders; map: Recor
   days[dayAt(today, -1)] = { [ids[0]!]: { 'd-sp': 18 }, [ids[1]!]: { 'd-sp': 14 }, [ids[2]!]: { 'd-ro': 6 } };            // spinach ordered 32 crates; 24 were harvested (h11): the gap shows
   const weeks: Record<string, Record<string, number>> = {};
   for (const [day, byClient] of Object.entries(days)) { const w = (weeks[mondayOf(day) ?? day] ??= {}); for (const q of Object.values(byClient)) for (const [p, n] of Object.entries(q)) { const before = w[p]; if (before === undefined) w[p] = n; else w[p] = before + n; } }
-  return { orders: { products: [{ id: 'd-sp', name: 'Σπανάκι' }, { id: 'd-ro', name: 'Ρόκα' }, { id: 'd-pa', name: 'Μαϊντανός' }, { id: 'd-en', name: 'Ενδίβια' }, { id: 'd-di', name: 'Άνηθος' }], weeks, skipped: 0, days, clients: ids.map((id, i) => ({ id, name: `Πελάτης ${CLIENTS[i]}` })) }, map: { 'd-sp': 'spinach', 'd-ro': 'rocket', 'd-pa': 'parsley', 'd-en': 'endive', 'd-di': 'dill' }, ids };
+  return { orders: { products: [{ id: 'd-sp', name: 'Σπανάκι' }, { id: 'd-ro', name: 'Ρόκα' }, { id: 'd-pa', name: 'Μαϊντανός' }, { id: 'd-en', name: 'Αντίδια' }, { id: 'd-di', name: 'Άνηθος' }], weeks, skipped: 0, days, clients: ids.map((id, i) => ({ id, name: `Πελάτης ${CLIENTS[i]}` })) }, map: { 'd-sp': 'spinach', 'd-ro': 'rocket', 'd-pa': 'parsley', 'd-en': 'endive', 'd-di': 'dill' }, ids };
 }
 
 export async function seedPeople(db: AppDB, today: string, plantings: readonly Row[], workerIds: readonly string[]): Promise<void> {
