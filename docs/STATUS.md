@@ -13,6 +13,11 @@
 - **«0042 yüklemeye hazır» için kalan tek şey:** #500'ü sen yüklemelisin; ardından tek bir küçük PR sözleşme dosyasını birleştirir ve onay düğmesini 0042'ye çevirir.
 - #504/#507: Codex sonucu yok, bekliyor. #508 açık.
 
+## Güncel (2026-11-26 akşam) — Demo sezonu
+- **Yeni:** Άλλα → Demo bölümünde **«Επίδειξη: πλήρης σεζόν (90 ημέρες)»** düğmesi: 7 parsel (70 στρ., çizili sınırlar, kurgusal ΚΑΕΚ 99…), 12 ekim, hasatlar, 9 ilaçlama, stok ve zor durumlar (bekleme süresindeki ρόκα, bugün REI süren parsel, imzasız/eksik etiket = «άγνωστο», biten ürün), 6 müşteri + 4 haftalık sipariş, 3 işçi, iş panosu, yarın notları, Ταμείο, 10 fotoğraf (kaynak satırlı). Klasik Demo aynen duruyor.
+- **Test listesi (Yunanca, 20 adım):** `docs/milestones/DEMO-SEASON-TEST.md`. Ekran görüntüleri: `docs/design/demo-season-2026-11-26/`.
+- **Dürüst sınır:** ilaçlar uygulamanın ÖRNEK ürünleri (resmî etiket değil). Gerçek etiketler ertelendi (resmî site bu ortamdan açılmıyor).
+
 ## Güncel (2026-11-25 gece, son)
 - **main yeşil (sha 6b52949c), 0042 yüklemeye hazır.** #500 birleşti (uygulanmadı). Telefon tarafı hazır ve uykuda (#566, #567). #504 (#569 ile) ve zaman çizelgesi (#570 öncesi #569) birleşti; bağımsız inceleme `docs/reviews/team/2026-11-25-independent-504-507.md` (2 MUST bulundu ve düzeltildi). #508 açık.
 - Para defteri «Επιστροφή ΦΠΑ» kategorisi kalıyor (nötr gelir etiketi).
