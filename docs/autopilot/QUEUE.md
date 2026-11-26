@@ -9,6 +9,13 @@ Priority classes: **P0** data integrity / sync / offline / permissions / agricul
 
 | # | Class | Item | Status | Notes |
 |---|---|---|---|---|
+| 30 | P1 | Demo gerçek ilaçlar (resmî ΥΠΑΑΤ kaydı/etiket PDF, ~10 ürün, harfi harfine, kaynak URL + tarih `docs/content/demo-labels-sources.md`; bulunamayan = «άγνωστο») | blocked | ΥΠΑΑΤ sitesi bu ortamdan açılmıyor; BLOCKERS.md'de Bora'nın indireceği PDF listesi |
+| 31 | P1 | Demo parselleri: Megara'da 7 parsel, 2–25 στρ., ~70 στρ., elle çizilmiş şekiller, ΚΑΕΚ «99…» + Demo etiketi | todo | docs/plan/DEMO-SEASON.md |
+| 32 | P1 | Demo tam sezon (−90/+14 gün, her açılışta kaydırılır; ekim, ilaçlama, hasat, kesim, gübre/sulama, plan, analiz, depo, müşteri/sipariş, işçi, pano, notlar, tekrarlayan, hedef, Ταμείο, gözlem; zor durumlar) | todo | 30'a bağlı (etiketli ürünler) |
+| 33 | P2 | Demo fotoğrafları (Wikimedia CC0/CC-BY/CC-BY-SA, 10–15, küçültülmüş, tembel, kaynak satırı, `docs/content/photo-credits.md`) | todo | |
+| 34 | P0 | Demo bütünlük testleri (a–f) | todo | |
+| 35 | P1 | Demo gezinti testi 320/375/390 + 30 ekran görüntüsü | todo | |
+| 36 | P4 | Yunanca test listesi `docs/milestones/DEMO-SEASON-TEST.md` + Türkçe REPORT özeti | todo | |
 | 1 | P1 | DONE (#537 + #538 restore): Double-submit guard audit: every «save» button (spray, harvest, job, stock receive/adjust, parcel, planting, product, label use, worker, observation) must be disabled while its write is in flight and give feedback on success/failure; add one e2e that double-taps save and asserts exactly one record | done (#537, #538) | find buttons: `grep -rn 'data-testid="[a-z-]*-save"' app/src/ui`; harvest/spray already use `busy` |
 | 2 | P1 | Monitored intermittents: `labeluse.spec.ts:118` (unexplained; 1 failure on main ad5790f, 5 passes after), `register-v2` print test (WebKit). Only act when a CI failure context (printed by the reporter) is available; read it, find the race, fix the TEST sync or the app | monitor | evidence: docs/DEVLOG-2026-11-24.md |
 | 3 | P1 | Αποθήκη (Stock) screen: information hierarchy + touch targets + feedback messages, zero feature loss (feature map + before/after screenshots) | done (PR #541) | same method as docs/design/field-atelier-p1-fields-2026-11-24.md |
