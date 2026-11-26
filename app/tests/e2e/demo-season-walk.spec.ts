@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { iphone } from './helpers/iphone';
 
@@ -10,11 +11,13 @@ for (const width of [320, 375, 390]) {
     await page.setViewportSize({ width, height: 812 });
     const errors = await iphone(page);
     let n = 0;
+    const problems: string[] = [];
     const visit = async (name: string) => {
       await page.waitForTimeout(350);
       expect(await page.evaluate(() => document.documentElement.scrollWidth), `${name} at ${width}`).toBeLessThanOrEqual(width);
       const body = await page.locator('body').innerText();
       expect(body.match(/\bNaN\b|\bundefined\b|\bnull\b|\[object|Infinity|€ ?-?0,00 €/g), `${name}: placeholder garbage on screen`).toBeNull();      // an unknown value must read «άγνωστο», never NaN / undefined / null
+      if (width === 375) { const axe = await new AxeBuilder({ page }).analyze(); problems.push(...axe.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => `${name}: axe ${v.id} (${v.impact}) ${v.nodes.length}×`)); }
       if (process.env.SHOTS === '1' && width === 375) await page.screenshot({ path: `${DIR}/${String(++n).padStart(2, '0')}-${name}.png`, fullPage: false });
     };
     const lower = async (name: string) => { await page.evaluate(() => window.scrollTo(0, 900)); await visit(name); await page.evaluate(() => window.scrollTo(0, 0)); };
@@ -31,6 +34,7 @@ for (const width of [320, 375, 390]) {
     await tab('more'); await visit('more');
     for (const id of ['open-register', 'open-orders', 'open-customers', 'open-money', 'open-workers', 'open-weekly-report', 'open-photos', 'open-info']) { await page.getByTestId(id).click(); await visit(id); if (id === 'open-customers') { await page.getByTestId('customer').first().click(); await visit('customer-page'); await back(page); } if (id === 'open-money') { await page.getByTestId('money-entry').first().click(); await visit('money-entry'); await page.getByTestId('sheet-close').first().click(); } await back(page); }
     await page.getByTestId('open-worker-view').click(); await visit('worker-view');
+    expect(problems, 'serious/critical accessibility problems (axe)').toEqual([]);
     expect(errors.filter((e) => !/icon-192|net::ERR/.test(e)), `console errors at ${width}`).toEqual([]);
   });
 }
