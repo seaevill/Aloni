@@ -14,7 +14,7 @@
 2. Sıradaki işi `simdi` alanına taşı.
 3. İşi en küçük anlamlı parçaya indir. Parça kurallardaki PR sınırını aşacaksa işi böl ve kalanı `sirada` listesine geri yaz.
 4. Önce testi yaz, sonra kodu. Testleri çalıştır ve çıktıyı sakla.
-5. Dalı gönder, PR aç. Birleştirme yapma.
+5. Dalı gönder, PR aç. Birleştirme yalnızca Anayasa madde 1'deki iki koşulla yapılır (tüm CI kapıları yeşil ve bekçi ONAY); biri eksikse birleştirme, Bora'ya bildir.
 6. `durum.json` güncelle, `defter.md` dosyasına tek ders ekle.
 
 **Bu takım ne yapmaz:** Doz, etiket ya da tarım kuralı kararı vermez; bunlar ziraat mühendisinin onayını bekler. Marka ve pazarlama işi yapmaz.

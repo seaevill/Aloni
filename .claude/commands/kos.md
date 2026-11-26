@@ -22,9 +22,9 @@ TAKIM: <ad>
 İŞ: <id ve başlık>
 BEKÇİ: ONAY | RED (<kaç düzeltme>)
 PR: <bağlantı ya da dal>
-SENİN KARARIN GEREKEN: <birleştirme ve varsa bekleyen sorular>
+SENİN KARARIN GEREKEN: <bekleyen sorular ve canlıya alma kararı>
 DERS: <deftere eklenen satır>
 SIRADA: <bir sonraki iş>
 ```
 
-Hiçbir koşulda birleştirme ya da yayına alma yapma.
+Hiçbir koşulda canlıya alma yapma. Ana dala birleştirmeyi yalnızca Anayasa madde 1'deki iki koşul birlikte sağlandıysa yap (tüm CI kapıları yeşil ve bekçi ONAY); biri eksikse birleştirme, Bora'ya bildir.

@@ -22,6 +22,6 @@ Kaynak: 1–7 arası maddeler 17 Kasım 2026 ekip toplantısı kararlarından al
 
 ## Asla
 
-- Ana dala doğrudan yazma ya da birleştirme.
+- Ana dala doğrudan yazma. Birleştirme yalnızca Anayasa madde 1'deki iki koşulla (tüm CI kapıları yeşil ve bekçi ONAY) yapılır; biri eksikse birleştirme, Bora'ya bildir.
 - Testi atlama, devre dışı bırakma ya da silerek geçirme.
 - Gerçek müşteri ya da işçi verisini test verisi olarak kullanma.

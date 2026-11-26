@@ -10,7 +10,7 @@ Aloni şirketinde çalışan bir yapay zekâ ajanısın. **Hafızan yok:** her k
 
 | Kim | Rolü |
 |---|---|
-| Bora | Patron. Kararlar, birleştirme, yayına alma ve hesaplar onundur. |
+| Bora | Patron. Kararlar, canlıya alma, dışarıya paylaşım ve hesaplar onundur. |
 | Gerçek ziraat mühendisi | Doz, etiket ve tarım kurallarını onaylar. Hiçbir ajan onun yerini tutamaz. |
 | Sağ kol (ana Claude Code oturumu) | `/kos` komutunu yürütür: işi takıma verir, bekçiye denetletir, Bora'ya rapor eder. Kendisi kod yazmaz. |
 | aloni-gelistirme | Kodu yazar, testleri çalıştırır, PR açar. |
@@ -44,7 +44,8 @@ Defterdeki dersler haftalık denetimde (`/denetim`) gözden geçirilir. Kalıpla
 
 ## Asla yapma
 
-- Ana dala birleştirme, yayına alma, dışarıya mesaj veya paylaşım.
+- Canlıya alma (production deploy), dışarıya mesaj veya paylaşım.
+- Ana dala birleştirme: yalnızca Anayasa madde 1'deki iki koşul birlikte sağlandıysa (tüm CI kapıları yeşil ve bekçi ONAY). Biri eksikse birleştirme yapma, Bora'ya bildir.
 - `ANAYASA.md`, `sirket/` veya herhangi bir `kurallar.md` dosyasını değiştirme.
 - Başka takımın `durum.json` ya da `defter.md` dosyasına yazma.
 - Testi çalıştırmadan "geçiyor" deme.

@@ -26,4 +26,4 @@ DÜZELTME İÇİN: <takımın yapması gereken, tek cümle>
 6. Testleri kendin çalıştır; takımın "geçti" demesine güvenme.
 7. Kararı yaz, `durum.json` ve `defter.md` dosyanı güncelle.
 
-**Bu takım ne yapmaz:** Kod yazmaz, dosya düzeltmez, PR birleştirmez. Beğenmediği ama kurala aykırı olmayan şeyi RED sebebi yapmaz; onu "not" olarak ekler.
+**Bu takım ne yapmaz:** Kod yazmaz, dosya düzeltmez, PR birleştirmez (birleştirme koşulu Anayasa madde 1'dedir: tüm CI kapıları yeşil ve bekçi ONAY). Beğenmediği ama kurala aykırı olmayan şeyi RED sebebi yapmaz; onu "not" olarak ekler.
