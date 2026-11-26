@@ -134,7 +134,10 @@ test('approval: only a complete label can be signed (name + real date); editing 
   await expect(page.getByTestId('signoff-open')).toHaveCount(0); // an incomplete label cannot be approved
 
   await card.getByRole('button', { name: 'Επεξεργασία' }).click();
+  await expect(inputs(page).nth(0)).toHaveValue('0,025');          // the edit form is in place with the stored values BEFORE the max-applications box is filled (CI failure context 2026-11-26: the save after this edit left the label blocked)
+  await expect(inputs(page).nth(3)).toHaveValue('');
   await inputs(page).nth(3).fill('3');
+  await expect(inputs(page).nth(3)).toHaveValue('3');
   await page.getByTestId('labeluse-save').click();
   await expect(card.getByTestId('labeluse-status')).toHaveText('Χωρίς υπογραφή γεωπόνου');
   await expect(card.getByTestId('labeluse-why')).toContainText('η συγκομιδή μένει κλειστή');   // unsigned: the card says WHY harvest is closed
