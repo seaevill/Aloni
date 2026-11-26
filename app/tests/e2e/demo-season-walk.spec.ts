@@ -4,11 +4,13 @@ import { iphone } from './helpers/iphone';
 
 // QUEUE 35: with the season Demo every tab and every sub-page opens at 320 / 375 / 390 px without a console error or sideways scroll. SHOTS=1 also writes the 375 px screenshots to docs/design/demo-season-2026-11-26/.
 const DIR = '../docs/design/demo-season-2026-11-26';
-const back = (page: Page) => page.getByRole('button', { name: /Πίσω|Επιστροφή/ }).first().click();
-for (const width of [320, 375, 390]) {
-  test(`season Demo walk at ${width} px`, async ({ page }) => {
+const back = (page: Page) => page.getByRole('button', { name: /Πίσω|Επιστροφή|Back|Geri/ }).first().click();
+const RUNS: Array<[string, number]> = [['el', 320], ['el', 375], ['el', 390], ['en', 375], ['tr', 375]];
+for (const [language, width] of RUNS) {
+  test(`season Demo walk at ${width} px (${language})`, async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width, height: 812 });
+    await page.addInitScript((l) => { try { localStorage.setItem('lang', l); } catch { /* ignore */ } }, language);
     const errors = await iphone(page);
     let n = 0;
     const problems: string[] = [];
@@ -18,11 +20,11 @@ for (const width of [320, 375, 390]) {
       const body = await page.locator('body').innerText();
       expect(body.match(/\bNaN\b|\bundefined\b|\bnull\b|\[object|Infinity|€ ?-?0,00 €/g), `${name}: placeholder garbage on screen`).toBeNull();      // an unknown value must read «άγνωστο», never NaN / undefined / null
       if (width === 375) { const axe = await new AxeBuilder({ page }).analyze(); problems.push(...axe.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => `${name}: axe ${v.id} (${v.impact}) ${v.nodes.length}×`)); }
-      if (process.env.SHOTS === '1' && width === 375) await page.screenshot({ path: `${DIR}/${String(++n).padStart(2, '0')}-${name}.png`, fullPage: false });
+      if (process.env.SHOTS === '1' && width === 375 && language === 'el') await page.screenshot({ path: `${DIR}/${String(++n).padStart(2, '0')}-${name}.png`, fullPage: false });
     };
     const lower = async (name: string) => { await page.evaluate(() => window.scrollTo(0, 900)); await visit(name); await page.evaluate(() => window.scrollTo(0, 0)); };
     const tab = (id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
-    await tab('more'); await page.getByTestId('demo-season-load').click(); await expect(page.getByText('Η επίδειξη φορτώθηκε.')).toBeVisible();
+    await tab('more'); await page.getByTestId('demo-season-load').click(); await expect(page.getByTestId('demo-banner')).toBeVisible();
     await tab('today'); await visit('today'); await lower('today-lower');
     for (const id of ['kpi-parcels', 'kpi-crops', 'today-cut7', 'today-canharvest']) { await page.getByTestId(id).click(); await visit(`today-${id}`); await page.getByTestId('sheet-close').first().click(); }
     await page.getByTestId('history-open').click(); await visit('history'); await back(page);
