@@ -4,12 +4,22 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": null,
+  "simdi": {
+    "id": "is-6b-2",
+    "baslik": "Σήμερα «Σήμερα έγιναν» kartı: gecikmiş iş var ama bugün kayıt yoksa yalnızca başlık görünüyordu; artık «Δεν έχει καταγραφεί τίποτα σήμερα.» yazıyor (bekçi notu d); kalanı is-6b-3",
+    "durum": "pr-acik",
+    "deneme": 1,
+    "son_deneme": {
+      "tarih": "2026-11-27",
+      "sonuc": "birim 919 geçti, 14 Σήμερα e2e + yeni test geçti (chromium), typecheck+eslint temiz",
+      "pr": null
+    }
+  },
   "sirada": [
     {
-      "id": "is-6b-2",
-      "baslik": "Σήμερα yinelenen sayılar, 2. parça (is-6b'nin kalanı, PR #623 raporu): (a) «Χωράφια χωρίς αναμονή» kutusu (today-canharvest, boş tarla sayar) ile «Για κοπή» sayısı (num-cut, boş ekim sayar) farklı birim — hangisinin kalacağı Bora'ya soruldu, cevap gelmeden bu alt madde yapılmaz; (b) Χωράφια/Καλλιέργειες kutuları + today-counts satırı (today-counts çok sayıda testte yükleme işareti; önce plan); (c) QuickAdd'de tekrar eden ilaçlama/hasat/iş düğmeleri (düğme silinmez, yalnızca tekrar kalkar); (d) bekçi notu: gecikmiş iş var ama bugün kayıt yoksa «Σήμερα έγιναν» kartı yalnızca başlık gösteriyor (Today.tsx:346). Özellik kaybı yok; testler gevşetilmez; 375 px önce/sonra görüntü.",
-      "kaynak": "is-6b'nin bölünen kalanı (PR #623); özgün kaynak: is-6'nın bölünen kalanı (PR #621); özgün kaynak: Bora, 27 Kasım 2026: çiftçilerden ve gerçek kullanıcılardan gelen geri bildirim",
+      "id": "is-6b-3",
+      "baslik": "Σήμερα yinelenen sayılar, 3. parça (is-6b-2'nin kalanı): (a) «Χωράφια χωρίς αναμονή» ile «Για κοπή» farklı birim — Bora cevabı gelmeden yapılmaz (bekleyen_kararlar); (b) Χωράφια/Καλλιέργειες kutuları + today-counts satırı (today-counts çok sayıda testte yükleme işareti; önce plan); (c) QuickAdd ile sayfadaki spray/harvest/job düğmelerinin tekrarı: hangisinin kalacağı belirsiz, düğme silinmez. Özellik kaybı yok; testler gevşetilmez; 375 px önce/sonra görüntü.",
+      "kaynak": "is-6b-2'nin bölünen kalanı (PR bu koşuda açıldı); özgün kaynak: is-6b'nin bölünen kalanı (PR #623); özgün kaynak: is-6'nın bölünen kalanı (PR #621); özgün kaynak: Bora, 27 Kasım 2026: çiftçilerden ve gerçek kullanıcılardan gelen geri bildirim",
       "onay": "Bora, 27 Kasım 2026 (çiftçi ve gerçek kullanıcı geri bildirimi) — is-6 metninden (bölünen parça)",
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
