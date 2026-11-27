@@ -8,6 +8,8 @@ import { appendMoney, buildEntry, cancelled, categoriesOf, effective, cratesTime
 import { downloadText } from '../backup/download';
 import { DEMO_FARM_ID } from '../config';
 import { moneyCsv, moneyLines } from '../money/export';
+import { moneyPrintData } from '../money/print';
+import { MoneyPrint } from './MoneyPrint';
 import { BackBar } from './BackBar';
 import { useSubmit } from './useSubmit';
 import { BigNum, Card, DetailSheet, ListRow, SheetFact } from './ds';
@@ -59,8 +61,9 @@ export function Money({ onBack }: { onBack: () => void }) {
     const head = [t('ui.money.date'), t('ui.money.dir'), t('ui.money.category'), t('ui.money.crop'), t('ui.money.col.amount'), t('ui.money.note'), t('ui.money.col.record')];
     downloadText(`aloni-${farm === DEMO_FARM_ID ? 'demo-' : ''}tameio-${year}.csv`, moneyCsv(t('ui.money.export.draft', { year }), head, lines), 'text/csv;charset=utf-8');
   };
+  const printData = moneyPrintData(rows, year, { dir: (d) => t(d === 'in' ? 'ui.money.dir.in' : 'ui.money.dir.out', undefined, 'el'), category: (c) => t(CAT_KEYS[c as Category], undefined, 'el'), crop: (slug) => CATALOG.find((x) => x.slug === slug)?.el ?? '' }, t('ui.pdf.unknown', undefined, 'el'));
   return (
-    <section data-testid="money">
+    <section class="money" data-testid="money">
       <BackBar onBack={onBack} testId="money-back" />
       <h1 tabIndex={-1}>{t('ui.money.title')}</h1>
       <p class="draft" role="note" data-testid="money-notbooks">{t('ui.money.notbooks')}</p>
@@ -104,6 +107,8 @@ export function Money({ onBack }: { onBack: () => void }) {
         )}
       </>}
       {live.length > 0 && <button class="btn secondary" data-testid="money-export" onClick={exportCsv}>{t('ui.money.export')}</button>}
+      {live.length > 0 && <button class="btn secondary" data-testid="money-print" onClick={() => window.print()}>{t('register.print')}</button>}
+      {live.length > 0 && <MoneyPrint data={printData} year={year} demo={farm === DEMO_FARM_ID} />}
       <p class="muted" data-testid="money-local">{t('ui.money.local')}</p>
       {open && <DetailSheet heading={signed(open)} testid="money-sheet" onClose={() => setView({ kind: 'main' })}>
         <SheetFact name={t('ui.money.category')} value={t(CAT_KEYS[open.category])} />

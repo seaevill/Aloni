@@ -1,0 +1,23 @@
+.money-print { display: none; }
+
+@media print {
+  @page moneyBook { size: A4 portrait; margin: 12mm; }
+  #app:has(.money-print) { page: moneyBook; display: block; min-height: 0; }
+  #app:has(.money-print) > :not(main),
+  main:has(.money-print) > :not(.money, :has(.money-print)),
+  .money > :not(.money-print) { display: none !important; }
+  main:has(.money-print) { max-width: none; }
+  .money .money-print { display: block; color: var(--fg); }
+  .money-print table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .money-print thead { display: table-header-group; }
+  .money-print tr { break-inside: avoid; }
+  .money-print th, .money-print td {
+    vertical-align: top;
+    text-align: start;
+    font-size: 9pt;
+    padding: 2mm;
+    border: var(--bw-1) solid currentColor;
+    overflow-wrap: anywhere;
+  }
+  .money-print td:nth-child(5) { text-align: end; }
+}
