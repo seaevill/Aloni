@@ -7,17 +7,6 @@
   "simdi": null,
   "sirada": [
     {
-      "id": "is-5",
-      "baslik": "Önce BACKLOG'da ve git log'da gerçekte kalan işi doğrula (bazı satırlar [x] görünüyor); yalnızca kalanı yap. Test paketi (docs/BACKLOG.md E5): tank karışımı, düzeltme, harita, işçi daveti için 375 px ekran testleri; testi gevşetmek yok",
-      "kaynak": "Bora, 27 Kasım 2026 (yoğun mod seçimi)",
-      "onay": "Bora, 27 Kasım 2026",
-      "sahip": "aloni-gelistirme",
-      "tur": "bakim",
-      "durum": "sirada",
-      "deneme": 0,
-      "son_deneme": null
-    },
-    {
       "id": "q-2",
       "baslik": "Ara sıra düşen testleri izle (labeluse.spec.ts:118, register-v2 yazdırma); yalnızca main'de yeni düşme kanıtı varsa kök nedeni ara",
       "kaynak": "docs/autopilot/QUEUE.md madde 2",
@@ -100,6 +89,11 @@
       "id": "is-4",
       "baslik": "Prototip | uygulama yan yana karşılaştırma: 11 görüntü + FARK-LISTESI.md (docs/design/compare/2026-11-27/), düzeltme yok",
       "pr": 612
+    },
+    {
+      "id": "is-5",
+      "baslik": "BACKLOG E5: tank karışımı, düzeltme, harita, işçi daveti 375 px testleri zaten vardı (spray.spec :167/:201, map.spec, live-auth :53, live-worker :32); yalnızca 2 eski çift satır silindi",
+      "pr": 614
     }
   ],
   "bekleyen_kararlar": [
@@ -111,12 +105,12 @@
   ],
   "gunluk": {
     "tarih": "2026-11-27",
-    "kod_isi": 6
+    "kod_isi": 7
   },
   "son_kosu": {
     "tarih": "2026-11-27",
-    "is": "is-4: prototip | uygulama karşılaştırması",
-    "sonuc": "birleşti (#612, main 7f3f6fa, bekçi ONAY 9fa8c92, CI yeşil)"
+    "is": "is-5: BACKLOG E5 doğrulama",
+    "sonuc": "birleşti (#614, main 55fb12f, bekçi ONAY afe0838, CI yeşil/docs-only atlananlar)"
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }

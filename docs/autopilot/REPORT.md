@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-27 13:39 Atina — yönetici koşusu 20261127-1131
+1. **Uygulamada ne değişti:** Uygulamada bir şey değişmedi. Sıradaki iş (tank karışımı, «Διόρθωση», harita ve işçi daveti için telefon genişliğinde ekran testleri) kontrol edildi: dördünün de testi zaten var ve her gün çalışıyor. İş listesinde bu satırlar yine iki kez, biri «yapılmadı» olarak duruyordu; eski satırlar silindi.
+2. **Senin için faydası:** Var olan testler için boşuna yeni kod yazılmadı; iş listesi gerçeği gösteriyor.
+3. **Ne denendi, ne başarısız oldu:** Birim testleri 919 geçti, kod denetimleri temiz. Bekçi testlerin yerini tek tek açıp gördü ve testleri kendisi çalıştırdı: ilk denetimde ONAY. GitHub'daki kontroller yeşil (yalnızca belge değiştiği için ekran testleri bu kez çalışmadı). Bilgisayardaki denemede bir ilaçlama ekran testi, bağlantısız ortamda simge resmi yüklenemediği için düştü; bu deneme ortamına özgü görünüyor, uygulamanın koduna dokunulmadı. GitHub'daki asıl testler bunu gösterirse sıradaki izleme işi (q-2) bakacak.
+4. **Önerim:** sıradaki onaylı iş q-31 (Demo parselleri işinde gerçekten kalan bir şey var mı kontrol). Ondan sonra iş listesinde onaylı yeni özellik kalmıyor; fark listesindeki 5 öneriden seçmen gerekiyor.
+5. **Senden gereken karar:** docs/design/compare/2026-11-27/FARK-LISTESI.md içindeki 5 öneriden hangileri yapılsın (numara yazman yeterli)? Yunanca sözcük soruları (veresiye, kasa fiyatı) hâlâ cevabını bekliyor.
+
+PR: https://github.com/seaevill/Aloni/pull/614 (birleşti, main `55fb12f`). Bugünkü kod işi: 7/12. Birleşti ≠ canlıda.
+
 ## 2026-11-27 13:24 Atina — yönetici koşusu 20261127-1109
 1. **Uygulamada ne değişti:** Uygulamanın kendisi değişmedi. Prototip ile uygulama ekran ekran yan yana resimlendi (11 ekran, telefon genişliğinde, Yunanca, Demo çiftlik): Σήμερα, Φυτά, ürün sayfası, «Γιατί;», Χωράφια, tarla sayfası, Αποθήκη, Άλλα, Μητρώο, Διαθέσιμες κλούβες, hasat tahmini. Her ekran için Türkçe fark listesi yazıldı.
 2. **Senin için faydası:** Prototipte olup uygulamada farklı duran yerleri tek dosyada görürsün ve hangisinin düzeltileceğini sen seçersin. Kurallar imzasız olduğu için bilerek eksik olan şeyler (uyarı kartları, ekim önerisi, verim tahmini) öneri olarak sunulmadı.
