@@ -4,19 +4,22 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": null,
+  "simdi": {
+    "id": "is-4",
+    "baslik": "Prototip ile uygulama karşılaştırması (docs/BACKLOG.md E2.2): her ekran için 375 px prototip | uygulama yan yana görüntü + fark listesi. Düzeltmeler bu işe dahil değil; fark listesi Bora'ya öneri olarak sunulur.",
+    "kaynak": "Bora, 27 Kasım 2026 (yoğun mod seçimi)",
+    "onay": "Bora, 27 Kasım 2026",
+    "sahip": "aloni-gelistirme",
+    "tur": "ozellik",
+    "durum": "pr-acik",
+    "deneme": 1,
+    "son_deneme": {
+      "tarih": "2026-11-27",
+      "sonuc": "PR açıldı; 11 görüntü + FARK-LISTESI.md, düzeltme yok",
+      "pr": 612
+    }
+  },
   "sirada": [
-    {
-      "id": "is-4",
-      "baslik": "Prototip ile uygulama karşılaştırması (docs/BACKLOG.md E2.2): her ekran için 375 px prototip | uygulama yan yana görüntü + fark listesi. Düzeltmeler bu işe dahil değil; fark listesi Bora'ya öneri olarak sunulur.",
-      "kaynak": "Bora, 27 Kasım 2026 (yoğun mod seçimi)",
-      "onay": "Bora, 27 Kasım 2026",
-      "sahip": "aloni-gelistirme",
-      "tur": "ozellik",
-      "durum": "sirada",
-      "deneme": 0,
-      "son_deneme": null
-    },
     {
       "id": "is-5",
       "baslik": "Önce BACKLOG'da ve git log'da gerçekte kalan işi doğrula (bazı satırlar [x] görünüyor); yalnızca kalanı yap. Test paketi (docs/BACKLOG.md E5): tank karışımı, düzeltme, harita, işçi daveti için 375 px ekran testleri; testi gevşetmek yok",
@@ -116,12 +119,12 @@
   ],
   "gunluk": {
     "tarih": "2026-11-27",
-    "kod_isi": 5
+    "kod_isi": 6
   },
   "son_kosu": {
     "tarih": "2026-11-27",
-    "is": "is-3: Κλούβες içe aktarma doğrulaması",
-    "sonuc": "yeni kod gerekmedi (repoda vardı); BACKLOG temizliği birleşti (#610, main a2fe0dc, bekçi ONAY ef20871, CI yeşil)"
+    "is": "is-4: prototip | uygulama karşılaştırması",
+    "sonuc": "PR #612 açıldı, bekçi ve CI bekleniyor"
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }
