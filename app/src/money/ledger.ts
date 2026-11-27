@@ -1,4 +1,4 @@
-import { parseDecimal, type Known } from '@aloni/rules-core';
+import { parseDecimal, parseWhole, type Known } from '@aloni/rules-core';
 import type { AppDB } from '../db/schema';
 import { putLocal } from '../repo';
 
@@ -18,8 +18,11 @@ export interface MoneyEntry {
   crop?: string; note: string; amends?: string; void?: true; at: string;
   /** Veresiye: the id of a customer (never a name) and `owed: true` = the crates were sold but not paid yet. Only a sale can be owed; paying writes an amending row without `owed`. */
   customer?: string; owed?: true;
+  /** Whole crates sold (a sale only). With the customer and the crop it gives the price per crate for the next sale; the total is never split by rounding. */
+  crates?: number;
 }
 
+export const MAX_CRATES = 9999;
 export const MAX_CENTS = 99_999_999;          // 999.999,99 €: anything bigger is a typing error
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -36,8 +39,8 @@ export function parseCents(input: string): Known<number> {
   return { known: true, value: cents };
 }
 
-export interface EntryInput { day: string; dir: Direction; category: string; amount: string; crop?: string; note: string; customer?: string; owed?: boolean }
-export type BuildResult = { ok: true; entry: MoneyEntry } | { ok: false; reason: 'amount' | 'day' | 'category' | 'customer' };
+export interface EntryInput { day: string; dir: Direction; category: string; amount: string; crop?: string; note: string; customer?: string; owed?: boolean; crates?: string }
+export type BuildResult = { ok: true; entry: MoneyEntry } | { ok: false; reason: 'amount' | 'day' | 'category' | 'customer' | 'crates' };
 
 export function validDay(day: string): boolean {
   return DAY.test(day) && Number.isFinite(Date.parse(`${day}T12:00:00Z`)) && new Date(`${day}T12:00:00Z`).toISOString().startsWith(day);
@@ -54,9 +57,13 @@ export function buildEntry(input: EntryInput, id: string, nowIso: string, amends
   const isSale = input.dir === 'in' && input.category === 'sale';
   const customer = isSale && input.customer !== undefined && input.customer !== '' ? input.customer : undefined;   // a customer is kept on a sale only
   if (input.owed === true && customer === undefined) return { ok: false, reason: 'customer' };                      // «not paid» needs to say who owes, and only a sale can be owed
+  const given = isSale ? (input.crates ?? '').trim() : '';                                                           // a crate count is kept on a sale only
+  const parsed = given === '' ? undefined : parseWhole<'Crates'>(given);                                          // whole crates only: «2,5», 0, signs and text are refused
+  if (parsed !== undefined && (!parsed.known || parsed.value <= 0)) return { ok: false, reason: 'crates' };
   const entry: MoneyEntry = { id, day: input.day, dir: input.dir, category: input.category as Category, cents: amount.value, note: input.note.trim().slice(0, 80), at: nowIso };
   if (input.crop !== undefined && input.crop !== '') entry.crop = input.crop;
   if (customer !== undefined) entry.customer = customer;
+  if (parsed !== undefined && parsed.known) entry.crates = parsed.value;
   if (input.owed === true) entry.owed = true;
   if (amends !== undefined) entry.amends = amends;
   return { ok: true, entry };
@@ -67,6 +74,7 @@ export function voidOf(target: MoneyEntry, id: string, nowIso: string): MoneyEnt
   const v: MoneyEntry = { id, day: target.day, dir: target.dir, category: target.category, cents: target.cents, note: target.note, amends: target.id, void: true, at: nowIso };
   if (target.crop !== undefined) v.crop = target.crop;
   if (target.customer !== undefined) v.customer = target.customer;
+  if (target.crates !== undefined) v.crates = target.crates;
   if (target.owed === true) v.owed = true;
   return v;
 }
@@ -76,6 +84,7 @@ export function restoreOf(voidRow: MoneyEntry, id: string, nowIso: string): Mone
   const r: MoneyEntry = { id, day: voidRow.day, dir: voidRow.dir, category: voidRow.category, cents: voidRow.cents, note: voidRow.note, amends: voidRow.id, at: nowIso };
   if (voidRow.crop !== undefined) r.crop = voidRow.crop;
   if (voidRow.customer !== undefined) r.customer = voidRow.customer;
+  if (voidRow.crates !== undefined) r.crates = voidRow.crates;
   if (voidRow.owed === true) r.owed = true;
   return r;
 }
@@ -85,7 +94,22 @@ export function settleOf(target: MoneyEntry, id: string, nowIso: string): MoneyE
   const p: MoneyEntry = { id, day: target.day, dir: target.dir, category: target.category, cents: target.cents, note: target.note, amends: target.id, at: nowIso };
   if (target.crop !== undefined) p.crop = target.crop;
   if (target.customer !== undefined) p.customer = target.customer;
+  if (target.crates !== undefined) p.crates = target.crates;
   return p;
+}
+
+/** The newest price per crate (whole cents) of this customer and crop: from the counted sales that carry both and a crate count. A sale whose total does not split into whole cents per crate is skipped (nothing is rounded); none = unknown. */
+export function lastCratePrice(rows: readonly MoneyEntry[], customer: string, crop: string): { cents: number; day: string } | undefined {
+  if (customer === '' || crop === '') return undefined;
+  const hit = effective(rows).find((e) => e.dir === 'in' && e.category === 'sale' && e.customer === customer && e.crop === crop && e.crates !== undefined && Number.isInteger(e.cents / e.crates));   // `effective` lists the newest day first
+  return hit && hit.crates !== undefined ? { cents: hit.cents / hit.crates, day: hit.day } : undefined;
+}
+
+/** crates × price per crate in whole cents; a bad count or a result over the book limit gives nothing. */
+export function cratesTimesPrice(priceCents: number, crates: number): number | undefined {
+  if (!Number.isSafeInteger(priceCents) || priceCents <= 0 || !Number.isSafeInteger(crates) || crates <= 0 || crates > MAX_CRATES) return undefined;
+  const total = priceCents * crates;
+  return total <= MAX_CENTS ? total : undefined;
 }
 
 export interface OwedLine { customer: string; cents: number; count: number }
@@ -185,7 +209,7 @@ export function isEntry(r: unknown): r is MoneyEntry {
     && typeof e.category === 'string' && (categoriesOf(e.dir) as readonly string[]).includes(e.category)
     && typeof e.cents === 'number' && Number.isSafeInteger(e.cents) && e.cents > 0 && e.cents <= MAX_CENTS
     && typeof e.note === 'string' && typeof e.at === 'string' && (e.amends === undefined || typeof e.amends === 'string')
-    && (e.customer === undefined || typeof e.customer === 'string') && (e.owed === undefined || (e.owed === true && e.dir === 'in' && e.category === 'sale' && typeof e.customer === 'string'));
+    && (e.customer === undefined || typeof e.customer === 'string') && (e.crates === undefined || (typeof e.crates === 'number' && Number.isSafeInteger(e.crates) && e.crates > 0 && e.crates <= MAX_CRATES && e.dir === 'in' && e.category === 'sale')) && (e.owed === undefined || (e.owed === true && e.dir === 'in' && e.category === 'sale' && typeof e.customer === 'string'));
 }
 export async function loadMoney(db: AppDB, farm: string): Promise<MoneyEntry[]> {
   const v = (await db.settings.get(key(farm)))?.value;

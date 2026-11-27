@@ -659,5 +659,9 @@
   "ui.money.owed.count": "{n} kayıt",
   "ui.money.owed.unknown": "Bulunamayan müşteri",
   "ui.money.settle": "Ödendi",
-  "ui.money.err.customer": "Ödenmemiş satış için bir müşteri seç."
+  "ui.money.err.customer": "Ödenmemiş satış için bir müşteri seç.",
+  "ui.money.crates": "Kasa sayısı",
+  "ui.money.err.crates": "Kasa sayısını tam sayı olarak yaz.",
+  "ui.money.lastprice": "Önceki fiyat: kasa başı {v} ({day})",
+  "ui.money.lastprice.use": "Kullan"
 }
