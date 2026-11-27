@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-27 13:24 Atina — yönetici koşusu 20261127-1109
+1. **Uygulamada ne değişti:** Uygulamanın kendisi değişmedi. Prototip ile uygulama ekran ekran yan yana resimlendi (11 ekran, telefon genişliğinde, Yunanca, Demo çiftlik): Σήμερα, Φυτά, ürün sayfası, «Γιατί;», Χωράφια, tarla sayfası, Αποθήκη, Άλλα, Μητρώο, Διαθέσιμες κλούβες, hasat tahmini. Her ekran için Türkçe fark listesi yazıldı.
+2. **Senin için faydası:** Prototipte olup uygulamada farklı duran yerleri tek dosyada görürsün ve hangisinin düzeltileceğini sen seçersin. Kurallar imzasız olduğu için bilerek eksik olan şeyler (uyarı kartları, ekim önerisi, verim tahmini) öneri olarak sunulmadı.
+3. **Ne denendi, ne başarısız oldu:** Birim testleri 919 geçti, kod denetimleri temiz. Bekçi resimleri açıp listeyle karşılaştırdı ve ilk denetimde onay verdi. Küçük bir not düştü: listede «Άλλα'da 10'dan fazla satır» yazıyor ama resimde 9 satır görünüyor. GitHub'daki tüm kontroller yeşil. Uzun ekranlar resimde ilk kısımda kesildi. Bazı resimlerde alttaki menü çubuğu sayfanın ortasında görünüyor; bu resim çekme yönteminden kaynaklanıyor, uygulamadaki bir hata değil.
+4. **Önerim:** listenin sonundaki 5 öneri: (1) Άλλα ekranını kısaltmak, (2) ürün sayfasında ekimleri üste almak, (3) Σήμερα'da hava özetini üste almak, (4) Μητρώο'da kayıt kimliğini gizlemek ve düğme metinlerini kısaltmak, (5) Αποθήκη ve Χωράφια'da tekrar eden alanları küçültmek. Sıradaki onaylı iş is-5 (ekran testleri).
+5. **Senden gereken karar:** Resimlere ve listeye bak (docs/design/compare/2026-11-27/FARK-LISTESI.md). 5 öneriden hangileri yapılsın? Numaralarını yazman yeterli; onay vermediğin öneri sıraya girmez. Yunanca sözcük soruları hâlâ cevabını bekliyor.
+
+PR: https://github.com/seaevill/Aloni/pull/612 (birleşti, main `7f3f6fa`). Bugünkü kod işi: 6/12. Birleşti ≠ canlıda.
+
 ## 2026-11-27 13:01 Atina — yönetici koşusu 20261127-1052
 1. **Uygulamada ne değişti:** Uygulamada bir şey değişmedi. Sıradaki iş (Κλούβες yedeğini içe alma, «Διαθέσιμες κλούβες» ekranı ve ekim önerisi) kontrol edildi: zaten yapılmış ve test edilmiş (Άλλα → Διαθέσιμες κλούβες). İlaç bekleme süresindeki hasat «satılabilir» sayılmıyor; bunu deneyen test var. İş listesinde bu iş yanlışlıkla iki kez, biri «yapılmadı» olarak duruyordu; o eski satır silindi.
 2. **Senin için faydası:** Aynı işe ikinci kez kod yazılmadı; iş listesi artık gerçeği gösteriyor.

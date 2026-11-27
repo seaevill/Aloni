@@ -4,21 +4,7 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": {
-    "id": "is-4",
-    "baslik": "Prototip ile uygulama karşılaştırması (docs/BACKLOG.md E2.2): her ekran için 375 px prototip | uygulama yan yana görüntü + fark listesi. Düzeltmeler bu işe dahil değil; fark listesi Bora'ya öneri olarak sunulur.",
-    "kaynak": "Bora, 27 Kasım 2026 (yoğun mod seçimi)",
-    "onay": "Bora, 27 Kasım 2026",
-    "sahip": "aloni-gelistirme",
-    "tur": "ozellik",
-    "durum": "pr-acik",
-    "deneme": 1,
-    "son_deneme": {
-      "tarih": "2026-11-27",
-      "sonuc": "PR açıldı; 11 görüntü + FARK-LISTESI.md, düzeltme yok",
-      "pr": 612
-    }
-  },
+  "simdi": null,
   "sirada": [
     {
       "id": "is-5",
@@ -109,13 +95,19 @@
       "id": "is-3",
       "baslik": "Κλούβες yedeği içe aktarma + «Διαθέσιμες κλούβες» + PHI testi repoda zaten vardı (orders/klouves.ts, available.ts, orders.test.ts); yalnızca BACKLOG E4'teki 2 eski çift satır silindi",
       "pr": 610
+    },
+    {
+      "id": "is-4",
+      "baslik": "Prototip | uygulama yan yana karşılaştırma: 11 görüntü + FARK-LISTESI.md (docs/design/compare/2026-11-27/), düzeltme yok",
+      "pr": 612
     }
   ],
   "bekleyen_kararlar": [
     "0042 SQL yüklemesi (QUEUE madde 14): yalnızca Bora «Supabase migrate (manual)» ile yükler; sonra «yükleme tamam» yazar.",
     "q-2b: m18_job_board.sql:90 düzeltmesi supabase/** dokunur; Bora yazılı onay verirse yapılır.",
     "Ταμείο veresiye (PR #604): Yunanca «Απλήρωτο / Πληρώθηκε / Δεν πληρώθηκε ακόμα / Απλήρωτα από πελάτες» terimleri docs/i18n/glossary-el.md içinde yok; Bora sözlük onayı versin ya da başka terim söylesin.",
-    "Ταμείο kasa fiyatı (is-2c): «Κλούβες», «Προηγούμενη τιμή: … ανά κλούβα», «Χρήση» Yunanca terimleri docs/i18n/glossary-el.md içinde yok (yalnızca «κλούβα» var); Bora sözlük onayı versin ya da başka terim söylesin."
+    "Ταμείο kasa fiyatı (is-2c): «Κλούβες», «Προηγούμενη τιμή: … ανά κλούβα», «Χρήση» Yunanca terimleri docs/i18n/glossary-el.md içinde yok (yalnızca «κλούβα» var); Bora sözlük onayı versin ya da başka terim söylesin.",
+    "is-4 fark listesi (docs/design/compare/2026-11-27/FARK-LISTESI.md): 5 öneriden hangileri iş olarak sıraya girsin? (Άλλα'yı kısaltmak, ürün detayında ekimleri üste almak, Σήμερα'da hava özetini üste almak, Μητρώο kimlik satırı/düğme metinleri, Αποθήκη/Χωράφια yinelenen alanlar). Onaysız iş alınmaz."
   ],
   "gunluk": {
     "tarih": "2026-11-27",
@@ -124,7 +116,7 @@
   "son_kosu": {
     "tarih": "2026-11-27",
     "is": "is-4: prototip | uygulama karşılaştırması",
-    "sonuc": "PR #612 açıldı, bekçi ve CI bekleniyor"
+    "sonuc": "birleşti (#612, main 7f3f6fa, bekçi ONAY 9fa8c92, CI yeşil)"
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }
