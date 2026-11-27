@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-27 16:35 Atina — yönetici koşusu 20261127-1407
+1. **Uygulamada ne değişti:** Σήμερα'da iki kez görünen iki bilgi teke indi. «Κλούβες 7 ημερών» sayısı artık yalnızca üstteki büyük sayıda (yanındaki küçük çizgiyle) var; alttaki listede ikinci kez yazılmıyor. Geciken işlerin sayısı üç yerde değil, iki yerde: Εργασίες bölümündeki «Καθυστερημένες» grubu ve özet satırı. Büyük sayıya dokununca aynı 7 günlük kasa ayrıntısı açılıyor; hiçbir bilgi kaybolmadı.
+2. **Senin için faydası:** Aynı sayıyı iki kez okumak yok; ekran biraz daha kısa ve sakin.
+3. **Ne denendi, ne başarısız oldu:** Takım ve bekçi ayrı ayrı tüm birim testlerini (919 geçti) ve Σήμερα'ya bağlı 5 ekran testini çalıştırdı; testler yalnızca kaldırılan kutu yerine büyük sayıyı okuyacak şekilde güncellendi, kontrolleri gevşetilmedi. İlk denetimde önce/sonra resmi eksikti; takım ekledi, bekçi resimleri açıp yeniden onay verdi. GitHub'daki tüm kontroller (iPhone tarayıcısıyla 3 parça ekran testi, SQL, Cloudflare derlemesi) yeşil. Başarısız olan yok. Resimler: docs/design/today-simplify/2026-11-27/part2-*.
+4. **Önerim:** Sıradaki iş is-7 (Αποθήκη'yi Άλλα menüsüne taşımak). Σήμερα'nın kalan tekrarları is-6b-2 olarak sırada; içindeki bir alt madde senin cevabını bekliyor (aşağıda).
+5. **Senden gereken karar:** Σήμερα'da «Για κοπή σήμερα» sayısı **ekimleri** (φυτεύσεις) sayıyor, altındaki «Χωράφια χωρίς αναμονή» kutusu **tarlaları** sayıyor. İkisi tek satıra inecekse hangisi kalsın: ekim sayısı mı, tarla sayısı mı, yoksa ikisi aynı satırda mı?
+
+PR: https://github.com/seaevill/Aloni/pull/623 (birleşti, main `945f5fe`). Bugünkü kod işi: 11/12. Birleşti ≠ canlıda.
+
 ## 2026-11-27 16:00 Atina — yönetici koşusu 20261127-1344
 1. **Uygulamada ne değişti:** Σήμερα ekranında, «Για κοπή σήμερα» bölümünün altındaki beş büyük sayı kutusu (Χωράφια, Καλλιέργειες, Κλούβες 7 ve 28 günlük, «Χωράφια χωρίς αναμονή σήμερα») artık tek beyaz liste kartında, her satırda bir sayı. «Αύριο φεύγουν» kartlarında ürün adı ayrı bir iç kutu değil, düz yazı; «Λείπουν …» etiketi tek satır. Hiçbir bilgi ya da düğme kaldırılmadı; sayılara dokununca yine aynı ayrıntı açılıyor. Ekran yaklaşık 250 nokta kısaldı (Demo sezonunda).
 2. **Senin için faydası:** Σήμερα daha az kaydırılıyor, sayılar tek bakışta okunuyor; çiftçilerin «kalabalık» şikâyetinin ilk adımı.

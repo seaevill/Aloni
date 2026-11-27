@@ -7,9 +7,9 @@
   "simdi": null,
   "sirada": [
     {
-      "id": "is-6b",
-      "baslik": "Σήμερα sadeleştirme, 2. parça (is-6'nın kalanı): PR #621'deki envantere göre Σήμερα'da yinelenen sayıları (Κλούβες 7 ημ. büyük sayı + kutu; «Για κοπή» sayısı + «Χωράφια χωρίς αναμονή» kutusu; Χωράφια/Καλλιέργειες kutuları + today-counts satırı; gecikmiş işler 3 yerde; QuickAdd'de tekrar eden düğmeler) tek kısa satır + bağlantıya indir. Hava, koşullar, günün kesimleri, ilaçlamalar ve işler kalır. Özellik kaybı yok; testid'lere bağlı testler gevşetilmeden güncellenir; 375 px önce/sonra; gerekirse parçalara böl.",
-      "kaynak": "is-6'nın bölünen kalanı (PR #621); özgün kaynak: Bora, 27 Kasım 2026: çiftçilerden ve gerçek kullanıcılardan gelen geri bildirim",
+      "id": "is-6b-2",
+      "baslik": "Σήμερα yinelenen sayılar, 2. parça (is-6b'nin kalanı, PR #623 raporu): (a) «Χωράφια χωρίς αναμονή» kutusu (today-canharvest, boş tarla sayar) ile «Για κοπή» sayısı (num-cut, boş ekim sayar) farklı birim — hangisinin kalacağı Bora'ya soruldu, cevap gelmeden bu alt madde yapılmaz; (b) Χωράφια/Καλλιέργειες kutuları + today-counts satırı (today-counts çok sayıda testte yükleme işareti; önce plan); (c) QuickAdd'de tekrar eden ilaçlama/hasat/iş düğmeleri (düğme silinmez, yalnızca tekrar kalkar); (d) bekçi notu: gecikmiş iş var ama bugün kayıt yoksa «Σήμερα έγιναν» kartı yalnızca başlık gösteriyor (Today.tsx:346). Özellik kaybı yok; testler gevşetilmez; 375 px önce/sonra görüntü.",
+      "kaynak": "is-6b'nin bölünen kalanı (PR #623); özgün kaynak: is-6'nın bölünen kalanı (PR #621); özgün kaynak: Bora, 27 Kasım 2026: çiftçilerden ve gerçek kullanıcılardan gelen geri bildirim",
       "onay": "Bora, 27 Kasım 2026 (çiftçi ve gerçek kullanıcı geri bildirimi) — is-6 metninden (bölünen parça)",
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
@@ -119,6 +119,11 @@
       "id": "is-6",
       "baslik": "Σήμερα sadeleştirme, 1. parça: 5 sayı kutusu tek kompakt liste kartı, «Αύριο φεύγουν» satırında ikinci kart görünümü kalktı (yalnızca CSS); tekrar envanteri PR'da; kalanı is-6b",
       "pr": 621
+    },
+    {
+      "id": "is-6b",
+      "baslik": "Σήμερα yinelenen sayılar, 1. parça: ikinci «Κλούβες 7 ημερών» kutusu ve üçüncü gecikmiş iş satırı kaldırıldı (bilgi büyük sayıda ve Εργασίες'te duruyor); 2 ölü çeviri anahtarı silindi; 5 e2e yalnızca hedef değiştirdi; kalanı is-6b-2",
+      "pr": 623
     }
   ],
   "bekleyen_kararlar": [
@@ -127,16 +132,17 @@
     "Ταμείο veresiye (PR #604): Yunanca «Απλήρωτο / Πληρώθηκε / Δεν πληρώθηκε ακόμα / Απλήρωτα από πελάτες» terimleri docs/i18n/glossary-el.md içinde yok; Bora sözlük onayı versin ya da başka terim söylesin.",
     "Ταμείο kasa fiyatı (is-2c): «Κλούβες», «Προηγούμενη τιμή: … ανά κλούβα», «Χρήση» Yunanca terimleri docs/i18n/glossary-el.md içinde yok (yalnızca «κλούβα» var); Bora sözlük onayı versin ya da başka terim söylesin.",
     "is-4 fark listesi (docs/design/compare/2026-11-27/FARK-LISTESI.md): 5 öneriden hangileri iş olarak sıraya girsin? (Άλλα'yı kısaltmak, ürün detayında ekimleri üste almak, Σήμερα'da hava özetini üste almak, Μητρώο kimlik satırı/düğme metinleri, Αποθήκη/Χωράφια yinelenen alanlar). Onaysız iş alınmaz.",
-    "q-2 restore-drill.spec.ts:25: takım, hesap silme penceresinde yazının kutuda kaldığını doğrulayan bir iddia (toHaveValue) eklemeyi öneriyor; testi sıkılaştırır, bir sonraki düşmede hangi adımın bozulduğunu gösterir. Bora «evet» derse ayrı iş olarak sıraya girer."
+    "q-2 restore-drill.spec.ts:25: takım, hesap silme penceresinde yazının kutuda kaldığını doğrulayan bir iddia (toHaveValue) eklemeyi öneriyor; testi sıkılaştırır, bir sonraki düşmede hangi adımın bozulduğunu gösterir. Bora «evet» derse ayrı iş olarak sıraya girer.",
+    "is-6b-2 (a): Σήμερα'da «Για κοπή σήμερα» sayısı ekim (φυτεύσεις) sayıyor, «Χωράφια χωρίς αναμονή» kutusu tarla sayıyor. Tek satıra inecekse hangisi kalsın: ekim sayısı mı, tarla sayısı mı, ikisi bir satırda mı?"
   ],
   "gunluk": {
     "tarih": "2026-11-27",
-    "kod_isi": 10
+    "kod_isi": 11
   },
   "son_kosu": {
     "tarih": "2026-11-27",
-    "is": "is-6 1. parça (yönetici koşusu 20261127-1344)",
-    "sonuc": "PR #621 bekçi ONAY (SHA 53fa80c), tüm CI yeşil, birleşti (main 87410b6); kalan parça is-6b olarak sıraya girdi"
+    "is": "is-6b 1. parça (yönetici koşusu 20261127-1407)",
+    "sonuc": "PR #623: ilk ONAY'dan sonra QUALITY madde 8 için önce/sonra görüntü eklendi, bekçi yeni SHA'da (2e5a7f1) yeniden ONAY, tüm CI yeşil, birleşti (main 945f5fe); kalanı is-6b-2"
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }
