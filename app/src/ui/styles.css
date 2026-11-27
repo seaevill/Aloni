@@ -150,11 +150,16 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 .tile { background:var(--card-on-dark); border-radius:var(--r-md); padding:var(--sp-10) var(--sp-12); display:grid; gap:var(--sp-2); }
 .tile strong { font-size:var(--fs-22); font-variant-numeric:tabular-nums; }
 .tile small { color:var(--white); font-size:var(--fs-14); }
-.kpis { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-8); margin:0 0 var(--sp-12); }
-.kpi { background:var(--card); border:var(--bw-1) solid var(--line); border-radius:var(--r-card); padding:var(--sp-12) var(--sp-14); display:grid; gap:var(--sp-2); }
-.kpi strong { font-size:var(--fs-30); font-variant-numeric:tabular-nums; }
+.kpis { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--sp-2); margin:0 0 var(--sp-12); background:var(--card); border-radius:var(--r-card); box-shadow:var(--shadow-card); padding:var(--sp-4) var(--sp-14); }
+.kpi { background:transparent; border:0; border-bottom:var(--bw-1) solid var(--line); padding:var(--sp-8) 0; min-height:var(--tap); display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:var(--sp-2) var(--sp-8); text-align:start; }
+.kpi:last-child { border-bottom:0; }
+.kpi strong { font-size:var(--fs-18); font-variant-numeric:tabular-nums; }
 .kpi small { font-size:var(--fs-14); color:var(--muted); }
-.kpi.wide { grid-column:1 / -1; }
+.kpi.wide small:last-child { flex-basis:100%; }
+/* Σήμερα → «Αύριο φεύγουν»: the crop name is plain text in the row (not a second card); the chip stays on one line */
+.card[data-testid="tomorrow-row"] .field-head { align-items:center; }
+.card[data-testid="tomorrow-row"] .field-head .row { background:transparent; box-shadow:none; padding:0; margin:0; min-height:var(--tap); }
+.card[data-testid="tomorrow-row"] .badge { white-space:nowrap; }
 /* Parcel detail (prototype) */
 .detail h1 { margin:0 0 var(--sp-8); }
 .sketch { display:block; width:100%; max-height:var(--sketch-h); background:var(--card); border-radius:var(--r-card); margin:0 0 var(--sp-12); }
