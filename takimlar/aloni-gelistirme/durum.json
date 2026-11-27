@@ -16,7 +16,7 @@
     "son_deneme": {
       "tarih": "2026-11-27",
       "sonuc": "2. parça: Ταμείο'da veresiye (satış müşteriye bağlanır, «Δεν πληρώθηκε ακόμα» işareti, «Απλήρωτα» kartı, «Πληρώθηκε» düzeltme satırı yazar); PR açık, bekçi ve CI bekleniyor",
-      "pr": null
+      "pr": 604
     },
     "karar": "Bora 27 Kasım 2026: kasa fiyatı geçmişi ve veresiye şimdilik telefonda (Dexie); SQL/supabase yok."
   },
