@@ -5,6 +5,9 @@ import { formatMoney } from '../i18n/format';
 import { athensToday } from '../plantings/planting';
 import { CATALOG } from '../crops/catalog';
 import { appendMoney, buildEntry, cancelled, categoriesOf, effective, historyOf, loadMoney, restoreOf, rootOf, voidOf, MONTHS, yearSummary, yearsOf, type Category, type Direction, type MoneyEntry } from '../money/ledger';
+import { downloadText } from '../backup/download';
+import { DEMO_FARM_ID } from '../config';
+import { moneyCsv, moneyLines } from '../money/export';
 import { BackBar } from './BackBar';
 import { useSubmit } from './useSubmit';
 import { BigNum, Card, DetailSheet, ListRow, SheetFact } from './ds';
@@ -44,6 +47,11 @@ export function Money({ onBack }: { onBack: () => void }) {
     await append(v); setView({ kind: 'main' });
     showUndo(t('ui.money.cancelled'), () => append(restoreOf(v, crypto.randomUUID(), new Date().toISOString())));
   };
+  const exportCsv = () => {
+    const lines = moneyLines(rows, year, { dir: (d) => t(d === 'in' ? 'ui.money.dir.in' : 'ui.money.dir.out'), category: (c) => t(CAT_KEYS[c as Category]), crop: cropName });
+    const head = [t('ui.money.date'), t('ui.money.dir'), t('ui.money.category'), t('ui.money.crop'), t('ui.money.col.amount'), t('ui.money.note'), t('ui.money.col.record')];
+    downloadText(`aloni-${farm === DEMO_FARM_ID ? 'demo-' : ''}tameio-${year}.csv`, moneyCsv(t('ui.money.export.draft', { year }), head, lines), 'text/csv;charset=utf-8');
+  };
   return (
     <section data-testid="money">
       <BackBar onBack={onBack} testId="money-back" />
@@ -81,6 +89,7 @@ export function Money({ onBack }: { onBack: () => void }) {
           </details>
         )}
       </>}
+      {live.length > 0 && <button class="btn secondary" data-testid="money-export" onClick={exportCsv}>{t('ui.money.export')}</button>}
       <p class="muted" data-testid="money-local">{t('ui.money.local')}</p>
       {open && <DetailSheet heading={signed(open)} testid="money-sheet" onClose={() => setView({ kind: 'main' })}>
         <SheetFact name={t('ui.money.category')} value={t(CAT_KEYS[open.category])} />

@@ -4,7 +4,10 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": null,
+  "simdi": {
+    "id": "is-2",
+    "dal": "1127-is-2-ledger-csv"
+  },
   "sirada": [
     {
       "id": "is-2",
@@ -13,9 +16,13 @@
       "onay": "Bora, 27 Kasım 2026",
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
-      "durum": "sirada",
-      "deneme": 0,
-      "son_deneme": null
+      "durum": "pr-acik",
+      "deneme": 1,
+      "son_deneme": {
+        "tarih": "2026-11-27",
+        "sonuc": "CSV dışa aktarım parçası hazır; veresiye, müşteri fiyatı ve PDF kaldı",
+        "pr": null
+      }
     },
     {
       "id": "q-2",
@@ -83,7 +90,7 @@
   ],
   "gunluk": {
     "tarih": "2026-11-27",
-    "kod_isi": 0
+    "kod_isi": 1
   },
   "son_kosu": {
     "tarih": "2026-11-27",
