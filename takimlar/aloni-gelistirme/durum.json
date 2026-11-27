@@ -105,7 +105,7 @@
     {
       "id": "is-3",
       "baslik": "Κλούβες yedeği içe aktarma + «Διαθέσιμες κλούβες» + PHI testi repoda zaten vardı (orders/klouves.ts, available.ts, orders.test.ts); yalnızca BACKLOG E4'teki 2 eski çift satır silindi",
-      "pr": null
+      "pr": 610
     }
   ],
   "bekleyen_kararlar": [
@@ -121,7 +121,7 @@
   "son_kosu": {
     "tarih": "2026-11-27",
     "is": "is-3: Κλούβες içe aktarma doğrulaması",
-    "sonuc": "yeni kod gerekmedi; BACKLOG temizliği PR'ı açıldı"
+    "sonuc": "yeni kod gerekmedi (repoda vardı); BACKLOG temizliği birleşti (#610, main a2fe0dc, bekçi ONAY ef20871, CI yeşil)"
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }

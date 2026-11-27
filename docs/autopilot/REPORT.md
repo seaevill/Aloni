@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-27 13:01 Atina — yönetici koşusu 20261127-1052
+1. **Uygulamada ne değişti:** Uygulamada bir şey değişmedi. Sıradaki iş (Κλούβες yedeğini içe alma, «Διαθέσιμες κλούβες» ekranı ve ekim önerisi) kontrol edildi: zaten yapılmış ve test edilmiş (Άλλα → Διαθέσιμες κλούβες). İlaç bekleme süresindeki hasat «satılabilir» sayılmıyor; bunu deneyen test var. İş listesinde bu iş yanlışlıkla iki kez, biri «yapılmadı» olarak duruyordu; o eski satır silindi.
+2. **Senin için faydası:** Aynı işe ikinci kez kod yazılmadı; iş listesi artık gerçeği gösteriyor.
+3. **Ne denendi, ne başarısız oldu:** Bekçi Κλούβες testlerini kendisi çalıştırdı (10 test geçti), ilk denetimde ONAY. GitHub'daki tüm kontroller (telefon ekranı testleri 3 parça, SQL, Cloudflare derlemesi) yeşil. Başarısız olan yok.
+4. **Önerim:** sıradaki iş is-4: prototip ile uygulamanın ekran ekran yan yana karşılaştırması ve fark listesi (düzeltme değil, sana öneri).
+5. **Senden gereken karar:** Yeni karar yok. Önceki Yunanca sözcük soruları (veresiye ve kasa fiyatı) hâlâ cevabını bekliyor.
+
+PR: https://github.com/seaevill/Aloni/pull/610 (birleşti, main `a2fe0dc`). Bugünkü kod işi: 5/12. Birleşti ≠ canlıda: bu ortamdan canlı adres doğrulanamaz.
+
 ## 2026-11-27 12:44 Atina — yönetici koşusu 20261127-1032
 1. **Uygulamada ne değişti:** Άλλα → Ταμείο ekranına «Εκτύπωση» düğmesi geldi. Seçili yılın kayıtlarını tek sayfalık, her zaman Yunanca bir döküm olarak açar; telefonda «Paylaş → Yazdır» ile PDF olarak kaydedebilirsin. Dökümde CSV ile aynı satırlar var (düzeltilen kayıt bir kez, iptal edilen hiç yok), gelir, gider ve net toplam, ayrıca «όχι λογιστικά βιβλία» (resmî muhasebe defteri değil) uyarısı. Tutarlar kuruşu kuruşuna, ondalık virgülle; tarihler gün/ay/yıl. Yeni Yunanca sözcük eklenmedi.
 2. **Senin için faydası:** Muhasebeciye Excel yerine düzgün bir PDF sayfası da verebilirsin; yazıcıdan da basılır.
