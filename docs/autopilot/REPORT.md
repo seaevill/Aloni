@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-27 12:25 Atina — yönetici koşusu 20261127-1010
+1. **Uygulamada ne değişti:** Άλλα → Ταμείο ekranında satış kaydına «Κλούβες» (kasa sayısı) alanı geldi. Aynı müşteriye aynı ürünü daha önce sattıysan formda «Προηγούμενη τιμή: … ανά κλούβα» (önceki kasa fiyatı) önerisi görünür; tutar ancak «Χρήση» düğmesine basarsan dolar, kaydı yine sen yaparsın. Daha önce satış yoksa öneri hiç çıkmaz; fiyat uydurulmaz, yuvarlanmaz. Bilgi yalnızca telefonda tutulur.
+2. **Senin için faydası:** Her müşteriye geçen sefer kasayı kaça verdiğini hatırlamak zorunda kalmazsın; tek dokunuşla aynı fiyatı kullanır ya da değiştirirsin.
+3. **Ne denendi, ne başarısız oldu:** Birim testleri 913 geçti (0, eksi, 2,5 kasa, harf, çok büyük sayı gibi yanlış girişleri deneyen testler dahil), kod denetimleri temiz, Ταμείο ekran testleri bilgisayarda geçti. Bekçi testleri kendisi tekrar çalıştırdı: ilk denetimde ONAY. GitHub'daki tüm kontroller (telefon ekranı testleri 3 parça, SQL, Cloudflare derlemesi) yeşil. Başarısız olan yok. Ekran resmi alınmadı.
+4. **Önerim:** sıradaki iş is-2d: muhasebeci için PDF dışa aktarım (is-2c'den ayrılan kalan parça).
+5. **Senden gereken karar:** Yeni Yunanca sözcükler uygun mu: «Κλούβες», «Προηγούμενη τιμή: … ανά κλούβα», «Χρήση»? (Önceki veresiye sözcükleri de hâlâ onay bekliyor.) Uygunsa «tamam» yaz, değilse kendi sözcüğünü söyle.
+
+PR: https://github.com/seaevill/Aloni/pull/606 (birleşti, main `f7ac9ac`). Bugünkü kod işi: 3/12. Birleşti ≠ canlıda: bu ortamdan canlı adres doğrulanamaz.
+
 ## 2026-11-27 11:40 Atina — yönetici koşusu 20261127-0918
 1. **Uygulamada ne değişti:** Άλλα → Ταμείο ekranında veresiye: bir satış kaydına müşteri seçilebiliyor ve «Δεν πληρώθηκε ακόμα» (henüz ödenmedi) işaretlenebiliyor. Bu kayıtlar «Απλήρωτο» etiketiyle görünür; ekranda yeni «Απλήρωτα από πελάτες» kartı müşteri müşteri ödenmeyen toplamı gösterir. Para gelince «Πληρώθηκε» düğmesi bir düzeltme satırı yazar; gelir yine satış gününde, bir kez sayılır. Bilgi yalnızca telefonda tutulur (senin kararın).
 2. **Senin için faydası:** Kimin sana ne kadar borcu olduğunu deftere bakmadan tek ekranda görürsün; ödeme gelince tek dokunuşla kapatırsın, yıl toplamı bozulmaz.

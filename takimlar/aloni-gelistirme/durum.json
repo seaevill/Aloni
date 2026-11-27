@@ -4,23 +4,7 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": {
-    "id": "is-2c",
-    "baslik": "Ταμείο kasa fiyatı geçmişi (1. parça): satışa kasa sayısı, aynı müşteri × ürün için son kasa fiyatı ÖNERİSİ (Dexie, SQL yok). Kalanı is-2d (PDF).",
-    "kaynak": "Bora, 23 Kasım 2026",
-    "onay": "Bora, 27 Kasım 2026",
-    "sahip": "aloni-gelistirme",
-    "tur": "ozellik",
-    "durum": "pr-acik",
-    "deneme": 1,
-    "son_deneme": {
-      "tarih": "2026-11-27",
-      "sonuc": "PR açıldı",
-      "pr": 606
-    },
-    "karar": "Bora 27 Kasım 2026: kasa fiyatı geçmişi ve veresiye şimdilik telefonda (Dexie); SQL/supabase yok.",
-    "dal": "1127-is-2c-kasa-fiyati"
-  },
+  "simdi": null,
   "sirada": [
     {
       "id": "is-2d",
@@ -129,6 +113,11 @@
         601,
         604
       ]
+    },
+    {
+      "id": "is-2c",
+      "baslik": "Ταμείο: satışa kasa sayısı ve aynı müşteri × ürün için son kasa fiyatı önerisi (kalanı is-2d PDF)",
+      "pr": 606
     }
   ],
   "bekleyen_kararlar": [
@@ -143,8 +132,8 @@
   },
   "son_kosu": {
     "tarih": "2026-11-27",
-    "is": "is-2 2. parça: Ταμείο veresiye",
-    "sonuc": "birleşti (#604, main 2ff294c, bekçi önce RED 3f104c4 sonra ONAY 41c1ed0, CI yeşil)"
+    "is": "is-2c: Ταμείο kasa fiyatı önerisi",
+    "sonuc": "birleşti (#606, main f7ac9ac, bekçi ONAY 6acfb8f, CI yeşil)"
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }
