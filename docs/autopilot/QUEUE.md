@@ -1,4 +1,6 @@
-# Autopilot queue (English; the owner report is Turkish: REPORT.md)
+# Autopilot queue — ARCHIVE since 2026-11-27
+
+> **Not the work queue any more.** Bora approved one system on 2026-11-27: the single queue is `takimlar/aloni-gelistirme/durum.json`, run by `docs/autopilot/YONETICI.md`. Open items 2, 2b, 30, 31 moved there (as q-2, q-2b, q-30, q-31); item 14 is in `bekleyen_kararlar`. Do not take items from this file.
 
 Status values: `todo` · `in-progress (PR #n)` · `done (PR #n)` · `monitor` (needs new evidence) · `blocked` (see BLOCKERS.md) · `ongoing`.
 **Anti-repeat rule (every run, before taking an item):** (1) skip every item whose status is not `todo`; (2) for the chosen `todo` item run `gh api "repos/seaevill/Aloni/pulls?state=all&per_page=40"` and `git log origin/main --oneline -40` and look for its keywords — if a PR (open or merged) already covers it, set its status accordingly in QUEUE.md (docs PR) and take the next item; (3) when an item is merged, the SAME PR (or the next docs PR) sets `done (PR #n)`.

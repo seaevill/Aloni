@@ -2,33 +2,92 @@
   "takim": "aloni-gelistirme",
   "guncelleme": "2026-11-27",
   "dogrulandi": true,
-  "not": "2026-11-27 koşusunda repoya (docs/STATUS.md, docs/BACKLOG.md, git log, GitHub REST) bakılarak eşitlendi. Kaynak: docs/STATUS.md ve docs/plan/FINANCE-AND-GROWTH-PLAN.md.",
-  "simdi": {
-    "id": "is-1",
-    "baslik": "Tarla + iş + hasat kaydı: Farmable kapsamına göre kalan boşluğu belirle, en küçük parçayı yap (not, ekip, stok ve satış kapsam dışı)",
-    "kaynak": "Bora, 23 Kasım 2026",
-    "not": "Kalan boşluk: features.csv/recon.md bayat; gübreleme/sulama, QR etiket, yıl karşılaştırma, GPS yürüme repoda var. Gerçek boşluk: ilaçlama kaydında o günün havası (should). Parça: SpraySheet'e yalnızca gösterim, depolama/SQL yok."
-  },
+  "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
+  "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
+  "simdi": null,
   "sirada": [
     {
       "id": "is-2",
-      "baslik": "Gelir-gider kaydı F2/F3: müşteriye ve zamana göre kasa fiyatı, veresiye takibi, muhasebeci için CSV ve PDF dışa aktarım (F1 elle defter repoda var)",
-      "kaynak": "Bora, 23 Kasım 2026"
+      "baslik": "Gelir-gider kaydı F2/F3: müşteriye ve zamana göre kasa fiyatı, veresiye takibi, muhasebeci için CSV ve PDF dışa aktarım (F1 elle defter repoda var). Önce kalan boşluğu belirle, en küçük parçayı yap; supabase/** gerekiyorsa dur ve Bora'ya sor.",
+      "kaynak": "Bora, 23 Kasım 2026",
+      "onay": "Bora, 27 Kasım 2026",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "q-2",
+      "baslik": "Ara sıra düşen testleri izle (labeluse.spec.ts:118, register-v2 yazdırma); yalnızca main'de yeni düşme kanıtı varsa kök nedeni ara",
+      "kaynak": "docs/autopilot/QUEUE.md madde 2",
+      "onay": null,
+      "sahip": "aloni-gelistirme",
+      "tur": "bakim",
+      "durum": "bora-bekliyor",
+      "deneme": 0,
+      "son_deneme": null,
+      "not": "Onay kaynağı dosyalarda doğrulanamadı (bekçi RED, PR #600); Bora açıkça onaylarsa açılır."
+    },
+    {
+      "id": "q-31",
+      "baslik": "QUEUE madde 31 (Demo parselleri) 'yarım' görünüyor ama 32 bitti: gerçekten kalan iş var mı doğrula, yoksa tamam yaz",
+      "kaynak": "docs/autopilot/QUEUE.md madde 31",
+      "onay": null,
+      "sahip": "aloni-gelistirme",
+      "tur": "bakim",
+      "durum": "bora-bekliyor",
+      "deneme": 0,
+      "son_deneme": null,
+      "not": "Onay kaynağı dosyalarda doğrulanamadı (bekçi RED, PR #600); Bora açıkça onaylarsa açılır."
+    },
+    {
+      "id": "q-2b",
+      "baslik": "SQL testi supabase/tests/m18_job_board.sql:90 ara sıra düşüyor; düzeltme supabase/** PR'ı ister",
+      "kaynak": "docs/autopilot/QUEUE.md madde 2b",
+      "onay": null,
+      "sahip": "aloni-gelistirme",
+      "tur": "bakim",
+      "durum": "bora-bekliyor",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "q-30",
+      "baslik": "Demo için gerçek ilaç etiketleri (resmî site bu ortamdan açılmıyor)",
+      "kaynak": "docs/autopilot/QUEUE.md madde 30",
+      "onay": null,
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "ertelendi",
+      "deneme": 0,
+      "son_deneme": null
     }
   ],
-  "bekleyen_kararlar": [],
+  "biten": [
+    {
+      "id": "is-0",
+      "baslik": "Durum dosyasını repodaki gerçek durumla eşitle",
+      "pr": 598
+    },
+    {
+      "id": "is-1",
+      "baslik": "İlaçlama kaydında o günün havası (gösterim)",
+      "pr": 599
+    }
+  ],
+  "bekleyen_kararlar": [
+    "0042 SQL yüklemesi (QUEUE madde 14): yalnızca Bora «Supabase migrate (manual)» ile yükler; sonra «yükleme tamam» yazar.",
+    "q-2b: m18_job_board.sql:90 düzeltmesi supabase/** dokunur; Bora yazılı onay verirse yapılır.",
+    "q-2 ve q-31 (eski kuyruktan taşınan bakım maddeleri) yeniden onaylansın mı?"
+  ],
+  "gunluk": {
+    "tarih": "2026-11-27",
+    "kod_isi": 0
+  },
   "son_kosu": {
     "tarih": "2026-11-27",
-    "is": "is-1 ilaçlama kaydında o günün havası (gösterim)",
-    "sonuc": "PR bekliyor (bekçi denetimi sağ kolda)"
-  },
-  "gercek_durum": {
-    "main": "e99e6e3 (#597). Son birleştirilenler: #583 şirket iskeleti, #584-#592 Demo sezonu/test/a11y, #594-#597 docs ve labeluse düzeltmesi.",
-    "acik_pr": [
-      "#508 claude/intel-3b: ARAŞTIRMA PROTOTİPİ (karşılanmamış talep hesabı + istihbarat denetimi), özellik değil; birleştirilmedi"
-    ],
-    "is-1 tarla/is/hasat": "Büyük ölçüde repoda var (STATUS: hasat temposu, kesim/temizlik, gübreleme/sulama, ΚΑΕΚ, iş panosu; Demo sezonu 7 parsel/12 ekim/hasat). Kalan boşluk bu koşuda belirlenmedi; işe başlarken Farmable kapsamıyla (replica/recon.md) karşılaştırılmalı.",
-    "is-2 gelir-gider": "Kısmen var: Ταμείο çekirdeği (#484) ve ekranı (#557), iptal/geri alma (#589), app/src/money/ledger.ts, Demo sezonunda para verisi. Plan docs/plan/FINANCE-AND-GROWTH-PLAN.md: F1 elle defter (var), F2 otomatik kayıt + veresiye + müşteri/zamana göre fiyat, F3 CSV+PDF muhasebeci aktarımı. F2 ve F3 repoda bulunamadı (money/ altında yalnızca ledger.ts; CSV/PDF yalnızca ilaçlama defteri için: export/register*.ts). Kesin durum bilinmiyor; işe başlarken doğrulanmalı.",
-    "bekleyen_bora": "STATUS'a göre: 0042 SQL yükleme onayı Bora'da; canlıya alma Bora'nın."
+    "is": "is-1 ilaçlama kaydında o günün havası",
+    "sonuc": "birleşti (#599, bekçi ONAY 10d5efe, CI yeşil)"
   }
 }
