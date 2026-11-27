@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openStock } from './helpers/tabs';
 import { fixClock } from './helpers/clock';
 
 // Αποθήκη product cards (Field Atelier): the ⓘ button sits on the SAME line as the name (it used to take a 56 px row of its own), both still open the product sheet, the balance is the strongest line of the card, every action is still there.
@@ -8,7 +9,7 @@ test('Demo Αποθήκη (375 px): name and ⓘ share one line, both open the s
   await page.goto('/');
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-counts')).toBeVisible();
-  await page.locator('nav.tabs [data-tab="stock"]').click();
+  await openStock(page);
   const card = page.getByTestId('product').first();
   const name = card.getByTestId('product-source-open');
   const info = card.getByTestId('product-info');

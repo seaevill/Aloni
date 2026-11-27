@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { goTab } from './helpers/tabs';
 import { fixClock } from './helpers/clock';
 
 // Quality gate: no sideways scroll on any of the five tabs at 320, 375, 390 and 768 px, in Greek, with the Demo farm loaded (weather, plantings, stock and orders all present).
@@ -12,7 +13,7 @@ for (const width of [320, 375, 390, 768]) {
     await expect(page.getByTestId('weather-strip')).toBeVisible();
     const wide: string[] = [];
     for (const tab of ['today', 'crops', 'parcels', 'stock', 'more']) {
-      await page.locator(`nav.tabs [data-tab="${tab}"]`).click();
+      await goTab(page, tab);
       await page.waitForTimeout(300);
       const over = await page.evaluate((w) => document.documentElement.scrollWidth - w, width);
       if (over > 0) wide.push(`${tab}: ${over}px`);

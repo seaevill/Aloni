@@ -1,10 +1,11 @@
 import { expect, test } from '@playwright/test';
+import { openStock } from './helpers/tabs';
 import { iphone } from './helpers/iphone';
 
 test('Αποθήκη (prototype layout): dark band, type filters narrow the list, the waiting period shows only from approved labels', async ({ page }) => {
   const errors = await iphone(page);
   await page.getByTestId('empty-state').locator('button').nth(1).click();          // the demo farm
-  await page.locator('nav.tabs [data-tab="stock"]').click();
+  await openStock(page);
   await expect(page.locator('header.band')).toBeVisible();
   await expect(page.getByTestId('product').first()).toBeVisible();
   const all = await page.getByTestId('product').count();

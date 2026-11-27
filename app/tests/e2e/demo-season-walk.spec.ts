@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
+import { goTab } from './helpers/tabs';
 import { iphone } from './helpers/iphone';
 
 // QUEUE 35: with the season Demo every tab and every sub-page opens at 320 / 375 / 390 px without a console error or sideways scroll. SHOTS=1 also writes the 375 px screenshots to docs/design/demo-season-2026-11-26/.
@@ -23,7 +24,7 @@ for (const [language, width] of RUNS) {
       if (process.env.SHOTS === '1' && width === 375 && language === 'el') await page.screenshot({ path: `${DIR}/${String(++n).padStart(2, '0')}-${name}.png`, fullPage: false });
     };
     const lower = async (name: string) => { await page.evaluate(() => window.scrollTo(0, 900)); await visit(name); await page.evaluate(() => window.scrollTo(0, 0)); };
-    const tab = (id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
+    const tab = (id: string) => goTab(page, id);
     await tab('more'); await (language === 'classic' ? page.getByTestId('demo-load') : page.getByTestId('demo-season-load')).click(); await expect(page.getByTestId('demo-banner')).toBeVisible();
     await tab('today'); await visit('today'); await lower('today-lower');
     for (const id of ['kpi-parcels', 'kpi-crops', 'today-cut7-big', 'today-canharvest']) { await page.getByTestId(id).click(); await visit(`today-${id}`); await page.getByTestId('sheet-close').first().click(); }

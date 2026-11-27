@@ -9,7 +9,8 @@ test('More prioritizes register and orders, with labelled targets at 320 px', as
   const links = page.getByTestId('more-menu').getByRole('button');
   await expect(links.first()).toHaveAttribute('data-testid', 'open-register');
   await expect(links.nth(1)).toHaveAttribute('data-testid', 'open-orders');
-  await expect(links.nth(2)).toHaveAttribute('data-testid', 'open-worker-view');
+  await expect(links.nth(2)).toHaveAttribute('data-testid', 'open-stock');
+  await expect(links.nth(3)).toHaveAttribute('data-testid', 'open-worker-view');
   for (const link of await links.all()) expect((await link.boundingBox())?.height).toBeGreaterThanOrEqual(56);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
   await links.first().click();

@@ -1,8 +1,9 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
+import { goTab } from './helpers/tabs';
 import { iphone } from './helpers/iphone';
 
-const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
+const tab = (page: Page, id: string) => goTab(page, id);
 const inputs = (page: Page) => page.locator('main input.input');
 
 async function addProduct(page: Page) {

@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openStock } from './helpers/tabs';
 import { setup } from './helpers/farm';
 import { iphone } from './helpers/iphone';
 
@@ -6,7 +7,7 @@ import { iphone } from './helpers/iphone';
 test('missing authorisation number: note on the product card and in the spray form', async ({ page }) => {
   const errors = await iphone(page);
   await setup(page, true);
-  await page.locator('nav.tabs [data-tab="stock"]').click();
+  await openStock(page);
   await expect(page.getByTestId('product-noreg').first()).toBeVisible();
   await page.locator('nav.tabs [data-tab="today"]').click();
   await page.getByTestId('spray-open').click();

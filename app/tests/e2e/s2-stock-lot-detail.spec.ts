@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openStock } from './helpers/tabs';
 import { fixClock } from './helpers/clock';
 
 test('Demo lot details show the recorded ledger with no adjustment action', async ({ page }) => {
@@ -8,7 +9,7 @@ test('Demo lot details show the recorded ledger with no adjustment action', asyn
   await page.goto('/');
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-counts')).toBeVisible();
-  await page.locator('nav.tabs [data-tab="stock"]').click();
+  await openStock(page);
   await page.getByTestId('product').filter({ hasText: 'χαλκού' }).getByTestId('stock-open').click();
   const open = page.getByTestId('lot-detail-open').first();
   await expect(open).toHaveAccessibleName('Κινήσεις παρτίδας');

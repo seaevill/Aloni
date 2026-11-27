@@ -1,7 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
+import { goTab } from './helpers/tabs';
 
 // «Δημιουργία κτήματος» against the MOCK backend (the e2e build): a signed-in person with NO farm sets up the first one through the app (migration 0034). Nothing leaves the machine.
-const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
+const tab = (page: Page, id: string) => goTab(page, id);
 const GRANT = { access_token: 'a-new', refresh_token: 'r-new', expires_in: 3600, user: { id: 'u-new', email: 'bora@example.org' } };
 
 async function mock(page: Page, farms: Array<{ farm_id: string }>, createAnswer?: { status: number; body: string }) {

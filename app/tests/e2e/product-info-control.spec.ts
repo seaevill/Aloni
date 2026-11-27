@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openStock } from './helpers/tabs';
 
 test.use({ viewport: { width: 375, height: 812 } });
 
@@ -7,7 +8,7 @@ test('Αποθήκη: every product card has its own «ⓘ» button (≥56 px) t
   await page.goto('/');
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-counts')).toBeVisible();
-  await page.locator('nav.tabs [data-tab="stock"]').click();
+  await openStock(page);
   const cards = page.getByTestId('product');
   await expect(cards.first()).toBeVisible();
   const n = await cards.count();

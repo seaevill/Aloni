@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openStock } from './helpers/tabs';
 
 test.use({ viewport: { width: 375, height: 812 } });
 
@@ -7,7 +8,7 @@ test('Demo: Αποθήκη starts with the harvest in store (crop, crates, age) 
   await page.goto('/');
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-counts')).toBeVisible();
-  await page.locator('nav.tabs [data-tab="stock"]').click();
+  await openStock(page);
   const section = page.getByTestId('store-stock');
   await expect(section).toBeVisible();
   const row = section.getByTestId('store-row').first();

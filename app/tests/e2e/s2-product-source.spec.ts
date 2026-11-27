@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openStock } from './helpers/tabs';
 import { fixClock } from './helpers/clock';
 
 test('the Demo stock product opens recorded label and balance facts', async ({ page, baseURL }) => {
@@ -8,7 +9,7 @@ test('the Demo stock product opens recorded label and balance facts', async ({ p
   await fixClock(page);
   await page.goto('/');
   await page.getByTestId('empty-state').locator('button').nth(1).click();
-  await page.locator('nav.tabs [data-tab="stock"]').click();
+  await openStock(page);
   const open = page.getByTestId('product-source-open').filter({ hasText: 'χαλκού' });
   expect((await open.boundingBox())?.height).toBeGreaterThanOrEqual(56);
   await open.click();

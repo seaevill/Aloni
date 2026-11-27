@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import { goTab } from './helpers/tabs';
 import { fixClock } from './helpers/clock';
 
 // «Φως ημέρας» (Sun / Glove mode): a device-local LOOK: black on white, bigger text and targets. It survives a reload, never overflows sideways, passes axe, and changes no feature.
@@ -19,7 +20,7 @@ test('Daylight mode: switches from Άλλα, survives a reload, black on white, 
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-sun', '');                              // kept on this phone
   for (const tab of ['today', 'crops', 'parcels', 'stock', 'more']) {
-    await page.locator(`nav.tabs [data-tab="${tab}"]`).click();
+    await goTab(page, tab);
     await page.waitForTimeout(250);
     expect(await page.evaluate(() => document.documentElement.scrollWidth), tab).toBeLessThanOrEqual(375);
     const small = await page.evaluate(() => [...document.querySelectorAll('main button:not(:disabled)')].filter((b) => { const r = b.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.height < 56; }).length);

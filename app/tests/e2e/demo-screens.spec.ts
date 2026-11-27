@@ -1,9 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
+import { goTab } from './helpers/tabs';
 import { fixClock } from './helpers/clock';
 import { iphone } from './helpers/iphone';
 import { openHistory, closeHistory } from './helpers/farm';
 
-const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
+const tab = (page: Page, id: string) => goTab(page, id);
 
 test('the demo farm fills every screen, read-only, in Greek at 375 px without overflow, and no write button appears', async ({ page }) => {
   const errors = await iphone(page);

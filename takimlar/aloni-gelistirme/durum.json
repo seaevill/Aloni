@@ -4,7 +4,7 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": null,
+  "simdi": "is-7",
   "sirada": [
     {
       "id": "is-6b-4",
@@ -24,9 +24,13 @@
       "onay": "Bora, 27 Kasım 2026 (çiftçi ve gerçek kullanıcı geri bildirimi)",
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
-      "durum": "sirada",
-      "deneme": 0,
-      "son_deneme": null
+      "durum": "pr-acik",
+      "deneme": 1,
+      "son_deneme": {
+        "tarih": "2026-11-28",
+        "sonuc": "PR hazır (bekçi bekliyor)",
+        "pr": 638
+      }
     },
     {
       "id": "q-2",
@@ -153,7 +157,7 @@
   ],
   "gunluk": {
     "tarih": "2026-11-28",
-    "kod_isi": 2
+    "kod_isi": 3
   },
   "son_kosu": {
     "tarih": "2026-11-28",

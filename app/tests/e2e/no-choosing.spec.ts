@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openStock } from './helpers/tabs';
 import { setup, closeHistory, fillStart } from './helpers/farm';
 import { iphone } from './helpers/iphone';
 
@@ -32,7 +33,7 @@ test('the dose stays empty until the owner taps «Ίδια με την ετικ�
 test('a job for a product with no label data for the crop is refused: «Δεν μπορείτε να αναθέσετε»', async ({ page }) => {
   await iphone(page);
   await setup(page, true);
-  await page.locator('nav.tabs [data-tab="stock"]').click();
+  await openStock(page);
   await page.locator('main').getByRole('button', { name: 'Προσθήκη προϊόντος' }).click();
   await page.locator('input.input').nth(0).fill('Score 25');
   await page.getByRole('button', { name: 'Μυκητοκτόνο' }).click(); await page.getByRole('button', { name: 'Κιλά (kg)' }).click();

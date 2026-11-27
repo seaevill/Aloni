@@ -12,7 +12,7 @@ h1 { font-size:var(--fs-30); font-weight:800; line-height:1.05; letter-spacing:v
 .badge { font-size:var(--fs-14); font-weight:700; background:var(--warn); color:var(--white); padding:var(--sp-2) var(--sp-8); border-radius:var(--r-pill); }
 .card { overflow-wrap:break-word; hyphens:auto; background:var(--card); border:0; box-shadow:var(--shadow-card); border-radius:var(--r-card); padding:var(--sp-12) var(--sp-14); margin:0 0 var(--sp-10); }
 .card small { display:block; font-size:var(--fs-14); color:var(--muted); }
-nav.tabs { position:fixed; left:0; right:0; bottom:0; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); background:var(--card); border-top:var(--bw-1) solid var(--line); padding-bottom:env(safe-area-inset-bottom); }
+nav.tabs { position:fixed; left:0; right:0; bottom:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); background:var(--card); border-top:var(--bw-1) solid var(--line); padding-bottom:env(safe-area-inset-bottom); }
 nav.tabs button { min-width:0; padding:0 var(--sp-2); line-height:1.15; text-align:center; overflow-wrap:anywhere; min-height:var(--tap); border:0; background:none; font:inherit; font-size:var(--fs-14); color:var(--tab); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--sp-2); }
 nav.tabs button[aria-current="page"] { color:var(--forest-2); font-weight:700; }
 nav.tabs button { min-width:0; padding:0 var(--sp-2); line-height:1.15; text-align:center; overflow-wrap:break-word; hyphens:auto; min-height:var(--tap); border:0; background:none; font:inherit; font-size:var(--fs-14); color:var(--tab); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--sp-2); }
