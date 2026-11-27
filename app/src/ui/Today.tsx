@@ -348,7 +348,7 @@ export function Today() {
         </section>
       )}
       {loaded && has && <button class="row" data-testid="history-open" onClick={() => setHistory(true)}><span>{t('history.title')}</span><span aria-hidden="true" class="chev" /></button>}
-      {loaded && has && <p class="card" data-testid="today-counts">{t('today.counts', { parcels: live(parcels).length, crops: formatQty(cropsInUse), plantings: formatQty(live(plantings).length) })}</p>}
+      {loaded && has && <p class="card" data-testid="today-counts">{t('today.counts', { plantings: formatQty(live(plantings).length) })}</p>}
     </section>
   );
 }
