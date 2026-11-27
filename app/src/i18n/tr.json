@@ -6,7 +6,7 @@
   "farm.real": "Çiftliğim",
   "farm.demo": "Demo çiftlik",
   "today.title": "Bugün",
-  "today.counts": "Parsel: {parcels} · Ürün: {crops} · Ekim: {plantings}",
+  "today.counts": "Ekim: {plantings}",
   "crops.title": "Ürünler",
   "parcels.title": "Parseller",
   "stock.title": "Depo",

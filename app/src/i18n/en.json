@@ -6,7 +6,7 @@
   "farm.real": "My farm",
   "farm.demo": "Demo farm",
   "today.title": "Today",
-  "today.counts": "Parcels: {parcels} · Crops: {crops} · Plantings: {plantings}",
+  "today.counts": "Plantings: {plantings}",
   "crops.title": "Crops",
   "parcels.title": "Parcels",
   "stock.title": "Stock",

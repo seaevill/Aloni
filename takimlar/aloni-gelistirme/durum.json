@@ -4,7 +4,10 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": null,
+  "simdi": {
+    "id": "is-6b-3",
+    "dal": "1128-is-6b-3-today-counts-plantings"
+  },
   "sirada": [
     {
       "id": "is-6b-3",
@@ -13,9 +16,13 @@
       "onay": "Bora, 27 Kasım 2026 (çiftçi ve gerçek kullanıcı geri bildirimi) — is-6 metninden (bölünen parça)",
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
-      "durum": "sirada",
-      "deneme": 0,
-      "son_deneme": null
+      "durum": "pr-acik",
+      "deneme": 1,
+      "son_deneme": {
+        "tarih": "2026-11-28",
+        "sonuc": "(b) yapıldı: today-counts satırı yalnızca «Φυτεύσεις: N»; Χωράφια/Καλλιέργειες kutuları kaldı. (a) ve (c) Bora cevabını bekliyor (bekleyen_kararlar)",
+        "pr": null
+      }
     },
     {
       "id": "is-7",

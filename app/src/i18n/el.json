@@ -6,7 +6,7 @@
   "farm.real": "Το κτήμα μου",
   "farm.demo": "Κτήμα επίδειξης",
   "today.title": "Σήμερα",
-  "today.counts": "Χωράφια: {parcels} · Καλλιέργειες: {crops} · Φυτεύσεις: {plantings}",
+  "today.counts": "Φυτεύσεις: {plantings}",
   "crops.title": "Καλλιέργειες",
   "parcels.title": "Χωράφια",
   "stock.title": "Αποθήκη",
