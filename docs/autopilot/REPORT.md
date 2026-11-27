@@ -13,7 +13,7 @@
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
 ## 2026-11-27 13:50 Atina — yönetici koşusu 20261127-1147
-1. **Uygulamada ne değişti:** Uygulamada bir şey değişmedi. Bu sabah 06:44'te (Atina) GitHub'da bir kez düşen «yedek al → telefonu sil → geri yükle» testine bakıldı. Test, Άλλα → Πληροφορίες → «Διαγραφή λογαριασμού» penceresinde, çiftlik adının yazıldığı kutu boş kaldığı için takılmış. Silme ve geri yükleme adımlarına hiç gelinmemiş. Yani yedeğin kendisinde bir hata görülmedi, ama bu koşu yedeği de sınamadı.
+1. **Uygulamada ne değişti:** Uygulamada bir şey değişmedi. Bu sabah 05:44’te (Atina) GitHub'da bir kez düşen «yedek al → telefonu sil → geri yükle» testine bakıldı. Test, Άλλα → Πληροφορίες → «Διαγραφή λογαριασμού» penceresinde, çiftlik adının yazıldığı kutu boş kaldığı için takılmış. Silme ve geri yükleme adımlarına hiç gelinmemiş. Yani yedeğin kendisinde bir hata görülmedi, ama bu koşu yedeği de sınamadı.
 2. **Senin için faydası:** Testin hangi adımda takıldığı artık kayıtlı. Tahminle kod değiştirilmedi.
 3. **Ne denendi, ne başarısız oldu:** Takım testi bilgisayarda, makine zorlanırken 10 kez çalıştırdı; 10'u da geçti, hata yeniden görülmedi. Neden kutunun boş kaldığı bilinmiyor; kök neden bulunamadı. O sabahtan sonraki tüm GitHub koşuları yeşil. PR açılmadı.
 4. **Önerim:** teste, yazının kutuda kaldığını kontrol eden bir satır eklemek. Bu testi gevşetmez, sıkılaştırır ve bir sonraki düşmede sorunu açıkça gösterir. Sıradaki onaylı iş q-31 (Demo parselleri kontrolü).
