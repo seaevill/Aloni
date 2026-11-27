@@ -20,11 +20,11 @@
         "sonuc": "1. parça birleşti: Ταμείο'da muhasebeci için CSV (#601, bekçi ONAY 6d952eb, CI yeşil). Kalan: müşteriye göre kasa fiyatı, veresiye, PDF.",
         "pr": 601
       },
-      "karar": "Bora 27 Kasım 2026: kasa fiyatı geçmişi ve veresiye ŞİMDİLİK YALNIZCA TELEFONDA (Dexie), SQL/supabase yok; ekranda «yalnızca bu telefonda» yazar."
+      "karar": "Bora 27 Kasım 2026: kasa fiyatı geçmişi ve veresiye şimdilik telefonda (Dexie); SQL/supabase yok."
     },
     {
       "id": "is-3",
-      "baslik": "Κλούβες yedeğini içe al (docs/BACKLOG.md E4, TECH-SPEC §7): Κλούβες JSON yedeği → «Διαθέσιμες κλούβες» ve ekim önerisi; yalnızca içe aktarma ve gösterim, SQL yok",
+      "baslik": "Önce BACKLOG'da ve git log'da gerçekte kalan işi doğrula (bazı satırlar [x] görünüyor); yalnızca kalanı yap. Κλούβες yedeğini içe al (docs/BACKLOG.md E4, TECH-SPEC §7): Κλούβες JSON yedeği → «Διαθέσιμες κλούβες» ve ekim önerisi; yalnızca içe aktarma ve gösterim, SQL yok",
       "kaynak": "Bora, 27 Kasım 2026 (yoğun mod seçimi)",
       "onay": "Bora, 27 Kasım 2026",
       "sahip": "aloni-gelistirme",
@@ -35,7 +35,7 @@
     },
     {
       "id": "is-4",
-      "baslik": "Prototip ile uygulama karşılaştırması (docs/BACKLOG.md E2.2): her ekran için 375 px prototip | uygulama yan yana görüntü + fark listesi; sonra küçük, özellik kaybı olmayan düzeltmeler (her biri ayrı PR)",
+      "baslik": "Prototip ile uygulama karşılaştırması (docs/BACKLOG.md E2.2): her ekran için 375 px prototip | uygulama yan yana görüntü + fark listesi. Düzeltmeler bu işe dahil değil; fark listesi Bora'ya öneri olarak sunulur.",
       "kaynak": "Bora, 27 Kasım 2026 (yoğun mod seçimi)",
       "onay": "Bora, 27 Kasım 2026",
       "sahip": "aloni-gelistirme",
@@ -46,7 +46,7 @@
     },
     {
       "id": "is-5",
-      "baslik": "Test paketi (docs/BACKLOG.md E5): tank karışımı, düzeltme, harita, işçi daveti için 375 px ekran testleri; testi gevşetmek yok",
+      "baslik": "Önce BACKLOG'da ve git log'da gerçekte kalan işi doğrula (bazı satırlar [x] görünüyor); yalnızca kalanı yap. Test paketi (docs/BACKLOG.md E5): tank karışımı, düzeltme, harita, işçi daveti için 375 px ekran testleri; testi gevşetmek yok",
       "kaynak": "Bora, 27 Kasım 2026 (yoğun mod seçimi)",
       "onay": "Bora, 27 Kasım 2026",
       "sahip": "aloni-gelistirme",
