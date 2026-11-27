@@ -1,28 +1,21 @@
 {
   "takim": "aloni-gelistirme",
-  "guncelleme": "2026-11-27",
+  "guncelleme": "2026-11-28",
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": {
-    "id": "is-6b-3",
-    "dal": "1128-is-6b-3-today-counts-plantings"
-  },
+  "simdi": null,
   "sirada": [
     {
-      "id": "is-6b-3",
-      "baslik": "Σήμερα yinelenen sayılar, 3. parça (is-6b-2'nin kalanı): (a) «Χωράφια χωρίς αναμονή» ile «Για κοπή» farklı birim — Bora cevabı gelmeden yapılmaz (bekleyen_kararlar); (b) Χωράφια/Καλλιέργειες kutuları + today-counts satırı (today-counts çok sayıda testte yükleme işareti; önce plan); (c) QuickAdd ile sayfadaki spray/harvest/job düğmelerinin tekrarı: hangisinin kalacağı belirsiz, düğme silinmez. Özellik kaybı yok; testler gevşetilmez; 375 px önce/sonra görüntü.",
-      "kaynak": "is-6b-2'nin bölünen kalanı (PR #625); özgün kaynak: is-6b'nin bölünen kalanı (PR #623); özgün kaynak: is-6'nın bölünen kalanı (PR #621); özgün kaynak: Bora, 27 Kasım 2026: çiftçilerden ve gerçek kullanıcılardan gelen geri bildirim",
+      "id": "is-6b-4",
+      "baslik": "Σήμερα yinelenen sayılar, 4. parça (is-6b-3'ün kalanı): (a) «Χωράφια χωρίς αναμονή» ile «Για κοπή σήμερα» farklı birim sayıyor — hangisinin kalacağı Bora'nın cevabına bağlı; (c) QuickAdd ile sayfadaki spray/harvest/job düğmelerinin tekrarı — hangisinin kalacağı Bora'nın cevabına bağlı, düğme işlevi silinmez. Özellik kaybı yok; testler gevşetilmez; 375 px önce/sonra görüntü.",
+      "kaynak": "is-6b-3'ün bölünen kalanı (PR #635); özgün kaynak: Bora, 27 Kasım 2026: çiftçilerden ve gerçek kullanıcılardan gelen geri bildirim",
       "onay": "Bora, 27 Kasım 2026 (çiftçi ve gerçek kullanıcı geri bildirimi) — is-6 metninden (bölünen parça)",
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
-      "durum": "pr-acik",
-      "deneme": 1,
-      "son_deneme": {
-        "tarih": "2026-11-28",
-        "sonuc": "(b) yapıldı: today-counts satırı yalnızca «Φυτεύσεις: N»; Χωράφια/Καλλιέργειες kutuları kaldı. (a) ve (c) Bora cevabını bekliyor (bekleyen_kararlar)",
-        "pr": null
-      }
+      "durum": "bora-bekliyor",
+      "deneme": 0,
+      "son_deneme": null
     },
     {
       "id": "is-7",
@@ -136,6 +129,16 @@
       "id": "is-6b-2",
       "baslik": "Σήμερα «Σήμερα έγιναν»: gecikmiş iş var ama bugün kayıt yoksa artık «Δεν έχει καταγραφεί τίποτα σήμερα.» yazıyor (yalnızca alt madde d); kalanı is-6b-3",
       "pr": 625
+    },
+    {
+      "id": "is-6b-3",
+      "baslik": "Σήμερα: «today-counts» satırı yalnızca «Φυτεύσεις: N» (Χωράφια/Καλλιέργειες zaten üstteki kutularda) — yalnızca alt madde b; kalanı is-6b-4",
+      "pr": 635
+    },
+    {
+      "id": "bakim-1128",
+      "baslik": "Bakım: main kırmızı — orders-per-farm.test.ts örnek tarihleri gerçek saate kayarken sabit TEST_NOW'da okuyordu; test saati sabitlendi (iddia aynı)",
+      "pr": 636
     }
   ],
   "bekleyen_kararlar": [
@@ -149,13 +152,13 @@
     "is-6b-3 (c): Σήμερα'da ilaçlama/hasat/iş ekleme düğmeleri hem hızlı ekleme (QuickAdd) bölümünde hem sayfanın başka yerinde var. Tekrar kalkacaksa hangisi kalsın: hızlı ekleme bölümü mü, sayfadaki düğmeler mi? (Düğme işlevi silinmez, yalnızca tekrar kalkar.)"
   ],
   "gunluk": {
-    "tarih": "2026-11-27",
-    "kod_isi": 12
+    "tarih": "2026-11-28",
+    "kod_isi": 2
   },
   "son_kosu": {
-    "tarih": "2026-11-27",
-    "is": "yok (yönetici koşusu 20261127-2119)",
-    "sonuc": "günlük kod işi sınırı 12/12 dolu; yalnızca rapor, ajan çalışmadı; saat 19:00'u geçtiği için zincir yok"
+    "tarih": "2026-11-28",
+    "is": "bakım (main kırmızı: orders-per-farm.test.ts tarih bombası, PR #636) + is-6b-3 (b) (PR #635) — yönetici koşusu 20261127-2219",
+    "sonuc": "iki PR birleşti; is-6b-3 kalanı is-6b-4 olarak Bora cevabını bekliyor"
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }
