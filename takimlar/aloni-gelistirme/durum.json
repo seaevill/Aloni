@@ -4,7 +4,7 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": "is-7",
+  "simdi": null,
   "sirada": [
     {
       "id": "is-6b-4",
@@ -16,21 +16,6 @@
       "durum": "bora-bekliyor",
       "deneme": 0,
       "son_deneme": null
-    },
-    {
-      "id": "is-7",
-      "baslik": "Αποθήκη'yi alt menüden kaldır ve Άλλα menüsüne taşı (Bora'nın seçimi). Ekran, ilaç partisi, son kullanma ve stok uyarıları aynen çalışmaya devam eder; yalnızca sekmenin yeri değişir. Alt menüye bağlı testler ve bağlantılar yeni yere güncellenir; test gevşetmek yok.",
-      "kaynak": "Bora, 27 Kasım 2026: çiftçilerden ve gerçek kullanıcılardan gelen geri bildirim",
-      "onay": "Bora, 27 Kasım 2026 (çiftçi ve gerçek kullanıcı geri bildirimi)",
-      "sahip": "aloni-gelistirme",
-      "tur": "ozellik",
-      "durum": "pr-acik",
-      "deneme": 1,
-      "son_deneme": {
-        "tarih": "2026-11-28",
-        "sonuc": "PR hazır (bekçi bekliyor)",
-        "pr": 638
-      }
     },
     {
       "id": "q-2",
@@ -143,6 +128,11 @@
       "id": "bakim-1128",
       "baslik": "Bakım: main kırmızı — orders-per-farm.test.ts örnek tarihleri gerçek saate kayarken sabit TEST_NOW'da okuyordu; test saati sabitlendi (iddia aynı)",
       "pr": 636
+    },
+    {
+      "id": "is-7",
+      "baslik": "Αποθήκη alt menüden Άλλα menüsüne taşındı (Καθημερινή δουλειά grubu, Παραγγελίες'ten sonra); alt çubuk 4 sekme; eski #/own/stock bağlantısı açılıyor, Αποθήκη açıkken Άλλα vurgulu; ~40 e2e tek yardımcıyla (helpers/tabs.ts) yeni yolu kullanıyor",
+      "pr": 638
     }
   ],
   "bekleyen_kararlar": [
@@ -161,8 +151,8 @@
   },
   "son_kosu": {
     "tarih": "2026-11-28",
-    "is": "bakım (main kırmızı: orders-per-farm.test.ts tarih bombası, PR #636) + is-6b-3 (b) (PR #635) — yönetici koşusu 20261127-2219",
-    "sonuc": "iki PR birleşti; is-6b-3 kalanı is-6b-4 olarak Bora cevabını bekliyor"
+    "is": "is-7 (PR #638) — yönetici koşusu 20261127-2318",
+    "sonuc": "birleşti; ilk CI koşusunda iki menü sırası testi yeni satırı bilmiyordu, takım düzeltti, bekçi yeni SHA'yı yeniden onayladı"
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }

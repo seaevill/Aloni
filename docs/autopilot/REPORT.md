@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 01:48 Atina — yönetici koşusu 20261127-2318
+1. **Uygulamada ne değişti:** «Αποθήκη» artık alt menüde değil; «Άλλα» menüsünde, «Καθημερινή δουλειά» grubunda «Παραγγελίες»in hemen altında bir satır olarak duruyor. Alt menüde 4 sekme kaldı (Σήμερα, Φυτά, Χωράφια, Άλλα). Αποθήκη ekranının kendisi (ilaç partileri, son kullanma, stok uyarıları) hiç değişmedi; Αποθήκη açıkken alt menüde «Άλλα» vurgulu görünüyor. Eski Αποθήκη bağlantısı (kayıtlı yer dahil) hâlâ açılıyor.
+2. **Senin için faydası:** Alt menü daha sade, her düğme daha geniş; senin seçtiğin düzen. Hiçbir işlev kaybolmadı.
+3. **Ne denendi, ne başarısız oldu:** İlk denemede iPhone tarayıcısıyla çalışan ekran testlerinden ikisi düştü: «Άλλα» menüsünün sırasını kontrol eden iki test yeni «Αποθήκη» satırını bilmiyordu. Takım yalnızca beklenen sıraya yeni satırı ekledi (test gevşetilmedi), bekçi yeni hali yeniden inceleyip ONAY verdi. İkinci denemede tüm kontroller yeşil (3 parça ekran testi, SQL, Cloudflare derlemesi). Yeni bir test de eklendi: alt menüde Αποθήκη yok, Άλλα'daki satır ekranı açıyor, eski bağlantı çalışıyor.
+4. **Önerim:** Telefonda «Άλλα → Αποθήκη»yı açıp bir ilaç partisine bak. Onaylı ve senin cevabına bağlı olmayan iş kalmadı; sıradaki iş is-6b-4 senin cevabını bekliyor.
+5. **Senden gereken karar:** «Σήμερα»nın iki sorusu (is-6b-4): (a) «Για κοπή σήμερα» ekim sayıyor, «Χωράφια χωρίς αναμονή» tarla sayıyor — tek satıra inecekse hangisi kalsın? (c) İlaçlama/hasat/iş ekleme düğmeleri hem hızlı ekleme bölümünde hem sayfada var — hangisi kalsın? Ayrıca prototip karşılaştırmasındaki 5 öneriden hangileri iş olsun?
+
+PR: https://github.com/seaevill/Aloni/pull/638 (Αποθήκη → Άλλα). Bugünkü kod işi: 3/12. Birleşti ≠ canlıda.
+
 ## 2026-11-28 00:45 Atina — yönetici koşusu 20261127-2219
 1. **Uygulamada ne değişti:** «Σήμερα» ekranının altındaki sayı satırı artık yalnızca «Φυτεύσεις: N» yazıyor. «Χωράφια» ve «Καλλιέργειες» sayıları zaten üstteki dokunulabilir kutularda olduğu için bu satırdan çıkarıldı; hiçbir sayı kaybolmadı. Ayrıca bir test onarıldı (uygulamanın davranışı değişmedi).
 2. **Senin için faydası:** Aynı sayıyı iki kez okumuyorsun; ekran biraz daha sade. Test onarımı sayesinde her gün kendi kendine kırmızıya dönen kontrol artık yanlış alarm vermiyor.
