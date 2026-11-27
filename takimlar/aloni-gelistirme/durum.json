@@ -4,22 +4,7 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": {
-    "id": "is-2",
-    "baslik": "Gelir-gider kaydı F2/F3: müşteriye ve zamana göre kasa fiyatı, veresiye takibi, muhasebeci için CSV ve PDF dışa aktarım (F1 elle defter repoda var). Önce kalan boşluğu belirle, en küçük parçayı yap; supabase/** gerekiyorsa dur ve Bora'ya sor.",
-    "kaynak": "Bora, 23 Kasım 2026",
-    "onay": "Bora, 27 Kasım 2026",
-    "sahip": "aloni-gelistirme",
-    "tur": "ozellik",
-    "durum": "pr-acik",
-    "deneme": 2,
-    "son_deneme": {
-      "tarih": "2026-11-27",
-      "sonuc": "2. parça: Ταμείο'da veresiye (satış müşteriye bağlanır, «Δεν πληρώθηκε ακόμα» işareti, «Απλήρωτα» kartı, «Πληρώθηκε» düzeltme satırı yazar); PR açık, bekçi ve CI bekleniyor",
-      "pr": 604
-    },
-    "karar": "Bora 27 Kasım 2026: kasa fiyatı geçmişi ve veresiye şimdilik telefonda (Dexie); SQL/supabase yok."
-  },
+  "simdi": null,
   "sirada": [
     {
       "id": "is-2c",
@@ -121,6 +106,14 @@
       "id": "is-1",
       "baslik": "İlaçlama kaydında o günün havası (gösterim)",
       "pr": 599
+    },
+    {
+      "id": "is-2",
+      "baslik": "Ταμείο: muhasebeci için CSV (1. parça) ve veresiye (2. parça); kalanı is-2c",
+      "pr": [
+        601,
+        604
+      ]
     }
   ],
   "bekleyen_kararlar": [
@@ -134,8 +127,8 @@
   },
   "son_kosu": {
     "tarih": "2026-11-27",
-    "is": "is-2 1. parça: Ταμείο CSV",
-    "sonuc": "birleşti (#601, bekçi ONAY 6d952eb, CI yeşil)"
+    "is": "is-2 2. parça: Ταμείο veresiye",
+    "sonuc": "birleşti (#604, main 2ff294c, bekçi önce RED 3f104c4 sonra ONAY 41c1ed0, CI yeşil)"
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }
