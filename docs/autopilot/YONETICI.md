@@ -35,10 +35,10 @@ Latest main commit and the CONCLUSION of each check-run; open PRs; for `durum.js
 ## 4. Decide ONE thing (first match wins)
 1. **Main is red** → maintenance: root cause from the failing log («FAILURE CONTEXT»); a green rerun is not a fix. Counts as a code job (`kod_isi` + 1).
 2. **`simdi` has an open PR** → continue it, never start a new item: CI red → team fixes; no bekçi verdict at the head SHA → bekçi; ONAY at head SHA + gates green → merge (step 7). PR merged → item `tamam`.
-3. **First `sirada` item with `onay` set, `durum` = `sirada`, `deneme` < 2**, and `gunluk.kod_isi` < 4 for today (Europe/Athens date) → take it: move it to `simdi`, `deneme` + 1, `kod_isi` + 1.
+3. **First `sirada` item with `onay` set, `durum` = `sirada`, `deneme` < 2**, and `gunluk.kod_isi` < the daily cap for today (Europe/Athens date; cap 4, but 12 up to and including 2026-12-01 — Bora's intensive mode, see `durum.json` `yogun_mod`) → take it: move it to `simdi`, `deneme` + 1, `kod_isi` + 1.
 4. **Maintenance with new evidence only** (`tur: bakim` items, e.g. a monitored test failed on main in the last 24 h).
 5. Nothing → no agents; short report (step 8) and stop.
-The cap is for EVERY code job (1, 2 when it needs a team fix, 3, 4): at 4 code jobs today only reporting is allowed. Maintenance (4) also needs an item with `onay`. Never take an item without `onay`. Never invent a feature. An item that failed twice becomes `engelli` and its question goes to `bekleyen_kararlar`.
+The cap is for EVERY code job (1, 2 when it needs a team fix, 3, 4): at the cap only reporting is allowed. Maintenance (4) also needs an item with `onay`. Never take an item without `onay`. Never invent a feature. An item that failed twice becomes `engelli` and its question goes to `bekleyen_kararlar`.
 
 ## 5. Team (aloni-gelistirme)
 Repo agents do not load as agent types in a fresh clone: start a `general-purpose` sub-agent with model `sonnet`, give it the body of `.claude/agents/aloni-gelistirme.md` verbatim as its identity, the environment notes (branch name rule above, push with `-c push.negotiate=true`, PR via `gh api repos/seaevill/Aloni/pulls`, this session's attribution lines), then ONLY: «Koşuya başla. Sıradaki tek işi yap.» After a bekçi RED: pass the reasons verbatim, nothing else (max 2 fixes).

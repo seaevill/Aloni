@@ -19,31 +19,63 @@
         "tarih": "2026-11-27",
         "sonuc": "1. parça birleşti: Ταμείο'da muhasebeci için CSV (#601, bekçi ONAY 6d952eb, CI yeşil). Kalan: müşteriye göre kasa fiyatı, veresiye, PDF.",
         "pr": 601
-      }
+      },
+      "karar": "Bora 27 Kasım 2026: kasa fiyatı geçmişi ve veresiye şimdilik telefonda (Dexie); SQL/supabase yok."
+    },
+    {
+      "id": "is-3",
+      "baslik": "Önce BACKLOG'da ve git log'da gerçekte kalan işi doğrula (bazı satırlar [x] görünüyor); yalnızca kalanı yap. Κλούβες yedeğini içe al (docs/BACKLOG.md E4, TECH-SPEC §7): Κλούβες JSON yedeği → «Διαθέσιμες κλούβες» ve ekim önerisi; yalnızca içe aktarma ve gösterim, SQL yok",
+      "kaynak": "Bora, 27 Kasım 2026 (yoğun mod seçimi)",
+      "onay": "Bora, 27 Kasım 2026",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "is-4",
+      "baslik": "Prototip ile uygulama karşılaştırması (docs/BACKLOG.md E2.2): her ekran için 375 px prototip | uygulama yan yana görüntü + fark listesi. Düzeltmeler bu işe dahil değil; fark listesi Bora'ya öneri olarak sunulur.",
+      "kaynak": "Bora, 27 Kasım 2026 (yoğun mod seçimi)",
+      "onay": "Bora, 27 Kasım 2026",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "is-5",
+      "baslik": "Önce BACKLOG'da ve git log'da gerçekte kalan işi doğrula (bazı satırlar [x] görünüyor); yalnızca kalanı yap. Test paketi (docs/BACKLOG.md E5): tank karışımı, düzeltme, harita, işçi daveti için 375 px ekran testleri; testi gevşetmek yok",
+      "kaynak": "Bora, 27 Kasım 2026 (yoğun mod seçimi)",
+      "onay": "Bora, 27 Kasım 2026",
+      "sahip": "aloni-gelistirme",
+      "tur": "bakim",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
     },
     {
       "id": "q-2",
       "baslik": "Ara sıra düşen testleri izle (labeluse.spec.ts:118, register-v2 yazdırma); yalnızca main'de yeni düşme kanıtı varsa kök nedeni ara",
       "kaynak": "docs/autopilot/QUEUE.md madde 2",
-      "onay": null,
+      "onay": "Bora, 27 Kasım 2026",
       "sahip": "aloni-gelistirme",
       "tur": "bakim",
-      "durum": "bora-bekliyor",
+      "durum": "sirada",
       "deneme": 0,
-      "son_deneme": null,
-      "not": "Onay kaynağı dosyalarda doğrulanamadı (bekçi RED, PR #600); Bora açıkça onaylarsa açılır."
+      "son_deneme": null
     },
     {
       "id": "q-31",
       "baslik": "QUEUE madde 31 (Demo parselleri) 'yarım' görünüyor ama 32 bitti: gerçekten kalan iş var mı doğrula, yoksa tamam yaz",
       "kaynak": "docs/autopilot/QUEUE.md madde 31",
-      "onay": null,
+      "onay": "Bora, 27 Kasım 2026",
       "sahip": "aloni-gelistirme",
       "tur": "bakim",
-      "durum": "bora-bekliyor",
+      "durum": "sirada",
       "deneme": 0,
-      "son_deneme": null,
-      "not": "Onay kaynağı dosyalarda doğrulanamadı (bekçi RED, PR #600); Bora açıkça onaylarsa açılır."
+      "son_deneme": null
     },
     {
       "id": "q-2b",
@@ -82,9 +114,7 @@
   ],
   "bekleyen_kararlar": [
     "0042 SQL yüklemesi (QUEUE madde 14): yalnızca Bora «Supabase migrate (manual)» ile yükler; sonra «yükleme tamam» yazar.",
-    "q-2b: m18_job_board.sql:90 düzeltmesi supabase/** dokunur; Bora yazılı onay verirse yapılır.",
-    "q-2 ve q-31 (eski kuyruktan taşınan bakım maddeleri) yeniden onaylansın mı?",
-    "is-2 kalan parçalar (kasa fiyatı geçmişi, veresiye): veriler yalnızca telefonda mı tutulsun (SQL gerekmez), yoksa sunucu tablosu mu (supabase/** PR'ı, Bora onayı)?"
+    "q-2b: m18_job_board.sql:90 düzeltmesi supabase/** dokunur; Bora yazılı onay verirse yapılır."
   ],
   "gunluk": {
     "tarih": "2026-11-27",
@@ -94,5 +124,6 @@
     "tarih": "2026-11-27",
     "is": "is-2 1. parça: Ταμείο CSV",
     "sonuc": "birleşti (#601, bekçi ONAY 6d952eb, CI yeşil)"
-  }
+  },
+  "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }
