@@ -1,26 +1,34 @@
 {
   "takim": "aloni-gelistirme",
-  "guncelleme": "2026-11-26",
-  "dogrulandi": false,
-  "not": "Bu liste Bora'nin sohbette soylediklerinden kuruldu, repoya bakilmadan. Ilk kosunun ilk isi: acik PR'lara ve belgelere bakip bu dosyayi gercek durumla esitlemek, sonra dogrulandi alanini true yapmak.",
+  "guncelleme": "2026-11-27",
+  "dogrulandi": true,
+  "not": "2026-11-27 koşusunda repoya (docs/STATUS.md, docs/BACKLOG.md, git log, GitHub REST) bakılarak eşitlendi. Kaynak: docs/STATUS.md ve docs/plan/FINANCE-AND-GROWTH-PLAN.md.",
   "simdi": null,
   "sirada": [
     {
-      "id": "is-0",
-      "baslik": "Durum dosyasini repodaki gercek durumla esitle (acik PR'lar, yarim isler, son birlestirilenler)",
-      "kaynak": "kurulum"
-    },
-    {
       "id": "is-1",
-      "baslik": "Tarla + is + hasat kaydi (Farmable'dan alinan bolum; not, ekip, stok ve satis kapsam disi)",
-      "kaynak": "Bora, 23 Kasim 2026"
+      "baslik": "Tarla + iş + hasat kaydı: Farmable kapsamına göre kalan boşluğu belirle, en küçük parçayı yap (not, ekip, stok ve satış kapsam dışı)",
+      "kaynak": "Bora, 23 Kasım 2026"
     },
     {
       "id": "is-2",
-      "baslik": "Gelir-gider kaydi: musteriye ve zamana gore degisen kasa fiyati, veresiye takibi, muhasebeci icin CSV ve PDF disa aktarim",
-      "kaynak": "Bora, 23 Kasim 2026"
+      "baslik": "Gelir-gider kaydı F2/F3: müşteriye ve zamana göre kasa fiyatı, veresiye takibi, muhasebeci için CSV ve PDF dışa aktarım (F1 elle defter repoda var)",
+      "kaynak": "Bora, 23 Kasım 2026"
     }
   ],
   "bekleyen_kararlar": [],
-  "son_kosu": null
+  "son_kosu": {
+    "tarih": "2026-11-27",
+    "is": "is-0 durum eşitleme",
+    "sonuc": "PR bekliyor"
+  },
+  "gercek_durum": {
+    "main": "e99e6e3 (#597). Son birleştirilenler: #583 şirket iskeleti, #584-#592 Demo sezonu/test/a11y, #594-#597 docs ve labeluse düzeltmesi.",
+    "acik_pr": [
+      "#508 claude/intel-3b: ARAŞTIRMA PROTOTİPİ (karşılanmamış talep hesabı + istihbarat denetimi), özellik değil; birleştirilmedi"
+    ],
+    "is-1 tarla/is/hasat": "Büyük ölçüde repoda var (STATUS: hasat temposu, kesim/temizlik, gübreleme/sulama, ΚΑΕΚ, iş panosu; Demo sezonu 7 parsel/12 ekim/hasat). Kalan boşluk bu koşuda belirlenmedi; işe başlarken Farmable kapsamıyla (replica/recon.md) karşılaştırılmalı.",
+    "is-2 gelir-gider": "Kısmen var: Ταμείο çekirdeği (#484) ve ekranı (#557), iptal/geri alma (#589), app/src/money/ledger.ts, Demo sezonunda para verisi. Plan docs/plan/FINANCE-AND-GROWTH-PLAN.md: F1 elle defter (var), F2 otomatik kayıt + veresiye + müşteri/zamana göre fiyat, F3 CSV+PDF muhasebeci aktarımı. F2 ve F3 repoda bulunamadı (money/ altında yalnızca ledger.ts; CSV/PDF yalnızca ilaçlama defteri için: export/register*.ts). Kesin durum bilinmiyor; işe başlarken doğrulanmalı.",
+    "bekleyen_bora": "STATUS'a göre: 0042 SQL yükleme onayı Bora'da; canlıya alma Bora'nın."
+  }
 }
