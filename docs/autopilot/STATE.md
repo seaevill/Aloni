@@ -2,9 +2,9 @@
 
 ```
 LOCK: none            # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)
-LAST_RUN: 2026-11-26 01:00 Istanbul, night shift (autopilot/20261126-01-archived-sprays)
-LAST_COMPLETED: queue item 17b (S6 archived-planting sprayings stated under «Τελευταίοι ψεκασμοί»; S7 moved planting history pinned) (PR #573)
-NEXT_SAFE_ACTION: next dev run: no `todo` item left in QUEUE.md except ongoing #9 → docs/maintenance only or stop; item 14 waits for Bora («yükleme tamam» for 0042). Hour-07 run = MORNING VERIFICATION only.
+LAST_RUN: 2026-11-27 03:00 Istanbul, night shift (autopilot/20261127-03-sql-flake-evidence)
+LAST_COMPLETED: docs only — no `todo` in QUEUE.md; recorded the new SQL intermittent m18_job_board.sql:90 as item 2b (evidence + hypothesis)
+NEXT_SAFE_ACTION: next dev run: still no `todo` item (2/2b monitor, 14 waits for Bora «yükleme tamam», 30 deferred) → stop after Step 2 unless main is red or new failure evidence appears. takimlar/aloni-gelistirme/durum.json (#583) is the interactive session's list, not this queue. Hour-07 run = MORNING VERIFICATION only.
 OPEN_BRANCHES: none owned by autopilot
 ```
 
