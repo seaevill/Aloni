@@ -147,8 +147,8 @@
   },
   "son_kosu": {
     "tarih": "2026-11-27",
-    "is": "is-6b-2 (yönetici koşusu 20261127-1442)",
-    "sonuc": "PR #625: bekçi ilk denetimde ONAY (SHA 0855315), tüm CI yeşil, birleşti (main 275248b); is-6b-2 tamam (deneme 1), kalanı is-6b-3; günlük kod işi sınırı 12/12 doldu"
+    "is": "yok (yönetici koşusu 20261127-1503, «zincir» ile elle başlatıldı)",
+    "sonuc": "günlük kod işi sınırı 12/12 dolu; yalnızca rapor, ajan çalışmadı"
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }
