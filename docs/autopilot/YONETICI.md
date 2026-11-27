@@ -33,12 +33,12 @@ Also stop («Claude Code aktif – müdahale yok», release the lock) if a commi
 Latest main commit and the CONCLUSION of each check-run; open PRs; for `durum.json` `simdi`: its PR state, head SHA, check-runs and comments.
 
 ## 4. Decide ONE thing (first match wins)
-1. **Main is red** → maintenance: root cause from the failing log («FAILURE CONTEXT»); a green rerun is not a fix. Counts as a code job.
+1. **Main is red** → maintenance: root cause from the failing log («FAILURE CONTEXT»); a green rerun is not a fix. Counts as a code job (`kod_isi` + 1).
 2. **`simdi` has an open PR** → continue it, never start a new item: CI red → team fixes; no bekçi verdict at the head SHA → bekçi; ONAY at head SHA + gates green → merge (step 7). PR merged → item `tamam`.
 3. **First `sirada` item with `onay` set, `durum` = `sirada`, `deneme` < 2**, and `gunluk.kod_isi` < 4 for today (Europe/Athens date) → take it: move it to `simdi`, `deneme` + 1, `kod_isi` + 1.
 4. **Maintenance with new evidence only** (`tur: bakim` items, e.g. a monitored test failed on main in the last 24 h).
 5. Nothing → no agents; short report (step 8) and stop.
-Never take an item without `onay`. Never invent a feature. An item that failed twice becomes `engelli` and its question goes to `bekleyen_kararlar`.
+The cap is for EVERY code job (1, 2 when it needs a team fix, 3, 4): at 4 code jobs today only reporting is allowed. Maintenance (4) also needs an item with `onay`. Never take an item without `onay`. Never invent a feature. An item that failed twice becomes `engelli` and its question goes to `bekleyen_kararlar`.
 
 ## 5. Team (aloni-gelistirme)
 Repo agents do not load as agent types in a fresh clone: start a `general-purpose` sub-agent with model `sonnet`, give it the body of `.claude/agents/aloni-gelistirme.md` verbatim as its identity, the environment notes (branch name rule above, push with `-c push.negotiate=true`, PR via `gh api repos/seaevill/Aloni/pulls`, this session's attribution lines), then ONLY: «Koşuya başla. Sıradaki tek işi yap.» After a bekçi RED: pass the reasons verbatim, nothing else (max 2 fixes).
@@ -50,7 +50,7 @@ Same way with `.claude/agents/bekci.md` (read-only; it leaves its own `durum.jso
 Wait for CI at most 30 minutes. Merge (squash, `-f sha=<head>`) ONLY if: the PR head SHA equals the SHA in the latest bekçi ONAY comment; every check-run conclusion (check, sql, static, e2e 1–3, pr-size, Workers Builds) is success or skipped; no `supabase/**` file; not #508, not «DO NOT MERGE»; QUALITY.md holds. Otherwise leave it open and say why.
 
 ## 8. Record + report (every run, also when nothing was done)
-A docs-only PR from the record branch that changes ONLY `docs/autopilot/REPORT.md`, `takimlar/*/durum.json`, `takimlar/*/defter.md` (check `git diff --name-only`). It may be merged without bekçi when check, sql and static are green (ANAYASA 1 exception, Bora 2026-11-27).
+A docs-only PR from the record branch that changes ONLY `docs/autopilot/REPORT.md`, `takimlar/*/durum.json`, `takimlar/*/defter.md` (check `git diff --name-only`). It may be merged without bekçi only when ALL CI gates of step 7 are success or skipped (ANAYASA 1 exception, Bora 2026-11-27).
 - `durum.json`: item `durum` and `son_deneme` {tarih, sonuc, pr}, `simdi`, `son_kosu`, `gunluk` {tarih, kod_isi}.
 - Bekçi's uncommitted `durum.json`/`defter.md` go into this PR.
 - If agents ran, `defter.md` gets one lesson (ANAYASA 5).

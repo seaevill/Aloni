@@ -21,23 +21,25 @@
       "id": "q-2",
       "baslik": "Ara sıra düşen testleri izle (labeluse.spec.ts:118, register-v2 yazdırma); yalnızca main'de yeni düşme kanıtı varsa kök nedeni ara",
       "kaynak": "docs/autopilot/QUEUE.md madde 2",
-      "onay": "Bora, 24 Kasım 2026 (gece görevi)",
+      "onay": null,
       "sahip": "aloni-gelistirme",
       "tur": "bakim",
-      "durum": "sirada",
+      "durum": "bora-bekliyor",
       "deneme": 0,
-      "son_deneme": null
+      "son_deneme": null,
+      "not": "Onay kaynağı dosyalarda doğrulanamadı (bekçi RED, PR #600); Bora açıkça onaylarsa açılır."
     },
     {
       "id": "q-31",
       "baslik": "QUEUE madde 31 (Demo parselleri) 'yarım' görünüyor ama 32 bitti: gerçekten kalan iş var mı doğrula, yoksa tamam yaz",
       "kaynak": "docs/autopilot/QUEUE.md madde 31",
-      "onay": "Bora, 26 Kasım 2026 (Demo sezonu)",
+      "onay": null,
       "sahip": "aloni-gelistirme",
       "tur": "bakim",
-      "durum": "sirada",
+      "durum": "bora-bekliyor",
       "deneme": 0,
-      "son_deneme": null
+      "son_deneme": null,
+      "not": "Onay kaynağı dosyalarda doğrulanamadı (bekçi RED, PR #600); Bora açıkça onaylarsa açılır."
     },
     {
       "id": "q-2b",
@@ -63,14 +65,26 @@
     }
   ],
   "biten": [
-    {"id": "is-0", "baslik": "Durum dosyasını repodaki gerçek durumla eşitle", "pr": 598},
-    {"id": "is-1", "baslik": "İlaçlama kaydında o günün havası (gösterim)", "pr": 599}
+    {
+      "id": "is-0",
+      "baslik": "Durum dosyasını repodaki gerçek durumla eşitle",
+      "pr": 598
+    },
+    {
+      "id": "is-1",
+      "baslik": "İlaçlama kaydında o günün havası (gösterim)",
+      "pr": 599
+    }
   ],
   "bekleyen_kararlar": [
     "0042 SQL yüklemesi (QUEUE madde 14): yalnızca Bora «Supabase migrate (manual)» ile yükler; sonra «yükleme tamam» yazar.",
-    "q-2b: m18_job_board.sql:90 düzeltmesi supabase/** dokunur; Bora yazılı onay verirse yapılır."
+    "q-2b: m18_job_board.sql:90 düzeltmesi supabase/** dokunur; Bora yazılı onay verirse yapılır.",
+    "q-2 ve q-31 (eski kuyruktan taşınan bakım maddeleri) yeniden onaylansın mı?"
   ],
-  "gunluk": {"tarih": "2026-11-27", "kod_isi": 0},
+  "gunluk": {
+    "tarih": "2026-11-27",
+    "kod_isi": 0
+  },
   "son_kosu": {
     "tarih": "2026-11-27",
     "is": "is-1 ilaçlama kaydında o günün havası",
