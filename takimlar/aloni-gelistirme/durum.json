@@ -4,19 +4,22 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": null,
+  "simdi": {
+    "id": "is-2d",
+    "baslik": "Ταμείο muhasebeci için PDF dışa aktarım (is-2c'nin kalanı; kasa fiyatı geçmişi PR'da bitti). Yalnızca telefonda, SQL/supabase yok. Mevcut app/src/export/register-pdf.ts ve RegisterPrint.tsx kalıbına bak.",
+    "kaynak": "is-2c bölünmesi, Bora 23/27 Kasım 2026",
+    "onay": "Bora, 27 Kasım 2026 (is-2c kapsamı)",
+    "sahip": "aloni-gelistirme",
+    "tur": "ozellik",
+    "durum": "pr-acik",
+    "deneme": 1,
+    "son_deneme": {
+      "tarih": "2026-11-27",
+      "sonuc": "PR açıldı, bekçi bekliyor",
+      "pr": null
+    }
+  },
   "sirada": [
-    {
-      "id": "is-2d",
-      "baslik": "Ταμείο muhasebeci için PDF dışa aktarım (is-2c'nin kalanı; kasa fiyatı geçmişi PR'da bitti). Yalnızca telefonda, SQL/supabase yok. Mevcut app/src/export/register-pdf.ts ve RegisterPrint.tsx kalıbına bak.",
-      "kaynak": "is-2c bölünmesi, Bora 23/27 Kasım 2026",
-      "onay": "Bora, 27 Kasım 2026 (is-2c kapsamı)",
-      "sahip": "aloni-gelistirme",
-      "tur": "ozellik",
-      "durum": "sirada",
-      "deneme": 0,
-      "son_deneme": null
-    },
     {
       "id": "is-3",
       "baslik": "Önce BACKLOG'da ve git log'da gerçekte kalan işi doğrula (bazı satırlar [x] görünüyor); yalnızca kalanı yap. Κλούβες yedeğini içe al (docs/BACKLOG.md E4, TECH-SPEC §7): Κλούβες JSON yedeği → «Διαθέσιμες κλούβες» ve ekim önerisi; yalnızca içe aktarma ve gösterim, SQL yok",
@@ -128,7 +131,7 @@
   ],
   "gunluk": {
     "tarih": "2026-11-27",
-    "kod_isi": 3
+    "kod_isi": 4
   },
   "son_kosu": {
     "tarih": "2026-11-27",
