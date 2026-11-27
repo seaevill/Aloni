@@ -4,10 +4,7 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": {
-    "id": "is-2",
-    "dal": "1127-is-2-ledger-csv"
-  },
+  "simdi": null,
   "sirada": [
     {
       "id": "is-2",
@@ -16,12 +13,12 @@
       "onay": "Bora, 27 Kasım 2026",
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
-      "durum": "pr-acik",
+      "durum": "sirada",
       "deneme": 1,
       "son_deneme": {
         "tarih": "2026-11-27",
-        "sonuc": "CSV dışa aktarım parçası hazır; veresiye, müşteri fiyatı ve PDF kaldı",
-        "pr": null
+        "sonuc": "1. parça birleşti: Ταμείο'da muhasebeci için CSV (#601, bekçi ONAY 6d952eb, CI yeşil). Kalan: müşteriye göre kasa fiyatı, veresiye, PDF.",
+        "pr": 601
       }
     },
     {
@@ -86,7 +83,8 @@
   "bekleyen_kararlar": [
     "0042 SQL yüklemesi (QUEUE madde 14): yalnızca Bora «Supabase migrate (manual)» ile yükler; sonra «yükleme tamam» yazar.",
     "q-2b: m18_job_board.sql:90 düzeltmesi supabase/** dokunur; Bora yazılı onay verirse yapılır.",
-    "q-2 ve q-31 (eski kuyruktan taşınan bakım maddeleri) yeniden onaylansın mı?"
+    "q-2 ve q-31 (eski kuyruktan taşınan bakım maddeleri) yeniden onaylansın mı?",
+    "is-2 kalan parçalar (kasa fiyatı geçmişi, veresiye): veriler yalnızca telefonda mı tutulsun (SQL gerekmez), yoksa sunucu tablosu mu (supabase/** PR'ı, Bora onayı)?"
   ],
   "gunluk": {
     "tarih": "2026-11-27",
@@ -94,7 +92,7 @@
   },
   "son_kosu": {
     "tarih": "2026-11-27",
-    "is": "is-1 ilaçlama kaydında o günün havası",
-    "sonuc": "birleşti (#599, bekçi ONAY 10d5efe, CI yeşil)"
+    "is": "is-2 1. parça: Ταμείο CSV",
+    "sonuc": "birleşti (#601, bekçi ONAY 6d952eb, CI yeşil)"
   }
 }

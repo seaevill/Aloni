@@ -2,13 +2,13 @@
   "takim": "bekci",
   "guncelleme": "2026-11-27",
   "son_denetim": {
-    "pr": 600,
-    "sha": "193c00b25604c9dda7b402c1537084dcc4b4c032",
+    "pr": 601,
+    "sha": "6d952eb9c98f184d47430df9d453db5c59d4ffc9",
     "takim": "aloni-gelistirme",
-    "karar": "RED (yalnızca ANAYASA.md; Bora elle birleştirirse engel yok)"
+    "karar": "ONAY"
   },
   "denetim_sayaci": {
-    "onay": 2,
+    "onay": 3,
     "red": 1
   }
 }
