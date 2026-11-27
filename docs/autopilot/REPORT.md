@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-27 17:05 Atina — yönetici koşusu 20261127-1503
+1. **Uygulamada ne değişti:** Hiçbir şey. Bu koşu «zincir» notuyla elle başlatıldı, ama bugünkü kod işi sınırı (12/12) bir önceki koşuda doldu; sınır dolunca yalnızca rapor yazılabiliyor.
+2. **Senin için faydası:** Sınır aşılmadı, kuralsız iş yapılmadı.
+3. **Ne denendi, ne başarısız oldu:** Ana dal (son kayıt 0a2bef5) ve önceki kod işi (#625) yeşil. Başarısız olan yok.
+4. **Önerim:** Yarın (yeni gün, sınır sıfırlanır) sıradaki iş is-7: Αποθήκη'yi Άλλα menüsüne taşımak.
+5. **Senden gereken karar:** Önceki raporun iki sorusu (is-6b-3 a ve c) hâlâ cevap bekliyor.
+
+PR yok (yalnızca bu kayıt). Bugünkü kod işi: 12/12. Birleşti ≠ canlıda.
+
 ## 2026-11-27 16:56 Atina — yönetici koşusu 20261127-1442
 1. **Uygulamada ne değişti:** Σήμερα'daki «Σήμερα έγιναν» kartı, geciken iş varken ama bugün hiçbir kayıt yokken yalnızca başlığı gösteriyordu (altı boş). Artık altında «Δεν έχει καταγραφεί τίποτα σήμερα.» yazıyor. Bugün bir ilaçlama ya da hasat kaydı varsa cümle görünmüyor, kayıtlar listeleniyor (önceki gibi).
 2. **Senin için faydası:** Boş kart «bir şey mi bozuldu?» diye düşündürmüyor; bugün kayıt girilmediği açıkça yazıyor.
