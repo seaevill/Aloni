@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-27 23:19 Atina — yönetici koşusu 20261127-2119
+1. **Uygulamada ne değişti:** Hiçbir şey. Bugünkü kod işi sınırı (12/12) bugün öğleden sonra doldu; sınır dolunca yalnızca rapor yazılabiliyor. Saat 19:00'u geçti; zincir kurulmadı.
+2. **Senin için faydası:** Sınır aşılmadı, kuralsız iş yapılmadı.
+3. **Ne denendi, ne başarısız oldu:** Ana dal (son kayıt 2b77225) yeşil: tüm kontroller (SQL, iPhone tarayıcısıyla 3 parça ekran testi, Cloudflare derlemesi) başarılı. Başarısız olan yok.
+4. **Önerim:** Yarın (yeni gün, sınır sıfırlanır) sıradaki iş is-6b-3'ün senin cevabına bağlı olmayan kısmı ya da is-7: Αποθήκη'yi Άλλα menüsüne taşımak.
+5. **Senden gereken karar:** Önceki raporun iki sorusu (is-6b-3 a ve c) hâlâ cevap bekliyor.
+
+PR yok (yalnızca bu kayıt). Bugünkü kod işi: 12/12. Birleşti ≠ canlıda.
+
 ## 2026-11-27 22:19 Atina — yönetici koşusu 20261127-2018
 1. **Uygulamada ne değişti:** Hiçbir şey. Bugünkü kod işi sınırı (12/12) bugün öğleden sonra doldu; sınır dolunca yalnızca rapor yazılabiliyor. Saat 19:00'u geçti; zincir kurulmadı.
 2. **Senin için faydası:** Sınır aşılmadı, kuralsız iş yapılmadı.
