@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { goTab } from './helpers/tabs';
 
 // Greek (and TR/EN) strings run long: nothing may stick out of the 375 px screen or force sideways scrolling.
 const TABS = ['today', 'crops', 'parcels', 'stock', 'more'] as const;
@@ -12,7 +13,7 @@ test('no horizontal overflow at 375 px, with demo data, in el/tr/en, on every ta
     await page.locator('nav.tabs [data-tab="more"]').click();
     await page.getByRole('button', { name: lang, exact: true }).click();
     for (const id of TABS) {
-      await page.locator(`nav.tabs [data-tab="${id}"]`).click();
+      await goTab(page, id);
       const { scroll, wide } = await page.evaluate(() => ({
         scroll: document.documentElement.scrollWidth,
         // an element inside a row that scrolls sideways BY DESIGN (the stock filter) may reach past the screen; the row itself may not

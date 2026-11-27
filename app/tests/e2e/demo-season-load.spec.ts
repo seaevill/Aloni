@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { goTab } from './helpers/tabs';
 import { iphone } from './helpers/iphone';
 
 // Demo season (queue item 32a): the opt-in «πλήρης σεζόν» Demo has seven fictional parcels with drawn outlines and fictional ΚΑΕΚ (labelled Demo), plantings and harvests; every tab opens at 320/375/390 without errors or sideways scroll.
@@ -16,7 +17,7 @@ for (const width of [320, 375, 390]) {
     await expect(page.getByTestId('kaek-demo')).toBeVisible();
     await expect(page.getByTestId('kaek-edit')).toHaveCount(0);
     for (const tab of ['today', 'crops', 'parcels', 'stock', 'more']) {
-      await page.locator(`nav.tabs [data-tab="${tab}"]`).click();
+      await goTab(page, tab);
       await page.waitForTimeout(400);
       expect(await page.evaluate(() => document.documentElement.scrollWidth), `${tab} at ${width}`).toBeLessThanOrEqual(width);
     }

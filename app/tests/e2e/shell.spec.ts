@@ -1,16 +1,17 @@
 import { expect, test } from '@playwright/test';
+import { goTab } from './helpers/tabs';
 import { APP_NAME } from '../../src/config';
 
-test('shell: five tabs in Greek, 375 px, no horizontal scroll', async ({ page }) => {
+test('shell: four tabs in Greek (Αποθήκη opens from Άλλα), 375 px, no horizontal scroll', async ({ page }) => {
   await page.goto('/');
   const tabs = page.locator('nav.tabs button');
-  await expect(tabs).toHaveCount(5);
+  await expect(tabs).toHaveCount(4);
   // one short word per tab, drawn with line icons (no emoji), and every label stays on ONE line
   const labels = (await tabs.allInnerTexts()).map((s) => s.replace(/[\u00ad\s]/g, ''));
-  expect(labels).toEqual(['Σήμερα', 'Φυτά', 'Χωράφια', 'Αποθήκη', 'Άλλα']);
+  expect(labels).toEqual(['Σήμερα', 'Φυτά', 'Χωράφια', 'Άλλα']);
   // every label is ONE line (the crops tab is «Φυτά» since 2026-11-21: «Καλλιέρ-γειες» broke in the 75 px column)
   for (const l of await page.locator('nav.tabs .lbl').all()) { const text = (await l.innerText()).replace(/\u00ad/g, ''); expect((await l.boundingBox())!.height).toBeLessThanOrEqual(20); }
-  await expect(page.locator('nav.tabs svg')).toHaveCount(5);
+  await expect(page.locator('nav.tabs svg')).toHaveCount(4);
   const vw = page.viewportSize()!.width;
   expect(vw).toBe(375);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
@@ -20,7 +21,7 @@ test('shell: five tabs in Greek, 375 px, no horizontal scroll', async ({ page })
 test('tabs switch screens', async ({ page }) => {
   await page.goto('/');
   for (const [id, title] of [['crops', 'Φυτά'], ['parcels', 'Χωράφια'], ['stock', 'Αποθήκη'], ['more', 'Άλλα'], ['today', 'Σήμερα']]) {
-    await page.locator(`nav.tabs [data-tab="${id}"]`).click();
+    await goTab(page, id);
     await expect(page.locator('h1')).toContainText(title);
   }
 });

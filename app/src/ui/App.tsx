@@ -25,12 +25,12 @@ import { useEffect } from 'preact/hooks';
 import { activeFarm, db } from '../db';
 import { putLocal } from '../repo';
 
+// Αποθήκη is not in the bar any more (is-7): it opens from Άλλα. It stays a routable tab («#/own/stock», saved state), shown under Άλλα.
 // Keys are spelled out as literals so the i18n key test can see them (no dynamic t(`tab.${id}`)).
 const TABS: Array<{ id: Tab; icon: IconName; label: I18nKey }> = [
   { id: 'today', icon: 'today', label: 'tab.today' },
   { id: 'crops', icon: 'crops', label: 'ui.tab.crops' },
   { id: 'parcels', icon: 'parcels', label: 'tab.parcels' },
-  { id: 'stock', icon: 'stock', label: 'tab.stock' },
   { id: 'more', icon: 'more', label: 'tab.more' },
 ];
 
@@ -63,7 +63,7 @@ export function App() {
       <SheetHost />
       <nav class="tabs" aria-label={t('nav.main')}>
         {TABS.map(({ id, icon, label }) => (
-          <button key={id} data-tab={id} aria-current={tab.value === id ? 'page' : undefined} onClick={() => goTab(id)}>
+          <button key={id} data-tab={id} aria-current={(tab.value === 'stock' ? 'more' : tab.value) === id ? 'page' : undefined} onClick={() => goTab(id)}>
             <span class="ico" aria-hidden="true"><Icon name={icon} /></span>
             <span class="lbl">{t(label)}</span>
           </button>

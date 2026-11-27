@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { setup, closeHistory } from './helpers/farm';
+import { openStock } from './helpers/tabs';
 import { iphone } from './helpers/iphone';
 
 test('Back closes the open parcel and stays in the app on the Χωράφια list', async ({ page }) => {
@@ -18,11 +19,11 @@ test('Back closes the open parcel and stays in the app on the Χωράφια lis
 test('the demo farm and the tab survive a reload (with the demo banner); the own farm is one tap away', async ({ page }) => {
   await iphone(page);
   await page.getByTestId('empty-state').locator('button').nth(1).click();           // the demo farm
-  await page.locator('nav.tabs [data-tab="stock"]').click();
+  await openStock(page);
   await expect(page.getByTestId('demo-banner').first()).toBeVisible();
   await page.reload();
   await expect(page).toHaveURL(/#\/demo\/stock/);                                       // retried: the address is read after the app restored its state, not at the first instant after reload
-  await expect(page.locator('nav.tabs [data-tab="stock"]')).toHaveAttribute('aria-current', 'page');
+  await expect(page.locator('nav.tabs [data-tab="more"]')).toHaveAttribute('aria-current', 'page');   // Αποθήκη lives under Άλλα
   await expect(page.getByTestId('demo-banner').first()).toBeVisible();
 });
 
@@ -60,12 +61,12 @@ test('a tab tap with something typed asks first; after «stay» the text is stil
   await page.locator('nav.tabs [data-tab="parcels"]').click();
   await page.getByTestId('empty-state').locator('button').click();
   await page.locator('main input.input').first().fill('Κάτω Κάμπος');
-  await page.locator('nav.tabs [data-tab="stock"]').click();
+  await page.locator('nav.tabs [data-tab="more"]').click();
   await expect(page.getByTestId('leave-ask')).toBeVisible();
   await page.getByTestId('leave-stay').click();
   await expect(page.locator('main input.input').first()).toHaveValue('Κάτω Κάμπος');
-  await page.locator('nav.tabs [data-tab="stock"]').click();
+  await page.locator('nav.tabs [data-tab="more"]').click();
   await page.getByTestId('leave-go').click();
-  await expect(page.locator('nav.tabs [data-tab="stock"]')).toHaveAttribute('aria-current', 'page');
+  await expect(page.locator('nav.tabs [data-tab="more"]')).toHaveAttribute('aria-current', 'page');
   expect(errors).toEqual([]);
 });

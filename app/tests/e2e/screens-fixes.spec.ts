@@ -1,8 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
+import { goTab } from './helpers/tabs';
 import { athensInput, fixClock } from './helpers/clock';
 import { iphone } from './helpers/iphone';
 
-const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
+const tab = (page: Page, id: string) => goTab(page, id);
 
 test('Σήμερα: empty farm offers «add a field» first and the demo second; with data it shows only the counts, no «no data» and no demo button', async ({ page }) => {
   await iphone(page);

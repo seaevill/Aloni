@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openStock } from './helpers/tabs';
 
 // Προϊόν › «Υπολογισμός ψεκαστικού»: the dose of a SIGNED label × the area, exactly; an unsigned or incomplete label gives no number; the grower types the water and the tank.
 test('the Demo copper product: a signed label gives exact numbers, an unsigned one stays closed; tanks come from the grower\'s own water and tank numbers', async ({ page }) => {
@@ -7,7 +8,7 @@ test('the Demo copper product: a signed label gives exact numbers, an unsigned o
   await page.goto('/');
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-counts')).toBeVisible();
-  await page.locator('nav.tabs [data-tab="stock"]').click();
+  await openStock(page);
   await page.getByTestId('product-source-open').filter({ hasText: 'χαλκού' }).click();
   await page.getByTestId('product-calc').evaluate((el) => (el as HTMLElement).click());
   const sheet = page.getByTestId('spray-calc');

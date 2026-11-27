@@ -1,7 +1,8 @@
 import { expect, type Page } from '@playwright/test';
+import { goTab } from './tabs';
 import { athensInput } from './clock';
 
-const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
+const tab = (page: Page, id: string) => goTab(page, id);
 const inputs = (page: Page) => page.locator('main input.input');
 
 /** A real farm with everything a spray needs: parcel, planting, product with a COMPLETE label (optionally signed), a lot of 4,5 kg and a worker. */

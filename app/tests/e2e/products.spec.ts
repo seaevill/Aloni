@@ -1,7 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
+import { goTab } from './helpers/tabs';
 import { iphone } from './helpers/iphone';
 
-const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
+const tab = (page: Page, id: string) => goTab(page, id);
 const PIXEL = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
 
 test('add a product offline with a label photo: name kept, type and unit must be chosen, survives reload, archive and undo, no dialog', async ({ page, context }) => {

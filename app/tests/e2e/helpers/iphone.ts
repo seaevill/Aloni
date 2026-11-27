@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { goTab } from './tabs';
 
 // 375 px WebKit helper: every screen × language × state (empty farm, demo farm). Console errors fail the run.
 export const LANGS = ['EL', 'TR', 'EN'] as const;
@@ -15,7 +16,7 @@ export async function iphone(page: Page): Promise<string[]> {
   return errors;
 }
 
-const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
+const tab = (page: Page, id: string) => goTab(page, id);
 
 export async function goTo(page: Page, route: Route): Promise<void> {
   if (route === 'parcel-form') { await tab(page, 'parcels'); await page.getByTestId('empty-state').locator('button').click(); } else if (route === 'product-form') { await tab(page, 'stock'); await page.getByTestId('empty-state').locator('button').click(); } else if (route === 'photos') { await tab(page, 'today'); await tab(page, 'more'); await page.getByTestId('open-photos').click(); } else if (route === 'money') { await tab(page, 'more'); await page.getByTestId('open-money').click(); } else if (route === 'info') { await tab(page, 'more'); await page.getByTestId('open-info').click(); } else await tab(page, route);

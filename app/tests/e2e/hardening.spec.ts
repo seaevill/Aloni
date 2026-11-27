@@ -1,9 +1,10 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
+import { goTab } from './helpers/tabs';
 import { setup, openHistory, closeHistory } from './helpers/farm';
 import { iphone } from './helpers/iphone';
 
-const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
+const tab = (page: Page, id: string) => goTab(page, id);
 
 /** The UX bar on whatever is on screen: no sideways scroll at 375 px, every tap target ≥ 56 × 44 px, no serious axe problem. */
 async function bar(page: Page, at: string, minHeight = 56) {

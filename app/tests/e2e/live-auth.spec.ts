@@ -1,8 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
+import { goTab } from './helpers/tabs';
 
 // The live features against a MOCK backend (the e2e build, port 4174): e-mail code sign-in and the owner's invitation of a worker.
 // The mock answers what Supabase would; nothing leaves the machine.
-const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
+const tab = (page: Page, id: string) => goTab(page, id);
 const GRANT = { access_token: 'a-owner', refresh_token: 'r-owner', expires_in: 3600, user: { id: 'u-owner', email: 'bora@example.org' } };
 
 async function mockBackend(page: Page): Promise<{ invitations: unknown[] }> {

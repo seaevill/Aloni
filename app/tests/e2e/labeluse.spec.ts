@@ -1,9 +1,10 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
+import { goTab, openStock } from './helpers/tabs';
 import { iphone } from './helpers/iphone';
 
 const PIXEL = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
-const tab = (page: Page, id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
+const tab = (page: Page, id: string) => goTab(page, id);
 
 async function addProduct(page: Page) {
   await tab(page, 'stock');
@@ -160,7 +161,7 @@ test('approval: only a complete label can be signed (name + real date); editing 
   await expect(page.getByTestId('signoff-open')).toHaveCount(0);
 
   await page.reload();
-  await page.locator('nav.tabs [data-tab="stock"]').click();
+  await openStock(page);
   await page.getByTestId('labeluse-open').click();
   await expect(card.getByTestId('labeluse-status')).toContainText('Υπογραφή γεωπόνου: Test Agronomist'); // survives reload
   await expect(card.getByTestId('signoff-shown-note')).toHaveText('seen at the shop');                 // the note survives it too

@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { goTab } from './helpers/tabs';
 import { fixClock } from './helpers/clock';
 
 const screens = [
@@ -14,7 +15,7 @@ for (const screen of screens) {
     await fixClock(page);
     await page.goto('/');
     await page.getByTestId('empty-state').locator('button').nth(1).click();
-    await page.locator(`nav.tabs [data-tab="${screen.tab}"]`).click();
+    await goTab(page, screen.tab);
     const opener = page.getByTestId(screen.open).first();
     await expect(opener).toBeVisible();
     await opener.press('Enter');

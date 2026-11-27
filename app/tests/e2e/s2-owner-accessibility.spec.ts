@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import { goTab } from './helpers/tabs';
 import { fixClock } from './helpers/clock';
 
 const stages = [
@@ -26,7 +27,7 @@ for (const [name, tab, open, marker] of stages) {
     await page.goto('/');
     await page.getByTestId('empty-state').locator('button').nth(1).click();
     await expect(page.getByTestId('today-counts')).toBeVisible();
-    await page.locator(`nav.tabs [data-tab="${tab}"]`).click();
+    await goTab(page, tab);
     if (open === 'stock-open') await page.getByTestId('product').filter({ hasText: 'χαλκού' }).getByTestId(open).click();
     else if (open) await page.getByTestId(open).first().click();
     await expect(page.getByTestId(marker).first()).toBeVisible();

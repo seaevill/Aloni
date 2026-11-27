@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { goTab } from './helpers/tabs';
 import { iphone } from './helpers/iphone';
 import { setup } from './helpers/farm';
 
@@ -11,7 +12,7 @@ test('demo: exactly one ribbon on Σήμερα, Φυτά, Χωράφια, Απο
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-counts')).toBeVisible();
   for (const tab of ['today', 'crops', 'parcels', 'stock']) {
-    await page.locator(`nav.tabs [data-tab="${tab}"]`).click();
+    await goTab(page, tab);
     await expect(page.getByTestId('demo-banner'), tab).toHaveCount(1);
     expect(await page.locator('main').getByText(WORD).count(), tab).toBe(1);        // the wording appears once
   }
@@ -30,7 +31,7 @@ test('real farm: no demo mark anywhere on the main screens', async ({ page }) =>
   await iphone(page);
   await setup(page, true);
   for (const tab of ['today', 'crops', 'parcels', 'stock', 'more']) {
-    await page.locator(`nav.tabs [data-tab="${tab}"]`).click();
+    await goTab(page, tab);
     await expect(page.getByTestId('demo-banner'), tab).toHaveCount(0);
   }
 });
