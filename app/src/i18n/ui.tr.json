@@ -648,5 +648,16 @@
   "ui.money.cat.transport": "Nakliye",
   "ui.money.cat.equipment": "Ekipman",
   "ui.money.cat.fees": "Harçlar / muhasebeci",
-  "ui.money.cat.other_out": "Diğer gider"
+  "ui.money.cat.other_out": "Diğer gider",
+  "ui.money.customer": "Müşteri",
+  "ui.money.customer.optional": "Müşteri (isteğe bağlı)",
+  "ui.money.customer.none": "Müşteri yok; Diğer → Müşteriler'den ekle.",
+  "ui.money.owed.toggle": "Henüz ödenmedi",
+  "ui.money.owed.badge": "Ödenmedi",
+  "ui.money.owed.title": "Müşterilerin ödemediği satışlar",
+  "ui.money.owed.total": "Ödenmeyenlerin toplamı",
+  "ui.money.owed.count": "{n} kayıt",
+  "ui.money.owed.unknown": "Bulunamayan müşteri",
+  "ui.money.settle": "Ödendi",
+  "ui.money.err.customer": "Ödenmemiş satış için bir müşteri seç."
 }

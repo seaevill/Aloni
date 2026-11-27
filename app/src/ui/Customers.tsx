@@ -18,11 +18,11 @@ import { Card, ListRow } from './ds';
 
 // Άλλα → Πελάτες: the owner's customers (name, phone, note) and the orders he types for them. Everything stays on this phone, per farm; only the owner opens this screen. The orders go into the same shape the Κλούβες import
 // uses, so «Αύριο φεύγουν» and the supply table read them.
-interface Customer { id: string; name: string; phone: string; note: string }
+export interface Customer { id: string; name: string; phone: string; note: string }
 const key = (farm: string): string => `customers:${farm}`;
 const EMPTY: KlouvesOrders = { products: [], weeks: {}, skipped: 0, days: {}, clients: [] };
 
-async function loadCustomers(farm: string, server: boolean): Promise<Customer[]> {
+export async function loadCustomers(farm: string, server: boolean): Promise<Customer[]> {
   if (server) return (await db.customers.where('farm_id').equals(farm).toArray()).filter((c) => !c.deleted_at).map((c) => ({ id: String(c.id), name: String(c.name), phone: String(c.phone ?? ''), note: String(c.note ?? '') }));
   return ((await db.settings.get(key(farm)))?.value as Customer[] | undefined) ?? [];
 }

@@ -648,5 +648,16 @@
   "ui.money.cat.transport": "Μεταφορά",
   "ui.money.cat.equipment": "Εξοπλισμός",
   "ui.money.cat.fees": "Τέλη / λογιστής",
-  "ui.money.cat.other_out": "Άλλο έξοδο"
+  "ui.money.cat.other_out": "Άλλο έξοδο",
+  "ui.money.customer": "Πελάτης",
+  "ui.money.customer.optional": "Πελάτης (προαιρετικά)",
+  "ui.money.customer.none": "Δεν υπάρχουν πελάτες· πρόσθεσέ τους στο Άλλα → Πελάτες.",
+  "ui.money.owed.toggle": "Δεν πληρώθηκε ακόμα",
+  "ui.money.owed.badge": "Απλήρωτο",
+  "ui.money.owed.title": "Απλήρωτα από πελάτες",
+  "ui.money.owed.total": "Σύνολο απλήρωτων",
+  "ui.money.owed.count": "{n} εγγραφές",
+  "ui.money.owed.unknown": "Πελάτης που δεν βρέθηκε",
+  "ui.money.settle": "Πληρώθηκε",
+  "ui.money.err.customer": "Για απλήρωτη πώληση διάλεξε πελάτη."
 }

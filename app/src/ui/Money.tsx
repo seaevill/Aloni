@@ -4,7 +4,7 @@ import { formatDate, formatMonth, lang, t, type I18nKey } from '../i18n';
 import { formatMoney } from '../i18n/format';
 import { athensToday } from '../plantings/planting';
 import { CATALOG } from '../crops/catalog';
-import { appendMoney, buildEntry, cancelled, categoriesOf, effective, historyOf, loadMoney, restoreOf, rootOf, voidOf, MONTHS, yearSummary, yearsOf, type Category, type Direction, type MoneyEntry } from '../money/ledger';
+import { appendMoney, buildEntry, cancelled, categoriesOf, effective, historyOf, loadMoney, owedByCustomer, restoreOf, rootOf, settleOf, voidOf, MONTHS, yearSummary, yearsOf, type Category, type Direction, type MoneyEntry } from '../money/ledger';
 import { downloadText } from '../backup/download';
 import { DEMO_FARM_ID } from '../config';
 import { moneyCsv, moneyLines } from '../money/export';
@@ -12,6 +12,8 @@ import { BackBar } from './BackBar';
 import { useSubmit } from './useSubmit';
 import { BigNum, Card, DetailSheet, ListRow, SheetFact } from './ds';
 import { showUndo } from './Toast';
+import { serverRecordsOn } from '../owner-records/mode';
+import { loadCustomers, type Customer } from './Customers';
 
 // Άλλα → «Ταμείο» (F1, docs/milestones/F1.md): the owner's own income/expense book, on THIS phone only. Not official bookkeeping (the screen says so).
 // Rows are never edited or removed: «Διόρθωση» writes an amending row, «Ακύρωση» a void row, and «Αναίρεση» amends the void. Owner app only.
@@ -32,11 +34,14 @@ export function Money({ onBack }: { onBack: () => void }) {
   const [rows, setRows] = useState<MoneyEntry[] | undefined>(undefined);
   const [year, setYear] = useState(today.slice(0, 4));
   const [view, setView] = useState<View>({ kind: 'main' });
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const reload = async () => setRows(await loadMoney(db, farm));
   useEffect(() => { void reload(); }, [farm]);
+  useEffect(() => { void serverRecordsOn(db).then((on) => loadCustomers(farm, on)).then(setCustomers, () => setCustomers([])); }, [farm]);   // a customer list that cannot be read only hides the names
+  const who = (id: string | undefined): string => customers.find((c) => c.id === id)?.name ?? '';
   if (rows === undefined) return null;
   const append = async (e: MoneyEntry) => { await appendMoney(db, farm, e); await reload(); };
-  if (view.kind === 'form') return <EntryForm dir={view.dir} from={view.from} today={today} onBack={() => setView({ kind: 'main' })} onSave={async (e) => { await append(e); setYear(e.day.slice(0, 4)); setView({ kind: 'main' }); }} />;
+  if (view.kind === 'form') return <EntryForm dir={view.dir} from={view.from} today={today} customers={customers} onBack={() => setView({ kind: 'main' })} onSave={async (e) => { await append(e); setYear(e.day.slice(0, 4)); setView({ kind: 'main' }); }} />;
   const s = yearSummary(rows, year);
   const live = effective(rows).filter((e) => e.day.startsWith(`${year}-`));
   const months = s.months.map((m, i) => ({ m, ym: [year, MONTHS[i]].join('-') })).filter(({ m }) => m.inCents > 0 || m.outCents > 0).reverse();
@@ -47,6 +52,8 @@ export function Money({ onBack }: { onBack: () => void }) {
     await append(v); setView({ kind: 'main' });
     showUndo(t('ui.money.cancelled'), () => append(restoreOf(v, crypto.randomUUID(), new Date().toISOString())));
   };
+  const settle = async (e: MoneyEntry) => { await append(settleOf(e, crypto.randomUUID(), new Date().toISOString())); setView({ kind: 'main' }); };
+  const owed = owedByCustomer(rows);
   const exportCsv = () => {
     const lines = moneyLines(rows, year, { dir: (d) => t(d === 'in' ? 'ui.money.dir.in' : 'ui.money.dir.out'), category: (c) => t(CAT_KEYS[c as Category]), crop: cropName });
     const head = [t('ui.money.date'), t('ui.money.dir'), t('ui.money.category'), t('ui.money.crop'), t('ui.money.col.amount'), t('ui.money.note'), t('ui.money.col.record')];
@@ -69,6 +76,13 @@ export function Money({ onBack }: { onBack: () => void }) {
         <button class="btn" data-testid="money-add-in" onClick={() => setView({ kind: 'form', dir: 'in' })}>{t('ui.money.add.in')}</button>
         <button class="btn" data-testid="money-add-out" onClick={() => setView({ kind: 'form', dir: 'out' })}>{t('ui.money.add.out')}</button>
       </div>
+      {owed.byCustomer.length > 0 && (
+        <Card testid="money-owed">
+          <h2>{t('ui.money.owed.title')}</h2>
+          <BigNum value={formatMoney(owed.totalCents)} caption={t('ui.money.owed.total')} />
+          {owed.byCustomer.map((o) => <ListRow key={o.customer} testid="money-owed-line" heading={who(o.customer) || t('ui.money.owed.unknown')} meta={`${formatMoney(o.cents)} · ${t('ui.money.owed.count', { n: String(o.count) })}`} />)}
+        </Card>
+      )}
       {live.length === 0 && <p class="muted" data-testid="money-none">{t('ui.money.none')}</p>}
       {live.length > 0 && <>
         <h2>{t('ui.money.months')}</h2>
@@ -76,7 +90,7 @@ export function Money({ onBack }: { onBack: () => void }) {
         <h2>{t('ui.money.cats')}</h2>
         {s.byCategory.map((c) => <ListRow key={`${c.dir}:${c.category}`} testid="money-cat" heading={t(CAT_KEYS[c.category])} meta={formatMoney(c.dir === 'in' ? c.cents : -c.cents)} />)}
         <h2>{t('ui.money.entries')}</h2>
-        {live.map((e) => <ListRow key={e.id} testid="money-entry" heading={`${signed(e)} · ${t(CAT_KEYS[e.category])}`} meta={[formatDate(e.day), cropName(e.crop), e.note].filter((x) => x !== '').join(' · ')} onClick={() => setView({ kind: 'entry', id: e.id })} />)}
+        {live.map((e) => <ListRow key={e.id} testid="money-entry" heading={`${signed(e)} · ${t(CAT_KEYS[e.category])}`} meta={[formatDate(e.day), e.owed ? t('ui.money.owed.badge') : '', who(e.customer), cropName(e.crop), e.note].filter((x) => x !== '').join(' · ')} onClick={() => setView({ kind: 'entry', id: e.id })} />)}
         {gone.length > 0 && (
           <details class="fold" data-testid="money-cancelled">
             <summary>{t('ui.money.cancelled.list', { n: String(gone.length) })}</summary>
@@ -95,11 +109,14 @@ export function Money({ onBack }: { onBack: () => void }) {
         <SheetFact name={t('ui.money.category')} value={t(CAT_KEYS[open.category])} />
         <SheetFact name={t('ui.money.date')} value={formatDate(open.day)} />
         {open.crop !== undefined && <SheetFact name={t('ui.money.crop')} value={cropName(open.crop)} />}
+        {open.customer !== undefined && <SheetFact name={t('ui.money.customer')} value={who(open.customer) || t('ui.money.owed.unknown')} />}
+        {open.owed === true && <SheetFact name={t('ui.money.owed.badge')} value={signed(open)} />}
         {open.note !== '' && <SheetFact name={t('ui.money.note')} value={open.note} />}
         {historyOf(rows, rootOf(rows, open)).length > 1 && <>
           <h3>{t('ui.money.history')}</h3>
           {historyOf(rows, rootOf(rows, open)).map((h) => <HistoryLine key={h.id} h={h} />)}
         </>}
+        {open.owed === true && <button class="btn" data-testid="money-settle" onClick={() => void settle(open)}>{t('ui.money.settle')}</button>}
         <button class="btn" data-testid="money-correct" onClick={() => setView({ kind: 'form', dir: open.dir, from: open })}>{t('ui.money.correct')}</button>
         <button class="btn danger" data-testid="money-cancel" onClick={() => void cancel(open)}>{t('ui.money.cancel')}</button>
       </DetailSheet>}
@@ -112,18 +129,20 @@ function HistoryLine({ h }: { h: MoneyEntry }) {
   return <p class="muted" data-testid="money-history-line">{t(key, { v: signed(h), day: formatDate(h.day) })}</p>;
 }
 
-function EntryForm({ dir, from, today, onBack, onSave }: { dir: Direction; from?: MoneyEntry; today: string; onBack: () => void; onSave: (e: MoneyEntry) => Promise<void> }) {
+function EntryForm({ dir, from, today, customers, onBack, onSave }: { dir: Direction; from?: MoneyEntry; today: string; customers: Customer[]; onBack: () => void; onSave: (e: MoneyEntry) => Promise<void> }) {
   const [amount, setAmount] = useState(from ? formatMoney(from.cents).replace(/\s€$/, '') : '');
   const [category, setCategory] = useState<string>(from ? from.category : '');
   const [day, setDay] = useState(from ? from.day : today);
   const [crop, setCrop] = useState(from?.crop !== undefined ? from.crop : '');
   const [note, setNote] = useState(from ? from.note : '');
-  const [err, setErr] = useState<'amount' | 'day' | 'category' | undefined>(undefined);
+  const [customer, setCustomer] = useState(from?.customer ?? '');
+  const [owed, setOwed] = useState(from?.owed === true);
+  const [err, setErr] = useState<'amount' | 'day' | 'category' | 'customer' | undefined>(undefined);
   const head: I18nKey = from ? 'ui.money.correct' : dir === 'in' ? 'ui.money.add.in' : 'ui.money.add.out';
   const entryId = useRef(crypto.randomUUID()).current;       // ONE id per form: a second tap can never write a second row
   const guard = useSubmit();
   const submit = () => guard.submit(async () => {
-    const r = buildEntry({ day, dir, category, amount, crop, note }, entryId, new Date().toISOString(), from?.id);
+    const r = buildEntry({ day, dir, category, amount, crop, note, customer, owed: owed && dir === 'in' && category === 'sale' }, entryId, new Date().toISOString(), from?.id);
     if (!r.ok) { setErr(r.reason); return; }
     await onSave(r.entry);
   });
@@ -144,6 +163,15 @@ function EntryForm({ dir, from, today, onBack, onSave }: { dir: Direction; from?
       <div class="chips" role="group" aria-label={t('ui.money.crop')}>
         {CATALOG.map((c) => <button key={c.slug} type="button" class="tag-btn" aria-pressed={crop === c.slug} data-testid={`money-crop-${c.slug}`} onClick={() => setCrop(crop === c.slug ? '' : c.slug)}>{c[lang.value]}</button>)}
       </div>
+      {dir === 'in' && category === 'sale' && <>
+        <h2>{t('ui.money.customer.optional')}</h2>
+        {customers.length === 0 && <p class="muted" data-testid="money-no-customers">{t('ui.money.customer.none')}</p>}
+        <div class="chips" role="group" aria-label={t('ui.money.customer')}>
+          {customers.map((c) => <button key={c.id} type="button" class="tag-btn" aria-pressed={customer === c.id} data-testid="money-customer" onClick={() => { setCustomer(customer === c.id ? '' : c.id); if (customer === c.id) setOwed(false); }}>{c.name}</button>)}
+        </div>
+        <button type="button" class="tag-btn" aria-pressed={owed} data-testid="money-owed-toggle" onClick={() => setOwed(!owed)}>{t('ui.money.owed.toggle')}</button>
+        {err === 'customer' && <p class="msg error" role="alert" data-testid="money-error">{t('ui.money.err.customer')}</p>}
+      </>}
       <label class="field">{t('ui.money.note')}<input class="input" value={note} maxLength={80} autoComplete="off" data-testid="money-note" onInput={(e) => setNote((e.target as HTMLInputElement).value)} /></label>
       <p class="muted">{t('ui.money.note.hint')}</p>
       <button class="btn" data-testid="money-save" disabled={guard.busy} onClick={() => void submit()}>{t('ui.money.save')}</button>
