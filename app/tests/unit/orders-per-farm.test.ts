@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { importDemo, type PrototypeData } from '../../src/db/import-demo';
 import { DEMO_FARM_ID } from '../../src/config';
 import { demoOrders, loadOrders, migrateUnkeyedOrders, saveOrders } from '../../src/orders/store';
@@ -26,7 +26,11 @@ describe('orders belong to one farm (T5)', () => {
     expect((await loadOrders(db, DEMO_FARM_ID)).orders).toBeUndefined();
     expect(await db.settings.get('klouves_orders')).toBeUndefined();
   });
+  afterEach(() => { vi.useRealTimers(); });
   it('the demo gets its own fictional sample; its crop slugs are fixed, so spinach has a planting that can be cut', async () => {
+    // importDemo moves the sample's spray dates to the real Athens today, but the supply below is read at the fixed TEST_NOW: the clock is pinned to TEST_NOW
+    // while importing, so the waiting periods (PHI) are the same on every real date (unpinned, this failed from 2026-11-28 on).
+    vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date(TEST_NOW));
     const db = await newDb();
     await importDemo(db, data as unknown as PrototypeData);
     const s = demoOrders(Date.parse('2026-11-16T09:00:00Z'));
