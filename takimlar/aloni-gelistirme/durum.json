@@ -91,7 +91,7 @@
     {
       "id": "q-31",
       "baslik": "Demo parselleri (QUEUE 31): kalan iş yok; veri+test+yükleyici (parcels.ts, load.ts, 3 birim + e2e demo-season-load) repoda tam; yalnızca QUEUE satırı 'done' yapıldı",
-      "pr": "PR_NO"
+      "pr": 617
     }
   ],
   "bekleyen_kararlar": [
