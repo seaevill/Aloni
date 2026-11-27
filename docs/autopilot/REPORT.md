@@ -12,6 +12,16 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-27 03:00 — gece koşusu (otomatik)
+- **Tamamlanan iyileştirmeler:** uygulama kodu değişmedi. Kuyrukta (QUEUE.md) yapılacak `todo` iş yok; bu yüzden yalnızca kayıt tuttum.
+- **PR'lar:** bu belge PR'ı (yalnız docs/autopilot).
+- **CI:** main `0549c91` (#583) — check, sql, static, e2e 1/2/3, Workers Builds **yeşil**.
+- **Cloudflare önizleme:** yok (kod değişmedi).
+- **Görünen değişiklik:** telefonda yok.
+- **Kalan sorunlar:** dün 16:16 UTC'de main'de (#591) SQL testi `m18_job_board.sql:90` bir kez düştü, sonraki tüm koşular yeşil. Muhtemel neden (kanıtlanmadı): test, sunucu boştaymış gibi varsayıyor; senkron `pull` o anda açık başka bir işlem varken yeni yazılan satırı bilerek bir sonraki çekmeye bırakıyor. Düzeltme yalnız test dosyasında (`supabase/tests/`), ama o klasöre giden PR'ı gece vardiyası birleştiremez. Kayıt: QUEUE 2b, BLOCKERS. `labeluse:118` testi #594 ile güçlendirildi, izlemede.
+- **Sıradaki öncelik:** kuyruğa yeni iş girene kadar gece koşuları yalnız main'in yeşil olduğunu kontrol eder.
+- **Bora'dan karar:** (a) m18 test düzeltmesini etkileşimli oturum mu yapsın? (b) 0042 yüklemesi («yükleme tamam»). (c) Gece vardiyası `takimlar/aloni-gelistirme/durum.json` listesindeki işleri (is-1, is-2) de alsın mı? Şu an almıyor: o liste doğrulanmamış (`dogrulandi: false`) ve büyük özellik işleri.
+
 ## 2026-11-26 07:00 — ALONI — NIGHT SHIFT RESULTS (sabah doğrulaması, otomatik)
 Kaynak: GitHub REST (07:03 İstanbul). Tahmin yok; «birleşti» ≠ «canlıda».
 
