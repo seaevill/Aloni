@@ -7,6 +7,28 @@
   "simdi": null,
   "sirada": [
     {
+      "id": "is-6",
+      "baslik": "Σήμερα sadeleştirme: Σήμερα'da kalacak olanlar hava, koşullar, günün kesimleri, ilaçlamalar ve işler. Hava özeti en üstte tek satır (FARK-LISTESI öneri 3). Σήμερα'da iki kez görünen ya da Φυτά/Χωράφια ayrıntısında zaten olan bilgi Σήμερα'da tek kısa satır + bağlantı olur. Özellik kaybı yok (bilgi başka ekranda erişilebilir kalır); 375 px önce/sonra ekran görüntüsü; birden fazla PR gerekirse parçalara böl.",
+      "kaynak": "Bora, 27 Kasım 2026: çiftçilerden ve gerçek kullanıcılardan gelen geri bildirim",
+      "onay": "Bora, 27 Kasım 2026 (çiftçi ve gerçek kullanıcı geri bildirimi)",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "is-7",
+      "baslik": "Αποθήκη'yi alt menüden kaldır ve Άλλα menüsüne taşı (Bora'nın seçimi). Ekran, ilaç partisi, son kullanma ve stok uyarıları aynen çalışmaya devam eder; yalnızca sekmenin yeri değişir. Alt menüye bağlı testler ve bağlantılar yeni yere güncellenir; test gevşetmek yok.",
+      "kaynak": "Bora, 27 Kasım 2026: çiftçilerden ve gerçek kullanıcılardan gelen geri bildirim",
+      "onay": "Bora, 27 Kasım 2026 (çiftçi ve gerçek kullanıcı geri bildirimi)",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
       "id": "q-2",
       "baslik": "Ara sıra düşen testleri izle (labeluse.spec.ts:118, register-v2 yazdırma); yalnızca main'de yeni düşme kanıtı varsa kök nedeni ara",
       "kaynak": "docs/autopilot/QUEUE.md madde 2",
