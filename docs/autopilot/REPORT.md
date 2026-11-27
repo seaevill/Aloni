@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-27 12:44 Atina — yönetici koşusu 20261127-1032
+1. **Uygulamada ne değişti:** Άλλα → Ταμείο ekranına «Εκτύπωση» düğmesi geldi. Seçili yılın kayıtlarını tek sayfalık, her zaman Yunanca bir döküm olarak açar; telefonda «Paylaş → Yazdır» ile PDF olarak kaydedebilirsin. Dökümde CSV ile aynı satırlar var (düzeltilen kayıt bir kez, iptal edilen hiç yok), gelir, gider ve net toplam, ayrıca «όχι λογιστικά βιβλία» (resmî muhasebe defteri değil) uyarısı. Tutarlar kuruşu kuruşuna, ondalık virgülle; tarihler gün/ay/yıl. Yeni Yunanca sözcük eklenmedi.
+2. **Senin için faydası:** Muhasebeciye Excel yerine düzgün bir PDF sayfası da verebilirsin; yazıcıdan da basılır.
+3. **Ne denendi, ne başarısız oldu:** Birim testleri 919 geçti (bozuk tutar ya da tarih «άγνωστο» yazar, formül gibi başlayan not düz metin kalır), kod denetimleri temiz, Ταμείο ve ekran genişliği testleri bilgisayarda geçti. Bekçi testleri kendisi tekrar çalıştırdı: ilk denetimde ONAY. GitHub'daki tüm kontroller (telefon ekranı testleri 3 parça, SQL, Cloudflare derlemesi) yeşil. Başarısız olan yok. Sayfa düzeni gerçek bir PDF dosyasıyla değil, tarayıcının yazdırma görünümüyle kontrol edildi; iPhone'da bir kez denemen iyi olur.
+4. **Önerim:** sıradaki iş is-3: Κλούβες yedeğini içe alma (önce gerçekten ne kaldığı kontrol edilecek).
+5. **Senden gereken karar:** iPhone'da Άλλα → Ταμείο → «Εκτύπωση» → Paylaş → Yazdır → PDF olarak kaydet; sayfa düzgün mü? Önceki Yunanca sözcük soruları (veresiye ve kasa fiyatı) hâlâ cevabını bekliyor.
+
+PR: https://github.com/seaevill/Aloni/pull/608 (birleşti, main `db17dc7`). Bugünkü kod işi: 4/12. Birleşti ≠ canlıda: bu ortamdan canlı adres doğrulanamaz.
+
 ## 2026-11-27 12:25 Atina — yönetici koşusu 20261127-1010
 1. **Uygulamada ne değişti:** Άλλα → Ταμείο ekranında satış kaydına «Κλούβες» (kasa sayısı) alanı geldi. Aynı müşteriye aynı ürünü daha önce sattıysan formda «Προηγούμενη τιμή: … ανά κλούβα» (önceki kasa fiyatı) önerisi görünür; tutar ancak «Χρήση» düğmesine basarsan dolar, kaydı yine sen yaparsın. Daha önce satış yoksa öneri hiç çıkmaz; fiyat uydurulmaz, yuvarlanmaz. Bilgi yalnızca telefonda tutulur.
 2. **Senin için faydası:** Her müşteriye geçen sefer kasayı kaça verdiğini hatırlamak zorunda kalmazsın; tek dokunuşla aynı fiyatı kullanır ya da değiştirirsin.
