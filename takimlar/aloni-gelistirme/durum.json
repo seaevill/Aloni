@@ -4,21 +4,7 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": {
-    "id": "is-2d",
-    "baslik": "Ταμείο muhasebeci için PDF dışa aktarım (is-2c'nin kalanı; kasa fiyatı geçmişi PR'da bitti). Yalnızca telefonda, SQL/supabase yok. Mevcut app/src/export/register-pdf.ts ve RegisterPrint.tsx kalıbına bak.",
-    "kaynak": "is-2c bölünmesi, Bora 23/27 Kasım 2026",
-    "onay": "Bora, 27 Kasım 2026 (is-2c kapsamı)",
-    "sahip": "aloni-gelistirme",
-    "tur": "ozellik",
-    "durum": "pr-acik",
-    "deneme": 1,
-    "son_deneme": {
-      "tarih": "2026-11-27",
-      "sonuc": "PR açıldı, bekçi bekliyor",
-      "pr": null
-    }
-  },
+  "simdi": null,
   "sirada": [
     {
       "id": "is-3",
@@ -121,6 +107,11 @@
       "id": "is-2c",
       "baslik": "Ταμείο: satışa kasa sayısı ve aynı müşteri × ürün için son kasa fiyatı önerisi (kalanı is-2d PDF)",
       "pr": 606
+    },
+    {
+      "id": "is-2d",
+      "baslik": "Ταμείο: muhasebeci için yazdırma / PDF sayfası («Εκτύπωση»)",
+      "pr": 608
     }
   ],
   "bekleyen_kararlar": [
@@ -135,8 +126,8 @@
   },
   "son_kosu": {
     "tarih": "2026-11-27",
-    "is": "is-2c: Ταμείο kasa fiyatı önerisi",
-    "sonuc": "birleşti (#606, main f7ac9ac, bekçi ONAY 6acfb8f, CI yeşil)"
+    "is": "is-2d: Ταμείο yazdırma / PDF",
+    "sonuc": "birleşti (#608, main db17dc7, bekçi ONAY 472845d, CI yeşil)"
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }
