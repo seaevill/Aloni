@@ -7,10 +7,10 @@
   "simdi": null,
   "sirada": [
     {
-      "id": "is-6",
-      "baslik": "Σήμερα sadeleştirme: Σήμερα'da kalacak olanlar hava, koşullar, günün kesimleri, ilaçlamalar ve işler. Önce Σήμερα'da iki kez görünen ya da Φυτά/Χωράφια ayrıntısında zaten olan bilgilerin envanterini çıkar (PR'da ve raporda liste). Bunlar Σήμερα'da tek kısa satır + bağlantı olur. Özellik kaybı yok (bilgi başka ekranda erişilebilir kalır); 375 px önce/sonra ekran görüntüsü; birden fazla PR gerekirse parçalara böl.",
-      "kaynak": "Bora, 27 Kasım 2026: çiftçilerden ve gerçek kullanıcılardan gelen geri bildirim",
-      "onay": "Bora, 27 Kasım 2026 (çiftçi ve gerçek kullanıcı geri bildirimi)",
+      "id": "is-6b",
+      "baslik": "Σήμερα sadeleştirme, 2. parça (is-6'nın kalanı): PR #621'deki envantere göre Σήμερα'da yinelenen sayıları (Κλούβες 7 ημ. büyük sayı + kutu; «Για κοπή» sayısı + «Χωράφια χωρίς αναμονή» kutusu; Χωράφια/Καλλιέργειες kutuları + today-counts satırı; gecikmiş işler 3 yerde; QuickAdd'de tekrar eden düğmeler) tek kısa satır + bağlantıya indir. Hava, koşullar, günün kesimleri, ilaçlamalar ve işler kalır. Özellik kaybı yok; testid'lere bağlı testler gevşetilmeden güncellenir; 375 px önce/sonra; gerekirse parçalara böl.",
+      "kaynak": "is-6'nın bölünen kalanı (PR #621); özgün kaynak: Bora, 27 Kasım 2026: çiftçilerden ve gerçek kullanıcılardan gelen geri bildirim",
+      "onay": "Bora, 27 Kasım 2026 (çiftçi ve gerçek kullanıcı geri bildirimi) — is-6 metninden (bölünen parça)",
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
       "durum": "sirada",
@@ -114,6 +114,11 @@
       "id": "q-31",
       "baslik": "Demo parselleri (QUEUE 31): kalan iş yok; veri+test+yükleyici (parcels.ts, load.ts, 3 birim + e2e demo-season-load) repoda tam; yalnızca QUEUE satırı 'done' yapıldı",
       "pr": 617
+    },
+    {
+      "id": "is-6",
+      "baslik": "Σήμερα sadeleştirme, 1. parça: 5 sayı kutusu tek kompakt liste kartı, «Αύριο φεύγουν» satırında ikinci kart görünümü kalktı (yalnızca CSS); tekrar envanteri PR'da; kalanı is-6b",
+      "pr": 621
     }
   ],
   "bekleyen_kararlar": [
@@ -126,12 +131,12 @@
   ],
   "gunluk": {
     "tarih": "2026-11-27",
-    "kod_isi": 9
+    "kod_isi": 10
   },
   "son_kosu": {
     "tarih": "2026-11-27",
-    "is": "iş yok (yönetici koşusu 20261127-1319)",
-    "sonuc": "onaylı sıradaki iş yok; q-2 izleme maddesi için main'de yeni düşme yok (12:35 UTC dahil son 15 CI koşusu yeşil), dokunulmadı; kod değişmedi, PR yalnızca kayıt"
+    "is": "is-6 1. parça (yönetici koşusu 20261127-1344)",
+    "sonuc": "PR #621 bekçi ONAY (SHA 53fa80c), tüm CI yeşil, birleşti (main 87410b6); kalan parça is-6b olarak sıraya girdi"
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }

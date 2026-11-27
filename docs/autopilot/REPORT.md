@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-27 16:00 Atina — yönetici koşusu 20261127-1344
+1. **Uygulamada ne değişti:** Σήμερα ekranında, «Για κοπή σήμερα» bölümünün altındaki beş büyük sayı kutusu (Χωράφια, Καλλιέργειες, Κλούβες 7 ve 28 günlük, «Χωράφια χωρίς αναμονή σήμερα») artık tek beyaz liste kartında, her satırda bir sayı. «Αύριο φεύγουν» kartlarında ürün adı ayrı bir iç kutu değil, düz yazı; «Λείπουν …» etiketi tek satır. Hiçbir bilgi ya da düğme kaldırılmadı; sayılara dokununca yine aynı ayrıntı açılıyor. Ekran yaklaşık 250 nokta kısaldı (Demo sezonunda).
+2. **Senin için faydası:** Σήμερα daha az kaydırılıyor, sayılar tek bakışta okunuyor; çiftçilerin «kalabalık» şikâyetinin ilk adımı.
+3. **Ne denendi, ne başarısız oldu:** Takım ve bekçi ayrı ayrı tüm birim testlerini (919 geçti) ve telefon genişliği testlerini (320/375/390/768, 14 test) çalıştırdı; hiçbir test değiştirilmedi. Bekçi önce/sonra resimlerini açıp karşılaştırdı: ilk denetimde ONAY. GitHub'daki tüm kontroller (iPhone tarayıcısıyla 3 parça ekran testi, SQL, Cloudflare derlemesi) yeşil. Başarısız olan yok. Önce/sonra resimleri: docs/design/today-simplify/2026-11-27/.
+4. **Önerim:** Sıradaki iş is-6b: Σήμερα'da iki kez görünen sayıları (7 günlük kasa sayısı, «kesime hazır» sayısı, geciken işler 3 yerde, hızlı ekleme düğmeleri) tek kısa satır + bağlantıya indirmek. Envanter PR #621'in açıklamasında. Ardından is-7 (Αποθήκη'yi Άλλα'ya taşımak).
+5. **Senden gereken karar:** Yeni karar yok. Telefonda Σήμερα'yı açıp yeni liste kartına bak; beğenmezsen söyle, geri alınır. Eski sorular (Yunanca sözcükler, hesap silme testi satırı) hâlâ cevap bekliyor.
+
+PR: https://github.com/seaevill/Aloni/pull/621 (birleşti, main `87410b6`). Bugünkü kod işi: 10/12. Birleşti ≠ canlıda.
+
 ## 2026-11-27 15:20 Atina — yönetici koşusu 20261127-1319
 1. **Uygulamada ne değişti:** Hiçbir şey. İş listesinde senin onayladığın, yapılmayı bekleyen yeni iş yok. Tek onaylı madde «ara sıra düşen testleri izle» işi; o yalnızca GitHub'da yeni bir düşme olursa ele alınıyor ve yeni düşme yok.
 2. **Senin için faydası:** Boşuna kod yazılmadı, uydurma iş açılmadı.
