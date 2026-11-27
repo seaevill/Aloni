@@ -125,7 +125,8 @@
   ],
   "bekleyen_kararlar": [
     "0042 SQL yüklemesi (QUEUE madde 14): yalnızca Bora «Supabase migrate (manual)» ile yükler; sonra «yükleme tamam» yazar.",
-    "q-2b: m18_job_board.sql:90 düzeltmesi supabase/** dokunur; Bora yazılı onay verirse yapılır."
+    "q-2b: m18_job_board.sql:90 düzeltmesi supabase/** dokunur; Bora yazılı onay verirse yapılır.",
+    "Ταμείο veresiye (PR #604): Yunanca «Απλήρωτο / Πληρώθηκε / Δεν πληρώθηκε ακόμα / Απλήρωτα από πελάτες» terimleri docs/i18n/glossary-el.md içinde yok; Bora sözlük onayı versin ya da başka terim söylesin."
   ],
   "gunluk": {
     "tarih": "2026-11-27",
