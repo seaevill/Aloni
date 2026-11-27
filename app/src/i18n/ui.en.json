@@ -648,5 +648,16 @@
   "ui.money.cat.transport": "Transport",
   "ui.money.cat.equipment": "Equipment",
   "ui.money.cat.fees": "Fees / accountant",
-  "ui.money.cat.other_out": "Other expense"
+  "ui.money.cat.other_out": "Other expense",
+  "ui.money.customer": "Customer",
+  "ui.money.customer.optional": "Customer (optional)",
+  "ui.money.customer.none": "No customers yet; add them under More → Customers.",
+  "ui.money.owed.toggle": "Not paid yet",
+  "ui.money.owed.badge": "Not paid",
+  "ui.money.owed.title": "Unpaid by customers",
+  "ui.money.owed.total": "Total unpaid",
+  "ui.money.owed.count": "{n} entries",
+  "ui.money.owed.unknown": "Customer not found",
+  "ui.money.settle": "Paid",
+  "ui.money.err.customer": "Choose a customer for an unpaid sale."
 }

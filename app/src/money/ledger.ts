@@ -16,6 +16,8 @@ export const categoriesOf = (d: Direction): readonly Category[] => (d === 'in' ?
 export interface MoneyEntry {
   id: string; day: string; dir: Direction; category: Category; cents: number;
   crop?: string; note: string; amends?: string; void?: true; at: string;
+  /** Veresiye: the id of a customer (never a name) and `owed: true` = the crates were sold but not paid yet. Only a sale can be owed; paying writes an amending row without `owed`. */
+  customer?: string; owed?: true;
 }
 
 export const MAX_CENTS = 99_999_999;          // 999.999,99 €: anything bigger is a typing error
@@ -34,8 +36,8 @@ export function parseCents(input: string): Known<number> {
   return { known: true, value: cents };
 }
 
-export interface EntryInput { day: string; dir: Direction; category: string; amount: string; crop?: string; note: string }
-export type BuildResult = { ok: true; entry: MoneyEntry } | { ok: false; reason: 'amount' | 'day' | 'category' };
+export interface EntryInput { day: string; dir: Direction; category: string; amount: string; crop?: string; note: string; customer?: string; owed?: boolean }
+export type BuildResult = { ok: true; entry: MoneyEntry } | { ok: false; reason: 'amount' | 'day' | 'category' | 'customer' };
 
 export function validDay(day: string): boolean {
   return DAY.test(day) && Number.isFinite(Date.parse(`${day}T12:00:00Z`)) && new Date(`${day}T12:00:00Z`).toISOString().startsWith(day);
@@ -49,8 +51,13 @@ export function buildEntry(input: EntryInput, id: string, nowIso: string, amends
   if (!amount.known) return { ok: false, reason: 'amount' };
   if (!validDay(input.day) || input.day < FIRST_DAY || input.day > dayAfter(nowIso, 366)) return { ok: false, reason: 'day' };   // a typo like 2062 must not open a new year
   if (!(categoriesOf(input.dir) as readonly string[]).includes(input.category)) return { ok: false, reason: 'category' };
+  const isSale = input.dir === 'in' && input.category === 'sale';
+  const customer = isSale && input.customer !== undefined && input.customer !== '' ? input.customer : undefined;   // a customer is kept on a sale only
+  if (input.owed === true && customer === undefined) return { ok: false, reason: 'customer' };                      // «not paid» needs to say who owes, and only a sale can be owed
   const entry: MoneyEntry = { id, day: input.day, dir: input.dir, category: input.category as Category, cents: amount.value, note: input.note.trim().slice(0, 80), at: nowIso };
   if (input.crop !== undefined && input.crop !== '') entry.crop = input.crop;
+  if (customer !== undefined) entry.customer = customer;
+  if (input.owed === true) entry.owed = true;
   if (amends !== undefined) entry.amends = amends;
   return { ok: true, entry };
 }
@@ -59,6 +66,8 @@ export function buildEntry(input: EntryInput, id: string, nowIso: string, amends
 export function voidOf(target: MoneyEntry, id: string, nowIso: string): MoneyEntry {
   const v: MoneyEntry = { id, day: target.day, dir: target.dir, category: target.category, cents: target.cents, note: target.note, amends: target.id, void: true, at: nowIso };
   if (target.crop !== undefined) v.crop = target.crop;
+  if (target.customer !== undefined) v.customer = target.customer;
+  if (target.owed === true) v.owed = true;
   return v;
 }
 
@@ -66,7 +75,31 @@ export function voidOf(target: MoneyEntry, id: string, nowIso: string): MoneyEnt
 export function restoreOf(voidRow: MoneyEntry, id: string, nowIso: string): MoneyEntry {
   const r: MoneyEntry = { id, day: voidRow.day, dir: voidRow.dir, category: voidRow.category, cents: voidRow.cents, note: voidRow.note, amends: voidRow.id, at: nowIso };
   if (voidRow.crop !== undefined) r.crop = voidRow.crop;
+  if (voidRow.customer !== undefined) r.customer = voidRow.customer;
+  if (voidRow.owed === true) r.owed = true;
   return r;
+}
+
+/** «Πληρώθηκε»: a row that amends the unpaid sale with the same values and no `owed`. The sale stays ONE income row (a payment never writes a second one), so no total changes. */
+export function settleOf(target: MoneyEntry, id: string, nowIso: string): MoneyEntry {
+  const p: MoneyEntry = { id, day: target.day, dir: target.dir, category: target.category, cents: target.cents, note: target.note, amends: target.id, at: nowIso };
+  if (target.crop !== undefined) p.crop = target.crop;
+  if (target.customer !== undefined) p.customer = target.customer;
+  return p;
+}
+
+export interface OwedLine { customer: string; cents: number; count: number }
+/** What customers still owe: the counted rows with `owed`, per customer (biggest first) and in total. Integer sums only. */
+export function owedByCustomer(rows: readonly MoneyEntry[]): { byCustomer: OwedLine[]; totalCents: number } {
+  const per = new Map<string, OwedLine>();
+  let totalCents = 0;
+  for (const e of effective(rows)) {
+    if (e.owed !== true || e.customer === undefined) continue;
+    totalCents += e.cents;
+    const l = per.get(e.customer);
+    if (l) { l.cents += e.cents; l.count += 1; } else per.set(e.customer, { customer: e.customer, cents: e.cents, count: 1 });
+  }
+  return { byCustomer: [...per.values()].sort((a, b) => a.customer.localeCompare(b.customer)).sort((a, b) => b.cents - a.cents), totalCents };
 }
 
 /** The cancelled entries (a void row nobody amended after): they do not count, but they stay listed so a mistaken cancel can be undone later (independent review SHOULD 3). */
@@ -151,7 +184,8 @@ export function isEntry(r: unknown): r is MoneyEntry {
   return typeof e.id === 'string' && typeof e.day === 'string' && validDay(e.day) && (e.dir === 'in' || e.dir === 'out')
     && typeof e.category === 'string' && (categoriesOf(e.dir) as readonly string[]).includes(e.category)
     && typeof e.cents === 'number' && Number.isSafeInteger(e.cents) && e.cents > 0 && e.cents <= MAX_CENTS
-    && typeof e.note === 'string' && typeof e.at === 'string' && (e.amends === undefined || typeof e.amends === 'string');
+    && typeof e.note === 'string' && typeof e.at === 'string' && (e.amends === undefined || typeof e.amends === 'string')
+    && (e.customer === undefined || typeof e.customer === 'string') && (e.owed === undefined || (e.owed === true && e.dir === 'in' && e.category === 'sale' && typeof e.customer === 'string'));
 }
 export async function loadMoney(db: AppDB, farm: string): Promise<MoneyEntry[]> {
   const v = (await db.settings.get(key(farm)))?.value;

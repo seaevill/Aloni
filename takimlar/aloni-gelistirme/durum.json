@@ -4,22 +4,33 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": null,
+  "simdi": {
+    "id": "is-2",
+    "baslik": "Gelir-gider kaydı F2/F3: müşteriye ve zamana göre kasa fiyatı, veresiye takibi, muhasebeci için CSV ve PDF dışa aktarım (F1 elle defter repoda var). Önce kalan boşluğu belirle, en küçük parçayı yap; supabase/** gerekiyorsa dur ve Bora'ya sor.",
+    "kaynak": "Bora, 23 Kasım 2026",
+    "onay": "Bora, 27 Kasım 2026",
+    "sahip": "aloni-gelistirme",
+    "tur": "ozellik",
+    "durum": "pr-acik",
+    "deneme": 2,
+    "son_deneme": {
+      "tarih": "2026-11-27",
+      "sonuc": "2. parça: Ταμείο'da veresiye (satış müşteriye bağlanır, «Δεν πληρώθηκε ακόμα» işareti, «Απλήρωτα» kartı, «Πληρώθηκε» düzeltme satırı yazar); PR açık, bekçi ve CI bekleniyor",
+      "pr": 604
+    },
+    "karar": "Bora 27 Kasım 2026: kasa fiyatı geçmişi ve veresiye şimdilik telefonda (Dexie); SQL/supabase yok."
+  },
   "sirada": [
     {
-      "id": "is-2",
-      "baslik": "Gelir-gider kaydı F2/F3: müşteriye ve zamana göre kasa fiyatı, veresiye takibi, muhasebeci için CSV ve PDF dışa aktarım (F1 elle defter repoda var). Önce kalan boşluğu belirle, en küçük parçayı yap; supabase/** gerekiyorsa dur ve Bora'ya sor.",
+      "id": "is-2c",
+      "baslik": "Gelir-gider kaydı F2/F3 kalanı: müşteri × ürüne göre kasa fiyatı geçmişi (yalnızca telefonda, Dexie; son fiyat önerilir, Bora onaylar) ve muhasebeci için PDF dışa aktarım. supabase/** gerekiyorsa dur ve Bora'ya sor. (CSV #601 ve veresiye is-2 ile bitti.)",
       "kaynak": "Bora, 23 Kasım 2026",
       "onay": "Bora, 27 Kasım 2026",
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
       "durum": "sirada",
-      "deneme": 1,
-      "son_deneme": {
-        "tarih": "2026-11-27",
-        "sonuc": "1. parça birleşti: Ταμείο'da muhasebeci için CSV (#601, bekçi ONAY 6d952eb, CI yeşil). Kalan: müşteriye göre kasa fiyatı, veresiye, PDF.",
-        "pr": 601
-      },
+      "deneme": 0,
+      "son_deneme": null,
       "karar": "Bora 27 Kasım 2026: kasa fiyatı geçmişi ve veresiye şimdilik telefonda (Dexie); SQL/supabase yok."
     },
     {
@@ -114,11 +125,12 @@
   ],
   "bekleyen_kararlar": [
     "0042 SQL yüklemesi (QUEUE madde 14): yalnızca Bora «Supabase migrate (manual)» ile yükler; sonra «yükleme tamam» yazar.",
-    "q-2b: m18_job_board.sql:90 düzeltmesi supabase/** dokunur; Bora yazılı onay verirse yapılır."
+    "q-2b: m18_job_board.sql:90 düzeltmesi supabase/** dokunur; Bora yazılı onay verirse yapılır.",
+    "Ταμείο veresiye (PR #604): Yunanca «Απλήρωτο / Πληρώθηκε / Δεν πληρώθηκε ακόμα / Απλήρωτα από πελάτες» terimleri docs/i18n/glossary-el.md içinde yok; Bora sözlük onayı versin ya da başka terim söylesin."
   ],
   "gunluk": {
     "tarih": "2026-11-27",
-    "kod_isi": 1
+    "kod_isi": 2
   },
   "son_kosu": {
     "tarih": "2026-11-27",
