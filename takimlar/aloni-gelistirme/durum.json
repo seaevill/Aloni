@@ -4,22 +4,12 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": {
-    "id": "is-6b-2",
-    "baslik": "Σήμερα «Σήμερα έγιναν» kartı: gecikmiş iş var ama bugün kayıt yoksa yalnızca başlık görünüyordu; artık «Δεν έχει καταγραφεί τίποτα σήμερα.» yazıyor (bekçi notu d); kalanı is-6b-3",
-    "durum": "pr-acik",
-    "deneme": 1,
-    "son_deneme": {
-      "tarih": "2026-11-27",
-      "sonuc": "birim 919 geçti, 14 Σήμερα e2e + yeni test geçti (chromium), typecheck+eslint temiz",
-      "pr": null
-    }
-  },
+  "simdi": null,
   "sirada": [
     {
       "id": "is-6b-3",
       "baslik": "Σήμερα yinelenen sayılar, 3. parça (is-6b-2'nin kalanı): (a) «Χωράφια χωρίς αναμονή» ile «Για κοπή» farklı birim — Bora cevabı gelmeden yapılmaz (bekleyen_kararlar); (b) Χωράφια/Καλλιέργειες kutuları + today-counts satırı (today-counts çok sayıda testte yükleme işareti; önce plan); (c) QuickAdd ile sayfadaki spray/harvest/job düğmelerinin tekrarı: hangisinin kalacağı belirsiz, düğme silinmez. Özellik kaybı yok; testler gevşetilmez; 375 px önce/sonra görüntü.",
-      "kaynak": "is-6b-2'nin bölünen kalanı (PR bu koşuda açıldı); özgün kaynak: is-6b'nin bölünen kalanı (PR #623); özgün kaynak: is-6'nın bölünen kalanı (PR #621); özgün kaynak: Bora, 27 Kasım 2026: çiftçilerden ve gerçek kullanıcılardan gelen geri bildirim",
+      "kaynak": "is-6b-2'nin bölünen kalanı (PR #625); özgün kaynak: is-6b'nin bölünen kalanı (PR #623); özgün kaynak: is-6'nın bölünen kalanı (PR #621); özgün kaynak: Bora, 27 Kasım 2026: çiftçilerden ve gerçek kullanıcılardan gelen geri bildirim",
       "onay": "Bora, 27 Kasım 2026 (çiftçi ve gerçek kullanıcı geri bildirimi) — is-6 metninden (bölünen parça)",
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
@@ -134,6 +124,11 @@
       "id": "is-6b",
       "baslik": "Σήμερα yinelenen sayılar, 1. parça: ikinci «Κλούβες 7 ημερών» kutusu ve üçüncü gecikmiş iş satırı kaldırıldı (bilgi büyük sayıda ve Εργασίες'te duruyor); 2 ölü çeviri anahtarı silindi; 5 e2e yalnızca hedef değiştirdi; kalanı is-6b-2",
       "pr": 623
+    },
+    {
+      "id": "is-6b-2",
+      "baslik": "Σήμερα «Σήμερα έγιναν»: gecikmiş iş var ama bugün kayıt yoksa artık «Δεν έχει καταγραφεί τίποτα σήμερα.» yazıyor (yalnızca alt madde d); kalanı is-6b-3",
+      "pr": 625
     }
   ],
   "bekleyen_kararlar": [
@@ -143,16 +138,17 @@
     "Ταμείο kasa fiyatı (is-2c): «Κλούβες», «Προηγούμενη τιμή: … ανά κλούβα», «Χρήση» Yunanca terimleri docs/i18n/glossary-el.md içinde yok (yalnızca «κλούβα» var); Bora sözlük onayı versin ya da başka terim söylesin.",
     "is-4 fark listesi (docs/design/compare/2026-11-27/FARK-LISTESI.md): 5 öneriden hangileri iş olarak sıraya girsin? (Άλλα'yı kısaltmak, ürün detayında ekimleri üste almak, Σήμερα'da hava özetini üste almak, Μητρώο kimlik satırı/düğme metinleri, Αποθήκη/Χωράφια yinelenen alanlar). Onaysız iş alınmaz.",
     "q-2 restore-drill.spec.ts:25: takım, hesap silme penceresinde yazının kutuda kaldığını doğrulayan bir iddia (toHaveValue) eklemeyi öneriyor; testi sıkılaştırır, bir sonraki düşmede hangi adımın bozulduğunu gösterir. Bora «evet» derse ayrı iş olarak sıraya girer.",
-    "is-6b-2 (a): Σήμερα'da «Για κοπή σήμερα» sayısı ekim (φυτεύσεις) sayıyor, «Χωράφια χωρίς αναμονή» kutusu tarla sayıyor. Tek satıra inecekse hangisi kalsın: ekim sayısı mı, tarla sayısı mı, ikisi bir satırda mı?"
+    "is-6b-2 (a): Σήμερα'da «Για κοπή σήμερα» sayısı ekim (φυτεύσεις) sayıyor, «Χωράφια χωρίς αναμονή» kutusu tarla sayıyor. Tek satıra inecekse hangisi kalsın: ekim sayısı mı, tarla sayısı mı, ikisi bir satırda mı?",
+    "is-6b-3 (c): Σήμερα'da ilaçlama/hasat/iş ekleme düğmeleri hem hızlı ekleme (QuickAdd) bölümünde hem sayfanın başka yerinde var. Tekrar kalkacaksa hangisi kalsın: hızlı ekleme bölümü mü, sayfadaki düğmeler mi? (Düğme işlevi silinmez, yalnızca tekrar kalkar.)"
   ],
   "gunluk": {
     "tarih": "2026-11-27",
-    "kod_isi": 11
+    "kod_isi": 12
   },
   "son_kosu": {
     "tarih": "2026-11-27",
-    "is": "is-6b 1. parça (yönetici koşusu 20261127-1407)",
-    "sonuc": "PR #623: ilk ONAY'dan sonra QUALITY madde 8 için önce/sonra görüntü eklendi, bekçi yeni SHA'da (2e5a7f1) yeniden ONAY, tüm CI yeşil, birleşti (main 945f5fe); kalanı is-6b-2"
+    "is": "is-6b-2 (yönetici koşusu 20261127-1442)",
+    "sonuc": "PR #625: bekçi ilk denetimde ONAY (SHA 0855315), tüm CI yeşil, birleşti (main 275248b); is-6b-2 tamam (deneme 1), kalanı is-6b-3; günlük kod işi sınırı 12/12 doldu"
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }

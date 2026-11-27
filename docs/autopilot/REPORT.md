@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-27 16:56 Atina — yönetici koşusu 20261127-1442
+1. **Uygulamada ne değişti:** Σήμερα'daki «Σήμερα έγιναν» kartı, geciken iş varken ama bugün hiçbir kayıt yokken yalnızca başlığı gösteriyordu (altı boş). Artık altında «Δεν έχει καταγραφεί τίποτα σήμερα.» yazıyor. Bugün bir ilaçlama ya da hasat kaydı varsa cümle görünmüyor, kayıtlar listeleniyor (önceki gibi).
+2. **Senin için faydası:** Boş kart «bir şey mi bozuldu?» diye düşündürmüyor; bugün kayıt girilmediği açıkça yazıyor.
+3. **Ne denendi, ne başarısız oldu:** Takım önce bu durumu yakalayan yeni bir ekran testi yazdı (düzeltmeden önce düştü, sonra geçti). Takım ve bekçi ayrı ayrı tüm birim testlerini (919 geçti) ve Σήμερα ekran testlerini çalıştırdı; bekçi yalnızca hasat kaydı olan günde cümlenin yanlışlıkla çıkmadığını da kontrol etti ve önce/sonra resimlerini açtı. İlk denetimde ONAY. GitHub'daki tüm kontroller (iPhone tarayıcısıyla 3 parça ekran testi, SQL, Cloudflare derlemesi) yeşil. Başarısız olan yok. Resimler: docs/design/today-simplify/2026-11-27/part3-*.
+4. **Önerim:** Bugünkü kod işi sınırı (12/12) doldu; bugün başka kod işi yapılmayacak. Sonraki koşuda sıradaki iş is-7 (Αποθήκη'yi Άλλα menüsüne taşımak); is-6b-3'ün iki alt maddesi senin cevabını bekliyor.
+5. **Senden gereken karar:** (a) «Για κοπή σήμερα» ekimleri, «Χωράφια χωρίς αναμονή» tarlaları sayıyor: tek satıra inecekse hangisi kalsın? (b) Σήμερα'daki ilaçlama/hasat/iş ekleme düğmeleri iki yerde var: hızlı ekleme bölümü mü kalsın, sayfadaki düğmeler mi? (Düğmeler silinmiyor, yalnızca tekrar kalkıyor.)
+
+PR: https://github.com/seaevill/Aloni/pull/625 (birleşti, main `275248b`). Bugünkü kod işi: 12/12. Birleşti ≠ canlıda.
+
 ## 2026-11-27 16:35 Atina — yönetici koşusu 20261127-1407
 1. **Uygulamada ne değişti:** Σήμερα'da iki kez görünen iki bilgi teke indi. «Κλούβες 7 ημερών» sayısı artık yalnızca üstteki büyük sayıda (yanındaki küçük çizgiyle) var; alttaki listede ikinci kez yazılmıyor. Geciken işlerin sayısı üç yerde değil, iki yerde: Εργασίες bölümündeki «Καθυστερημένες» grubu ve özet satırı. Büyük sayıya dokununca aynı 7 günlük kasa ayrıntısı açılıyor; hiçbir bilgi kaybolmadı.
 2. **Senin için faydası:** Aynı sayıyı iki kez okumak yok; ekran biraz daha kısa ve sakin.
