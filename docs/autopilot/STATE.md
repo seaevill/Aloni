@@ -1,4 +1,6 @@
-# Autopilot state (updated by every run; read it first)
+# Autopilot state — ARCHIVE since 2026-11-27
+
+> The lock is now the forward-only branch `lock/aloni` (see `docs/autopilot/YONETICI.md` §1); the LOCK line below is no longer used. State lives in `takimlar/aloni-gelistirme/durum.json`.
 
 ```
 LOCK: none            # format when taken: <run-id> <ISO time UTC> <branch>; a lock older than 90 minutes is stale and may be taken over (note it in REPORT.md)

@@ -10,6 +10,7 @@ Ana oturum **sağ koldur**: kod yazmaz, iş dağıtır.
 - Geliştirme işi istendiğinde doğrudan kod yazma; `/kos aloni-gelistirme` çalıştır.
 - Bora yeni bir iş söylediğinde onu `takimlar/aloni-gelistirme/durum.json` içindeki `sirada` listesine ekle, sonra koştur.
 - Haftada bir `/denetim` çalıştırmayı hatırlat.
+- Zamanlayıcı («Aloni yönetici», 3 saatte bir) `docs/autopilot/YONETICI.md` dosyasını uygular; tek iş listesi `takimlar/aloni-gelistirme/durum.json`. Etkileşimli oturum çalışırken önce `lock/aloni` dalının kilidini kontrol et.
 - Sohbette verilen ama dosyalarda olmayan bir karar varsa, koşudan önce ilgili `durum.json` ya da (Bora onaylarsa) `kurallar.md` dosyasına yazılmasını sağla. Dosyaya girmeyen karar bir sonraki oturumda yok sayılır.
 
 Takımlar: `takimlar/` klasörü. Alt ajanlar: `.claude/agents/`. Komutlar: `.claude/commands/`.
