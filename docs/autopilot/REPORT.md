@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-27 11:40 Atina — yönetici koşusu 20261127-0918
+1. **Uygulamada ne değişti:** Άλλα → Ταμείο ekranında veresiye: bir satış kaydına müşteri seçilebiliyor ve «Δεν πληρώθηκε ακόμα» (henüz ödenmedi) işaretlenebiliyor. Bu kayıtlar «Απλήρωτο» etiketiyle görünür; ekranda yeni «Απλήρωτα από πελάτες» kartı müşteri müşteri ödenmeyen toplamı gösterir. Para gelince «Πληρώθηκε» düğmesi bir düzeltme satırı yazar; gelir yine satış gününde, bir kez sayılır. Bilgi yalnızca telefonda tutulur (senin kararın).
+2. **Senin için faydası:** Kimin sana ne kadar borcu olduğunu deftere bakmadan tek ekranda görürsün; ödeme gelince tek dokunuşla kapatırsın, yıl toplamı bozulmaz.
+3. **Ne denendi, ne başarısız oldu:** Birim testleri 902 geçti (müşterisiz veresiye, gidere veresiye gibi yanlış kullanımları deneyen testler dahil), kod denetimleri temiz; yeni ekran testi bilgisayarda geçti. Bekçi ilk denetimde RED verdi: yeni Yunanca sözcükler terim sözlüğünde yoktu ve sana soru olarak yazılmamıştı. Soru eklendi, ikinci denetimde ONAY. GitHub'daki tüm kontroller (telefon ekranı testleri 3 parça, SQL, Cloudflare derlemesi) yeşil. Ekran resmi alınmadı.
+4. **Önerim:** sıradaki iş is-2c: müşteri ve ürüne göre kasa fiyatı geçmişi (son fiyat önerilir, sen onaylarsın), sonra muhasebeci için PDF.
+5. **Senden gereken karar:** Yunanca sözcükler uygun mu: «Δεν πληρώθηκε ακόμα», «Απλήρωτο», «Απλήρωτα από πελάτες», «Πληρώθηκε»? Uygunsa «tamam» yaz, değilse kendi sözcüğünü söyle.
+
+PR: https://github.com/seaevill/Aloni/pull/604 (birleşti, main `2ff294c`). Bugünkü kod işi: 2/12. Birleşti ≠ canlıda: bu ortamdan canlı adres doğrulanamaz.
+
 ## 2026-11-27 08:39 Atina — yönetici koşusu 20261127-0639
 1. **Uygulamada ne değişti:** Άλλα → Ταμείο ekranına yeni düğme: «CSV για τον λογιστή». Seçili yılın kayıtlarını muhasebeciye verilecek bir dosyaya indirir (düzeltilen kayıt bir kez, iptal edilen hiç yok; tutarlar kuruşu kuruşuna, ondalık virgülle). Dosyanın ilk satırı: «Προσωπικό βιβλίο εσόδων–εξόδων {yıl}, όχι λογιστικά βιβλία.» (kişisel defter, resmî muhasebe değil).
 2. **Senin için faydası:** Yıl sonunda gelir-gideri elle yazmadan muhasebeciye tek dosya gönderebilirsin; Excel'de açılır.
