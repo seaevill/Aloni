@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-27 14:33 Atina — yönetici koşusu 20261127-1219
+1. **Uygulamada ne değişti:** Uygulamada bir şey değişmedi. Sıradaki iş (Demo parselleri «yarım» görünüyordu) kontrol edildi: bitmiş. Demo çiftlikte Megara ovasında 7 hayalî tarla var, toplam 70 στρέμματα (en büyüğü 25, en küçüğü 2,5). Tapu numaralarının (ΚΑΕΚ) hepsi «99» ile başlıyor ve tarla sayfasında «Επίδειξη – φανταστικός αριθμός» yazısıyla gösteriliyor; değiştirilemiyor. Yalnızca iş listesindeki eski «yarım» satırı «bitti» yapıldı.
+2. **Senin için faydası:** Var olan iş için boşuna kod yazılmadı; iş listesi gerçeği gösteriyor.
+3. **Ne denendi, ne başarısız oldu:** Demo tarla testleri (16 test) takımda ve bekçide ayrı ayrı geçti. Bekçi tarla verisini ve ekrandaki «Επίδειξη» yazısını kendisi açıp baktı: ilk denetimde ONAY. GitHub'daki tüm kontroller (telefon ekranı testleri 3 parça, SQL, Cloudflare derlemesi) yeşil. Ara sıra düşen testler için yeni bir düşme yok (sabahki 05:44 düşmesinden sonra tüm koşular yeşil), bu yüzden o izleme işine bu koşuda dokunulmadı. Başarısız olan yok.
+4. **Önerim:** İş listesinde onaylı yeni iş kalmadı (yalnızca «yeni düşme olursa bak» izleme işi var). Fark listesindeki 5 öneriden birini seçersen sıradaki koşu onu yapar; en görünür fayda (3) Σήμερα'da hava özetini üste almak.
+5. **Senden gereken karar:** docs/design/compare/2026-11-27/FARK-LISTESI.md içindeki 5 öneriden hangileri yapılsın (numara yazman yeterli)? Hesap silme testine kontrol satırı eklensin mi («evet»)? Yunanca sözcük soruları (veresiye, kasa fiyatı) hâlâ cevabını bekliyor.
+
+PR: https://github.com/seaevill/Aloni/pull/617 (birleşti, main `b960ee7`). Bugünkü kod işi: 9/12. Birleşti ≠ canlıda.
+
 ## 2026-11-27 13:50 Atina — yönetici koşusu 20261127-1147
 1. **Uygulamada ne değişti:** Uygulamada bir şey değişmedi. Bu sabah 05:44’te (Atina) GitHub'da bir kez düşen «yedek al → telefonu sil → geri yükle» testine bakıldı. Test, Άλλα → Πληροφορίες → «Διαγραφή λογαριασμού» penceresinde, çiftlik adının yazıldığı kutu boş kaldığı için takılmış. Silme ve geri yükleme adımlarına hiç gelinmemiş. Yani yedeğin kendisinde bir hata görülmedi, ama bu koşu yedeği de sınamadı.
 2. **Senin için faydası:** Testin hangi adımda takıldığı artık kayıtlı. Tahminle kod değiştirilmedi.
