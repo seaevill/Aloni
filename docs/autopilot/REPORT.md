@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 00:45 Atina — yönetici koşusu 20261127-2219
+1. **Uygulamada ne değişti:** «Σήμερα» ekranının altındaki sayı satırı artık yalnızca «Φυτεύσεις: N» yazıyor. «Χωράφια» ve «Καλλιέργειες» sayıları zaten üstteki dokunulabilir kutularda olduğu için bu satırdan çıkarıldı; hiçbir sayı kaybolmadı. Ayrıca bir test onarıldı (uygulamanın davranışı değişmedi).
+2. **Senin için faydası:** Aynı sayıyı iki kez okumuyorsun; ekran biraz daha sade. Test onarımı sayesinde her gün kendi kendine kırmızıya dönen kontrol artık yanlış alarm vermiyor.
+3. **Ne denendi, ne başarısız oldu:** Gece yarısı tarih 28 Kasım'a dönünce bir test kendiliğinden düştü: örnek çiftlik tarihleri bugüne kayıyor, test ise 20 Kasım'a bakıyordu; ıspanaktaki ilaçlama bekleme süresi yüzünden «kesilebilir ıspanak yok» çıkıyordu (uygulama doğru davranıyordu, test yanlıştı). Önce bu onarıldı (#636), sonra ekran değişikliği (#635) birleştirildi. İkisinde de tüm kontroller (iPhone tarayıcısıyla 3 parça ekran testi, SQL, Cloudflare derlemesi) yeşil; bekçi ikisine de ONAY verdi. Not: yeni satır telefonda alt menünün arkasında kalıyor, görmek için sayfayı en alta kaydır.
+4. **Önerim:** Sıradaki onaylı iş is-7: «Αποθήκη»yı alt menüden «Άλλα» menüsüne taşımak. Bir sonraki koşu bunu alır.
+5. **Senden gereken karar:** «Σήμερα»nın kalan iki sorusu (artık is-6b-4): (a) «Για κοπή σήμερα» ekim sayıyor, «Χωράφια χωρίς αναμονή» tarla sayıyor — tek satıra inecekse hangisi kalsın? (c) İlaçlama/hasat/iş ekleme düğmeleri hem hızlı ekleme bölümünde hem sayfada var — hangisi kalsın?
+
+PR'lar: https://github.com/seaevill/Aloni/pull/636 (test onarımı) · https://github.com/seaevill/Aloni/pull/635 (Σήμερα sayı satırı). Bugünkü kod işi: 2/12. Birleşti ≠ canlıda.
+
 ## 2026-11-27 23:19 Atina — yönetici koşusu 20261127-2119
 1. **Uygulamada ne değişti:** Hiçbir şey. Bugünkü kod işi sınırı (12/12) bugün öğleden sonra doldu; sınır dolunca yalnızca rapor yazılabiliyor. Saat 19:00'u geçti; zincir kurulmadı.
 2. **Senin için faydası:** Sınır aşılmadı, kuralsız iş yapılmadı.
