@@ -26,7 +26,7 @@ for (const [language, width] of RUNS) {
     const tab = (id: string) => page.locator(`nav.tabs [data-tab="${id}"]`).click();
     await tab('more'); await (language === 'classic' ? page.getByTestId('demo-load') : page.getByTestId('demo-season-load')).click(); await expect(page.getByTestId('demo-banner')).toBeVisible();
     await tab('today'); await visit('today'); await lower('today-lower');
-    for (const id of ['kpi-parcels', 'kpi-crops', 'today-cut7', 'today-canharvest']) { await page.getByTestId(id).click(); await visit(`today-${id}`); await page.getByTestId('sheet-close').first().click(); }
+    for (const id of ['kpi-parcels', 'kpi-crops', 'today-cut7-big', 'today-canharvest']) { await page.getByTestId(id).click(); await visit(`today-${id}`); await page.getByTestId('sheet-close').first().click(); }
     await page.getByTestId('history-open').click(); await visit('history'); await back(page);
     await tab('crops'); await visit('crops'); await page.getByTestId('crop-open').first().click(); await visit('crop-detail'); await lower('crop-detail-lower'); await back(page);
     await page.getByTestId('season-calendar-open').click(); await visit('season-calendar'); await back(page);

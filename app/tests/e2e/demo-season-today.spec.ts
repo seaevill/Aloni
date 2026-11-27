@@ -11,10 +11,10 @@ test('season Demo: each Σήμερα count opens its source, and the totals agre
   await page.locator('nav.tabs [data-tab="today"]').click();
   const sheet = page.locator('[data-testid^="sheet-"]').first();
   const close = async () => { await page.getByTestId('sheet-close').first().click(); await expect(sheet).toHaveCount(0); };
-  const tiles = ['kpi-parcels', 'kpi-crops', 'today-cut7', 'today-cut28', 'today-canharvest'];
+  const tiles = ['kpi-parcels', 'kpi-crops', 'today-cut7-big', 'today-cut28', 'today-canharvest'];
   for (const id of tiles) {
     const tile = page.getByTestId(id); await expect(tile, id).toBeVisible();
-    const number = (await tile.locator('strong').first().innerText()).replace(/\D+/g, ' ').trim().split(' ')[0]!;
+    const number = (await tile.locator('strong, .ds-bignum-value').first().innerText()).replace(/\D+/g, ' ').trim().split(' ')[0]!;
     await tile.click();
     await expect(sheet, `${id} opens a source`).toBeVisible();
     await page.waitForTimeout(600);                                                  // the source reads its rows after it opens

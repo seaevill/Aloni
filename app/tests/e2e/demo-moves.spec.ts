@@ -7,7 +7,7 @@ test('the Demo moves with the real today: on another day it still has crates in 
   await page.goto('/');
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-counts')).toBeVisible();
-  await page.getByTestId('today-cut7').click();
+  await page.getByTestId('today-cut7-big').click();
   const sheet = page.getByTestId('sheet-crates');
   await expect(sheet.getByTestId('sheet-why')).toHaveCount(0);               // not «άγνωστο»: there are logged harvests in the window
   await sheet.getByTestId('sheet-close').click();
@@ -21,9 +21,9 @@ test('the 7-day tile and the table behind it agree at ANY time of day (Athens la
   await page.goto('/');
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-counts')).toBeVisible();
-  await expect(page.getByTestId('today-cut7').locator('strong')).toHaveText(/\d/);        // the tile is filled once the Demo rows are in (reading it earlier gave '')
-  const tile = (await page.getByTestId('today-cut7').locator('strong').innerText()).replace(/\D/g, '');
-  await page.getByTestId('today-cut7').click();
+  await expect(page.getByTestId('today-cut7-big').locator('.ds-bignum-value')).toHaveText(/\d/);        // the tile is filled once the Demo rows are in (reading it earlier gave '')
+  const tile = (await page.getByTestId('today-cut7-big').locator('.ds-bignum-value').innerText()).replace(/\D/g, '');
+  await page.getByTestId('today-cut7-big').click();
   await expect(page.getByTestId('sheet-crates').locator('.ds-bignum-value')).toBeVisible();
   await expect.poll(async () => (await page.getByTestId('sheet-crates').locator('.ds-bignum-value').innerText()).replace(/\D/g, '')).toBe(tile);
 });
