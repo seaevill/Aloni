@@ -50,7 +50,7 @@ Same way with `.claude/agents/bekci.md` (read-only; it leaves its own `durum.jso
 Wait for CI at most 30 minutes. Merge (squash, `-f sha=<head>`) ONLY if: the PR head SHA equals the SHA in the latest bekçi ONAY comment; every check-run conclusion (check, sql, static, e2e 1–3, pr-size, Workers Builds) is success or skipped; no `supabase/**` file; not #508, not «DO NOT MERGE»; QUALITY.md holds. Otherwise leave it open and say why.
 
 ## 8. Record + report (every run, also when nothing was done)
-A docs-only PR from the record branch that changes ONLY `docs/autopilot/REPORT.md`, `takimlar/*/durum.json`, `takimlar/*/defter.md` (check `git diff --name-only`). It may be merged without bekçi only when ALL CI gates of step 7 are success or skipped (ANAYASA 1 exception, Bora 2026-11-27).
+A docs-only PR from the record branch that changes ONLY `docs/autopilot/REPORT.md`, `takimlar/*/durum.json`, `takimlar/*/defter.md` (check `git diff --name-only`). It goes through bekçi like every PR (a short mechanical check: only these files, no secrets, records match GitHub), its verdict is posted with `SHA:` (step 6), and it is merged under step 7.
 - `durum.json`: item `durum` and `son_deneme` {tarih, sonuc, pr}, `simdi`, `son_kosu`, `gunluk` {tarih, kod_isi}.
 - Bekçi's uncommitted `durum.json`/`defter.md` go into this PR.
 - If agents ran, `defter.md` gets one lesson (ANAYASA 5).
