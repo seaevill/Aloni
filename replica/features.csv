@@ -14,7 +14,7 @@ Fertilise job logging,jobs,must,yes,no,tables job_fertilise exist since SQL 0003
 Irrigation job logging,jobs,must,yes,no,tables job_irrigate exist since SQL 0003; no screen in the app
 Sow/plant starts a crop cycle on all or part of a field,jobs,should,yes,yes,ui/PlantingForm.tsx (sown_on + area) + ui/SowRing.tsx
 Prune / mow / clean jobs,jobs,could,yes,partial,«Κοπή / καθαρισμός» one-tap record (ui/ParcelCut.tsx) kept on the phone only
-Weather at the time of the job,jobs,should,yes,partial,jobs.weather_snapshot column exists in SQL; not filled or shown in the app
+Weather at the time of the job,jobs,should,yes,partial,fertilise/irrigation records copy the stored weather of the day; the spray sheet now shows the stored weather of the spraying day (display only; jobs.weather_snapshot still unfilled)
 Duplicate-job warning,jobs,could,yes,no,
 Job log: filter by field / type / date,jobs,must,yes,yes,ui/History.tsx + ui/Sprays.tsx + ui/TodayDone.tsx
 Job sheet to share with a worker,jobs,could,yes,partial,workers get jobs in their own app; no shareable sheet (WhatsApp/PDF)
