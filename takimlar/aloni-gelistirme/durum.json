@@ -3,13 +3,13 @@
   "guncelleme": "2026-11-27",
   "dogrulandi": true,
   "not": "2026-11-27 koşusunda repoya (docs/STATUS.md, docs/BACKLOG.md, git log, GitHub REST) bakılarak eşitlendi. Kaynak: docs/STATUS.md ve docs/plan/FINANCE-AND-GROWTH-PLAN.md.",
-  "simdi": null,
+  "simdi": {
+    "id": "is-1",
+    "baslik": "Tarla + iş + hasat kaydı: Farmable kapsamına göre kalan boşluğu belirle, en küçük parçayı yap (not, ekip, stok ve satış kapsam dışı)",
+    "kaynak": "Bora, 23 Kasım 2026",
+    "not": "Kalan boşluk: features.csv/recon.md bayat; gübreleme/sulama, QR etiket, yıl karşılaştırma, GPS yürüme repoda var. Gerçek boşluk: ilaçlama kaydında o günün havası (should). Parça: SpraySheet'e yalnızca gösterim, depolama/SQL yok."
+  },
   "sirada": [
-    {
-      "id": "is-1",
-      "baslik": "Tarla + iş + hasat kaydı: Farmable kapsamına göre kalan boşluğu belirle, en küçük parçayı yap (not, ekip, stok ve satış kapsam dışı)",
-      "kaynak": "Bora, 23 Kasım 2026"
-    },
     {
       "id": "is-2",
       "baslik": "Gelir-gider kaydı F2/F3: müşteriye ve zamana göre kasa fiyatı, veresiye takibi, muhasebeci için CSV ve PDF dışa aktarım (F1 elle defter repoda var)",
@@ -19,8 +19,8 @@
   "bekleyen_kararlar": [],
   "son_kosu": {
     "tarih": "2026-11-27",
-    "is": "is-0 durum eşitleme",
-    "sonuc": "PR bekliyor"
+    "is": "is-1 ilaçlama kaydında o günün havası (gösterim)",
+    "sonuc": "PR bekliyor (bekçi denetimi sağ kolda)"
   },
   "gercek_durum": {
     "main": "e99e6e3 (#597). Son birleştirilenler: #583 şirket iskeleti, #584-#592 Demo sezonu/test/a11y, #594-#597 docs ve labeluse düzeltmesi.",

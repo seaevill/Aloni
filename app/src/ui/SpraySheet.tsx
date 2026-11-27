@@ -4,6 +4,8 @@ import { formatDateTime, t } from '../i18n';
 import { NOT_ON_LABEL } from '../labels/label-use';
 import { instantOf } from '../spray/time';
 import { waitRing } from '../summary/wait';
+import { sprayWeather } from '../weather/spray-day';
+import { weatherLine } from '../weather/line';
 import { DetailSheet, ListRow, SheetFact } from './ds';
 import { UNIT_KEYS } from './LabelUseForm';
 import { WaitRing } from './ds/WaitRing';
@@ -11,6 +13,7 @@ import { openSheet } from './nav';
 import { nameOf } from './screens';
 import { registerSheet, type SheetProps } from './sheets';
 import { useRows } from './useRows';
+import { useWeather } from './useWeather';
 import './ProductSheet';
 
 const text = (v: unknown): string => (typeof v === 'string' ? v : '');
@@ -19,7 +22,7 @@ const unitName = (u: string): string => (Object.hasOwn(UNIT_KEYS, u) ? t(UNIT_KE
 // The process of ONE recorded spraying: product, when, the dose exactly as recorded (never rounded, never advised), the wait ring while the waiting period runs, «Κοπή από», the re-entry end and who sprayed.
 // The periods come only from the record (copied from the label); a missing one is «άγνωστο» with its reason, never a default.
 function SpraySheet({ id, close }: SheetProps) {
-  const sprays = useRows('job_spray'); const products = useRows('products'); const workers = useRows('workers'); const links = useRows('job_plantings'); const plantings = useRows('plantings'); const crops = useRows('crops'); const parcels = useRows('parcels');
+  const sprays = useRows('job_spray'); const products = useRows('products'); const workers = useRows('workers'); const links = useRows('job_plantings'); const plantings = useRows('plantings'); const crops = useRows('crops'); const parcels = useRows('parcels'); const weather = useWeather();
   if (!sprays.rows) return null;
   const row = sprays.rows.find((r) => r.id === id);
   if (!row) return <DetailSheet heading={t('ui.sheet.notfound.head')} onClose={close} testid="sheet-notfound"><p class="ds-muted">{t('ui.sheet.notfound.body')}</p></DetailSheet>;
@@ -34,6 +37,10 @@ function SpraySheet({ id, close }: SheetProps) {
   const worker = (workers.rows ?? []).find((w) => w.id === row.applicator_id);
   const where = [...new Set((links.rows ?? []).filter((l) => l.job_id === row.job_id).map((l) => (plantings.rows ?? []).find((p) => p.id === l.planting_id)).filter((p): p is Row => p !== undefined)
     .map((p) => [nameOf((crops.rows ?? []).find((c) => c.id === p.crop_id) ?? {}), nameOf((parcels.rows ?? []).find((x) => x.id === p.parcel_id) ?? {})].join(' · ')))].join(', ');
+  const parcelIds = [...new Set((links.rows ?? []).filter((l) => l.job_id === row.job_id).map((l) => (plantings.rows ?? []).find((p) => p.id === l.planting_id)?.parcel_id).filter((x): x is string => typeof x === 'string'))];
+  const wx = sprayWeather(at, parcelIds, weather);
+  const wxName = (id: string): string => nameOf((parcels.rows ?? []).find((x) => x.id === id) ?? {});
+  const wxLines = wx.length === 0 ? [{ id: '-', text: weatherLine(undefined) }] : wx.map((x) => ({ id: x.parcel_id, text: [wx.length > 1 ? wxName(x.parcel_id) : '', weatherLine(x.weather)].filter((v) => v !== '').join(' · ') }));
   const dose = text(row.dose_str) === '' ? undefined : [text(row.dose_str).split('.').join(','), unitName(text(row.dose_unit))].filter((x) => x !== '').join(' ');
   return (
     <DetailSheet heading={product ? nameOf(product) : t('ui.unknown')} onClose={close} testid="spray-sheet">
@@ -44,6 +51,7 @@ function SpraySheet({ id, close }: SheetProps) {
       <span data-testid="spray-sheet-cutfrom"><SheetFact name={t('ui.spray.cutfrom')} value={cutEnd?.known ? formatDateTime(cutEnd.value) : undefined} unknown={t('ui.spray.cutfrom.unknown')} /></span>
       <span data-testid="spray-sheet-reentry"><SheetFact name={t('ui.spray.reentry')} value={reEnd?.known ? formatDateTime(reEnd.value) : undefined} unknown={t('ui.spray.reentry.unknown')} /></span>
       <SheetFact name={t('ui.spray.where')} value={where === '' ? undefined : where} unknown={t('ui.unknown')} />
+      <div data-testid="spray-sheet-weather">{wxLines.map((x) => <p key={x.id} class="ds-muted">{x.text}</p>)}</div>
       <SheetFact name={t('ui.spray.who')} value={worker ? nameOf(worker) : undefined} unknown={t('ui.spray.who.unknown')} />
       {typeof row.product_id === 'string' && <div data-testid="spray-sheet-product"><ListRow heading={t('ui.product.open')} onClick={() => openSheet('product', String(row.product_id))} /></div>}
     </DetailSheet>

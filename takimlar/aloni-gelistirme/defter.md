@@ -11,3 +11,4 @@ Haftalık denetimde kalıplaşan dersler kurala çevrilir ve bu liste temizlenir
 ## Dersler
 
 - 2026-11-27 · is-0 durum eşitleme · Durum listesini sohbetten değil önce docs/STATUS.md ve git log'dan kurmak gerekiyor; kapsam tahmini (is-1/is-2) repoda kısmen zaten yapılmış çıktı, bu yüzden her iş "kalan boşluk neydi" kontrolüyle başlamalı.
+- 2026-11-27 · is-1 ilaçlama kaydında hava · Önce `npm ci` yapmadan "kırmızı test" yazmak yanıltır (modül yok hatası gerçek kırmızı değildir); ayrıca test verisini depolanan anahtarlarla (`rain_mm`, `gust_kmh`) kurmak gerekiyor, ayrıştırıcıdan geçen adlarla değil.
