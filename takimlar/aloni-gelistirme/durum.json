@@ -8,7 +8,7 @@
   "sirada": [
     {
       "id": "is-6",
-      "baslik": "Σήμερα sadeleştirme: Σήμερα'da kalacak olanlar hava, koşullar, günün kesimleri, ilaçlamalar ve işler. Hava özeti en üstte tek satır (FARK-LISTESI öneri 3). Σήμερα'da iki kez görünen ya da Φυτά/Χωράφια ayrıntısında zaten olan bilgi Σήμερα'da tek kısa satır + bağlantı olur. Özellik kaybı yok (bilgi başka ekranda erişilebilir kalır); 375 px önce/sonra ekran görüntüsü; birden fazla PR gerekirse parçalara böl.",
+      "baslik": "Σήμερα sadeleştirme: Σήμερα'da kalacak olanlar hava, koşullar, günün kesimleri, ilaçlamalar ve işler. Önce Σήμερα'da iki kez görünen ya da Φυτά/Χωράφια ayrıntısında zaten olan bilgilerin envanterini çıkar (PR'da ve raporda liste). Bunlar Σήμερα'da tek kısa satır + bağlantı olur. Özellik kaybı yok (bilgi başka ekranda erişilebilir kalır); 375 px önce/sonra ekran görüntüsü; birden fazla PR gerekirse parçalara böl.",
       "kaynak": "Bora, 27 Kasım 2026: çiftçilerden ve gerçek kullanıcılardan gelen geri bildirim",
       "onay": "Bora, 27 Kasım 2026 (çiftçi ve gerçek kullanıcı geri bildirimi)",
       "sahip": "aloni-gelistirme",
