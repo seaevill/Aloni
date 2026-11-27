@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-27 08:39 Atina — yönetici koşusu 20261127-0639
+1. **Uygulamada ne değişti:** Άλλα → Ταμείο ekranına yeni düğme: «CSV για τον λογιστή». Seçili yılın kayıtlarını muhasebeciye verilecek bir dosyaya indirir (düzeltilen kayıt bir kez, iptal edilen hiç yok; tutarlar kuruşu kuruşuna, ondalık virgülle). Dosyanın ilk satırı: «Προσωπικό βιβλίο εσόδων–εξόδων {yıl}, όχι λογιστικά βιβλία.» (kişisel defter, resmî muhasebe değil).
+2. **Senin için faydası:** Yıl sonunda gelir-gideri elle yazmadan muhasebeciye tek dosya gönderebilirsin; Excel'de açılır.
+3. **Ne denendi, ne başarısız oldu:** Birim testleri 893 geçti (dosyaya kötü niyetli formül sızmasını deneyen testler dahil), kod denetimleri temiz. Bekçi testleri kendisi tekrar çalıştırdı: ONAY. GitHub'daki tüm kontroller (telefon ekranı testleri 3 parça, SQL, Cloudflare derlemesi) yeşil. Başarısız olan yok. Telefon ekranında görüntü (ekran resmi) alınmadı.
+4. **Önerim:** is-2'nin sıradaki parçası: müşteriye göre kasa fiyatı geçmişi (kayıt sırasında son fiyat önerilir, sen onaylarsın), sonra veresiye, en son PDF.
+5. **Senden gereken karar:** Kasa fiyatı ve veresiye bilgisi yalnızca telefonda mı tutulsun (hızlı, sunucuya dokunmaz), yoksa sunucuda mı (birden çok telefonda görünür, ama SQL değişikliği ve senin onayın gerekir)?
+
+PR: https://github.com/seaevill/Aloni/pull/601 (birleşti, main `452c53e`). Birleşti ≠ canlıda: canlı adreste görmek için yayının tamamlanması gerekir; bu ortamdan doğrulanamaz.
+
 ## 2026-11-27 03:00 — gece koşusu (otomatik)
 - **Tamamlanan iyileştirmeler:** uygulama kodu değişmedi. Kuyrukta (QUEUE.md) yapılacak `todo` iş yok; bu yüzden yalnızca kayıt tuttum.
 - **PR'lar:** bu belge PR'ı (yalnız docs/autopilot).
