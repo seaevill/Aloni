@@ -11,7 +11,7 @@ test('the demo farm fills every screen, read-only, in Greek at 375 px without ov
   const noSideways = async (at: string) => expect(await page.evaluate(() => document.documentElement.scrollWidth), at).toBeLessThanOrEqual(375);
 
   await expect(page.getByTestId('today-counts')).toBeVisible();
-  await expect(page.getByTestId('today-cut7')).toBeVisible(); await expect(page.getByTestId('today-cut28')).toBeVisible();
+  await expect(page.getByTestId('today-cut7-big')).toBeVisible(); await expect(page.getByTestId('today-cut28')).toBeVisible();
   await expect(page.getByTestId('weather-strip')).toBeVisible();   // the strip is there; its values depend on the date, so they are checked in the unit test
   await expect(page.getByTestId('demo-banner')).toHaveText('Επίδειξη – φανταστικά στοιχεία');
   await openHistory(page);

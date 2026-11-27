@@ -8,10 +8,10 @@ test.use({ viewport: { width: 375, height: 812 } });
 test('demo: the 7-day number opens the table that adds up to it; the same numbers as the screen', async ({ page }) => {
   const errors = await iphone(page);
   await page.getByTestId('empty-state').locator('button').nth(1).click();
-  await expect(page.getByTestId('today-cut7')).toBeVisible();
-  await expect(page.getByTestId('today-cut7').locator('strong')).toHaveText(/\d/);          // the harvest rows load after the tile first shows: wait for the number (the Demo always has crates in the last 7 days)
-  const kpi = Number((await page.getByTestId('today-cut7').locator('strong').innerText()).replace(/\D/g, ''));
-  await page.getByTestId('today-cut7').click();
+  await expect(page.getByTestId('today-cut7-big')).toBeVisible();
+  await expect(page.getByTestId('today-cut7-big').locator('.ds-bignum-value')).toHaveText(/\d/);          // the harvest rows load after the tile first shows: wait for the number (the Demo always has crates in the last 7 days)
+  const kpi = Number((await page.getByTestId('today-cut7-big').locator('.ds-bignum-value').innerText()).replace(/\D/g, ''));
+  await page.getByTestId('today-cut7-big').click();
   const sheet = page.getByTestId('sheet-crates');
   await expect(sheet).toBeVisible();
   await expect.poll(() => page.evaluate(() => location.hash)).toMatch(/\/sheet\/crates\/7$/);

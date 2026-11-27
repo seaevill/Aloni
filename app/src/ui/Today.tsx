@@ -336,7 +336,6 @@ export function Today() {
         <section class="kpis" data-testid="today-kpis">
           <button type="button" class="kpi" data-testid="kpi-parcels" onClick={() => openSheet('parcels', 'all')}><small>{t('today.kpi.parcels')}</small><strong>{formatQty(live(parcels).length)}</strong></button>
           <button type="button" class="kpi" data-testid="kpi-crops" onClick={() => openSheet('crops', 'all')}><small>{t('today.kpi.crops')}</small><strong>{formatQty(cropsInUse)}</strong></button>
-          <button type="button" class="kpi" data-testid="today-cut7" onClick={() => openSheet('crates', '7')}><small>{t('today.kpi.cut7')}</small><strong>{cratesText(7)}</strong></button>
           <button type="button" class="kpi" data-testid="today-cut28" onClick={() => openSheet('crates', '28')}><small>{t('today.kpi.cut28')}</small><strong>{cratesText(28)}</strong></button>
           <button type="button" class="kpi wide" data-testid="today-canharvest" onClick={() => openSheet('cut', 'today')}><small>{t('today.kpi.harvest')}</small><strong>{formatQty(ct.freeParcels)}</strong><small>{t('today.kpi.held', { n: ct.heldParcels })}</small></button>
         </section>
@@ -346,7 +345,6 @@ export function Today() {
           <strong>{t('today.who')}</strong>
           {summary.done.length === 0 && summary.harvests === 0 && summary.overdue.length === 0 && <small data-testid="today-who-none">{t('today.who.none')}</small>}
           <TodayDone records={doneRecords(athensToday(new Date()) ?? '', sprays.rows ?? [], harvestRows.rows ?? [], jobs.rows ?? [], links.rows ?? [], plantings.rows ?? [], (id) => nameOf(workers.rows?.find((w) => w.id === id) ?? {}), (id) => nameOf(products.rows?.find((p) => p.id === id) ?? {}))} />
-          {summary.overdue.length > 0 && <small class="late" data-testid="today-who-overdue">{t('today.who.overdue', { n: summary.overdue.length })}</small>}
         </section>
       )}
       {loaded && has && <button class="row" data-testid="history-open" onClick={() => setHistory(true)}><span>{t('history.title')}</span><span aria-hidden="true" class="chev" /></button>}
