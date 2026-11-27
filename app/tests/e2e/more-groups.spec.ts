@@ -13,8 +13,8 @@ test('Άλλα: the same entries (plus Ταμείο after Πελάτες), in th
   const menu = page.getByTestId('more-menu');
   await expect(menu.locator('h2.menu-group')).toHaveText(['Καθημερινή δουλειά', 'Αναφορές και φωτογραφίες', 'Πληροφορίες']);
   const order = await menu.locator('button.row').evaluateAll((els) => els.map((e) => e.getAttribute('data-testid')));
-  expect(order).toEqual(['open-register', 'open-orders', 'open-worker-view', 'open-customers', 'open-money', 'open-workers', 'open-weekly-report', 'open-photos', 'open-info']);   // the order the earlier tests fixed: nothing moved, only headings were added
-  for (const id of ['open-workers', 'open-customers', 'open-money', 'open-orders', 'open-worker-view', 'open-register', 'open-weekly-report', 'open-photos', 'open-info']) await expect(menu.getByTestId(id), id).toBeVisible();
+  expect(order).toEqual(['open-register', 'open-orders', 'open-stock', 'open-worker-view', 'open-customers', 'open-money', 'open-workers', 'open-weekly-report', 'open-photos', 'open-info']);   // the order the earlier tests fixed: nothing moved, only headings were added and Αποθήκη (is-7)
+  for (const id of ['open-workers', 'open-customers', 'open-money', 'open-orders', 'open-stock', 'open-worker-view', 'open-register', 'open-weekly-report', 'open-photos', 'open-info']) await expect(menu.getByTestId(id), id).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Επίδειξη (φανταστικά στοιχεία)' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
   await page.waitForTimeout(5000);
