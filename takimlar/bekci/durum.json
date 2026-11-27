@@ -2,13 +2,13 @@
   "takim": "bekci",
   "guncelleme": "2026-11-27",
   "son_denetim": {
-    "pr": 610,
-    "sha": "ef20871be046a0e2779b5ae247c94bfe3fe61a95",
+    "pr": 612,
+    "sha": "9fa8c92f5cff687c8387b693dff09f131aeba22d",
     "takim": "aloni-gelistirme",
     "karar": "ONAY"
   },
   "denetim_sayaci": {
-    "onay": 6,
+    "onay": 7,
     "red": 2
   }
 }
