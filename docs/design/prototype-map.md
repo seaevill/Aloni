@@ -1,6 +1,6 @@
 # Prototip ↔ uygulama haritası (E2)
 
-Kaynak: `reference/prototype/index.html` (v2 tıklanabilir prototip, 780 px ekran görüntüleri `reference/prototype/screenshots/`) ve `docs/design/theme-2026-11` (tasarım 2). Yan yana görüntüler: `docs/design/compare/` (sol prototip, sağ uygulama, 375 px).
+Kaynak: `reference/prototype/index.html` (v2 tıklanabilir prototip, 780 px ekran görüntüleri `reference/prototype/screenshots/`) ve `docs/design/theme-2026-11` (tasarım 2). Güncel yan yana görüntüler ve fark listesi: `docs/design/compare/2026-11-27/` (`FARK-LISTESI.md`). Eski görüntüler: `docs/design/compare/` (sol prototip, sağ uygulama, 375 px).
 
 | # | Prototip ekranı | Uygulamadaki karşılığı | Durum | Öz puan (benzerlik /10) | Eksik (→ BACKLOG) |
 |---|---|---|---|---:|---|
