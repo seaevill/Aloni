@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-27 15:20 Atina — yönetici koşusu 20261127-1319
+1. **Uygulamada ne değişti:** Hiçbir şey. İş listesinde senin onayladığın, yapılmayı bekleyen yeni iş yok. Tek onaylı madde «ara sıra düşen testleri izle» işi; o yalnızca GitHub'da yeni bir düşme olursa ele alınıyor ve yeni düşme yok.
+2. **Senin için faydası:** Boşuna kod yazılmadı, uydurma iş açılmadı.
+3. **Ne denendi, ne başarısız oldu:** Ana daldaki son 15 GitHub koşusunun hepsi yeşil (en sonuncusu 14:35 Atina). Telefon ekranı testleri (3 parça), SQL ve Cloudflare derlemesi son ana dal kaydında yeşil. Başarısız olan yok.
+4. **Önerim:** Fark listesindeki 5 öneriden birini seç; en görünür fayda (3) Σήμερα'da hava özetini üste almak. Onay verdiğin an sıradaki koşu başlar (bugün 19:00'a kadar art arda çalışabilir; bugünkü kod işi 9/12).
+5. **Senden gereken karar:** docs/design/compare/2026-11-27/FARK-LISTESI.md içindeki 5 öneriden hangileri yapılsın (numara yazman yeterli)? Hesap silme testine kontrol satırı eklensin mi («evet»)? Yunanca sözcük soruları (veresiye, kasa fiyatı) hâlâ cevabını bekliyor.
+
+PR yok (yalnızca bu kayıt). Bugünkü kod işi: 9/12. Birleşti ≠ canlıda.
+
 ## 2026-11-27 14:33 Atina — yönetici koşusu 20261127-1219
 1. **Uygulamada ne değişti:** Uygulamada bir şey değişmedi. Sıradaki iş (Demo parselleri «yarım» görünüyordu) kontrol edildi: bitmiş. Demo çiftlikte Megara ovasında 7 hayalî tarla var, toplam 70 στρέμματα (en büyüğü 25, en küçüğü 2,5). Tapu numaralarının (ΚΑΕΚ) hepsi «99» ile başlıyor ve tarla sayfasında «Επίδειξη – φανταστικός αριθμός» yazısıyla gösteriliyor; değiştirilemiyor. Yalnızca iş listesindeki eski «yarım» satırı «bitti» yapıldı.
 2. **Senin için faydası:** Var olan iş için boşuna kod yazılmadı; iş listesi gerçeği gösteriyor.
