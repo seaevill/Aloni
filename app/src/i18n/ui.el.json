@@ -659,5 +659,9 @@
   "ui.money.owed.count": "{n} εγγραφές",
   "ui.money.owed.unknown": "Πελάτης που δεν βρέθηκε",
   "ui.money.settle": "Πληρώθηκε",
-  "ui.money.err.customer": "Για απλήρωτη πώληση διάλεξε πελάτη."
+  "ui.money.err.customer": "Για απλήρωτη πώληση διάλεξε πελάτη.",
+  "ui.money.crates": "Κλούβες",
+  "ui.money.err.crates": "Γράψε ακέραιο αριθμό κλουβών.",
+  "ui.money.lastprice": "Προηγούμενη τιμή: {v} ανά κλούβα ({day})",
+  "ui.money.lastprice.use": "Χρήση"
 }

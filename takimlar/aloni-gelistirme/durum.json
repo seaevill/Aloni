@@ -4,19 +4,34 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": null,
+  "simdi": {
+    "id": "is-2c",
+    "baslik": "Ταμείο kasa fiyatı geçmişi (1. parça): satışa kasa sayısı, aynı müşteri × ürün için son kasa fiyatı ÖNERİSİ (Dexie, SQL yok). Kalanı is-2d (PDF).",
+    "kaynak": "Bora, 23 Kasım 2026",
+    "onay": "Bora, 27 Kasım 2026",
+    "sahip": "aloni-gelistirme",
+    "tur": "ozellik",
+    "durum": "pr-acik",
+    "deneme": 1,
+    "son_deneme": {
+      "tarih": "2026-11-27",
+      "sonuc": "PR açıldı",
+      "pr": 606
+    },
+    "karar": "Bora 27 Kasım 2026: kasa fiyatı geçmişi ve veresiye şimdilik telefonda (Dexie); SQL/supabase yok.",
+    "dal": "1127-is-2c-kasa-fiyati"
+  },
   "sirada": [
     {
-      "id": "is-2c",
-      "baslik": "Gelir-gider kaydı F2/F3 kalanı: müşteri × ürüne göre kasa fiyatı geçmişi (yalnızca telefonda, Dexie; son fiyat önerilir, Bora onaylar) ve muhasebeci için PDF dışa aktarım. supabase/** gerekiyorsa dur ve Bora'ya sor. (CSV #601 ve veresiye is-2 ile bitti.)",
-      "kaynak": "Bora, 23 Kasım 2026",
-      "onay": "Bora, 27 Kasım 2026",
+      "id": "is-2d",
+      "baslik": "Ταμείο muhasebeci için PDF dışa aktarım (is-2c'nin kalanı; kasa fiyatı geçmişi PR'da bitti). Yalnızca telefonda, SQL/supabase yok. Mevcut app/src/export/register-pdf.ts ve RegisterPrint.tsx kalıbına bak.",
+      "kaynak": "is-2c bölünmesi, Bora 23/27 Kasım 2026",
+      "onay": "Bora, 27 Kasım 2026 (is-2c kapsamı)",
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
       "durum": "sirada",
       "deneme": 0,
-      "son_deneme": null,
-      "karar": "Bora 27 Kasım 2026: kasa fiyatı geçmişi ve veresiye şimdilik telefonda (Dexie); SQL/supabase yok."
+      "son_deneme": null
     },
     {
       "id": "is-3",
@@ -119,11 +134,12 @@
   "bekleyen_kararlar": [
     "0042 SQL yüklemesi (QUEUE madde 14): yalnızca Bora «Supabase migrate (manual)» ile yükler; sonra «yükleme tamam» yazar.",
     "q-2b: m18_job_board.sql:90 düzeltmesi supabase/** dokunur; Bora yazılı onay verirse yapılır.",
-    "Ταμείο veresiye (PR #604): Yunanca «Απλήρωτο / Πληρώθηκε / Δεν πληρώθηκε ακόμα / Απλήρωτα από πελάτες» terimleri docs/i18n/glossary-el.md içinde yok; Bora sözlük onayı versin ya da başka terim söylesin."
+    "Ταμείο veresiye (PR #604): Yunanca «Απλήρωτο / Πληρώθηκε / Δεν πληρώθηκε ακόμα / Απλήρωτα από πελάτες» terimleri docs/i18n/glossary-el.md içinde yok; Bora sözlük onayı versin ya da başka terim söylesin.",
+    "Ταμείο kasa fiyatı (is-2c): «Κλούβες», «Προηγούμενη τιμή: … ανά κλούβα», «Χρήση» Yunanca terimleri docs/i18n/glossary-el.md içinde yok (yalnızca «κλούβα» var); Bora sözlük onayı versin ya da başka terim söylesin."
   ],
   "gunluk": {
     "tarih": "2026-11-27",
-    "kod_isi": 2
+    "kod_isi": 3
   },
   "son_kosu": {
     "tarih": "2026-11-27",

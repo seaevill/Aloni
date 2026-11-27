@@ -4,7 +4,7 @@ import { formatDate, formatMonth, lang, t, type I18nKey } from '../i18n';
 import { formatMoney } from '../i18n/format';
 import { athensToday } from '../plantings/planting';
 import { CATALOG } from '../crops/catalog';
-import { appendMoney, buildEntry, cancelled, categoriesOf, effective, historyOf, loadMoney, owedByCustomer, restoreOf, rootOf, settleOf, voidOf, MONTHS, yearSummary, yearsOf, type Category, type Direction, type MoneyEntry } from '../money/ledger';
+import { appendMoney, buildEntry, cancelled, categoriesOf, effective, cratesTimesPrice, historyOf, lastCratePrice, loadMoney, owedByCustomer, restoreOf, rootOf, settleOf, voidOf, MONTHS, yearSummary, yearsOf, type Category, type Direction, type MoneyEntry } from '../money/ledger';
 import { downloadText } from '../backup/download';
 import { DEMO_FARM_ID } from '../config';
 import { moneyCsv, moneyLines } from '../money/export';
@@ -41,7 +41,7 @@ export function Money({ onBack }: { onBack: () => void }) {
   const who = (id: string | undefined): string => customers.find((c) => c.id === id)?.name ?? '';
   if (rows === undefined) return null;
   const append = async (e: MoneyEntry) => { await appendMoney(db, farm, e); await reload(); };
-  if (view.kind === 'form') return <EntryForm dir={view.dir} from={view.from} today={today} customers={customers} onBack={() => setView({ kind: 'main' })} onSave={async (e) => { await append(e); setYear(e.day.slice(0, 4)); setView({ kind: 'main' }); }} />;
+  if (view.kind === 'form') return <EntryForm dir={view.dir} from={view.from} today={today} customers={customers} rows={rows} onBack={() => setView({ kind: 'main' })} onSave={async (e) => { await append(e); setYear(e.day.slice(0, 4)); setView({ kind: 'main' }); }} />;
   const s = yearSummary(rows, year);
   const live = effective(rows).filter((e) => e.day.startsWith(`${year}-`));
   const months = s.months.map((m, i) => ({ m, ym: [year, MONTHS[i]].join('-') })).filter(({ m }) => m.inCents > 0 || m.outCents > 0).reverse();
@@ -110,6 +110,7 @@ export function Money({ onBack }: { onBack: () => void }) {
         <SheetFact name={t('ui.money.date')} value={formatDate(open.day)} />
         {open.crop !== undefined && <SheetFact name={t('ui.money.crop')} value={cropName(open.crop)} />}
         {open.customer !== undefined && <SheetFact name={t('ui.money.customer')} value={who(open.customer) || t('ui.money.owed.unknown')} />}
+        {open.crates !== undefined && <SheetFact name={t('ui.money.crates')} value={String(open.crates)} />}
         {open.owed === true && <SheetFact name={t('ui.money.owed.badge')} value={signed(open)} />}
         {open.note !== '' && <SheetFact name={t('ui.money.note')} value={open.note} />}
         {historyOf(rows, rootOf(rows, open)).length > 1 && <>
@@ -129,7 +130,7 @@ function HistoryLine({ h }: { h: MoneyEntry }) {
   return <p class="muted" data-testid="money-history-line">{t(key, { v: signed(h), day: formatDate(h.day) })}</p>;
 }
 
-function EntryForm({ dir, from, today, customers, onBack, onSave }: { dir: Direction; from?: MoneyEntry; today: string; customers: Customer[]; onBack: () => void; onSave: (e: MoneyEntry) => Promise<void> }) {
+function EntryForm({ dir, from, today, customers, rows, onBack, onSave }: { dir: Direction; from?: MoneyEntry; today: string; customers: Customer[]; rows: MoneyEntry[]; onBack: () => void; onSave: (e: MoneyEntry) => Promise<void> }) {
   const [amount, setAmount] = useState(from ? formatMoney(from.cents).replace(/\s€$/, '') : '');
   const [category, setCategory] = useState<string>(from ? from.category : '');
   const [day, setDay] = useState(from ? from.day : today);
@@ -137,12 +138,16 @@ function EntryForm({ dir, from, today, customers, onBack, onSave }: { dir: Direc
   const [note, setNote] = useState(from ? from.note : '');
   const [customer, setCustomer] = useState(from?.customer ?? '');
   const [owed, setOwed] = useState(from?.owed === true);
-  const [err, setErr] = useState<'amount' | 'day' | 'category' | 'customer' | undefined>(undefined);
+  const [crates, setCrates] = useState(from?.crates !== undefined ? String(from.crates) : '');
+  const [err, setErr] = useState<'amount' | 'day' | 'category' | 'customer' | 'crates' | undefined>(undefined);
+  const count = /^[1-9]\d{0,3}$/.test(crates.trim()) ? parseFloat(crates.trim()) : 0;
+  const last = dir === 'in' && category === 'sale' && customer !== '' && crop !== '' ? lastCratePrice(rows, customer, crop) : undefined;   // a SUGGESTION only: the amount changes when the owner taps «Χρήση», and he still saves it himself
+  const suggested = last !== undefined ? cratesTimesPrice(last.cents, count) : undefined;
   const head: I18nKey = from ? 'ui.money.correct' : dir === 'in' ? 'ui.money.add.in' : 'ui.money.add.out';
   const entryId = useRef(crypto.randomUUID()).current;       // ONE id per form: a second tap can never write a second row
   const guard = useSubmit();
   const submit = () => guard.submit(async () => {
-    const r = buildEntry({ day, dir, category, amount, crop, note, customer, owed: owed && dir === 'in' && category === 'sale' }, entryId, new Date().toISOString(), from?.id);
+    const r = buildEntry({ day, dir, category, amount, crop, note, customer, crates, owed: owed && dir === 'in' && category === 'sale' }, entryId, new Date().toISOString(), from?.id);
     if (!r.ok) { setErr(r.reason); return; }
     await onSave(r.entry);
   });
@@ -171,6 +176,12 @@ function EntryForm({ dir, from, today, customers, onBack, onSave }: { dir: Direc
         </div>
         <button type="button" class="tag-btn" aria-pressed={owed} data-testid="money-owed-toggle" onClick={() => setOwed(!owed)}>{t('ui.money.owed.toggle')}</button>
         {err === 'customer' && <p class="msg error" role="alert" data-testid="money-error">{t('ui.money.err.customer')}</p>}
+        <label class="field">{t('ui.money.crates')}<input class="input" inputMode="numeric" value={crates} autoComplete="off" data-testid="money-crates" onInput={(e) => setCrates((e.target as HTMLInputElement).value)} /></label>
+        {err === 'crates' && <p class="msg error" role="alert" data-testid="money-error">{t('ui.money.err.crates')}</p>}
+        {last !== undefined && <>
+          <p data-testid="money-lastprice">{t('ui.money.lastprice', { v: formatMoney(last.cents), day: formatDate(last.day) })}</p>
+          <button type="button" class="btn secondary" data-testid="money-use-price" disabled={suggested === undefined} onClick={() => { if (suggested !== undefined) setAmount(formatMoney(suggested).replace(/\s€$/, '')); }}>{t('ui.money.lastprice.use')}</button>
+        </>}
       </>}
       <label class="field">{t('ui.money.note')}<input class="input" value={note} maxLength={80} autoComplete="off" data-testid="money-note" onInput={(e) => setNote((e.target as HTMLInputElement).value)} /></label>
       <p class="muted">{t('ui.money.note.hint')}</p>

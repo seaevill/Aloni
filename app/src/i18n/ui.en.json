@@ -659,5 +659,9 @@
   "ui.money.owed.count": "{n} entries",
   "ui.money.owed.unknown": "Customer not found",
   "ui.money.settle": "Paid",
-  "ui.money.err.customer": "Choose a customer for an unpaid sale."
+  "ui.money.err.customer": "Choose a customer for an unpaid sale.",
+  "ui.money.crates": "Crates",
+  "ui.money.err.crates": "Write a whole number of crates.",
+  "ui.money.lastprice": "Last price: {v} per crate ({day})",
+  "ui.money.lastprice.use": "Use it"
 }
