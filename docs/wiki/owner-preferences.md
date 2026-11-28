@@ -12,6 +12,7 @@ Dated; newest last. Each line cites where it is written down.
 
 - 2026-11-27 (DECISIONS row «One management system», point 2): Bora asked not to be needed for approvals; record PRs get a mechanical bekçi check instead of his approval, and ANAYASA stays unchanged.
 - 2026-11-28 (DECISIONS row «Independent five-part evaluation», this wiki's PR set): Bora delegated the decisions that follow from the 2026-11-28 evaluation to the team: «sorma» (do not ask). Queue items carry that delegation as `onay`.
+- 2026-11-28 evening (DECISIONS row «Bora (chat, evening)»): night shift until 2026-11-29 08:00 Athens (the main session chose a cap of 24 for jobs started before 08:00; 12 again after); weekly audit approved (Monday, see `docs/autopilot/YONETICI.md` «Weekly audit»); new features the team finds necessary may be added without asking, after the product research of 2026-11-28.
 - Hard stops stay his (CLAUDE.md «Production rules» 2026-11-20; YONETICI.md «Hard stops» at 682c32d): production and SQL, `supabase/**` merges, anything that costs money, contact with customers or workers, label/dose/PHI values and agronomist [SET] thresholds. Those items wait as `bora-bekliyor` with one line in `bekleyen_kararlar`.
 
 ## Product feedback

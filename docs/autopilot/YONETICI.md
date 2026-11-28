@@ -35,9 +35,11 @@ Latest main commit and the CONCLUSION of each check-run; open PRs; for `durum.js
 ## 4. Decide ONE thing (first match wins)
 1. **Main is red** → maintenance: root cause from the failing log («FAILURE CONTEXT»); a green rerun is not a fix. Counts as a code job (`kod_isi` + 1).
 2. **`simdi` has an open PR** → continue it, never start a new item: CI red → team fixes; no bekçi verdict at the head SHA → bekçi; ONAY at head SHA + gates green → merge (step 7). PR merged → item `tamam`.
-3. **First `sirada` item with `onay` set, `durum` = `sirada`, `deneme` < 2**, and `gunluk.kod_isi` < the daily cap for today (Europe/Athens date; cap 4, but 12 up to and including 2026-12-01 — Bora's intensive mode, see `durum.json` `yogun_mod`) → take it: move it to `simdi`, `deneme` + 1, `kod_isi` + 1.
+3. **First `sirada` item with `onay` set, `durum` = `sirada`, `deneme` < 2**, and `gunluk.kod_isi` < the daily cap for today (Europe/Athens date; cap 4, but 12 up to and including 2026-12-01 — Bora's intensive mode, see `durum.json` `yogun_mod`; night shift: a job started before 2026-11-29 08:00 Athens may use a cap of 24 — Bora asked for work «until 08:00», the number 24 is the main session's choice; from 08:00 on 2026-11-29 the cap is 12 again, counting that day's jobs) → take it: move it to `simdi`, `deneme` + 1, `kod_isi` + 1.
 4. **Maintenance with new evidence only** (`tur: bakim` items, e.g. a monitored test failed on main in the last 24 h).
 5. Nothing → no agents; short report (step 8) and stop.
+
+**Weekly audit (Bora approved 2026-11-28):** on Mondays, the first run at or after 07:00 Athens does the audit INSTEAD of a code job: (a) `.claude/commands/denetim.md` steps 1–3 — the rule-candidate table goes into the REPORT.md section and `bekleyen_kararlar`; no `kurallar.md` or `defter.md` change until Bora answers (steps 4–6 need his explicit word); (b) lint `docs/wiki/`: contradictions, orphan pages, missing links in `index.md`, undated or overtaken claims (add a dated superseding line, never rewrite history). Wiki fixes go in that run's record PR.
 The cap is for EVERY code job (1, 2 when it needs a team fix, 3, 4): at the cap only reporting is allowed. Maintenance (4) also needs an item with `onay`. Never take an item without `onay`. Never invent a feature. An item that failed twice becomes `engelli` and its question goes to `bekleyen_kararlar`.
 
 ## 5. Team (aloni-gelistirme)
@@ -50,7 +52,7 @@ Same way with `.claude/agents/bekci.md` (read-only; it leaves its own `durum.jso
 Wait for CI at most 30 minutes. Merge (squash, `-f sha=<head>`) ONLY if: the PR head SHA equals the SHA in the latest bekçi ONAY comment; every check-run conclusion (check, sql, static, e2e 1–3, pr-size, Workers Builds) is success or skipped; no `supabase/**` file; not #508, not «DO NOT MERGE»; QUALITY.md holds. Otherwise leave it open and say why.
 
 ## 8. Record + report (every run, also when nothing was done)
-A docs-only PR from the record branch that changes ONLY `docs/autopilot/REPORT.md`, `takimlar/*/durum.json`, `takimlar/*/defter.md` (check `git diff --name-only`). It goes through bekçi like every PR (a short mechanical check: only these files, no secrets, records match GitHub), its verdict is posted with `SHA:` (step 6), and it is merged under step 7.
+A docs-only PR from the record branch that changes ONLY `docs/autopilot/REPORT.md`, `takimlar/*/durum.json`, `takimlar/*/defter.md` (plus `docs/wiki/**` in the weekly audit run) (check `git diff --name-only`). It goes through bekçi like every PR (a short mechanical check: only these files, no secrets, records match GitHub), its verdict is posted with `SHA:` (step 6), and it is merged under step 7.
 - `durum.json`: item `durum` and `son_deneme` {tarih, sonuc, pr}, `simdi`, `son_kosu`, `gunluk` {tarih, kod_isi}.
 - Bekçi's uncommitted `durum.json`/`defter.md` go into this PR.
 - If agents ran, `defter.md` gets one lesson (ANAYASA 5).

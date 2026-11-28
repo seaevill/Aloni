@@ -749,5 +749,5 @@
     "is": "ev-5 — yönetici koşusu 20261128-1741",
     "sonuc": "PR #677 birleşti (squash 6fcaf46): bekçi ONAY 83c1f04'te, tüm kontroller (check, sql, static, e2e 1–3, pr-size, Workers Builds) ilk denemede yeşil. Bugünkü kod işi 12/12 (tavan)."
   },
-  "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
+  "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner. Ek (Bora 28 Kasım 2026): 2026-11-29 08:00 Atina'ya kadar kesintisiz çalışma. 08:00'den önce başlayan işler için sınır 24 (sayıyı sağ kol seçti); 29 Kasım 08:00'den sonra yeniden 12."
 }
