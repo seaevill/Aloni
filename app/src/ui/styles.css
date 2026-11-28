@@ -196,6 +196,9 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 /* Worker screen (theme B): the three actions sit in a tray that stays at the bottom of the screen on a blurred bar; the buttons are 72 px */
 .worker-tray { position:sticky; bottom:0; z-index:3; margin:var(--sp-16) calc(-1 * var(--sp-16)) 0; padding:var(--sp-8) var(--sp-16) calc(var(--sp-8) + env(safe-area-inset-bottom)); background:var(--bar); }
 @supports ((backdrop-filter:none) or (-webkit-backdrop-filter:none)) { .worker-tray { -webkit-backdrop-filter:var(--blur-bar); backdrop-filter:var(--blur-bar); } }
+/* kurallar 7 (ev-12): inside the worker app EVERY button, chip, summary and input is at least 72 px tall (gloves, sun). worker-layout.spec.ts holds the line. */
+[data-testid="worker-app"] :is(button, summary, input:not([type="hidden"], [type="checkbox"], [type="radio"]), select, textarea) { min-height:var(--tap-big); }
+.worker-head .bell-btn { width:var(--tap-big); height:var(--tap-big); }
 [data-testid="worker-app"] .btn[data-testid$="-save"], [data-testid="worker-app"] .btn[data-testid="job-confirm"] { bottom:calc(var(--tap-big) + var(--sp-24)); }   /* above the tray */
 
 /* the worker's toast sits at the TOP: it never covers the next job's buttons */
