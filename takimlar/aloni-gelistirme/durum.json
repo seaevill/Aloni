@@ -66,17 +66,6 @@
       "son_deneme": null
     },
     {
-      "id": "ev-12",
-      "baslik": "[P2] İşçi ekranlarında her düğme, çip ve giriş en az 72 px (kurallar 7): hasat çipleri (şimdi 56 px), not girişi, «+ Σημείωση», zil; worker-layout.spec.ts izinli listeden yasak listesine döner (her şey ≥ 72 px, istisna gerekçesiyle yazılır). ~80 satır.",
-      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 2-interface UI-04 (kurallar.md madde 7)",
-      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
-      "sahip": "aloni-gelistirme",
-      "tur": "ozellik",
-      "durum": "sirada",
-      "deneme": 0,
-      "son_deneme": null
-    },
-    {
       "id": "ev-13",
       "baslik": "[P2] UX çıtası testi gerçek ekranları gezsin: ürün/tarla detayı, ürün rehberi, ürün kartı, hava sayfası, hızlı ekleme, ilaçlama/hasat/gözlem/yarın formları, işçi sekmeleri; tam sezon Demo ile; hedeflere summary, tab, switch eklenir; işçi alt ağacında 72 px. Henüz düzelmemiş bulgular ev numarasıyla bilinen istisna listesinde, düzelince silinir. Yalnızca test, ~150 satır.",
       "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 2-interface ENV-4 (UI-06 bu testin görmediği yerde bulundu)",
@@ -907,6 +896,11 @@
       "id": "ev-11",
       "baslik": "Token koruması tüm src/ui CSS'te (yalnızca 3 yazdırma CSS'i, @media koşulu ve @page kâğıt ölçüleri izinli; kaçma denemeleriyle); renk sabiti src/**/*.ts(x) ve index.html'de yasak (tek istisna theme-color, testle --brand-forest'e bağlı); 9 yan CSS'te 47 sabit uzunluk token'a (değerler aynı); paylaşım kartı ve açılış logosu renkleri --brand-* token'larından. Ekran değişikliği yok. Kalan: scripts/render-icons.mjs iki marka hex'i; readShareColors() boş token'a yedek (bekçi notu)",
       "pr": 692
+    },
+    {
+      "id": "ev-12",
+      "baslik": "İşçi ekranında (worker-app) her düğme, açılır satır ve giriş kutusu en az 72 px (tek CSS kuralı, yalnızca --tap-big token'ı; gizli/checkbox/radio hariç); zil 56 → 72 px; worker-layout.spec.ts 56 px izinli listesi kalktı, 72 px altındakilerin tam listesi boş olmalı (istisna gerekçesiz yazılamaz), kaçma denemesi 60 px düğme. Sahip ekranları etkilenmiyor. Kalan (bekçi notu): ölçüm yalnızca üç sekmenin varsayılan durumunda; iş detay, hasat adımları, gözlem formu açıkken ölçülmüyor",
+      "pr": 694
     }
   ],
   "bekleyen_kararlar": [
@@ -935,12 +929,12 @@
   ],
   "gunluk": {
     "tarih": "2026-11-28",
-    "kod_isi": 17
+    "kod_isi": 18
   },
   "son_kosu": {
     "tarih": "2026-11-28",
-    "is": "ev-11 — yönetici koşusu 20261128-2006 (zincir)",
-    "sonuc": "ev-11 birleşti (#692, squash 9d60f73): bekçi ONAY b65d0b9 (ilk deneme), tüm CI kapıları yeşil. Kod işi 17/24 (gece vardiyası tavanı). Sıradaki onaylı iş ev-12."
+    "is": "ev-12 — yönetici koşusu 20261128-2028 (zincir)",
+    "sonuc": "ev-12 birleşti (#694, squash a9f3013): bekçi ONAY c3af0cd (ilk deneme), tüm CI kapıları yeşil. Kod işi 18/24 (gece vardiyası tavanı). Sıradaki onaylı iş ev-13."
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner. Ek (Bora 28 Kasım 2026): 2026-11-29 08:00 Atina'ya kadar kesintisiz çalışma. 08:00'den önce başlayan işler için sınır 24 (sayıyı sağ kol seçti); 29 Kasım 08:00'den sonra yeniden 12."
 }
