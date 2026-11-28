@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { iphone } from './helpers/iphone';
-import { setup, spray } from './helpers/farm';
+import { closeHistory, setup, spray } from './helpers/farm';
 
 test.use({ viewport: { width: 375, height: 812 } });
 
@@ -39,4 +39,23 @@ test('«Σήμερα έγιναν» lists each record as a row (type · crop · 
   await sheet.getByTestId('sheet-close').click();
   await sprayRow.click();
   await expect(page.getByTestId('done-sheet')).toContainText('Kocide 2000');
+});
+
+test('a harvest saved a second ago says where it went (the answer kept on this phone), not «άγνωστο – παλιά καταγραφή»; the detail agrees', async ({ page }) => {
+  await iphone(page);
+  await setup(page, true);
+  await closeHistory(page);
+  await page.getByTestId('harvest-open').click();
+  await page.getByTestId('harvest-chip').filter({ hasText: 'Σπανάκι' }).first().click();
+  await page.getByTestId('harvest-more').click();
+  await page.getByTestId('harvest-dest-store').click();
+  await page.getByTestId('harvest-cutby-option').first().click();
+  await page.getByTestId('harvest-save').click();
+  await expect(page.getByTestId('harvest-saved')).toBeVisible();
+  const row = page.getByTestId('today-done-row').filter({ hasText: 'Συγκομιδή' });
+  await expect(row).toContainText('Αποθήκη');
+  await expect(row).not.toContainText('άγνωστο');
+  await row.click();
+  await expect(page.getByTestId('done-sheet')).toContainText('Αποθήκη');
+  await expect(page.getByTestId('done-sheet')).not.toContainText('άγνωστο');
 });

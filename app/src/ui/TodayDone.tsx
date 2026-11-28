@@ -1,3 +1,7 @@
+import { useEffect, useState } from 'preact/hooks';
+import { activeFarm, dataVersion, db } from '../db';
+import { loadDestinations, type DestinationRecord } from '../stock/destination';
+import { isDispatch } from '../stock/destination-words';
 import { formatDateTime, t } from '../i18n';
 import { parseWhole } from '@aloni/rules-core';
 import type { Row } from '../db/schema';
@@ -11,6 +15,12 @@ import { useRows } from './useRows';
 import './ProductSheet';
 import './CrateLabelSheet';
 
+/** The answers the harvest form saved on this phone (harvest id → where it went); reloaded after every save. */
+export function usePhoneDestinations(): Record<string, DestinationRecord> {
+  const [dest, setDest] = useState<Record<string, DestinationRecord>>({});
+  useEffect(() => { void loadDestinations(db, activeFarm.value).then(setDest); }, [activeFarm.value, dataVersion.value]);
+  return dest;
+}
 const where = (d: DoneRecord): string => (d.destination === 'store' ? t('ui.done.dest.store') : d.destination === 'dispatch' ? t('ui.done.dest.dispatch') : t('ui.done.dest.unknown'));
 const cratesOf = (d: DoneRecord): string => (d.crates === undefined ? t('ui.done.crates.unknown') : t('ui.done.crates', { n: d.crates }));
 const crop = (rows: readonly Row[] | null, id: string): Row | undefined => (rows ?? []).find((c) => c.id === id);
@@ -42,7 +52,9 @@ function DoneSheet({ id, close }: SheetProps) {
   const job = (jobs.rows ?? []).find((j) => j.id === row.job_id);
   const worker = nameById(workers.rows, kind === 'spray' ? row.applicator_id : row.cut_by ?? job?.worker_id);
   const at = String(kind === 'spray' ? row.sprayed_at : row.harvested_at);
-  const dest = row.destination === 'store' ? t('ui.done.dest.store') : row.destination === 'dispatch' ? t('ui.done.dest.dispatch') : undefined;
+  const phone = usePhoneDestinations();
+  const word = row.destination ?? phone[String(row.id)]?.d;   // the row's own column wins; then this phone's answer
+  const dest = word === 'store' ? t('ui.done.dest.store') : isDispatch(word) ? t('ui.done.dest.dispatch') : undefined;
   const whole = parseWhole<'Crates'>(typeof row.crates_str === 'string' ? row.crates_str : '');
   const n = whole.known ? t('ui.done.crates', { n: String(whole.value) }) : undefined;
   return (

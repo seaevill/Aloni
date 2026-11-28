@@ -24,7 +24,7 @@ import { Title, nameOf, retry } from './screens';
 import { useRows, type Rows } from './useRows';
 import { dayOf, farmDay, parseDays, provenance, type Day } from '../weather/strip';
 import { cratesLogged, cratesPerDay, doneRecords } from '../summary/today';
-import { TodayDone } from './TodayDone';
+import { TodayDone, usePhoneDestinations } from './TodayDone';
 import './TomorrowSheet';
 import { BigNum, Sparkline } from './ds';
 import { Icon } from './icons/Icon';
@@ -238,7 +238,7 @@ export function Today() {
   const weatherRows = useWeather();
   const weatherOf = new Map(weatherRows.map((w) => [w.parcel_id, parseDays(w.days)] as const));
   const harvestRows = useRows('job_harvest');
-  const doneToday = doneRecords(athensToday(new Date()) ?? '', sprays.rows ?? [], harvestRows.rows ?? [], jobs.rows ?? [], links.rows ?? [], plantings.rows ?? [], (id) => nameOf(workers.rows?.find((w) => w.id === id) ?? {}), (id) => nameOf(products.rows?.find((p) => p.id === id) ?? {}));
+  const doneToday = doneRecords(athensToday(new Date()) ?? '', sprays.rows ?? [], harvestRows.rows ?? [], jobs.rows ?? [], links.rows ?? [], plantings.rows ?? [], (id) => nameOf(workers.rows?.find((w) => w.id === id) ?? {}), (id) => nameOf(products.rows?.find((p) => p.id === id) ?? {}), usePhoneDestinations());
   const jobLineBase = (j: Row): string => [...new Set(links.rows?.filter((l) => l.job_id === j.id).map((l) => plantings.rows?.find((p) => p.id === l.planting_id)).filter((p): p is Row => !!p).map((p) => t('spray.planting', { crop: nameOf(crops.rows?.find((c) => c.id === p.crop_id) ?? {}), parcel: text(parcels.rows?.find((x) => x.id === p.parcel_id)?.name) })) ?? [])].concat(text(workers.rows?.find((w) => w.id === j.worker_id)?.name), typeof j.planned_for === 'string' && j.planned_for !== '' ? formatDate(j.planned_for) : '').filter(Boolean).join(' · ');
   const jobLine = (j: Row): string => [kindTitle(j as { kind?: unknown }), jobLineBase(j)].filter((x) => x !== undefined && x !== '').join(' · ');
   const urgentPlanting = (p: Row): string | undefined => {          // the planting on that parcel whose waiting period is the reason (unknown first, then the earliest running one)
