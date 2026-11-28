@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 18:40 Atina — yönetici koşusu 20261128-1623
+1. **Uygulamada ne değişti:** «Σήμερα» ekranındaki «Σήμερα έγιναν» bölümünde, az önce kaydettiğin bir hasat artık yanlışlıkla «άγνωστο – παλιά καταγραφή» (bilinmiyor, eski kayıt) demiyor; hasat formunda seçtiğin yeri (ör. «Αποθήκη») gösteriyor. Satıra dokununca açılan ayrıntıda da aynı yer yazıyor. Gerçekten yeri girilmemiş eski kayıtlar eskisi gibi «bilinmiyor» kalıyor; uygulama yer uydurmuyor.
+2. **Senin için faydası:** Gün sonunda hangi hasadın nereye gittiğini doğru görüyorsun; yeni kayıt «eski kayıt» diye görünüp seni şüpheye düşürmüyor.
+3. **Ne denendi, ne başarısız oldu:** Önce hatayı gösteren bir test yazıldı (değişiklikten önce kırmızıydı), sonra yeşil; başka bir kaydın cevabının ya da anlamsız bir değerin kullanılmadığını da testler kontrol ediyor. Tüm birim testleri (928) geçti; ilgili ekran testleri geçti. Bekçi testleri kendisi koşturdu ve onayladı. GitHub'da tüm kontroller (iPhone tarayıcısıyla 3 parça ekran testi, SQL, Cloudflare derlemesi) ilk denemede başarılı. Başarısız bir şey yok.
+4. **Önerim:** Telefonda Demo çiftlikte bir hasat kaydet, sonra «Σήμερα» → «Σήμερα έγιναν» satırında yerin doğru yazdığına bak. Bekçinin küçük notu: liste ve ayrıntı sayfası yeri iki ayrı yoldan okuyor; ileride tek yola indirilebilir. Sıradaki onaylı iş: ev-3 (karar motoru: süren ilaç bekleme süresinde hasat önerilmesin).
+5. **Senden gereken karar:** Yeni karar yok. Önceki koşudan açık: «Δεν έχει σπαρθεί ακόμα» sözlüğe eklensin mi; yeni Hintçe kelimeyi kim kontrol edecek; «Σήμερα» takip işi sıraya girsin mi.
+
+PR: https://github.com/seaevill/aloni/pull/671 (birleşti). Bugünkü kod işi: 9/12. Birleşti ≠ canlıda.
+
 ## 2026-11-28 18:15 Atina — yönetici koşusu 20261128-1554
 1. **Uygulamada ne değişti:** Henüz ekilmemiş, yalnızca planlanmış bir ekime artık hasat yazılamıyor. Hasat formunda («Συγκομιδή») ürün seçerken planlanmış ekimin düğmesi gri ve kilitli, üstünde «Προγραμματισμένη» yazıyor. «Χωράφια» ve «Φυτά» ekranlarında yalnızca planlanmış ekimi olan tarla ya da ürün artık yanlışlıkla «Έτοιμο για κοπή» değil, «Προγραμματισμένη» görünüyor. Aynı tarlada büyüyen bir ekim de varsa eskisi gibi gösteriliyor.
 2. **Senin için faydası:** Bir işçi henüz toprağa girmemiş bir ürüne hasat kaydı yazamaz; kayıt defterin ve stok sayıların yanlış satırla bozulmaz. Kartlar «kesime hazır» diye yanıltmıyor.
