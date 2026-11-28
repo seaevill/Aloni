@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 10:19 Atina — yönetici koşusu 20261128-0818
+1. **Uygulamada ne değişti:** Hiçbir şey. Önceki koşudan beri yeni onaylı iş ya da senden yeni cevap gelmedi.
+2. **Senin için faydası:** Onaysız iş yapılmadı; ana dal sağlam kaldı.
+3. **Ne denendi, ne başarısız oldu:** Ana dal (son kayıt c5b7c27) yeşil: tüm kontroller (SQL, iPhone tarayıcısıyla 3 parça ekran testi, Cloudflare derlemesi) başarılı. Son 24 saatte ana dalda 44 koşu var, hepsi ilk denemede başarılı; bu yüzden ara sıra düşen testleri izleme işi (q-2) alınmadı. **Bir aksilik:** bu kaydın kendi PR'ında (yalnızca belge değişti) ekran testlerinden biri bir kez düştü — «hasat» testi, imzasız ilaçlama sonrası hasat ekranını açmaya çalışırken 60 saniye bekledi; ekran hâlâ «Ιστορικό»da kalmıştı. Uygulama kodu değişmediği için bu ara sıra düşen bir test; nedeni bilinmiyor. Bu yüzden kayıt bu ikinci düzeltmeyle yeniden denetlendi; ilk kırmızı sonuç bir düzeltme kanıtı sayılmaz.
+4. **Önerim:** Telefonda «Άλλα → Αποθήκη»yı ve «Σήμερα» ekranının yeni sade halini dene. Sıradaki iş is-6b-4 senin cevabınla hemen başlayabilir.
+5. **Senden gereken karar:** «Σήμερα» için iki soru (is-6b-4): (a) «Για κοπή σήμερα» ekim sayıyor, «Χωράφια χωρίς αναμονή» tarla sayıyor — tek satıra inecekse hangisi kalsın? (c) İlaçlama/hasat/iş ekleme düğmeleri hem hızlı ekleme bölümünde hem sayfada var — hangisi kalsın? Ayrıca prototip karşılaştırmasındaki 5 öneriden hangileri iş olsun?
+
+PR yok (yalnızca bu kayıt; #508 eski araştırma PR'ı, dokunulmadı). Bugünkü kod işi: 3/12. Birleşti ≠ canlıda.
+
 ## 2026-11-28 09:19 Atina — yönetici koşusu 20261128-0719
 1. **Uygulamada ne değişti:** Hiçbir şey. Önceki koşudan beri yeni onaylı iş ya da senden yeni cevap gelmedi.
 2. **Senin için faydası:** Onaysız iş yapılmadı; ana dal sağlam kaldı.
