@@ -471,6 +471,182 @@
       "durum": "bora-bekliyor",
       "deneme": 0,
       "son_deneme": null
+    },
+    {
+      "id": "ev-39",
+      "baslik": "[P2] Erişilebilirlik ve temel stiller: kayan sayfa gövdesi klavyeyle odaklanabilir (axe serious, hava sayfası), başlık sırası h4 → h3, Σήμερα hava bölümünde gerçek «Καιρός ›» düğmesi, ortak :focus-visible, temasız bağlantı mavisi ve düğme siyahı kalkar. ~100 satır.",
+      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 2-interface UI-06, UI-12, UI-13, UI-16, UI-14",
+      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ev-40",
+      "baslik": "[P2] «Νέος ψεκασμός» formu: hesaplanan miktar için «Χρήση 1,16 l» gibi bir düğme, lot kullanıcı seçmeden seçili gelmez, «Δεν ξέρω» 44 px; ekimler tarlaya göre gruplu, ürünlerde seçilen bitki için imzalı etiketi olanlar önce, gübreler ayrı; yapışkan düğme ilk satırı örtmesin. ~280 satır; takım iki parçaya böler.",
+      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 1-usability U8, U9",
+      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ev-41",
+      "baslik": "[P2] «Δείτε γιατί» sayfası bilinmeyen beklemeye yol açan ürünü adıyla söylesin, «δαχτυλίδι» sözcüğü kalksın, ürün etiketine giden düğme eklensin. ~80 satır.",
+      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 1-usability U10",
+      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ev-42",
+      "baslik": "[P2] Χωράφια: karışık tarlada en kötü durum yerine «1 από 2 ελεύθερες»; «Έτοιμο για κοπή» → «Χωρίς αναμονή» (el/tr/en/hi); tarla sayfası sırası Φυτείες → son ilaçlamalar/Χρονολόγιο → kayıtlar → ΚΑΕΚ/ΟΣΔΕ en son; zaman çizelgesindeki ilaçlama satırında ürün adı. ~240 satır; aşarsa böl.",
+      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 1-usability U12, U13, U14",
+      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ev-43",
+      "baslik": "[P2] Ταμείο: virgül varsa «1.250,50» kabul edilsin (belirsiz değil); virgülsüz «1.000» reddedilmeye devam eder (DECISIONS 2026-11-17); büyük tutarlar binlik noktayla gösterilir; kuruş kesin testleri. ~120 satır.",
+      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 1-usability U15",
+      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ev-44",
+      "baslik": "[P2] tokens.css: iki kez tanımlı 22 token silinir, tek yazı ölçeği (rem) kalır, aynı değerli takma adlar var() olur; aynı değişkenin iki kez tanımlanmasını yakalayan test. Görünüm değişmez. ~120 satır.",
+      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 2-interface UI-08",
+      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ev-45",
+      "baslik": "[P2] restore-drill.spec.ts:25 sağlamlaştırma: yazı kutusunu doldurup düğmenin açılmasını toPass ile bekleyen döngü ve kutudaki değeri doğrulayan iddia (q-2 için önerilen toHaveValue satırı); yalnızca test. bekleyen_kararlar'daki q-2 sorusunu değerlendirme kararıyla cevaplar; q-2 kaydına dokunulmadı. ~30 satır.",
+      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 5-data W10 (q-2 kısmı); durum.json bekleyen_kararlar q-2 sorusu",
+      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ev-46",
+      "baslik": "[P3] applied_ops okuma kapsamı: işçi yalnızca kendi uyguladığı satırları görsün (şimdi sahibe ait tabloların işlem izlerini görüyor); yeni SQL dosyası 0043, gerçek sahip/işçi rolleriyle kırmızı test. SQL.",
+      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 5-data F13, W8",
+      "onay": null,
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "bora-bekliyor",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ev-47",
+      "baslik": "[P3] Yunanca terim temizliği: Ρυθμίσεις kartındaki menü göstergesi gerçek etiketi kullansın («Αρχείο ψεκασμών (προσχέδιο)»); sözlüğe göre her yerde «φύτευση» («φυτεία» kalkar); aynı durum için her yerde «Άγνωστη αναμονή». ~150 satır.",
+      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 1-usability U18, U19, U20",
+      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ev-48",
+      "baslik": "[P3] Form tutarlılığı: hasat formuna «Επιστροφή» çubuğu, sahip ve işçide tek kasa sayacı bileşeni, kişinin kendi kaydı için kendisine bildirim gitmesin, Demo yüklendikten sonra Σήμερα açılsın. ~150 satır.",
+      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 1-usability U22, U23, U24",
+      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ev-49",
+      "baslik": "[P3] Ταμείο → Έσοδο: ürün listesinde önce çiftliğin ürünleri (1. parça, ~40 satır); siparişten doldurma (müşteri, kasa; fiyat elle yazılır) ayrı 2. parça (~250 satır). Yalnızca telefon (Dexie), SQL yok.",
+      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 1-usability U17",
+      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ev-50",
+      "baslik": "[P3] Küçük görsel düzeltmeler: 768 px'te başlık bandı ile kartların kenarı aynı hizada; «Κλούβες 7 ημ.» çizgisi 7 günlük çubuklara dönsün (375 px'te kopuk görünüyor). ~80 satır.",
+      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 2-interface UI-17, UI-18",
+      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ev-51",
+      "baslik": "[P3] Gönderim kutusu (outbox) temizliği: onaylanmış op'lar N gün ya da satır başına son op kadar tutulsun, gerisi silinsin; her kayıtta tüm kutuyu okumak kalksın. ~80 satır.",
+      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 5-data F12",
+      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ev-52",
+      "baslik": "[P3] Hasat tahmini geri testi: 2026-11-28 yöntemi (prototip verisi, KURGUSAL) WAPE'yi eşik değil rapor edilen sayı olarak yazan test; Bora'nın ilk gerçek sezonunda aynen çalışır. Demo sezonuna tahmin alanı yalnızca tahmin ekranı planlanırsa. ~120 satır.",
+      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 4-accuracy 4a–4d, iş 6",
+      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ev-53",
+      "baslik": "[P3] Yerel ölçüm araçları: npm run ui-scan (320/375/390/768 px'te taşma, hedef, yazı, axe, sayfa yüksekliği tablosu, PR gövdesi için); Chromium yedek koşusunda Chromium'a özgü ERR_INTERNET_DISCONNECTED simge hatası yok sayılsın ki yerel e2e karşılaştırılabilir olsun. ~150 satır.",
+      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 2-interface ENV-7; 4-accuracy ortam önerisi (yerel e2e)",
+      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ev-54",
+      "baslik": "[P3] İlk yükleme: update-*.js (68 kB gz, Dexie + eşitleme) ilk boyamadan ayrılsın — yalnızca 22 Kasım çevrimdışı ilk oturum kararı korunabiliyorsa; korunamıyorsa iş kapanır ve nedeni yazılır. ~150 satır.",
+      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 2-interface UI-19",
+      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
     }
   ],
   "biten": [
@@ -590,7 +766,8 @@
     "ev-30 (3-engine BUG-6): don kuralında eğim/kıyı ofseti ve R katsayısı ziraat mühendisi onayı ister; onay gelene kadar iş bekler.",
     "ev-36 (3-engine BUG-13): PHI-GUARD ileri tetiğinin tamponu (hasattan kaç gün önce) ziraat mühendisi onayı ister.",
     "ev-37 (3-engine E7): yeniden giriş kilidi aynı tarladaki diğer ekimlere de uygulansın mı (savrulma tamponu) — ziraat mühendisi kararı.",
-    "ev-38 (5-data F8): iki telefon aynı kaydı değiştirince biri sessizce kayboluyor; düzeltme SQL ister (ya da şartnamedeki söz düzeltilir) — SQL olduğu için Bora'nın onayına bağlı."
+    "ev-38 (5-data F8): iki telefon aynı kaydı değiştirince biri sessizce kayboluyor; düzeltme SQL ister (ya da şartnamedeki söz düzeltilir) — SQL olduğu için Bora'nın onayına bağlı.",
+    "ev-46 (5-data F13): işçinin applied_ops'ta sahibin işlem izlerini görmesini kapatan yeni SQL dosyası (0043); SQL olduğu için yazım ve yükleme Bora'nın onayına bağlı."
   ],
   "gunluk": {
     "tarih": "2026-11-28",
