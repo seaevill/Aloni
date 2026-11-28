@@ -55,17 +55,6 @@
       "son_deneme": null
     },
     {
-      "id": "ev-6",
-      "baslik": "[P1] Yedekten dönüş: telefonda olmayan satır «insert» olarak sıraya girsin (şimdi hepsi «update», sunucu reddediyor ya da yeni veriyi eziyor); eşitleme açıkken tam çekme bitmeden yedekten dönüş reddedilsin; RUNBOOK §3 ve §13'e tek Türkçe satır («önce giriş + eşitleme, sonra yedek»). ~150 satır.",
-      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 5-data F3",
-      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
-      "sahip": "aloni-gelistirme",
-      "tur": "ozellik",
-      "durum": "sirada",
-      "deneme": 0,
-      "son_deneme": null
-    },
-    {
       "id": "ev-7",
       "baslik": "[P1] Demo verisi gerçek yedeğe ve sunucu kuyruğuna girmesin (güvenlik kuralı 4): isDemoKey yardımcısı; makeBackup Demo ayar anahtarlarını süzer, parseBackup reddeder, geri yükleme süzer, putSetting Demo için yalnızca yerel yazar. Önce dört kırmızı test. ~120 satır.",
       "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 5-data F4, F5",
@@ -937,6 +926,11 @@
       "id": "ev-5",
       "baslik": "Eşitleme dönüşü: sunucudan çekilen satırlar tek fromServer() ile telefon biçimine çevriliyor (imza üç sütundan sign_off'a, eksik imza imza değil; not_on_label; sayılar tam ondalık metin; saatler saniyeye yukarı yuvarlanır, PHI kısalmaz; chain_no dahil sunucu sütunları atılır; farm_settings → settings, yerel bekleyen/cihaza özel anahtarlar ezilmez; yedekte Date.parse). Ekran değişikliği yok. Kalan: makineyle üretilen gerçek pull() fixture'ı ev-8'de (SQL)",
       "pr": 677
+    },
+    {
+      "id": "ev-6",
+      "baslik": "Yedekten dönüş: telefonda olmayan satır artık «insert» olarak kuyruğa giriyor; eşitleme açıkken ilk tam çekme (sunucu more=false) bitmeden yedekten dönüş yeni «sync_pending» mesajıyla reddediliyor (cihaza özel pull_done:<çiftlik> işareti, yedeğe girmez); RUNBOOK §3 ve §13'e «önce giriş + eşitleme, sonra yedek». Kalan (kapsam dışı): telefonda olup yedekten eski satır hâlâ «update»",
+      "pr": 684
     }
   ],
   "bekleyen_kararlar": [
@@ -965,12 +959,12 @@
   ],
   "gunluk": {
     "tarih": "2026-11-28",
-    "kod_isi": 12
+    "kod_isi": 13
   },
   "son_kosu": {
     "tarih": "2026-11-28",
-    "is": "yok — yönetici koşusu 20261128-1810 (zincir)",
-    "sonuc": "İş alınmadı: bugünkü kod işi tavanı dolu (12/12, Atina 2026-11-28). Main fbc0e9d yeşil, açık iş PR'ı yok. Sıradaki onaylı iş ev-6, 29 Kasım ilk koşuda."
+    "is": "ev-6 — yönetici koşusu 20261128-1844",
+    "sonuc": "ev-6 birleşti (#684, squash 0983f19): bekçi ONAY d45f049, tüm CI kapıları yeşil (ilk deneme). Kod işi 13/24 (gece vardiyası tavanı). Sıradaki onaylı iş ev-7."
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner. Ek (Bora 28 Kasım 2026): 2026-11-29 08:00 Atina'ya kadar kesintisiz çalışma. 08:00'den önce başlayan işler için sınır 24 (sayıyı sağ kol seçti); 29 Kasım 08:00'den sonra yeniden 12."
 }
