@@ -18,17 +18,6 @@
       "son_deneme": null
     },
     {
-      "id": "is-8",
-      "baslik": "Ürün detayı (Φυτά → bir ürün): o ürünün ekimleri sayfanın en üstünde görünsün (FARK-LISTESI öneri 2). Özellik kaybı yok; 375 px önce/sonra ekran görüntüsü.",
-      "kaynak": "Bora, 28 Kasım 2026 (docs/design/compare/2026-11-27/FARK-LISTESI.md önerilerinden seçti)",
-      "onay": "Bora, 28 Kasım 2026",
-      "sahip": "aloni-gelistirme",
-      "tur": "ozellik",
-      "durum": "sirada",
-      "deneme": 0,
-      "son_deneme": null
-    },
-    {
       "id": "is-9",
       "baslik": "Άλλα menüsünü kısalt: uzun listeyi gruplayıp kısalt (FARK-LISTESI öneri 1); hiçbir giriş kalkmaz, her ekran yine Άλλα'dan açılır. 375 px önce/sonra ekran görüntüsü.",
       "kaynak": "Bora, 28 Kasım 2026 (docs/design/compare/2026-11-27/FARK-LISTESI.md önerilerinden seçti)",
@@ -177,6 +166,11 @@
       "id": "is-7",
       "baslik": "Αποθήκη alt menüden Άλλα menüsüne taşındı (Καθημερινή δουλειά grubu, Παραγγελίες'ten sonra); alt çubuk 4 sekme; eski #/own/stock bağlantısı açılıyor, Αποθήκη açıkken Άλλα vurgulu; ~40 e2e tek yardımcıyla (helpers/tabs.ts) yeni yolu kullanıyor",
       "pr": 638
+    },
+    {
+      "id": "is-8",
+      "baslik": "Ürün detayı (Φυτά → bir ürün): ekimler (sayı kutusu + kart başına tarla) sayfanın en üstüne alındı; yalnızca JSX sırası, özellik kaybı yok; sıra testi + 375 px önce/sonra",
+      "pr": 653
     }
   ],
   "bekleyen_kararlar": [
@@ -191,7 +185,7 @@
   ],
   "gunluk": {
     "tarih": "2026-11-28",
-    "kod_isi": 3
+    "kod_isi": 4
   },
   "son_kosu": {
     "tarih": "2026-11-28",
