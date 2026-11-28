@@ -2,13 +2,13 @@
   "takim": "bekci",
   "guncelleme": "2026-11-28",
   "son_denetim": {
-    "pr": "677",
-    "sha": "83c1f04676029e204796aef21ba6fb50af62d6ea",
-    "takim": "aloni-gelistirme (ev-5)",
-    "karar": "ONAY"
+    "pr": "681+682",
+    "sha": "236e857299904fd0981be5abb289ec49dbadef54 / 68df06c4bc2933f85513b279610e5af89beeb542",
+    "takim": "aloni-gelistirme (araştırma raporu + ar-* kuyruğu, docs-only)",
+    "karar": "ONAY (ikisi de, notlarla)"
   },
   "denetim_sayaci": {
-    "onay": 30,
+    "onay": 32,
     "red": 4
   }
 }

@@ -320,7 +320,7 @@
     },
     {
       "id": "ar-2b",
-      "baslik": "[Özellik] Σήμερα'da tek satır «Μητρώο: N εγγραφές χρειάζονται συμπλήρωση» (0 olunca kaybolur); düzeltmeler ekleme-yalnız. ~100 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "baslik": "[Özellik] Σήμερα'da tek satır «Μητρώο: N εγγραφές χρειάζονται συμπλήρωση» (0 olunca kaybolur); düzeltmeler ekleme-yalnız. ~100 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez. Yalnızca eksik kayıt varken görünür, tek satır, yeni kart yok (Σήμερα çok uzun geri bildirimi, 27 Kasım).",
       "kaynak": "docs/research/2026-11-28-product-research.md §7 F2",
       "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
       "sahip": "aloni-gelistirme",
@@ -331,7 +331,7 @@
     },
     {
       "id": "ar-1a",
-      "baslik": "[Özellik] Σήμερα → «Κοπή σήμερα» sayfası (yalnızca sahip): ürün başına bugünkü sipariş − bugün kesilen = kesilecek kasa; serbest ekimler altında, beklemede/bilinmeyen ekimler ayrı ve asla sayılmaz (QA P0-2); ev-25 ile aynı veriyi okur, onu bozmaz. ~250 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "baslik": "[Özellik] Σήμερα → «Κοπή σήμερα» sayfası (yalnızca sahip): ürün başına bugünkü sipariş − bugün kesilen = kesilecek kasa; serbest ekimler altında, beklemede/bilinmeyen ekimler ayrı ve asla sayılmaz (QA P0-2); ev-25 ile aynı veriyi okur, onu bozmaz. ~250 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez. Σήμερα'yı uzatmaz: yalnızca mevcut kesim bloğunda tek giriş satırı (ev-22 kısaltmasıyla birlikte); ayrıntı ayrı sayfada.",
       "kaynak": "docs/research/2026-11-28-product-research.md §7 F1",
       "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
       "sahip": "aloni-gelistirme",
@@ -342,7 +342,7 @@
     },
     {
       "id": "ar-1b",
-      "baslik": "[Özellik] «Κοπή σήμερα»: sahip her serbest ekim için kasa yazar (uygulama bölmez; toplam siparişi aşarsa yalnızca bilgi), «Αποστολή στους εργάτες» listeyi bugünün notu olarak yazar (0039) ve paylaşma metni verir; işçi tarafında müşteri adı ve fiyat yok. ~250 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "baslik": "[Özellik] «Κοπή σήμερα»: sahip her serbest ekim için kasa yazar (uygulama bölmez; toplam siparişi aşarsa yalnızca bilgi), «Αποστολή στους εργάτες» listeyi bugünün notu olarak yazar (0039) ve paylaşma metni verir; işçi tarafında müşteri adı ve fiyat yok. ~250 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez. ar-1d (SQL) gelene kadar hedef yalnızca bugünün notunda (0039) ve telefonda tutulur; not metninde müşteri adı ve fiyat bulunmaz (işçi notu okuyabilir) — testle doğrulanır.",
       "kaynak": "docs/research/2026-11-28-product-research.md §7 F1",
       "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
       "sahip": "aloni-gelistirme",
@@ -353,7 +353,7 @@
     },
     {
       "id": "ar-1c",
-      "baslik": "[Özellik] İşçi ekranında kesim kartı: ürün çizimi + büyük kasa sayısı + tarla adı, 72 px; hasat sayacında «hedef 6 · kesilen 2» (sahip formunda da). ~200 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "baslik": "[Özellik] İşçi ekranında kesim kartı: ürün çizimi + büyük kasa sayısı + tarla adı, 72 px; hasat sayacında «hedef 6 · kesilen 2» (sahip formunda da). ~200 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez. Veri kaynağı ar-1b'nin bugünkü notudur; ar-1d'ye bağlı değildir.",
       "kaynak": "docs/research/2026-11-28-product-research.md §7 F1",
       "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
       "sahip": "aloni-gelistirme",
@@ -386,7 +386,7 @@
     },
     {
       "id": "ar-6a",
-      "baslik": "[Özellik] Πελάτες: «Αντιγραφή προηγούμενης εβδομάδας» → «πρόχειρο» siparişler; taslak «Αύριο φεύγουν», arz ve gelire sayılmaz; «Επιβεβαίωση» ile sipariş olur; 5 sn geri al. ~250 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "baslik": "[Özellik] Πελάτες: «Αντιγραφή προηγούμενης εβδομάδας» → «πρόχειρο» siparişler; taslak «Αύριο φεύγουν», arz ve gelire sayılmaz; «Επιβεβαίωση» ile sipariş olur; 5 sn geri al. ~250 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez. Sınır: taslak yalnızca telefonda (Dexie) tutulur; sunucuya yeni sipariş durumu eklenmez (0037'deki status kısıtı). Sunucuda saklamak gerekirse dur, ayrı SQL maddesi olarak bekleyen_kararlar'a yaz.",
       "kaynak": "docs/research/2026-11-28-product-research.md §7 F6",
       "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
       "sahip": "aloni-gelistirme",
@@ -463,7 +463,7 @@
     },
     {
       "id": "ar-7a",
-      "baslik": "[Özellik] summary/obs-vs-forecast.ts: her çiy/don gözlemi için o gecenin saklı tahmini (Tmin, model, veri yaşı), yoksa «—»; gözlemin üstüne yazılmaz. ~150 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "baslik": "[Özellik] summary/obs-vs-forecast.ts: her çiy/don gözlemi için o gecenin saklı tahmini (Tmin, model, veri yaşı), yoksa «—»; gözlemin üstüne yazılmaz. ~150 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez. Önce doğrula: geçmiş gecenin tahmini üzerine yazılmadan saklanıyor mu (weather_daily kind='forecast'). Saklanmıyorsa SQL/cron gerekir: dur, bekleyen_kararlar'a yaz.",
       "kaynak": "docs/research/2026-11-28-product-research.md §7 F7",
       "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
       "sahip": "aloni-gelistirme",
