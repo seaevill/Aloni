@@ -11,12 +11,12 @@
     "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
     "sahip": "aloni-gelistirme",
     "tur": "ozellik",
-    "durum": "calisiyor",
+    "durum": "pr-acik",
     "deneme": 1,
     "son_deneme": {
       "tarih": "2026-11-28",
-      "sonuc": "başladı",
-      "pr": null
+      "sonuc": "PR açıldı; bekçi ve CI bekleniyor",
+      "pr": "https://github.com/seaevill/Aloni/pull/671"
     }
   },
   "sirada": [
