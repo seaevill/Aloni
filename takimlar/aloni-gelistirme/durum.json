@@ -4,7 +4,11 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": null,
+  "simdi": {
+    "id": "ev-4",
+    "pr": 675,
+    "dal": "1128-ev-4-one-label-row"
+  },
   "sirada": [
     {
       "id": "is-6b-4",
@@ -51,17 +55,6 @@
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
       "durum": "ertelendi",
-      "deneme": 0,
-      "son_deneme": null
-    },
-    {
-      "id": "ev-4",
-      "baslik": "[P0] Karar motoru PHI/REI/kayıt kontrolü: (ürün, bitki) için ilk etiket satırını değil TÜM satırları okusun; birden çok imzalı satırda en geç bitiş, imzasız satır varsa engelli; bitişi başlangıçtan önce olan ilaçlama «okunamayan saat» (engelli). Önce kırmızı test (bugs-engine.test.ts'deki vakalar). ~90 satır.",
-      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 3-engine BUG-2, BUG-17",
-      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
-      "sahip": "aloni-gelistirme",
-      "tur": "ozellik",
-      "durum": "sirada",
       "deneme": 0,
       "son_deneme": null
     },
