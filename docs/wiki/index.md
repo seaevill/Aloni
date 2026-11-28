@@ -16,3 +16,7 @@ Long-lived memory of how this repo is run. English. Started 2026-11-28.
 ## Evaluations
 
 - [evaluation-2026-11-28.md](evaluation-2026-11-28.md): five-part independent evaluation of main 682c32d, scores and where its findings went (queue items ev-1 … ev-54).
+
+## Research
+
+- [research-2026-11-28.md](research-2026-11-28.md): product research of 2026-11-28 (what to improve and add for the farmer), top five features, where the `ar-*` queue items came from.
