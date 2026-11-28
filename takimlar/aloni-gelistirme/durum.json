@@ -308,6 +308,226 @@
       "son_deneme": null
     },
     {
+      "id": "ar-2a",
+      "baslik": "[Özellik] Μητρώο: «N εγγραφή tamamlanmalı» sayacı ve kayıt × eksik alan listesi (machine.ts uyarı kodları); her satır eksik değerin girildiği yere açılır (ürün → ruhsat no, tarla → ΟΣΔΕ, ilaçlama → BBCH düzeltme satırı); hiçbir değer otomatik dolmaz. ~250 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F2",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-2b",
+      "baslik": "[Özellik] Σήμερα'da tek satır «Μητρώο: N εγγραφές χρειάζονται συμπλήρωση» (0 olunca kaybolur); düzeltmeler ekleme-yalnız. ~100 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F2",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-1a",
+      "baslik": "[Özellik] Σήμερα → «Κοπή σήμερα» sayfası (yalnızca sahip): ürün başına bugünkü sipariş − bugün kesilen = kesilecek kasa; serbest ekimler altında, beklemede/bilinmeyen ekimler ayrı ve asla sayılmaz (QA P0-2); ev-25 ile aynı veriyi okur, onu bozmaz. ~250 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F1",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-1b",
+      "baslik": "[Özellik] «Κοπή σήμερα»: sahip her serbest ekim için kasa yazar (uygulama bölmez; toplam siparişi aşarsa yalnızca bilgi), «Αποστολή στους εργάτες» listeyi bugünün notu olarak yazar (0039) ve paylaşma metni verir; işçi tarafında müşteri adı ve fiyat yok. ~250 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F1",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-1c",
+      "baslik": "[Özellik] İşçi ekranında kesim kartı: ürün çizimi + büyük kasa sayısı + tarla adı, 72 px; hasat sayacında «hedef 6 · kesilen 2» (sahip formunda da). ~200 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F1",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-5a",
+      "baslik": "[Özellik] money/statement.ts: müşteri × tarih aralığı → gün gün kasa, bilinen fiyat (yoksa «χωρίς τιμή», asla 0), ödemeler, açık bakiye; kuruş tam sayı. ~180 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F5",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-5b",
+      "baslik": "[Özellik] Πελάτες → müşteri → «Κατάσταση»: görüntü olarak paylaş, üstte «Δεν είναι τιμολόγιο»; işçide yok; otomatik gönderim yok. ~220 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F5",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-6a",
+      "baslik": "[Özellik] Πελάτες: «Αντιγραφή προηγούμενης εβδομάδας» → «πρόχειρο» siparişler; taslak «Αύριο φεύγουν», arz ve gelire sayılmaz; «Επιβεβαίωση» ile sipariş olur; 5 sn geri al. ~250 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F6",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-4a",
+      "baslik": "[Özellik] summary/trace.ts: parti kodu → ekim, tarla (ΟΣΔΕ/ΚΑΕΚ), ekim günü, son 90 günde o ekime yapılan ilaçlamalar (ürün, ruhsat no, kesim anında PHI durumu saklı imzalı değerden, yoksa «άγνωστο»), kasaların gittiği yer ve gün. ~200 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F4",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-4b",
+      "baslik": "[Özellik] Άλλα → «Ιχνηλασιμότητα» (yalnızca sahip): kod yaz ya da hasattan aç; yazdır/PDF «εσωτερικό έγγραφο»; kasa etiketinden tek dokunuş. ~250 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F4",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-3a",
+      "baslik": "[Özellik] summary/sow-to-cut.ts: ürün × ekim ayı başına ekimden ilk kesime gün aralığı (en az–en çok, kaç ekimden), yalnızca kendi kayıtlarından; < 2 kayıt = «λίγα δεδομένα»; kitap değeri yok; Atina günü testleri. ~200 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F3",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-3b",
+      "baslik": "[Özellik] Φυτά → ürün → «Από τη σπορά ως την κοπή» kartı; YearCompare ve SowRing tek 12 ay şeridinde; yalnızca bilgi. ~250 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F3",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-3c",
+      "baslik": "[Özellik] Ters soru: «Κοπή γύρω στις …» → geçmişte o kesim için hangi hafta ekilmiş; Καθαρά Δευτέρα ve Πάσχα hesaplanarak önerilir, sahip seçer; o haftanın kayıtlı en yüksek sıcaklığı yalnızca bilgi. ~250 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F3",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-9a",
+      "baslik": "[Özellik] Φυτά → ürün: «Γιορτές» şeridi: Καθαρά Δευτέρα ve Πάσχα (Ορθόδοξο Πάσχα hesabı, test: 2027 = 15 Μαρ / 2 Μαΐ) + sahibin yazdığı günler; geçen yılın önceki 14 gündeki sipariş kasaları; tahmin yok. ~220 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F9",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-7a",
+      "baslik": "[Özellik] summary/obs-vs-forecast.ts: her çiy/don gözlemi için o gecenin saklı tahmini (Tmin, model, veri yaşı), yoksa «—»; gözlemin üstüne yazılmaz. ~150 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F7",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-7b",
+      "baslik": "[Özellik] Χωράφι → «Παρατηρήσεις και πρόγνωση» kartı + ziraat mühendisi için CSV; eşik, uyarı rengi, bildirim yok (FROST imzasız). ~200 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F7",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-8a",
+      "baslik": "[Özellik] Su analizlerindeki EC değerleri tarihli çizgi (yalnızca Bora'nın girdiği), eşik rengi yok; ParcelYield'e aylık m³/στρ. ~200 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F8",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-8b",
+      "baslik": "[Özellik] Su kartı: aynı kaynağı kullanan tarlaların aylık toplam m³'ü; bilinmeyen akış = «άγνωστο». ~150 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F8",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-10a",
+      "baslik": "[Özellik] Φυτά → «Σπόροι που χρειάζονται (4 εβδομάδες)»: planlanmış ekimler × sahibin tohum oranı, stoktaki tohum partisi düşülür; oran yoksa «άγνωστο»; yalnızca liste + paylaşma metni. ~200 satır. Her parça: önce kırmızı test, 375 px önce/sonra resmi, Demo sızıntı testi, Yunanca kural 5; hiçbir test gevşetilmez.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F10",
+      "onay": "Bora, 28 Kasım 2026: araştırma sonucu gerekli görülen özellikleri sormadan eklemeye yetki verdi",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "ar-1d",
+      "baslik": "[SQL] Planlanmış hasat işi için hedef kasa sütunu, gerçek sahip/işçi rolleriyle kırmızı test; işçi yalnızca kendine atanmış kesimi görür; bağımsız inceleme, Bora yükler.",
+      "kaynak": "docs/research/2026-11-28-product-research.md §7 F1",
+      "onay": null,
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "bora-bekliyor",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
       "id": "ev-29",
       "baslik": "[P1] Karar motoru rotasyon (ROT): etiketin en fazla uygulama sayısı ve en kısa aralığı aşılınca engellesin (imzalı maxApps). Sezon tanımı ve grup sınırları [SET]: ziraat mühendisi onayı ister.",
       "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 3-engine BUG-4",
@@ -738,7 +958,10 @@
     "ev-37 (3-engine E7): yeniden giriş kilidi aynı tarladaki diğer ekimlere de uygulansın mı (savrulma tamponu) — ziraat mühendisi kararı.",
     "ev-38 (5-data F8): iki telefon aynı kaydı değiştirince biri sessizce kayboluyor; düzeltme SQL ister (ya da şartnamedeki söz düzeltilir) — SQL olduğu için Bora'nın onayına bağlı.",
     "ev-46 (5-data F13): işçinin applied_ops'ta sahibin işlem izlerini görmesini kapatan yeni SQL dosyası (0043); SQL olduğu için yazım ve yükleme Bora'nın onayına bağlı.",
-    "ev-1 (PR #669): «Δεν έχει σπαρθεί ακόμα» ifadesi docs/i18n/glossary-el.md içinde yok, kullanılmadı; kartlar ve hasat seçicisi mevcut «Προγραμματισμένη» anahtarını kullanıyor. Bora sözlük onayı verirse hasat seçicisine açıklayıcı cümle eklenir. Ayrıca Hintçe «योजनाबद्ध» (planting.status.planned) geçici, ana dili Hintçe olan biri kontrol etmeli."
+    "ev-1 (PR #669): «Δεν έχει σπαρθεί ακόμα» ifadesi docs/i18n/glossary-el.md içinde yok, kullanılmadı; kartlar ve hasat seçicisi mevcut «Προγραμματισμένη» anahtarını kullanıyor. Bora sözlük onayı verirse hasat seçicisine açıklayıcı cümle eklenir. Ayrıca Hintçe «योजनाबद्ध» (planting.status.planned) geçici, ana dili Hintçe olan biri kontrol etmeli.",
+    "ar-1d: «Κοπή σήμερα» hedef kasa sütunu SQL ister (supabase/**); Bora onaylar ve yükler.",
+    "ar-6a: günlük siparişleri Κλούβες'te mi Πελάτες'te mi yazıyorsun? (taslak siparişin ve kesim listesinin nereden okuyacağını belirler; cevap gelene kadar Πελάτες varsayılır, Κλούβες bozulmaz)",
+    "Araştırma §8: soğuk oda var mı; işçi gün notu (kişisel veri) istenir mi; muhasebeciye ΕΡΓΑΝΗ kartı ve alıcıların myDATA faturaları; eko-program Π1-31.6 pilot için incelensin mi."
   ],
   "gunluk": {
     "tarih": "2026-11-28",
