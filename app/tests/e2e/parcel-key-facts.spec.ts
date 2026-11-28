@@ -9,7 +9,7 @@ for (const width of [320, 375, 390]) {
     await page.getByTestId('empty-state').locator('button').nth(1).click();
     await expect(page.getByTestId('today-counts')).toBeVisible();
     await page.locator('nav.tabs [data-tab="parcels"]').click();
-    await page.getByTestId('parcel-sketch-open').filter({ hasText: 'Κάτω Κάμπος' }).click();
+    await page.getByTestId('parcel-open').filter({ hasText: 'Κάτω Κάμπος' }).click();
     const detail = page.getByTestId('parcel-detail');
     const key = detail.getByTestId('detail-key');
     await expect(key).toBeVisible();

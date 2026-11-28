@@ -7,7 +7,7 @@ test('Demo parcel overview shows labelled sketches and opens the matching detail
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-counts')).toBeVisible();
   await page.locator('nav.tabs [data-tab="parcels"]').click();
-  const tiles = page.getByTestId('parcel-sketch-open');
+  const tiles = page.getByTestId('parcel-open');
   await expect(tiles).toHaveCount(5);
   await expect(tiles.locator('svg[data-shape="rect"]')).toHaveCount(3);
   await expect(tiles.locator('svg[data-shape="poly"]')).toHaveCount(2);
