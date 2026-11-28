@@ -151,8 +151,8 @@
   },
   "son_kosu": {
     "tarih": "2026-11-28",
-    "is": "yok — yönetici koşusu 20261128-0818",
-    "sonuc": "iş alınmadı: main yeşil (c5b7c27), simdi boş; is-6b-4 Bora'nın cevabını bekliyor; q-2 (bakım) için son 24 saatte main'de başarısız ya da tekrar çalıştırılan koşu yok (44 koşu, hepsi başarılı); kalan maddelerin onayı yok veya ertelendi. Not: bu kaydın PR'ında (#648, yalnızca belge, aaf4e3c) e2e 1/3'te harvest.spec.ts:56 bir kez düştü (harvest-open 60 sn beklendi, sayfa hâlâ Ιστορικό'da; CI job 140918520931); kök neden bilinmiyor, main'de değil, q-2 için yeni main kanıtı sayılmadı"
+    "is": "yok — yönetici koşusu 20261128-0919",
+    "sonuc": "iş alınmadı: main yeşil (481542c, tüm kontroller başarılı), simdi boş, açık PR yalnızca #508 (dokunulmadı); is-6b-4 Bora'nın cevabını bekliyor; q-2 (bakım) için son 24 saatte main'de başarısız ya da tekrar çalıştırılan koşu yok (45 koşu, hepsi ilk denemede başarılı); kalan maddelerin onayı yok veya ertelendi"
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }
