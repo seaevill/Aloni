@@ -66,17 +66,6 @@
       "son_deneme": null
     },
     {
-      "id": "ev-11",
-      "baslik": "[P2] Token koruması tüm CSS'te: tokens/css-sizes testleri yalnızca styles.css değil tüm src/ui/**/*.css dosyalarını okusun (yazdırma CSS'i izinli liste); 10 yan dosyadaki 55 sabit uzunluk/renk token'a taşınsın; hex kontrolü src/**/*.ts ve index.html'e genişlesin, share/card.ts ve index.html renkleri token'lardan gelsin. ~300 satır; takım dosya grubuna göre böler.",
-      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 2-interface UI-07, UI-15, ENV-1, ENV-8",
-      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
-      "sahip": "aloni-gelistirme",
-      "tur": "ozellik",
-      "durum": "sirada",
-      "deneme": 0,
-      "son_deneme": null
-    },
-    {
       "id": "ev-12",
       "baslik": "[P2] İşçi ekranlarında her düğme, çip ve giriş en az 72 px (kurallar 7): hasat çipleri (şimdi 56 px), not girişi, «+ Σημείωση», zil; worker-layout.spec.ts izinli listeden yasak listesine döner (her şey ≥ 72 px, istisna gerekçesiyle yazılır). ~80 satır.",
       "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 2-interface UI-04 (kurallar.md madde 7)",
@@ -913,6 +902,11 @@
       "id": "ev-10",
       "baslik": "Kural başına kontrast koruması: src/ui altındaki her CSS kuralında yazı + zemin çifti var() yedekleriyle çözülüp en az 7:1 olmalı, hesaplanamayan çift kırmızı (kaçma denemeleri ve «en az 50 kural» sayımıyla); «sunucu reddetti» işareti (refused-mark) 1,36:1'den 11,74:1'e (--blocked-bg/--blocked-fg). Kalan (bekçi notu): yalnızca color ya da yalnızca background koyan kurallar ve Sun modu taranmıyor",
       "pr": 690
+    },
+    {
+      "id": "ev-11",
+      "baslik": "Token koruması tüm src/ui CSS'te (yalnızca 3 yazdırma CSS'i, @media koşulu ve @page kâğıt ölçüleri izinli; kaçma denemeleriyle); renk sabiti src/**/*.ts(x) ve index.html'de yasak (tek istisna theme-color, testle --brand-forest'e bağlı); 9 yan CSS'te 47 sabit uzunluk token'a (değerler aynı); paylaşım kartı ve açılış logosu renkleri --brand-* token'larından. Ekran değişikliği yok. Kalan: scripts/render-icons.mjs iki marka hex'i; readShareColors() boş token'a yedek (bekçi notu)",
+      "pr": 692
     }
   ],
   "bekleyen_kararlar": [
@@ -941,12 +935,12 @@
   ],
   "gunluk": {
     "tarih": "2026-11-28",
-    "kod_isi": 16
+    "kod_isi": 17
   },
   "son_kosu": {
     "tarih": "2026-11-28",
-    "is": "ev-10 — yönetici koşusu 20261128-1949 (zincir)",
-    "sonuc": "ev-10 birleşti (#690, squash c0b9d92): bekçi ONAY 9cabbc4 (ilk deneme), tüm CI kapıları yeşil. Kod işi 16/24 (gece vardiyası tavanı). Sıradaki onaylı iş ev-11."
+    "is": "ev-11 — yönetici koşusu 20261128-2006 (zincir)",
+    "sonuc": "ev-11 birleşti (#692, squash 9d60f73): bekçi ONAY b65d0b9 (ilk deneme), tüm CI kapıları yeşil. Kod işi 17/24 (gece vardiyası tavanı). Sıradaki onaylı iş ev-12."
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner. Ek (Bora 28 Kasım 2026): 2026-11-29 08:00 Atina'ya kadar kesintisiz çalışma. 08:00'den önce başlayan işler için sınır 24 (sayıyı sağ kol seçti); 29 Kasım 08:00'den sonra yeniden 12."
 }
