@@ -3,6 +3,8 @@
 import { DEMO_FARM_ID } from '../config';
 import { FARM_TABLES, type AppDB, type Row } from '../db/schema';
 import { base64ToBlob, blobToBase64, sha256Hex } from '../db/sha256';
+import { SYNC_FLAG } from '../sync/golive';
+import { PULL_DONE_PREFIX, pullDone } from './sync-apply';
 import { actorId, deviceId, isAppendOnly, put, putLocal, putSetting, refreshPending } from '.';
 
 export const BACKUP_FORMAT = 'aloni-backup';
@@ -11,8 +13,8 @@ const DEVICE_ONLY = new Set(['device_id', 'actor_id', 'last_backup_at', 'auth_se
 /** The Ταμείο ledger lives on the phone only (no server table yet): it is backed up and restored, but NEVER queued for the server, and the Demo farm's fictional ledger never travels in a real backup. */
 const isLedgerKey = (key: string): boolean => key.startsWith('money:');
 const isDemoLedger = (key: string): boolean => key === `money:${DEMO_FARM_ID}`;
-export const isDeviceOnlyKey = (key: string): boolean => DEVICE_ONLY.has(key) || key.startsWith('sync_cursor:') || key.startsWith('held_action:') || key.startsWith('media_up:') || key.startsWith('notice_seen_at:');
-export type BackupErrorCode = 'format' | 'version' | 'sha256' | 'demo' | 'conflict';
+export const isDeviceOnlyKey = (key: string): boolean => DEVICE_ONLY.has(key) || key.startsWith('sync_cursor:') || key.startsWith(PULL_DONE_PREFIX) || key.startsWith('held_action:') || key.startsWith('media_up:') || key.startsWith('notice_seen_at:');
+export type BackupErrorCode = 'format' | 'version' | 'sha256' | 'demo' | 'conflict' | 'sync_pending';
 export class BackupError extends Error { constructor(readonly code: BackupErrorCode) { super(code); } }
 
 interface MediaEntry { id: string; farm_id: string; sha256: string; mime: string; width: number; height: number; bytes: number; created_at: string; device_id?: string; actor_id?: string; data_base64: string }
@@ -66,6 +68,8 @@ export async function restoreBackup(db: AppDB, backup: Backup, localFarmId: stri
   }
   const counts = await Promise.all([...FARM_TABLES.map((t) => db[t].where('farm_id').equals(localFarmId).count()), db.media.where('farm_id').equals(localFarmId).count()]);
   if (backup.farm.id !== localFarmId && counts.some((n) => n > 0)) throw new BackupError('conflict'); // photos count too: they must not be left under a farm id that is about to disappear
+  // With sync on, a restore before the first FULL pull would push week-old rows over the server's newer ones: sign in and let the first pull finish, then restore.
+  if ((await db.settings.get(SYNC_FLAG))?.value === true && !(await pullDone(db, backup.farm.id))) throw new BackupError('sync_pending');
   await appActor(db);
   const origin = { device_id: backup.device_id };
   const skipped: Skipped[] = [];
@@ -83,7 +87,7 @@ export async function restoreBackup(db: AppDB, backup: Backup, localFarmId: stri
         const local = await db.table<Row>(table).get(r.id);
         if (local && stable(local) === stable(r)) { same += 1; continue; }
         if (local && (isAppendOnly(table) || stampOf(r) <= stampOf(local))) { skipped.push({ table, id: r.id, label: labelOf(local) }); continue; }
-        await put(db, table, r, isAppendOnly(table) ? 'insert' : 'update', origin);
+        await put(db, table, r, isAppendOnly(table) || !local ? 'insert' : 'update', origin); // a row the phone did not have is an insert: the server then keeps its own newer copy (an «update» of a missing row is refused)
         rows += 1;
         if (local) updated += 1; else added += 1;
       }

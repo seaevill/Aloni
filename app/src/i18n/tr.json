@@ -71,6 +71,7 @@
   "backup.error.sha256": "Yedekteki bir fotoğraf bozuk. Hiçbir değişiklik yapılmadı.",
   "backup.error.demo": "Yedek demo veri içeriyor ve reddedildi.",
   "backup.error.conflict": "Bu telefonda zaten başka veri var. Geri yükleme yapılmadı.",
+  "backup.error.sync_pending": "Eşitleme açık ama ilk eşitleme henüz bitmedi. Önce giriş yap, eşitlemenin bitmesini bekle, sonra yedeği yükle. Hiçbir değişiklik yapılmadı.",
   "warn.homescreen": "Uygulamayı Ana Ekrana ekleyin: yoksa iPhone verilerini silebilir.",
   "warn.persist": "Tarayıcı verilerin kalacağını garanti etmiyor. Sık sık yedek alın.",
   "parcel.add": "Parsel ekle",
