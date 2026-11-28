@@ -35,7 +35,7 @@ Latest main commit and the CONCLUSION of each check-run; open PRs; for `durum.js
 ## 4. Decide ONE thing (first match wins)
 1. **Main is red** → maintenance: root cause from the failing log («FAILURE CONTEXT»); a green rerun is not a fix. Counts as a code job (`kod_isi` + 1).
 2. **`simdi` has an open PR** → continue it, never start a new item: CI red → team fixes; no bekçi verdict at the head SHA → bekçi; ONAY at head SHA + gates green → merge (step 7). PR merged → item `tamam`.
-3. **First `sirada` item with `onay` set, `durum` = `sirada`, `deneme` < 2**, and `gunluk.kod_isi` < the daily cap for today (Europe/Athens date; cap 4, but 12 up to and including 2026-12-01 — Bora's intensive mode, see `durum.json` `yogun_mod`; 24 on 2026-11-28 and 2026-11-29 for Bora's night shift until 2026-11-29 08:00 Athens) → take it: move it to `simdi`, `deneme` + 1, `kod_isi` + 1.
+3. **First `sirada` item with `onay` set, `durum` = `sirada`, `deneme` < 2**, and `gunluk.kod_isi` < the daily cap for today (Europe/Athens date; cap 4, but 12 up to and including 2026-12-01 — Bora's intensive mode, see `durum.json` `yogun_mod`; night shift: a job started before 2026-11-29 08:00 Athens may use a cap of 24 — Bora asked for work «until 08:00», the number 24 is the main session's choice; from 08:00 on 2026-11-29 the cap is 12 again, counting that day's jobs) → take it: move it to `simdi`, `deneme` + 1, `kod_isi` + 1.
 4. **Maintenance with new evidence only** (`tur: bakim` items, e.g. a monitored test failed on main in the last 24 h).
 5. Nothing → no agents; short report (step 8) and stop.
 
