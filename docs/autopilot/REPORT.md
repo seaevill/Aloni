@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 22:48 Atina — yönetici koşusu 20261128-2028
+1. **Uygulamada ne değişti:** İşçi ekranında («Δουλειές», «Συγκομιδή», «Σημείωση» sekmeleri) her düğme, seçim çipi ve yazı kutusu artık en az 72 px yüksekliğinde. Gözle görülen tek fark: üst köşedeki zil düğmesi biraz büyüdü (56 → 72 px). Sahip ekranları değişmedi.
+2. **Senin için faydası:** İşçiler eldivenle ya da güneşte daha kolay basar; yanlış düğmeye basma azalır. Bundan sonra işçi ekranına 72 px'ten küçük bir düğme eklenirse test hemen kırmızı olur.
+3. **Ne denendi, ne başarısız oldu:** İşçi ekranı testi 320/375/390 px genişlikte, Yunanca ve Hintçe olarak üç kez tekrarlandı, hep geçti; yatay kaydırma yok. Testi kandırma denemesi (60 px'lik gizli düğme) yakalanıyor. Tüm birim testleri (978) geçti; bekçi testleri kendi kopyasında koşturdu ve ilk denemede onayladı. GitHub'da tüm kontroller başarılı. Başarısız bir şey yok. Eksik: ölçüm sekmelerin ilk görünümünde yapılıyor; iş detayı ya da hasat adımları açıkken ayrıca ölçülmüyor (bekçi notu).
+4. **Önerim:** Sıradaki onaylı iş ev-13 (görünüm kurallarını denetleyen testin gerçek ekranları da gezmesi: ürün/tarla detayı vb.).
+5. **Senden gereken karar:** Yeni karar yok. Önceki koşulardan açık: «Δεν έχει σπαρθεί ακόμα» sözlüğe eklensin mi; yeni Hintçe kelimeyi kim kontrol edecek; «Σήμερα» için iki soru (is-6b-4). Ayrıca: zincirleme (bir koşu bitince sonrakini hemen başlatma) bir önceki koşuda izin reddine takıldı.
+
+PR: https://github.com/seaevill/aloni/pull/694 (birleşti). Bugünkü kod işi: 18/24 (gece vardiyası). Birleşti ≠ canlıda.
+
 ## 2026-11-28 22:36 Atina — yönetici koşusu 20261128-2006
 1. **Uygulamada ne değişti:** Ekranda görünür bir değişiklik yok. Arka planda, yan stil dosyalarındaki 47 sabit ölçü ortak ölçü listesine bağlandı (değerleri aynen korundu), paylaşım kartının ve açılış logosunun renkleri de artık ortak renk listesinden geliyor (renkler aynı).
 2. **Senin için faydası:** Bundan sonra herhangi bir ekrana listede olmayan bir renk ya da ölçü yazılırsa test hemen kırmızı olur; görünüm tutarlı kalır ve «Φως ημέρας» (güneş modu) gibi ayarlar her ekranı aynı şekilde etkiler.
