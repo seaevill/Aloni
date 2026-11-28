@@ -2,13 +2,13 @@
   "takim": "bekci",
   "guncelleme": "2026-11-28",
   "son_denetim": {
-    "pr": "667,662",
-    "sha": "030d22062643237cc61c250d8162538d308d6ead,6169d3e574916990f07954e028a50e7479ff0233",
-    "takim": "aloni-gelistirme (yeniden denetim 1/2)",
-    "karar": "667 ONAY, 662 ONAY"
+    "pr": "673",
+    "sha": "0c86c419e6024762c865644dbade14519fa1aeb0",
+    "takim": "aloni-gelistirme (ev-3)",
+    "karar": "ONAY"
   },
   "denetim_sayaci": {
-    "onay": 27,
+    "onay": 28,
     "red": 4
   }
 }
