@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { iphone } from './helpers/iphone';
+import { openSettings } from './helpers/tabs';
 
 // T19: a photo with GPS in its EXIF block is re-encoded: the stored bytes carry no APP1 / «Exif» segment (no location leaves the phone, FACTS: no location tracking).
 test('photo with GPS EXIF: the stored bytes have no Exif segment', async ({ page }) => {
@@ -34,6 +35,6 @@ test('photo with GPS EXIF: the stored bytes have no Exif segment', async ({ page
 
 test('backup screen shows the warning about workers’ names', async ({ page }) => {
   await iphone(page);
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await expect(page.getByTestId('backup-sensitive')).toContainText('Περιέχει ονόματα εργατών');
 });

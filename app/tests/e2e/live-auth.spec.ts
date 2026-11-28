@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { goTab } from './helpers/tabs';
+import { goTab, openSettings } from './helpers/tabs';
 
 // The live features against a MOCK backend (the e2e build, port 4174): e-mail code sign-in and the owner's invitation of a worker.
 // The mock answers what Supabase would; nothing leaves the machine.
@@ -18,7 +18,7 @@ async function mockBackend(page: Page): Promise<{ invitations: unknown[] }> {
 }
 
 async function signIn(page: Page) {
-  await tab(page, 'more');
+  await openSettings(page);
   await page.getByTestId('signin-send').scrollIntoViewIfNeeded();
   await page.getByTestId('sign-in').locator('input').first().fill('Bora@Example.org');
   await page.getByTestId('signin-send').click();
@@ -32,7 +32,7 @@ test('sign-in with an e-mail code: the card shows who is signed in; the session 
   await page.goto('/');
   await signIn(page);
   await page.reload();
-  await tab(page, 'more');
+  await openSettings(page);
   await expect(page.getByTestId('signed-in')).toContainText('bora@example.org');
   await page.getByRole('button', { name: 'Αποσύνδεση' }).click();
   await expect(page.getByTestId('sign-in')).toBeVisible();
@@ -42,7 +42,7 @@ test('a wrong code is refused with a calm message and nothing is stored', async 
   await mockBackend(page);
   await page.route('**/mock/auth/v1/verify', (r) => r.fulfill({ status: 401, contentType: 'application/json', body: '{"message":"bad code"}' }));
   await page.goto('/');
-  await tab(page, 'more');
+  await openSettings(page);
   await page.getByTestId('sign-in').locator('input').first().fill('bora@example.org');
   await page.getByTestId('signin-send').click();
   await page.getByTestId('sign-in').locator('input').nth(1).fill('000000');
@@ -55,6 +55,7 @@ test('inviting a worker: closed until the data controller details are entered, t
   const seen = await mockBackend(page);
   await page.goto('/');
   await signIn(page);
+  await page.getByRole('button', { name: 'Επιστροφή' }).click();
   await page.getByTestId('open-workers').click();
   await page.getByTestId('worker-name').fill('Δοκιμή');
   await page.getByTestId('worker-add').click();
@@ -79,7 +80,7 @@ test('inviting a worker: closed until the data controller details are entered, t
 // Sign-in code (login hardening): six digits only, plain Greek reasons, «Νέος κωδικός» after 60 s. No link anywhere.
 const emailBox = (page: Page) => page.getByTestId('sign-in').locator('input').first();
 async function sendCode(page: Page) {
-  await tab(page, 'more');
+  await openSettings(page);
   await emailBox(page).scrollIntoViewIfNeeded();
   await emailBox(page).fill('bora@example.org');
   await page.getByTestId('signin-send').click();

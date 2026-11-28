@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { goTab } from './helpers/tabs';
+import { goTab, openSettings } from './helpers/tabs';
 import { APP_NAME } from '../../src/config';
 
 test('shell: four tabs in Greek (Αποθήκη opens from Άλλα), 375 px, no horizontal scroll', async ({ page }) => {
@@ -40,7 +40,7 @@ test('manifest is valid and installable', async ({ page, request }) => {
 test('demo farm: load, see data, switch language, remove', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('empty-state')).toBeVisible();
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await page.getByRole('button', { name: 'Φόρτωση επίδειξης' }).click();
   await expect(page.getByRole('status')).toContainText('φορτώθηκε');
   await page.locator('nav.tabs [data-tab="today"]').click();
@@ -55,7 +55,9 @@ test('demo farm: load, see data, switch language, remove', async ({ page }) => {
   await page.locator('nav.tabs [data-tab="more"]').click();
   await page.getByRole('button', { name: 'TR', exact: true }).click();
   await expect(page.locator('h1')).toHaveText('Diğer');
+  await page.getByTestId('open-settings').click();
   await page.getByRole('button', { name: 'Demo çiftliği sil' }).click();
+  await page.locator('button.back').click();
   await page.getByRole('button', { name: 'EL', exact: true }).click();
   await page.locator('nav.tabs [data-tab="today"]').click();
   await expect(page.getByTestId('empty-state')).toBeVisible();

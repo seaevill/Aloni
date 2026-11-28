@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { goTab } from './helpers/tabs';
+import { goTab, openSettings } from './helpers/tabs';
 import { iphone } from './helpers/iphone';
 
 const tab = (page: Page, id: string) => goTab(page, id);
@@ -90,7 +90,7 @@ test('the planting form meets the UX bar in el/tr/en (375 px, targets, text size
 
 test('while the demo farm is active no planting can be added, and the demo shows its plantings in the farm\'s words', async ({ page }) => {
   await iphone(page);
-  await tab(page, 'more');
+  await openSettings(page);
   await page.locator('main button.btn').first().click();
   await expect(page.getByTestId('demo-banner')).toBeVisible();      // wait until the demo is loaded: its banner pushes the page down, a tap sent before it lands on the wrong spot
   await tab(page, 'crops');

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { goTab } from './helpers/tabs';
+import { goTab, openSettings } from './helpers/tabs';
 import { iphone } from './helpers/iphone';
 
 // Demo season (queue item 32a): the opt-in «πλήρης σεζόν» Demo has seven fictional parcels with drawn outlines and fictional ΚΑΕΚ (labelled Demo), plantings and harvests; every tab opens at 320/375/390 without errors or sideways scroll.
@@ -7,7 +7,7 @@ for (const width of [320, 375, 390]) {
   test(`full-season Demo at ${width} px: seven parcels, ΚΑΕΚ 99… labelled Demo, all five tabs open without errors or sideways scroll`, async ({ page }) => {
     await page.setViewportSize({ width, height: 812 });
     const errors = await iphone(page);
-    await page.locator('nav.tabs [data-tab="more"]').click();
+    await openSettings(page);
     await page.getByTestId('demo-season-load').click();
     await expect(page.getByTestId('demo-banner')).toBeVisible();
     await page.locator('nav.tabs [data-tab="parcels"]').click();

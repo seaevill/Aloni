@@ -1,10 +1,11 @@
 import { expect, test } from '@playwright/test';
 import { iphone } from './helpers/iphone';
+import { openSettings } from './helpers/tabs';
 
 // T18: the technical items live in a collapsed «Για προγραμματιστές» section at the bottom of Άλλα.
 test('Άλλα: no migration / advisor wording until «Για προγραμματιστές» is opened; the one-line phone note is visible', async ({ page }) => {
   const errors = await iphone(page);
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await expect(page.getByTestId('this-phone')).toContainText('μόνο σε αυτό το τηλέφωνο');
   await expect(page.getByTestId('opened-from')).toContainText('Ανοιχτό από');
   await expect(page.getByTestId('ready-controller')).toBeVisible();

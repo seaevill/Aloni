@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { goTab } from './helpers/tabs';
+import { goTab, openSettings } from './helpers/tabs';
 import { athensInput, fixClock } from './helpers/clock';
 import { iphone } from './helpers/iphone';
 
@@ -66,7 +66,7 @@ test('the «expires soon» warning follows the setting in More (60 days by defau
   await page.locator('main input.input').nth(2).fill('2');
   await page.getByTestId('receive-save').click();
   await expect(page.getByTestId('lot-flag')).toHaveText('Λήγει σύντομα'); // 45 days away, default 60
-  await tab(page, 'more');
+  await openSettings(page);
   await expect(page.getByTestId('soon-days')).toHaveValue('60');
   await page.getByTestId('soon-days').fill('abc');
   await page.getByRole('button', { name: 'Αποθήκευση' }).last().click();

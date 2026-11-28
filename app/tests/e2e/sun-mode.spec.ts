@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { goTab } from './helpers/tabs';
+import { goTab, openSettings } from './helpers/tabs';
 import { fixClock } from './helpers/clock';
 
 // «Φως ημέρας» (Sun / Glove mode): a device-local LOOK: black on white, bigger text and targets. It survives a reload, never overflows sideways, passes axe, and changes no feature.
@@ -11,7 +11,7 @@ test('Daylight mode: switches from Άλλα, survives a reload, black on white, 
   await page.goto('/');
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-counts')).toBeVisible();
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await expect(page.getByTestId('sun-off')).toHaveAttribute('aria-pressed', 'true');
   await page.getByTestId('sun-on').click();
   await expect(page.locator('html')).toHaveAttribute('data-sun', '');
@@ -32,7 +32,7 @@ test('Daylight mode: switches from Άλλα, survives a reload, black on white, 
   await page.screenshot({ path: `${SHOTS}/1-today-daylight.png` });
   const audit = await new AxeBuilder({ page }).analyze();
   expect(audit.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => [v.id, v.nodes.map((n) => n.target)])).toEqual([]);
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await page.getByTestId('sun-off').click();
   await expect(page.locator('html')).not.toHaveAttribute('data-sun', '');
 });

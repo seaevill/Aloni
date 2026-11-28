@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import { iphone } from './helpers/iphone';
+import { openSettings } from './helpers/tabs';
 
 /** A real PNG made in the browser: `w`×`h`, a gradient shifted by `seed` so that different seeds are different pictures. */
 async function png(page: Page, w: number, h: number, seed: number): Promise<Buffer> {
@@ -50,6 +51,7 @@ test('add photos offline: shrunk to 2000 px, the same photo only once, kept afte
   await expect(page.locator('.photo.big')).toBeVisible();
   await page.getByRole('button', { name: 'Κλείσιμο' }).click();
   await page.getByRole('button', { name: 'Επιστροφή' }).click();
+  await page.getByTestId('open-settings').click();
 
   const download = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Εξαγωγή αντιγράφου' }).click();
@@ -65,9 +67,10 @@ test('add photos offline: shrunk to 2000 px, the same photo only once, kept afte
 
 test('while the demo farm is active no photo can be added', async ({ page }) => {
   await iphone(page);
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await page.locator('main button.btn').first().click();
   await expect(page.getByTestId('demo-banner')).toBeVisible();      // wait until the demo is loaded: its banner pushes the page down, a tap sent before it lands on the wrong spot
+  await page.getByRole('button', { name: /Πίσω|Επιστροφή/ }).first().click();
   await page.getByTestId('open-photos').click();
   await expect(page.getByTestId('photos-demo-note')).toBeVisible();
   await expect(page.getByTestId('photo-add')).toHaveCount(0);

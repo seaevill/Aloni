@@ -11,9 +11,11 @@ test('season Demo: ten photos with a source line each, lazy; the classic Demo sh
   await page.getByTestId('open-photos').click();
   await expect(page.getByTestId('demo-photos')).toHaveCount(0);
   await page.getByRole('button', { name: /Πίσω|Επιστροφή/ }).first().click();
+  await page.getByTestId('open-settings').click();
   await page.getByTestId('demo-season-load').click();
   await expect(page.getByText('Η επίδειξη φορτώθηκε.')).toBeVisible();                              // the season is in
   expect(fetched).toEqual([]);                                                                    // nothing fetched at load
+  await page.getByRole('button', { name: /Πίσω|Επιστροφή/ }).first().click();
   await page.getByTestId('open-photos').click();
   await expect(page.getByTestId('demo-photo')).toHaveCount(10);
   const sources = await page.getByTestId('demo-photo-source').allInnerTexts();

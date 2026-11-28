@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import { iphone } from './helpers/iphone';
 import { setup } from './helpers/farm';
+import { openSettings } from './helpers/tabs';
 
 // The disaster drill: a real farm with records and photos → a backup file → the phone is wiped (the in-app deletion) → the app starts like a new phone → restore from the file → EVERY record and photo is back, byte for byte.
 test.use({ viewport: { width: 375, height: 812 } });
@@ -37,12 +38,14 @@ test('backup → wipe the phone → restore: every record and photo is back', as
 
   // 1. the backup file
   await page.getByRole('button', { name: 'Επιστροφή' }).click();
+  await page.getByTestId('open-settings').click();
   const download = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Εξαγωγή αντιγράφου' }).click();
   const path = test.info().outputPath('drill-backup.json');
   await (await download).saveAs(path);
 
   // 2. the phone is wiped with the app's own deletion (backup is fresh, the name is typed)
+  await page.getByRole('button', { name: 'Επιστροφή' }).click();
   await page.getByTestId('open-info').click();
   await page.getByTestId('account-open').click();
   await page.getByTestId('account-typed').fill('Το κτήμα μου');
@@ -54,13 +57,14 @@ test('backup → wipe the phone → restore: every record and photo is back', as
   expect(empty.photos).toEqual([]);
 
   // 3. the restore
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.getByRole('button', { name: 'Επαναφορά από αντίγραφο' }).click()]);   // the real path: the button, then the phone's file picker
   await chooser.setFiles({ name: 'aloni-backup.json', mimeType: 'application/json', buffer: readFileSync(path) });
   await expect.poll(async () => (await snapshot(page)).counts, { timeout: 20_000 }).toEqual(before.counts);      // the restore has run (the confirmation line can vanish when the farm changes and the screen redraws)
   const after = await snapshot(page);
   expect(after.counts).toEqual(before.counts);                                                     // every table has its rows again
   expect(after.photos).toEqual(before.photos);                                                     // and every photo is the same file (SHA-256)
+  await page.getByRole('button', { name: 'Επιστροφή' }).click();
   await page.getByTestId('open-photos').click();
   await expect(page.getByTestId('photo-count')).toContainText('2 φωτογραφίες');
   await page.getByRole('button', { name: 'Επιστροφή' }).click();
