@@ -66,17 +66,6 @@
       "son_deneme": null
     },
     {
-      "id": "ev-9",
-      "baslik": "[P1] CSS koruması: her var(--x) tanımlı olmalı testi (tanımsız --sp-3 sekiz kartın arasını 0 px yapmıştı) ve --sp-3 düzeltmesi; küçük yazı tabanı small = 14 px (detay ekranlarında 13,3 px); Παραγγελίες özet satırı (22 px) ve ekim çipi (55 px) dokunma hedefi. 375 px önce/sonra. ~80 satır.",
-      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 2-interface UI-02, UI-05, UI-10, UI-11, ENV-2",
-      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
-      "sahip": "aloni-gelistirme",
-      "tur": "ozellik",
-      "durum": "sirada",
-      "deneme": 0,
-      "son_deneme": null
-    },
-    {
       "id": "ev-10",
       "baslik": "[P1] Kontrast koruması kural başına: her CSS kuralındaki yazı + zemin çifti (var() çözülerek) en az 7:1, hesaplanamayan çift kırmızı; «sunucu reddetti» işaretindeki 1,36:1 kontrast düzeltilir. ~90 satır.",
       "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 2-interface UI-01, ENV-3",
@@ -925,6 +914,11 @@
       "id": "ev-7",
       "baslik": "Demo verisi gerçek yedeğe ve sunucu kuyruğuna girmiyor (güvenlik kuralı 4): tek isDemoKey yardımcısı (anahtar Demo çiftlik kimliğini içeriyor mu); makeBackup Demo ayarlarını almıyor, parseBackup Demo ayarlı dosyayı 'demo' koduyla reddediyor, geri yükleme Demo ayarlarını atlıyor, putSetting Demo için yalnızca yerel yazıyor. Eski money: kontrolü kapsandı. Kalan (bekçi notu): sunucudan çekilen ayarlar Demo anahtarı için süzülmüyor (sync-apply.ts)",
       "pr": 686
+    },
+    {
+      "id": "ev-9",
+      "baslik": "CSS koruması: her var(--x) tanımlı olmalı testi (kaçma denemesiyle); tanımsız --sp-3 (8 yer) → --sp-12 ve ayrıca bulunan --sp-1 → --sp-2; small tabanı 14 px; Παραγγελίες harita özet satırı ve ekim çipi 56 px dokunma hedefi (yalnızca orders-map'e daraltıldı, ilk sürümdeki genel .card > summary kuralı bekçi RED'iyle kaldırıldı). Kalan: .card small { display:block } (ev-10/ev-11)",
+      "pr": 688
     }
   ],
   "bekleyen_kararlar": [
@@ -953,12 +947,12 @@
   ],
   "gunluk": {
     "tarih": "2026-11-28",
-    "kod_isi": 14
+    "kod_isi": 15
   },
   "son_kosu": {
     "tarih": "2026-11-28",
-    "is": "ev-7 — yönetici koşusu 20261128-1907 (zincir)",
-    "sonuc": "ev-7 birleşti (#686, squash d3e3461): bekçi ONAY 57a1b73, tüm CI kapıları yeşil (ilk deneme). Kod işi 14/24 (gece vardiyası tavanı). Sıradaki onaylı iş ev-9."
+    "is": "ev-9 — yönetici koşusu 20261128-1924 (zincir)",
+    "sonuc": "ev-9 birleşti (#688, squash 6f7f49d): ilk bekçi RED b7af23b (genel .card > summary kuralı işçi ekranında ▸ okunu kaldırıyordu), 1 düzeltme, bekçi ONAY 8f3fb82, tüm CI kapıları yeşil. Kod işi 15/24 (gece vardiyası tavanı). Sıradaki onaylı iş ev-10."
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner. Ek (Bora 28 Kasım 2026): 2026-11-29 08:00 Atina'ya kadar kesintisiz çalışma. 08:00'den önce başlayan işler için sınır 24 (sayıyı sağ kol seçti); 29 Kasım 08:00'den sonra yeniden 12."
 }
