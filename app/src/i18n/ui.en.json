@@ -205,6 +205,7 @@
   "ui.crops.chip.unknown": "Waiting unknown",
   "ui.crops.chip.wait": "In waiting period",
   "ui.crops.chip.free": "Ready to cut",
+  "ui.crops.chip.planned": "Planned",
   "ui.crops.plantings": "Plantings",
   "ui.crop.tips": "Tips",
   "ui.crop.tips.note": "General information – not a recommendation",

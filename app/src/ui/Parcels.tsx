@@ -76,7 +76,8 @@ const SHORT = {
   free: { tone: 'ready', key: 'ui.crops.chip.free' },
   running: { tone: 'hold', key: 'ui.crops.chip.wait' },
   unknown: { tone: 'unknown', key: 'ui.crops.chip.unknown' },
-} as const satisfies Record<string, { tone: 'ready' | 'hold' | 'unknown'; key: I18nKey }>;
+  planned: { tone: 'info', key: 'ui.crops.chip.planned' },
+} as const satisfies Record<string, { tone: 'ready' | 'hold' | 'unknown' | 'info'; key: I18nKey }>;
 
 /** the names of the crops still on a field (unfinished plantings), once each: the card then says what grows there without opening it */
 function cropLineOf(parcelId: string, plantings: readonly Row[], crops: readonly Row[]): string {
