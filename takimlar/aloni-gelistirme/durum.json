@@ -4,7 +4,21 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": null,
+  "simdi": {
+    "id": "ev-5",
+    "baslik": "[P1] Eşitleme dönüşü: sunucudan çekilen satırları telefon biçimine çeviren tek fromServer() — imza üç sütundan sign_off'a, «not_on_label» bayrakları, sayılar tam ondalık metin, saatler YYYY-MM-DDTHH:MM:SSZ (bitiş saatleri yukarı yuvarlanır, PHI asla kısalmaz), chain_no dahil sunucuya ait sütunlar atılır, farm_settings → settings, yedekte saat karşılaştırması Date.parse ile. Testler gerçek pull() biçimindeki satırlarla; imzalı etiket çekmeden sonra «signed» kalmalı. Yalnızca uygulama, SQL yok. ~300 satır; aşarsa böl.",
+    "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 5-data F1, F2, F14, F15",
+    "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+    "sahip": "aloni-gelistirme",
+    "tur": "ozellik",
+    "durum": "pr-acik",
+    "deneme": 1,
+    "son_deneme": {
+      "tarih": "2026-11-28",
+      "sonuc": "PR #677 açıldı (dal 1128-ev-5-from-server): yerelde vitest 944 geçti, eslint ve tsc temiz; yeni 15 testin 6'sı eski kodda kırmızı. Bekçi ve CI bekleniyor.",
+      "pr": "https://github.com/seaevill/Aloni/pull/677"
+    }
+  },
   "sirada": [
     {
       "id": "is-6b-4",
@@ -51,17 +65,6 @@
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
       "durum": "ertelendi",
-      "deneme": 0,
-      "son_deneme": null
-    },
-    {
-      "id": "ev-5",
-      "baslik": "[P1] Eşitleme dönüşü: sunucudan çekilen satırları telefon biçimine çeviren tek fromServer() — imza üç sütundan sign_off'a, «not_on_label» bayrakları, sayılar tam ondalık metin, saatler YYYY-MM-DDTHH:MM:SSZ (bitiş saatleri yukarı yuvarlanır, PHI asla kısalmaz), chain_no dahil sunucuya ait sütunlar atılır, farm_settings → settings, yedekte saat karşılaştırması Date.parse ile. Testler gerçek pull() biçimindeki satırlarla; imzalı etiket çekmeden sonra «signed» kalmalı. Yalnızca uygulama, SQL yok. ~300 satır; aşarsa böl.",
-      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 5-data F1, F2, F14, F15",
-      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
-      "sahip": "aloni-gelistirme",
-      "tur": "ozellik",
-      "durum": "sirada",
       "deneme": 0,
       "son_deneme": null
     },
