@@ -1,13 +1,13 @@
 .spray-v2 .step {
-  border-top: 1px solid var(--line);
-  margin-top: 1.25rem;
-  padding-top: .75rem;
+  border-top: var(--bw-1) solid var(--line);
+  margin-top: var(--rs-20);
+  padding-top: var(--rs-12);
 }
 .spray-v2 .spray-choices > button {
-  min-height: 56px;
+  min-height: var(--tile);
   min-width: 0;
   overflow-wrap: anywhere;
-  padding: .5rem;
+  padding: var(--rs-8);
   text-align: start;
 }
 .spray-v2 .spray-choices > button[aria-pressed="true"] {

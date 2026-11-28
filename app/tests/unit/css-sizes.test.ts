@@ -1,8 +1,27 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 // UX bar (ux-qa.md §1): nothing smaller than 14 px, badges included. Stop-gap until the Playwright ux-bar spec (M1 PR 3).
+const UI = new URL('../../src/ui/', import.meta.url);
+const cssFiles = (dir = ''): string[] => readdirSync(new URL(dir, UI), { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? cssFiles(`${dir}${e.name}/`) : e.name.endsWith('.css') ? [`${dir}${e.name}`] : []));
+/** Every font-size in a stylesheet in px: a px or rem literal is read as it is (1 rem = 16 px), var(--x) through its token. */
+function fontSizes(css: string, tokens: string): number[] {
+  const px = (name: string): number => { const m = new RegExp(`--${name}:\\s*([\\d.]+)(px|rem)`).exec(tokens); return m ? Number(m[1]) * (m[2] === 'rem' ? 16 : 1) : NaN; };
+  return [...css.matchAll(/font-size:\s*(?:([\d.]+)(px|rem)|var\(--([\w-]+))/g)].map((m) => (m[1] ? Number(m[1]) * (m[2] === 'rem' ? 16 : 1) : px(m[3] ?? '')));
+}
+
 describe('CSS font sizes', () => {
+  it('no font-size below 14px in ANY stylesheet of src/ui (side files, ds/, cx/), and every var() size resolves', () => {
+    const tokens = readFileSync(new URL('tokens.css', UI), 'utf8');
+    const files = cssFiles();
+    expect(files.length).toBeGreaterThan(20);
+    const low = files.flatMap((f) => fontSizes(readFileSync(new URL(f, UI), 'utf8'), tokens).filter((s) => !(s >= 14)).map((s) => `${f}: ${s}`));
+    expect(low).toEqual([]);   // NaN (an unresolvable token) also fails: !(NaN >= 14)
+  });
+  it('escape attempt: rem sizes and unknown tokens are caught', () => {
+    expect(fontSizes('.a{font-size:.75rem}.b{font-size:var(--nope)}.c{font-size:1.125rem}', ':root{--fs-14:.875rem}')).toEqual([12, NaN, 18]);
+  });
+
   it('no font-size below 14px', () => {
     const css = readFileSync(new URL('../../src/ui/styles.css', import.meta.url), 'utf8');
     const tokens = readFileSync(new URL('../../src/ui/tokens.css', import.meta.url), 'utf8');

@@ -1,11 +1,11 @@
 .crop-card {
-  border: 1px solid var(--line);
+  border: var(--bw-1) solid var(--line);
 }
 .crop-card .crop-open {
   align-items: center;
   color: var(--fg);
-  gap: .75rem;
-  min-height: 56px;
+  gap: var(--rs-12);
+  min-height: var(--tile);
   text-align: start;
 }
 .crop-open strong,
@@ -16,37 +16,37 @@
   color: var(--muted);
 }
 .crop-card .line {
-  border-top: 1px solid var(--line);
-  padding-top: .625rem;
+  border-top: var(--bw-1) solid var(--line);
+  padding-top: var(--rs-10);
 }
 .crop-planting summary {
   align-content: center;
   color: var(--fg);
   cursor: pointer;
-  min-height: 56px;
+  min-height: var(--tile);
   overflow-wrap: anywhere;
 }
 .crop-planting summary small {
   color: var(--muted);
   display: block;
-  margin-top: .25rem;
+  margin-top: var(--rs-4);
 }
 .crop-weather-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
-  gap: .5rem;
+  grid-template-columns: repeat(auto-fit, minmax(var(--col-min-7), 1fr));
+  gap: var(--rs-8);
   list-style: none;
-  margin: .5rem 0 0;
+  margin: var(--rs-8) 0 0;
   padding: 0;
 }
 .crop-weather-grid li {
   background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: .5rem;
+  border: var(--bw-1) solid var(--line);
+  border-radius: var(--rs-8);
   color: var(--fg);
   min-width: 0;
   overflow-wrap: anywhere;
-  padding: .5rem;
+  padding: var(--rs-8);
 }
 .crop-weather-grid span,
 .crop-weather-grid time {

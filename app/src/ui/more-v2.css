@@ -2,24 +2,24 @@
   align-items: center;
   color: var(--fg);
   display: grid;
-  grid-template-columns: 2.25rem minmax(0, 1fr) auto;
-  min-height: 56px;
+  grid-template-columns: var(--rs-36) minmax(0, 1fr) auto;
+  min-height: var(--tile);
   overflow-wrap: anywhere;
   text-align: start;
 }
 .more-menu-icon {
   align-items: center;
   background: var(--bg);
-  border-radius: .625rem;
+  border-radius: var(--rs-10);
   color: var(--green);
   display: inline-flex;
-  height: 2rem;
+  height: var(--rs-32);
   justify-content: center;
-  width: 2rem;
+  width: var(--rs-32);
 }
 .more-menu-icon svg {
-  height: 1.25rem;
-  width: 1.25rem;
+  height: var(--rs-20);
+  width: var(--rs-20);
 }
 
 .fw-grid { display:grid; gap:var(--sp-8); }
@@ -47,7 +47,7 @@
 }
 
 .more-v2 .menu .row:focus-visible {
-  outline-offset: calc(0px - var(--bw-2));
+  outline-offset: calc(var(--bw-2) * -1);
 }
 
 .more-v2 .more-menu-icon {

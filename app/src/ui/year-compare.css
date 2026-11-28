@@ -3,6 +3,6 @@
 .yearcmp small { display: block; }
 .yearcmp-sums { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-2); }
 .yearcmp-sums strong { display: block; }
-.yearcmp-grid { inline-size: 100%; block-size: 96px; }
+.yearcmp-grid { inline-size: 100%; block-size: var(--thumb); }
 .yearcmp-bar.this { fill: var(--green); }
 .yearcmp-bar.last { fill: var(--line); }
