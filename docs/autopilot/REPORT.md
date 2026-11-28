@@ -12,7 +12,7 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
-## 2026-11-28 21:25 Atina — yönetici koşusu 20261128-1907
+## 2026-11-28 21:17 Atina — yönetici koşusu 20261128-1907
 1. **Uygulamada ne değişti:** Ekranda görünen bir değişiklik yok. Değişiklik yedek ve eşitleme tarafında: Demo çiftliğine (Άλλα → Επίδειξη) ait hiçbir ayar artık gerçek yedek dosyasına girmiyor, sunucuya gönderilmek üzere sıraya da girmiyor. İçinde Demo ayarı bulunan bir yedek dosyası yüklenmek istenirse uygulama onu reddediyor. Önceden bu koruma yalnızca Demo kasa (Ταμείο) kayıtları için vardı; şimdi Demo'ya ait her ayar için var.
 2. **Senin için faydası:** Demo'yu denediğin telefonda bile gerçek yedeğin ve sunucudaki gerçek çiftliğin uydurma Demo bilgisiyle karışmaz (güvenlik kuralı 4).
 3. **Ne denendi, ne başarısız oldu:** 5 yeni test yazıldı; eski kodla 5'i de kırmızıydı, yeni kodla yeşil. Testlerin bir kısmı kuralı delmeye çalışıyor (Demo ayarını yedeğe gizlice sokmak, gerçek çiftlik adıyla Demo ayarı yazmak); hepsi engellendi. Tüm birim testleri (955) geçti. Bekçi testleri kendi kopyasında koşturdu, gerçek kayıtların yanlışlıkla Demo sayılmadığını ayrıca kontrol etti ve onayladı. GitHub'da tüm kontroller ilk denemede başarılı. Başarısız bir şey yok. Not: Demo ayarı karışmış eski bir yedek dosyan varsa artık açılmaz; o durumda yeni bir yedek al.
