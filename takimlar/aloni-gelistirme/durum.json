@@ -4,11 +4,7 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": {
-    "id": "ev-3",
-    "pr": "https://github.com/seaevill/Aloni/pull/673",
-    "dal": "1128-ev-3-phi-veto"
-  },
+  "simdi": null,
   "sirada": [
     {
       "id": "is-6b-4",
@@ -57,21 +53,6 @@
       "durum": "ertelendi",
       "deneme": 0,
       "son_deneme": null
-    },
-    {
-      "id": "ev-3",
-      "baslik": "[P0] Karar motoru (rules-core; henüz hiçbir ekrana bağlı değil): süren PHI bekleyişi (phi_hold) hasat vetosu taşısın; don kuralının «çözülmeden hasat yok» önerisi PHI sürerken «phi_clear: true» demesin (bilinmiyorsa söylemesin). Yeni altın NEG vakası «R06 + süren ilaçlama». Etiket değeri uydurulmaz, test verisi kurgusal. ~80 satır.",
-      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 3-engine BUG-1, BUG-3",
-      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
-      "sahip": "aloni-gelistirme",
-      "tur": "ozellik",
-      "durum": "pr-acik",
-      "deneme": 1,
-      "son_deneme": {
-        "tarih": "2026-11-28",
-        "sonuc": "PR açıldı, testler yerelde yeşil; birleşme bekleniyor",
-        "pr": "https://github.com/seaevill/Aloni/pull/673"
-      }
     },
     {
       "id": "ev-4",
@@ -743,6 +724,11 @@
       "id": "ev-2",
       "baslik": "Σήμερα → «Σήμερα έγιναν»: hasadın gittiği yer satırda yoksa telefonun kaydettiği cevaptan okunur; az önce kaydedilen hasat artık «άγνωστο – παλιά καταγραφή» demez; cevap yoksa bilinmiyor kalır",
       "pr": 671
+    },
+    {
+      "id": "ev-3",
+      "baslik": "Karar motoru: süren PHI bekleyişi (phi_hold) artık hasat vetosu taşıyor; don kuralının «çözülmeden hasat yok» önerisi PHI sürerken (ya da bilinmezken) «phi_clear: true» demiyor; yeni altın NEG vakası NEG-FROST-thaw-during-phi (kurgusal, yalnızca test). Motor henüz ekrana bağlı değil",
+      "pr": 673
     }
   ],
   "bekleyen_kararlar": [
@@ -768,12 +754,12 @@
   ],
   "gunluk": {
     "tarih": "2026-11-28",
-    "kod_isi": 9
+    "kod_isi": 10
   },
   "son_kosu": {
     "tarih": "2026-11-28",
-    "is": "ev-2 — yönetici koşusu 20261128-1623",
-    "sonuc": "PR #671 birleşti (squash 1652056): bekçi ONAY ad4a9ba'da, tüm kontroller (check, sql, static, e2e 1–3, pr-size, Workers Builds) ilk denemede yeşil."
+    "is": "ev-3 — yönetici koşusu 20261128-1648",
+    "sonuc": "PR #673 birleşti (squash 4ded424): bekçi ONAY 0c86c41'de, tüm kontroller (check, sql, static, e2e 1–3, pr-size, Workers Builds) ilk denemede yeşil."
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }

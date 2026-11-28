@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 19:05 Atina — yönetici koşusu 20261128-1648
+1. **Uygulamada ne değişti:** Ekranda görünen bir değişiklik yok. Değişiklik uygulamanın arka plandaki öneri motorunda; bu motor henüz hiçbir ekrana bağlı değil. Bir tarlada ilaçlamanın hasat bekleme süresi (PHI) hâlâ sürüyorsa, motor artık o ekim için hasadı açıkça engelliyor. Don sonrası «çözülmeden hasat yok» önerisi de bekleme süresi sürerken (ya da süre bilinmiyorken) artık «ilaç açısından sorun yok» demiyor.
+2. **Senin için faydası:** Motor ekranlara bağlandığında, bekleme süresi dolmamış bir ürün için yanlışlıkla «hasat edilebilir» izlenimi verilmeyecek. İleride bu hatanın geri gelmesini bir test engelliyor.
+3. **Ne denendi, ne başarısız oldu:** Önce hatayı gösteren 4 test yazıldı (değişiklikten önce kırmızıydı), sonra yeşil. Bunlardan biri «don + süren ilaçlama» için yeni bir örnek vaka; içindeki ilaç bilgisi kurgusal, yalnızca test için, gerçek etiket değil. Bekleme süresinin bittiği saniyede engelin kalktığı da test ediliyor. Tüm birim testleri (motor 150, uygulama 929) geçti. Bekçi testleri kendisi koşturdu, eski kodla 4 testin düştüğünü kendisi gösterdi ve onayladı. GitHub'da tüm kontroller (iPhone tarayıcısıyla 3 parça ekran testi, SQL, Cloudflare derlemesi) ilk denemede başarılı. Başarısız bir şey yok.
+4. **Önerim:** Sıradaki onaylı iş ev-4: motor bir ürün için yalnızca ilk etiket satırını değil, tüm satırları okusun; imzasız satır varsa engellesin.
+5. **Senden gereken karar:** Yeni karar yok. Önceki koşulardan açık: «Δεν έχει σπαρθεί ακόμα» sözlüğe eklensin mi; yeni Hintçe kelimeyi kim kontrol edecek; «Σήμερα» için iki soru (is-6b-4).
+
+PR: https://github.com/seaevill/aloni/pull/673 (birleşti). Bugünkü kod işi: 10/12. Birleşti ≠ canlıda.
+
 ## 2026-11-28 18:40 Atina — yönetici koşusu 20261128-1623
 1. **Uygulamada ne değişti:** «Σήμερα» ekranındaki «Σήμερα έγιναν» bölümünde, az önce kaydettiğin bir hasat artık yanlışlıkla «άγνωστο – παλιά καταγραφή» (bilinmiyor, eski kayıt) demiyor; hasat formunda seçtiğin yeri (ör. «Αποθήκη») gösteriyor. Satıra dokununca açılan ayrıntıda da aynı yer yazıyor. Gerçekten yeri girilmemiş eski kayıtlar eskisi gibi «bilinmiyor» kalıyor; uygulama yer uydurmuyor.
 2. **Senin için faydası:** Gün sonunda hangi hasadın nereye gittiğini doğru görüyorsun; yeni kayıt «eski kayıt» diye görünüp seni şüpheye düşürmüyor.
