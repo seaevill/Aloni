@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 20:55 Atina — yönetici koşusu 20261128-1844
+1. **Uygulamada ne değişti:** Άλλα → yedek ekranında «yedekten geri yükle» artık daha dikkatli. (a) Yedekte olup telefonda olmayan kayıtlar sunucuya «yeni kayıt» olarak gönderilmek üzere sıraya giriyor; önceden «değişiklik» olarak giriyordu ve sunucu bunları reddedebiliyor ya da daha yeni bir kaydın üstüne yazabiliyordu. (b) Eşitleme açıkken telefon sunucudan ilk tam çekmeyi bitirmeden yedek yüklemeye çalışırsan uygulama bunu yapmıyor ve şu yazıyı gösteriyor: «Ο συγχρονισμός είναι ανοιχτός, αλλά δεν έχει ολοκληρωθεί ο πρώτος συγχρονισμός. Συνδεθείτε, περιμένετε να τελειώσει και μετά κάντε την επαναφορά. Δεν έγινε καμία αλλαγή.» (Türkçesi: önce giriş yap, eşitlemenin bitmesini bekle, sonra yedeği yükle; hiçbir şey değişmedi). RUNBOOK §3 ve §13'e de aynı kural tek satırla yazıldı: «önce giriş + eşitleme, sonra yedek».
+2. **Senin için faydası:** Telefon değiştirdiğinde ya da yedekten döndüğünde, eski yedek sunucudaki yeni kayıtları ezmez ve telefonda olmayan kayıtlar kaybolmaz.
+3. **Ne denendi, ne başarısız oldu:** 6 yeni test yazıldı; eski kodla 5'i kırmızıydı, yeni kodla hepsi yeşil. Tüm birim testleri (950) geçti. Bekçi testleri kendi kopyasında koşturdu, eski kodla 5 düşmeyi kendisi gösterdi ve onayladı. GitHub'da tüm kontroller (3 parça ekran testi, SQL, Cloudflare derlemesi) ilk denemede başarılı. Başarısız bir şey yok. Not: daha önce eşitlemeyi açmış bir telefon, bu güncellemeden sonraki ilk tam eşitleme bitene kadar yedek yüklemeyi reddeder (bilerek). Kalan: telefonda olup yedekteki hâli daha eski olan kayıtlar hâlâ «değişiklik» olarak gidiyor.
+4. **Önerim:** Sıradaki onaylı iş ev-7 (Demo verisinin gerçek yedeğe ve sunucu kuyruğuna girmemesi, güvenlik kuralı 4).
+5. **Senden gereken karar:** Yeni karar yok. Önceki koşulardan açık: «Δεν έχει σπαρθεί ακόμα» sözlüğe eklensin mi; yeni Hintçe kelimeyi kim kontrol edecek; «Σήμερα» için iki soru (is-6b-4).
+
+PR: https://github.com/seaevill/Aloni/pull/684 (birleşti). Bugünkü kod işi: 13/24 (gece vardiyası). Birleşti ≠ canlıda.
+
 ## 2026-11-28 20:17 Atina — yönetici koşusu 20261128-1810
 1. **Uygulamada ne değişti:** Hiçbir şey. Bu koşuda iş alınmadı.
 2. **Senin için faydası:** Yok; yalnızca kontrol yapıldı.
