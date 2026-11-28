@@ -5,7 +5,7 @@ import { formatDate, t } from '../i18n';
 import { formatQty } from '../i18n/format';
 import { APP_NAME_EL } from '../config';
 import { athensToday } from '../plantings/planting';
-import { HANDLE_MAX, shareCardSvg, topCropSlugs } from '../share/card';
+import { HANDLE_MAX, readShareColors, shareCardSvg, topCropSlugs } from '../share/card';
 import { sharePng, svgToPng } from '../share/render';
 import { cratesLogged } from '../summary/today';
 import { useRows } from './useRows';
@@ -25,7 +25,7 @@ export function ShareCard({ onClose }: { onClose: () => void }) {
   const crates = loaded ? cratesLogged(harvests.rows ?? [], nowIso, 7) : undefined;
   const slugs = loaded ? topCropSlugs(harvests.rows ?? [], plantings.rows ?? [], crops.rows ?? [], nowIso, 3) : [];
   const today = athensToday(new Date()) ?? '';
-  const svg = shareCardSvg({ name: APP_NAME_EL, dateText: today ? formatDate(today) : '', cratesText: crates === undefined ? undefined : formatQty(crates), cropSlugs: slugs, handle, demo, captions: { crates: t('ui.share.crates'), demo: t('ui.share.demo') } });
+  const svg = shareCardSvg({ name: APP_NAME_EL, dateText: today ? formatDate(today) : '', cratesText: crates === undefined ? undefined : formatQty(crates), cropSlugs: slugs, handle, demo, captions: { crates: t('ui.share.crates'), demo: t('ui.share.demo') }, colors: readShareColors() });
   useEffect(() => {
     if (!loaded) return undefined;
     let url = ''; let alive = true;

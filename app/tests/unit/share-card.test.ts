@@ -1,11 +1,31 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { Row } from '../../src/db/schema';
-import { shareCardSvg, topCropSlugs, type ShareInput } from '../../src/share/card';
+import { shareCardSvg, topCropSlugs, type ShareColors, type ShareInput } from '../../src/share/card';
 
 // D13: the share card shows ONLY: the app name and ring, the date, up to three crop drawings, one logged-crates number with its caption, an optional handle, and (Demo) the burned-in demo line.
 // Worker names, parcel names, location, spray, product, dose, client and price data are excluded BY CONSTRUCTION: the builder's input type has no place for them.
-const base: ShareInput = { name: 'Αλώνι', dateText: 'Σάβ 21 Νοε', cratesText: '340', cropSlugs: ['spinach', 'rocket', 'chard'], handle: '', demo: false, captions: { crates: 'κλούβες αυτή την εβδομάδα', demo: 'ΕΠΙΔΕΙΞΗ – φανταστικά στοιχεία' } };
+// The colours come from tokens.css, as readShareColors reads them in the browser (card.ts holds no colour literal).
+const tokenCss = readFileSync(new URL('../../src/ui/tokens.css', import.meta.url), 'utf8');
+const token = (name: string): string => /^#[0-9a-fA-F]{6}$/.exec(new RegExp(`${name}:\\s*(#[0-9a-fA-F]{6})`).exec(tokenCss)?.[1] ?? '')?.[0] ?? `MISSING ${name}`;
+const colors: ShareColors = { forest: token('--brand-forest'), lime: token('--brand-lime'), soft: token('--lime-soft'), sage: token('--brand-sage'), amber: token('--amber-bg'), amberInk: token('--amber-fg'), ink: token('--brand-ink') };
+const base: ShareInput = { colors, name: 'Αλώνι', dateText: 'Σάβ 21 Νοε', cratesText: '340', cropSlugs: ['spinach', 'rocket', 'chard'], handle: '', demo: false, captions: { crates: 'κλούβες αυτή την εβδομάδα', demo: 'ΕΠΙΔΕΙΞΗ – φανταστικά στοιχεία' } };
 const texts = (svg: string): string[] => [...svg.matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]!);
+
+describe('share card colours', () => {
+  it('all seven colours exist in tokens.css and the card uses exactly those (the values did not change: forest, lime, sage, ink, soft, amber)', () => {
+    expect(Object.values(colors).filter((c) => c.startsWith('MISSING'))).toEqual([]);
+    expect(colors).toMatchObject({ forest: '#134a2b', lime: '#c6f062', soft: '#eaf8c4', sage: '#edf2e8', amber: '#ffedc2', amberInk: '#432c00', ink: '#0e1c12' });
+    const used = new Set(shareCardSvg({ ...base, demo: true, handle: 'x' }).match(/(?:fill|stroke)="(#[0-9a-f]{6})"/g)?.map((m) => /#[0-9a-f]{6}/.exec(m)![0]));
+    expect([...used].filter((c) => !Object.values(colors).includes(c))).toEqual([]);
+  });
+  it('escape attempt: a different palette changes every colour of the picture (none is baked into card.ts)', () => {
+    const other: ShareColors = { forest: '#010101', lime: '#020202', soft: '#030303', sage: '#040404', amber: '#050505', amberInk: '#060606', ink: '#070707' };
+    const svg = shareCardSvg({ ...base, colors: other, demo: true, handle: 'x' });
+    expect(svg.match(/#[0-9a-fA-F]{6}/g)?.filter((c) => !Object.values(other).includes(c))).toEqual([]);
+    for (const c of Object.values(other)) expect(svg).toContain(c);
+  });
+});
 
 describe('share card', () => {
   it('is a 1080 x 1350 SVG whose text is exactly the allowed lines', () => {

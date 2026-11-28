@@ -17,6 +17,11 @@
   --sp-2:2px; --sp-4:4px; --sp-6:6px; --sp-8:8px; --sp-10:10px; --sp-12:12px; --sp-14:14px; --sp-16:16px; --sp-24:24px; --sp-48:48px;
   --r-sm:8px; --r-md:12px; --r-btn:14px; --r-card:22px; --r-pill:99px; --bw-1:1px; --bw-2:2px;
   --tap:56px; --sketch-h:220px; --map-h:56vh; --tap-step:36px; --tap-big:72px; --thumb:96px; --dot:10px; --btn-min-w:96px; --max-w:640px; --nav-h:72px; --main-pad-bottom:88px;
+  /* rem steps for the side stylesheets (rem, not px, so Sun mode's +12.5 % text still scales them as before) */
+  --rs-4:.25rem; --rs-8:.5rem; --rs-10:.625rem; --rs-12:.75rem; --rs-20:1.25rem; --rs-32:2rem; --rs-36:2.25rem; --rs-88:5.5rem; --col-min-7:7.5rem; --col-min-8:8rem;
+  --ls-caps-4:.04em; --ls-wordmark:-.03em;
+  /* brand colours for the share card (a picture, so it cannot read var()) and the static splash in index.html: the same values as the app icon */
+  --brand-forest:#134a2b; --brand-lime:#c6f062; --brand-sage:#edf2e8; --brand-ink:#0e1c12;
   --shadow-sheet:0 -8px 32px rgba(14,28,18,.18),0 -1px 0 rgba(14,28,18,.06); --scrim:rgba(14,28,18,.45);
   --shadow-card:0 1px 0 rgba(14,28,18,.06),0 4px 14px rgba(14,28,18,.06); --blur-bar:blur(22px) saturate(170%);
 }

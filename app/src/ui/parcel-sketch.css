@@ -4,14 +4,14 @@
   padding-block: var(--sp-10);
 }
 .parcel-card-open .parcel-sketch {
-  flex: 0 0 5.5rem;
+  flex: 0 0 var(--rs-88);
   margin: 0;
-  width: 5.5rem;
+  width: var(--rs-88);
 }
 .parcel-card-text {
   display: grid;
   flex: 1;
-  gap: .25rem;
+  gap: var(--rs-4);
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -31,7 +31,7 @@
 .sketch-note { color:var(--unknown-fg); display:block; margin:0 0 var(--sp-12); }
 
 [data-testid="planting-sketch-label"] {
-  min-height: 56px;
+  min-height: var(--tile);
 }
 
 .parcel-sketch-state { display:flex; justify-content:flex-start; }
