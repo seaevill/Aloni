@@ -4,7 +4,21 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": null,
+  "simdi": {
+    "id": "is-11",
+    "baslik": "Μητρώο: kayıt kimliğini kapalı bölüme al, indirme düğmesi yazılarını kısalt (FARK-LISTESI öneri 4). Kayıt içeriği ve dışa aktarım aynen kalır; 375 px önce/sonra ekran görüntüsü.",
+    "kaynak": "Bora, 28 Kasım 2026 (docs/design/compare/2026-11-27/FARK-LISTESI.md önerilerinden seçti)",
+    "onay": "Bora, 28 Kasım 2026",
+    "sahip": "aloni-gelistirme",
+    "tur": "ozellik",
+    "durum": "pr-acik",
+    "deneme": 1,
+    "son_deneme": {
+      "tarih": "2026-11-28",
+      "sonuc": "PR açıldı; yerel vitest/eslint/tsc yeşil, register e2e yeşil",
+      "pr": null
+    }
+  },
   "sirada": [
     {
       "id": "is-6b-4",
@@ -14,17 +28,6 @@
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
       "durum": "bora-bekliyor",
-      "deneme": 0,
-      "son_deneme": null
-    },
-    {
-      "id": "is-11",
-      "baslik": "Μητρώο: kayıt kimliğini kapalı bölüme al, indirme düğmesi yazılarını kısalt (FARK-LISTESI öneri 4). Kayıt içeriği ve dışa aktarım aynen kalır; 375 px önce/sonra ekran görüntüsü.",
-      "kaynak": "Bora, 28 Kasım 2026 (docs/design/compare/2026-11-27/FARK-LISTESI.md önerilerinden seçti)",
-      "onay": "Bora, 28 Kasım 2026",
-      "sahip": "aloni-gelistirme",
-      "tur": "ozellik",
-      "durum": "sirada",
       "deneme": 0,
       "son_deneme": null
     },

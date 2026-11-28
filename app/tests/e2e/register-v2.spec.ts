@@ -51,3 +51,25 @@ test('the print button opens the browser print action and exposes a Greek draft 
   const evidence = process.env.N23_REGISTER_EVIDENCE;
   if (evidence) await page.screenshot({ path: evidence, animations: 'disabled' });
 });
+
+test('the register card keeps the record id in a closed section and the download labels fit one line at 375 px', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/');
+  await page.getByTestId('empty-state').locator('button').nth(1).click();
+  await expect(page.getByTestId('today-counts')).toBeVisible();
+  await page.locator('nav.tabs [data-tab="more"]').click();
+  await page.getByTestId('open-register').click();
+  const first = page.getByTestId('register-line').first();
+  const id = first.getByTestId('register-id');
+  await expect(id).toBeVisible();
+  expect(await id.evaluate((el) => (el as HTMLDetailsElement).open)).toBe(false);
+  await expect(first.locator('small', { hasText: 'Κωδικός εγγραφής' })).toBeHidden();
+  expect((await id.locator('summary').boundingBox())?.height).toBeGreaterThanOrEqual(56);
+  await id.locator('summary').click();
+  await expect(first.locator('small', { hasText: 'Κωδικός εγγραφής' })).toBeVisible();
+  for (const tid of ['register-csv', 'register-json', 'register-csv-machine', 'register-csv-warnings']) {
+    const box = await page.getByTestId(tid).boundingBox();
+    expect(box?.height).toBeLessThanOrEqual(72);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
+});
