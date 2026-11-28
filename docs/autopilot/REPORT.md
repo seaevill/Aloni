@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 21:58 Atina — yönetici koşusu 20261128-1949
+1. **Uygulamada ne değişti:** Eşitleme açıkken sunucunun reddettiği bir kaydın yanında çıkan kırmızı işaret artık okunuyor: önceden koyu zemin üstünde koyu kırmızı yazıydı (neredeyse görünmüyordu), şimdi koyu kırmızı zemin üstünde beyaz yazı. Bu işaret Demo'da görünmez; yalnızca gerçek eşitlemede, sunucu bir kaydı kabul etmezse çıkar.
+2. **Senin için faydası:** Sunucu bir kaydını reddederse bunu güneşte de görürsün. Ayrıca yeni bir test, uygulamadaki her kartın yazı ve zemin rengini tek tek ölçüyor; okunmayacak kadar soluk bir renk çifti yazılırsa test hemen kırmızı olur.
+3. **Ne denendi, ne başarısız oldu:** Yeni test eski kodla kırmızıydı ve tek sorunu (bu işaret) buldu; yeni kodla yeşil. Testi kandırmaya çalışan denemeler (bilinmeyen renk, geçiş renkleri, yarı saydam renk) de yakalanıyor. Tüm birim testleri (966) geçti. Bekçi testleri kendi kopyasında koşturdu, oranı kendisi hesapladı ve ilk denemede onayladı. GitHub'da tüm kontroller başarılı. Başarısız bir şey yok. Eksik: işaret Demo'da çıkmadığı için ekran görüntüsü yok; test henüz yalnızca hem yazı hem zemin rengini birlikte veren kuralları ölçüyor (bekçi notu).
+4. **Önerim:** Sıradaki onaylı iş ev-11 (ölçü/renk kurallarını yalnızca ana stil dosyasında değil tüm stil dosyalarında denetlemek).
+5. **Senden gereken karar:** Yeni karar yok. Önceki koşulardan açık: «Δεν έχει σπαρθεί ακόμα» sözlüğe eklensin mi; yeni Hintçe kelimeyi kim kontrol edecek; «Σήμερα» için iki soru (is-6b-4).
+
+PR: https://github.com/seaevill/Aloni/pull/690 (birleşti). Bugünkü kod işi: 16/24 (gece vardiyası). Birleşti ≠ canlıda.
+
 ## 2026-11-28 21:40 Atina — yönetici koşusu 20261128-1924
 1. **Uygulamada ne değişti:** Küçük görünüm düzeltmeleri. (a) Bazı kartlarda (tarla ΚΑΕΚ kutusu, Φυτά ürün kartları, gübre, tohum, kesim ve yıl karşılaştırma kartları, işçi saha kartı) kutular arasındaki boşluk tanımsız bir ölçü yüzünden 0 px'ti, birbirine yapışıktı; şimdi 12 px (işçi kartındaki küçük boşluk 2 px). (b) Detay ekranlarındaki küçük yazılar 13,3 px'ten 14 px'e çıktı, daha kolay okunur. (c) Παραγγελίες ekranındaki harita katlama satırı (22 px yüksekti) ve ürün sayfasındaki ekim düğmesi (39 px) artık parmakla rahat basılacak yükseklikte (56 px).
 2. **Senin için faydası:** Kartlar daha düzenli, küçük yazılar okunaklı, iki küçük düğmeye ıskalamadan basılır. Yeni bir test, ileride tanımsız bir ölçü yazılırsa bunu hemen yakalar.
