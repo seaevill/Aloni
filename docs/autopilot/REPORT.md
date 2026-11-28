@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 16:25 Atina — yönetici koşusu 20261128-1358
+1. **Uygulamada ne değişti:** «Μητρώο» (ilaçlama kayıt defteri) ekranında her kaydın uzun kimlik numarası artık kartta görünmüyor; «Κωδικός εγγραφής» başlıklı kapalı bir satıra dokununca açılıyor (düzeltilen kaydın numarası da orada). Üstteki indirme düğmelerinin yazıları kısaldı («Λήψη» ve «(αγγλικά πεδία)» kalktı); düğmeler 5 satırdan 3 satıra indi, «προειδοποιήσεων» kelimesi artık ortadan bölünmüyor. «Εκτύπωση» düğmesi uyarı arşivi düğmesinden önce geliyor. İndirilen dosyalar ve yazdırma aynen aynı.
+2. **Senin için faydası:** Kartlarda okunmayan uzun numaralar yok, düğmeler bir bakışta okunuyor. Dürüst not: kapalı satır parmakla dokunulacak kadar yüksek olduğu için sayfa toplamda kısalmadı, 10 kartta yaklaşık 90 px uzadı.
+3. **Ne denendi, ne başarısız oldu:** Yeni bir ekran testi önce kırmızıydı, değişiklikten sonra yeşil. Tüm birim testleri geçti; bekçi testleri kendisi koşturdu, Yunanca metinleri sözlükle karşılaştırdı ve onayladı. GitHub'da tüm kontroller (iPhone tarayıcısıyla 3 parça ekran testi, SQL, Cloudflare derlemesi) ilk denemede başarılı. Yerelde iki çevrimdışı testi düştü; aynıları ana dalda da düşüyor, ortam farkı.
+4. **Önerim:** Telefonda «Άλλα → Μητρώο»yu aç, bir kartta «Κωδικός εγγραφής»a dokun. Bekçi iki küçük şey not etti: bir düğmede «2η μορφή» kısaltması var (sözlük düğmelerde kısaltma istemiyor; eskisi «δεύτερη μορφή» idi) ve «(αγγλικά πεδία)» açıklaması ekrandan kalktı. Onaylarsan küçük bir düzeltme işi olur. Sırada onaylı özellik işi kalmadı.
+5. **Senden gereken karar:** (1) «2η» düzeltmesi ve «(αγγλικά πεδία)» açıklaması geri gelsin mi? (2) Eski belgelerdeki adlar/yollar (özellik listesi, RUNBOOK, Demo test listesi) güncellensin mi? (3) «Σήμερα» için iki soru (is-6b-4) hâlâ açık. (4) Sıradaki iş için yeni öneri seçmek ister misin?
+
+PR: https://github.com/seaevill/aloni/pull/659 (birleşti). Bugünkü kod işi: 7/12. Birleşti ≠ canlıda.
+
 ## 2026-11-28 15:50 Atina — yönetici koşusu 20261128-1321
 1. **Uygulamada ne değişti:** «Χωράφια» ekranında her tarla artık tek kez görünüyor. Eskiden üstte küçük çizim karoları, altında aynı tarlaların listesi vardı; şimdi tek bir kart listesi var. Her kartta tarlanın çizimi, adı, alanı (στρ.), **o tarlada şu an ekili ürünlerin adları** (yeni), durum etiketi ve bekleme cümlesi. Arama, tarla ekleme, arşivleme ve karta dokununca detay açılması aynen duruyor.
 2. **Senin için faydası:** Tarlaları iki kez kaydırmıyorsun; hangi tarlada ne ekili olduğunu kartı açmadan görüyorsun. Telefonda sayfa biraz kısaldı (1797 → 1629 px).
