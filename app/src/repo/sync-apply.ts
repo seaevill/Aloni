@@ -1,9 +1,8 @@
 // What the SERVER's answers do to this phone's database. Only this file (and repo/index.ts) may write to Dexie (ESLint W01); the sync engine calls it.
 import type { AppDB, FarmTable, OutboxRow, Row } from '../db/schema';
+import { isDeviceOnlyKey } from './backup';
+import { fromServer } from './from-server';
 import { isAppendOnly, refreshPending } from './index';
-
-/** Columns the server sets itself (the phone may never send them back): stripped from every pulled row so an edit of a pulled record is accepted. */
-const SERVER_ONLY = ['server_seq', 'sync_xid', 'hash', 'prev_hash', 'created_by', 'received_at', 'assigned_to', 'done_by'] as const;
 
 export interface ServerAnswer { status: 'applied' | 'duplicate' | 'rejected'; code?: string; reason?: string }
 
@@ -29,19 +28,34 @@ export async function dismissRejected(db: AppDB, opId: string): Promise<void> {
  * Pulled rows into the local tables. A record this phone still has changes for (pending or refused) is NOT overwritten: the phone's own version wins
  * until the server has answered it. Append-only records are only ever ADDED (they never change). Returns how many rows were written.
  */
-export async function applyPulled(db: AppDB, farmId: string, rows: ReadonlyArray<{ table: string; row: Row }>): Promise<number> {
+export async function applyPulled(db: AppDB, farmId: string, rows: ReadonlyArray<{ table: string; row: Record<string, unknown> }>): Promise<number> {
   const open = new Set((await db.outbox.where('farm_id').equals(farmId).filter((o: OutboxRow) => o.status !== 'acked').toArray()).map((o) => `${o.table}:${o.row_id}`));
   let n = 0;
   await db.transaction('rw', db.tables, async () => {
-    for (const { table, row } of rows) {
-      if (row.farm_id !== farmId || !db.tables.some((t) => t.name === table) || open.has(`${table}:${row.id}`)) continue;
-      const clean: Row = { ...row };
-      for (const k of SERVER_ONLY) delete (clean as Record<string, unknown>)[k];
+    for (const p of rows) {
+      if (p.row.farm_id !== farmId) continue;
+      const { table, row: clean } = fromServer(p.table, p.row);   // the server's shape becomes the phone's shape (columns, text numbers, sign-off, instants)
+      if (table === 'settings') { // an owner setting: the key is its id; this phone's own device-only keys are never replaced
+        const key = clean.key;
+        if (typeof key === 'string' && !isDeviceOnlyKey(key) && !open.has(`settings:${key}`)) { await db.settings.put({ key, value: clean.value }); n++; }
+        continue;
+      }
+      const id = clean.id;
+      if (typeof id !== 'string' || !db.tables.some((t) => t.name === table) || open.has(`${table}:${id}`)) continue;
       const t = db.table(table as FarmTable);
-      if (isAppendOnly(table)) { if (!(await t.get(row.id))) { await t.add(clean); n++; } } else { await t.put(clean); n++; }
+      const local = await t.get(id);
+      if (isAppendOnly(table)) { if (!local) { await t.add(clean as Row); n++; } continue; }
+      await t.put(local ? keepSignOffExtras(local, clean as Row) : (clean as Row)); n++;
     }
   });
   return n;
+}
+
+/** The server has no column for the note and photo kept with an approval (display only): the same approval, pulled back, keeps what this phone already has. */
+function keepSignOffExtras(local: Row, pulled: Row): Row {
+  const a = local.sign_off as Record<string, unknown> | undefined; const b = pulled.sign_off as Record<string, unknown> | undefined;
+  if (!a || !b || a.by !== b.by || a.on !== b.on || a.fingerprint !== b.fingerprint) return pulled;
+  return { ...pulled, sign_off: { ...b, ...(a.note === undefined ? {} : { note: a.note }), ...(a.photo_id === undefined ? {} : { photo_id: a.photo_id }) } };
 }
 
 /** The weather of this farm as the server shows it (one entry per parcel: its days). Device-local, information only: replaces what this phone had, never queued, never part of a backup restore of records. */

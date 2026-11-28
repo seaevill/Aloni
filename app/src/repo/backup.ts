@@ -48,7 +48,8 @@ export interface Skipped { table: string; id: string; label: string }
 export interface Restored { rows: number; added: number; updated: number; same: number; farmId: string; skipped: Skipped[] }
 
 const stable = (v: unknown): string => JSON.stringify(v, (_k, x: unknown) => (x && typeof x === 'object' && !Array.isArray(x) && !(x instanceof ArrayBuffer) ? Object.fromEntries(Object.entries(x).sort(([a], [b]) => a.localeCompare(b))) : x));
-const stampOf = (r: Row): string => String(r.updated_at ?? r.created_at ?? '');
+/** When a record was last written, as a point in time (formats differ: `…:00Z`, `….000Z`, `…+00:00`); unreadable or missing = the oldest. */
+const stampOf = (r: Row): number => { const t = Date.parse(String(r.updated_at ?? r.created_at ?? '')); return Number.isNaN(t) ? -Infinity : t; };
 const labelOf = (r: Row): string => String(r.name ?? r.batch ?? r.sampled_on ?? r.id);
 
 /**
