@@ -8,7 +8,7 @@ import { fingerprint, known, makeDose, parseDecimal, parseMaxApps, parsePhiDays,
 type J = Record<string, any>;
 const DIR = new URL('../fixtures/golden/', import.meta.url);
 const cases: J[] = readdirSync(DIR).filter((f) => f.endsWith('.json')).sort().map((f) => JSON.parse(readFileSync(new URL(f, DIR), 'utf8')) as J);
-export const LANDED = ['R04-sow-spinach-south-plain', 'A03-phi-guard-harvesting-spinach', 'R02-harvest-not-spray', 'NEG-P0-1-dose-never-rounded', 'A05-gap-spinach', 'NEG-P0-2-phi-lot-not-supply', 'A06-stock-low-mandipropamid', 'A07-stock-expired-acetamiprid', 'A08-stock-expiring-spinosad', 'A01-frost-low-plain', 'A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-end-time-blocks', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'R05-frost-cover-herbs', 'REI-after-r01-spray', 'A10-salt-pachi-well', 'R06-chicory-harvest-after-thaw'];
+export const LANDED = ['R04-sow-spinach-south-plain', 'A03-phi-guard-harvesting-spinach', 'R02-harvest-not-spray', 'NEG-P0-1-dose-never-rounded', 'A05-gap-spinach', 'NEG-P0-2-phi-lot-not-supply', 'A06-stock-low-mandipropamid', 'A07-stock-expired-acetamiprid', 'A08-stock-expiring-spinosad', 'A01-frost-low-plain', 'A04-phi-parsley-geraneia', 'A09-front-closes-spray-windows', 'NEG-PHI-no-end-time-blocks', 'NEG-PHI-no-label-row-blocks', 'NEG-REG-exclude-unregistered-beds', 'NEG-ROT-unknown-group', 'NEG-unsigned-rule-info-only', 'R05-frost-cover-herbs', 'REI-after-r01-spray', 'A10-salt-pachi-well', 'R06-chicory-harvest-after-thaw', 'NEG-FROST-thaw-during-phi'];
 
 const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[+-]\d{2}:\d{2}|Z)$/;
 const ms = (v: unknown): unknown => (typeof v === 'string' && ISO.test(v) ? Date.parse(v) : v); // times compare as instants, whatever their offset
@@ -215,7 +215,7 @@ function check(c: J, outs: Output[]): void {
 
 describe('golden cases', () => {
   it('every case file is a Demo-farm case named after its id and is classified (landed or pending)', () => {
-    expect(cases).toHaveLength(27);
+    expect(cases).toHaveLength(28);
     for (const c of cases) { expect(c.farm).toBe('demo'); expect(c.expected.must_not?.length, c.id).toBeGreaterThan(0); }
     for (const id of LANDED) expect(cases.some((c) => c.id === id), id).toBe(true);
   });

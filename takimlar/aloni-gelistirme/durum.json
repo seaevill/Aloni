@@ -4,7 +4,11 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": null,
+  "simdi": {
+    "id": "ev-3",
+    "pr": "https://github.com/seaevill/Aloni/pull/673",
+    "dal": "1128-ev-3-phi-veto"
+  },
   "sirada": [
     {
       "id": "is-6b-4",
@@ -61,9 +65,13 @@
       "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
-      "durum": "sirada",
-      "deneme": 0,
-      "son_deneme": null
+      "durum": "pr-acik",
+      "deneme": 1,
+      "son_deneme": {
+        "tarih": "2026-11-28",
+        "sonuc": "PR açıldı, testler yerelde yeşil; birleşme bekleniyor",
+        "pr": "https://github.com/seaevill/Aloni/pull/673"
+      }
     },
     {
       "id": "ev-4",

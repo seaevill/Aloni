@@ -71,7 +71,8 @@ function phi(s: Snapshot): Output[] {
     if (!end.known) {
       out.push(blank({ rule_id: 'PHI', kind: 'alert', category: 'phi_blocked_unknown', severity: 'high', planting_ids: [pid], parcel_ids: [p.parcelId], product_ids: [j.productId], values: { lot_status: 'blocked', safe_from: null, reason: j.endedAt === undefined ? 'no_end_time' : 'unreadable_time' }, vetoes: [{ by: 'PHI', vetoed: 'harvest', planting_id: pid, reason: j.endedAt === undefined ? 'no_end_time' : 'unreadable_time' }] }));
     } else if (!waitOver(s.asOf, end)) {
-      out.push(blank({ rule_id: 'PHI', kind: 'alert', category: 'phi_hold', severity: 'high', confidence: 'medium', planting_ids: [pid], parcel_ids: [p.parcelId], product_ids: [j.productId], window: { start: j.startedAt, end: end.value }, values: { safe_from: end.value, phi_days: use.signed.value.phiDays, lot_status: 'hold_phi' } }));
+      out.push(blank({ rule_id: 'PHI', kind: 'alert', category: 'phi_hold', severity: 'high', confidence: 'medium', planting_ids: [pid], parcel_ids: [p.parcelId], product_ids: [j.productId], window: { start: j.startedAt, end: end.value }, values: { safe_from: end.value, phi_days: use.signed.value.phiDays, lot_status: 'hold_phi' },
+        vetoes: [{ by: 'PHI', vetoed: 'harvest', planting_id: pid, reason: 'phi_running' }] })); // a running hold vetoes harvest exactly like the blocked case does
     }
   }
   return out;
@@ -191,7 +192,8 @@ function frost(s: Snapshot): Output[] {
     out.push(blank({ rule_id: 'FROST', kind: 'recommendation', category: 'cover', confidence: 'low', parcel_ids: pids, planting_ids: tender.map((p) => p.id), window: n.window, values: { ...values(n), cover_gain_range_c: [...f.params.coverGainC], cover_gain_basis: 'EST' } }));
   }
   if (f.thaw) {
-    const held = new Set(phi(s).flatMap((o) => o.vetoes.map((v) => v.planting_id)));
+    // every planting with a PHI harvest veto (running hold OR blocked/unknown) gets NO thaw advice, so «phi_clear: true» below is only ever said for a planting with no PHI veto
+    const held = new Set(phi(s).flatMap((o) => o.vetoes.filter((v) => v.vetoed === 'harvest').map((v) => v.planting_id)));
     for (const planting of guard) {
       const harvestFrom = f.thaw.harvestFromByPlanting[planting.id];
       if (held.has(planting.id)) continue;

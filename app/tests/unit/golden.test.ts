@@ -65,13 +65,14 @@ const RUN: Record<string, (c: J) => void> = {
     expect(rei.known && Date.parse(rei.value)).toBe(Date.parse(String(o(o(c.expected).values).reentry_at)));   // from the END of the spraying, never from midnight
   },
   'NEG-PHI-no-label-row-blocks': (c) => { expect(phiOf(c, 'J-X1', 'PL09', true).known).toBe(false); expect(o(o(c.expected).values).safe_from).toBeNull(); },
+  'NEG-FROST-thaw-during-phi': (c) => { const end = phiOf(c, 'J-X2', 'PL03', true); expect(end.known && Date.parse(end.value)).toBe(Date.parse(String(o(arr(o(c.expected).also)[0]!.values).safe_from))); },   // the hold the thaw advice must respect ends exactly PHI x 24 h after the spray END
   'NEG-PHI-no-end-time-blocks': (c) => { expect(phiOf(c, 'J-X1', 'PL09', true).known).toBe(false); expect(parseInstant('').known).toBe(false); expect(o(o(c.expected).values).safe_from).toBeNull(); },
 };
 const WHY = 'no engine code for this rule yet (frost, spray window, rotation, nitrogen, sowing, regulation, salt, harvest forecast): needs M3+ and the signed thresholds';
 
 describe('golden cases: shape (all of them)', () => {
-  it('there are 27, named like their file, Demo farm only, with a decision mode and a rule', () => {
-    expect(cases.size).toBe(27);
+  it('there are 28, named like their file, Demo farm only, with a decision mode and a rule', () => {
+    expect(cases.size).toBe(28);
     for (const [id, c] of cases) {
       expect(c.id, id).toBe(id); expect(c.schema_version, id).toBe(1); expect(c.farm, id).toBe('demo');
       expect(['golden', 'derived', 'negative'], id).toContain(c.case_type);
