@@ -30,3 +30,23 @@
 .register-record-head small {
   color: var(--muted);
 }
+.register-id summary {
+  align-items: center;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  gap: .5rem;
+  min-height: var(--tap);
+}
+.register-id summary::before {
+  content: "\25B8";
+}
+.register-id[open] summary::before {
+  content: "\25BE";
+}
+.register-id small {
+  display: block;
+}
+.register-actions [data-testid="register-csv-warnings"] {
+  grid-column: 1 / -1;
+}

@@ -29,6 +29,9 @@ const FMT: Fmt = {
   when: formatLocalIso, num: (s) => (s ? formatQty(s) : ''), name: nameOf,
   flag: (f) => (f in FLAG_KEYS ? t(FLAG_KEYS[f as Flag]) : f), label: (s) => (s in LABEL_KEYS ? t(LABEL_KEYS[s]) : ''), unit: (u) => (u in UNIT_KEYS ? t(UNIT_KEYS[u as DoseUnit]) : ''),
 };
+/** The card shows these two in its head; the record id and the record it amends sit in a closed section (still in the CSV, JSON and print page). */
+const CARD_HEAD = new Set<Column>(['product', 'when']);
+const CARD_ID = new Set<Column>(['record', 'amends']);
 const SCREEN: Fmt = { ...FMT, when: formatDateTimeYear };
 
 /** The spray register for an inspection: a DRAFT, printable and downloadable as CSV. The app prepares it; a person checks and signs it. */
@@ -74,8 +77,8 @@ export function Register({ onBack }: { onBack: () => void }) {
         <button class="btn" data-testid="register-csv" onClick={csv}>{t('register.csv')}</button>
         <button class="btn" data-testid="register-json" onClick={json}>{t('register.json')}</button>
         <button class="btn secondary" data-testid="register-csv-machine" onClick={machine}>{t('register.csv.machine')}</button>
-        <button class="btn secondary" data-testid="register-csv-warnings" onClick={warnings}>{t('register.csv.warnings')}</button>
         <button class="btn secondary" data-testid="register-print" onClick={() => window.print()}>{t('register.print')}</button>
+        <button class="btn secondary" data-testid="register-csv-warnings" onClick={warnings}>{t('register.csv.warnings')}</button>
       </div>
       {sprays.rows && lines.length === 0 && <p class="muted" data-testid="register-empty">{t('register.empty')}</p>}
       {lines.map((l, i) => (
@@ -84,7 +87,11 @@ export function Register({ onBack }: { onBack: () => void }) {
             {l.product && <h2 data-testid="register-record-product">{t('labeluse.line', { name: t('register.col.product'), value: l.product })}</h2>}
             {l.when && <small data-testid="register-record-end">{t('labeluse.line', { name: t('register.col.when'), value: l.when })}</small>}
           </div>}
-          {COLUMNS.filter((c) => c !== 'product' && c !== 'when' && l[c]).map((c) => <small key={c}>{t('labeluse.line', { name: t(COL_KEYS[c]), value: l[c] })}</small>)}
+          {COLUMNS.filter((c) => !CARD_HEAD.has(c) && !CARD_ID.has(c) && l[c]).map((c) => <small key={c}>{t('labeluse.line', { name: t(COL_KEYS[c]), value: l[c] })}</small>)}
+          {COLUMNS.some((c) => CARD_ID.has(c) && l[c]) && <details class="register-id" data-testid="register-id">
+            <summary>{t('register.col.record')}</summary>
+            {COLUMNS.filter((c) => CARD_ID.has(c) && l[c]).map((c) => <small key={c}>{t('labeluse.line', { name: t(COL_KEYS[c]), value: l[c] })}</small>)}
+          </details>}
         </div>
       ))}
       <RegisterPrint data={data} demo={demo} name={holder} address={controller?.address ?? ''} phone={controller?.phone ?? ''} vat={storedVat} />
