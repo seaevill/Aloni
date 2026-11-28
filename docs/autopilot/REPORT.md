@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 12:19 Atina — yönetici koşusu 20261128-1019
+1. **Uygulamada ne değişti:** Hiçbir şey. Önceki koşudan beri yeni onaylı iş ya da senden yeni cevap gelmedi.
+2. **Senin için faydası:** Onaysız iş yapılmadı; ana dal sağlam kaldı.
+3. **Ne denendi, ne başarısız oldu:** Ana dal (son kayıt ea7eacd) yeşil: tüm kontroller (SQL, iPhone tarayıcısıyla 3 parça ekran testi, Cloudflare derlemesi) başarılı. Son 24 saatte ana dalda 44 koşu var, hepsi ilk denemede başarılı; bu yüzden ara sıra düşen testleri izleme işi (q-2) alınmadı. Başarısız olan yok.
+4. **Önerim:** Telefonda «Άλλα → Αποθήκη»yı ve «Σήμερα» ekranının yeni sade halini dene. Sıradaki iş is-6b-4 senin cevabınla hemen başlayabilir.
+5. **Senden gereken karar:** «Σήμερα» için iki soru (is-6b-4): (a) «Για κοπή σήμερα» ekim sayıyor, «Χωράφια χωρίς αναμονή» tarla sayıyor — tek satıra inecekse hangisi kalsın? (c) İlaçlama/hasat/iş ekleme düğmeleri hem hızlı ekleme bölümünde hem sayfada var — hangisi kalsın? Ayrıca prototip karşılaştırmasındaki 5 öneriden hangileri iş olsun?
+
+PR yok (yalnızca bu kayıt; #508 eski araştırma PR'ı, dokunulmadı). Bugünkü kod işi: 3/12. Birleşti ≠ canlıda.
+
 ## 2026-11-28 11:19 Atina — yönetici koşusu 20261128-0919
 1. **Uygulamada ne değişti:** Hiçbir şey. Önceki koşudan beri yeni onaylı iş ya da senden yeni cevap gelmedi.
 2. **Senin için faydası:** Onaysız iş yapılmadı; ana dal sağlam kaldı.
