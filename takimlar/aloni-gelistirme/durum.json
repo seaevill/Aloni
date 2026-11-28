@@ -55,17 +55,6 @@
       "son_deneme": null
     },
     {
-      "id": "ev-7",
-      "baslik": "[P1] Demo verisi gerçek yedeğe ve sunucu kuyruğuna girmesin (güvenlik kuralı 4): isDemoKey yardımcısı; makeBackup Demo ayar anahtarlarını süzer, parseBackup reddeder, geri yükleme süzer, putSetting Demo için yalnızca yerel yazar. Önce dört kırmızı test. ~120 satır.",
-      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 5-data F4, F5",
-      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
-      "sahip": "aloni-gelistirme",
-      "tur": "ozellik",
-      "durum": "sirada",
-      "deneme": 0,
-      "son_deneme": null
-    },
-    {
       "id": "ev-8",
       "baslik": "[P1] Ters sözleşme testi: supabase/tests/pull-shape.json gerçek pull() çıktısından üretilsin; telefon testi çek → düzenle → geri gönder ve apply_ops her tablo için «applied» desin. supabase/** dokunur.",
       "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 5-data W1b",
@@ -931,6 +920,11 @@
       "id": "ev-6",
       "baslik": "Yedekten dönüş: telefonda olmayan satır artık «insert» olarak kuyruğa giriyor; eşitleme açıkken ilk tam çekme (sunucu more=false) bitmeden yedekten dönüş yeni «sync_pending» mesajıyla reddediliyor (cihaza özel pull_done:<çiftlik> işareti, yedeğe girmez); RUNBOOK §3 ve §13'e «önce giriş + eşitleme, sonra yedek». Kalan (kapsam dışı): telefonda olup yedekten eski satır hâlâ «update»",
       "pr": 684
+    },
+    {
+      "id": "ev-7",
+      "baslik": "Demo verisi gerçek yedeğe ve sunucu kuyruğuna girmiyor (güvenlik kuralı 4): tek isDemoKey yardımcısı (anahtar Demo çiftlik kimliğini içeriyor mu); makeBackup Demo ayarlarını almıyor, parseBackup Demo ayarlı dosyayı 'demo' koduyla reddediyor, geri yükleme Demo ayarlarını atlıyor, putSetting Demo için yalnızca yerel yazıyor. Eski money: kontrolü kapsandı. Kalan (bekçi notu): sunucudan çekilen ayarlar Demo anahtarı için süzülmüyor (sync-apply.ts)",
+      "pr": 686
     }
   ],
   "bekleyen_kararlar": [
@@ -959,12 +953,12 @@
   ],
   "gunluk": {
     "tarih": "2026-11-28",
-    "kod_isi": 13
+    "kod_isi": 14
   },
   "son_kosu": {
     "tarih": "2026-11-28",
-    "is": "ev-6 — yönetici koşusu 20261128-1844",
-    "sonuc": "ev-6 birleşti (#684, squash 0983f19): bekçi ONAY d45f049, tüm CI kapıları yeşil (ilk deneme). Kod işi 13/24 (gece vardiyası tavanı). Sıradaki onaylı iş ev-7."
+    "is": "ev-7 — yönetici koşusu 20261128-1907 (zincir)",
+    "sonuc": "ev-7 birleşti (#686, squash d3e3461): bekçi ONAY 57a1b73, tüm CI kapıları yeşil (ilk deneme). Kod işi 14/24 (gece vardiyası tavanı). Sıradaki onaylı iş ev-9."
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner. Ek (Bora 28 Kasım 2026): 2026-11-29 08:00 Atina'ya kadar kesintisiz çalışma. 08:00'den önce başlayan işler için sınır 24 (sayıyı sağ kol seçti); 29 Kasım 08:00'den sonra yeniden 12."
 }

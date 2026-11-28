@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 21:17 Atina — yönetici koşusu 20261128-1907
+1. **Uygulamada ne değişti:** Ekranda görünen bir değişiklik yok. Değişiklik yedek ve eşitleme tarafında: Demo çiftliğine (Άλλα → Επίδειξη) ait hiçbir ayar artık gerçek yedek dosyasına girmiyor, sunucuya gönderilmek üzere sıraya da girmiyor. İçinde Demo ayarı bulunan bir yedek dosyası yüklenmek istenirse uygulama onu reddediyor. Önceden bu koruma yalnızca Demo kasa (Ταμείο) kayıtları için vardı; şimdi Demo'ya ait her ayar için var.
+2. **Senin için faydası:** Demo'yu denediğin telefonda bile gerçek yedeğin ve sunucudaki gerçek çiftliğin uydurma Demo bilgisiyle karışmaz (güvenlik kuralı 4).
+3. **Ne denendi, ne başarısız oldu:** 5 yeni test yazıldı; eski kodla 5'i de kırmızıydı, yeni kodla yeşil. Testlerin bir kısmı kuralı delmeye çalışıyor (Demo ayarını yedeğe gizlice sokmak, gerçek çiftlik adıyla Demo ayarı yazmak); hepsi engellendi. Tüm birim testleri (955) geçti. Bekçi testleri kendi kopyasında koşturdu, gerçek kayıtların yanlışlıkla Demo sayılmadığını ayrıca kontrol etti ve onayladı. GitHub'da tüm kontroller ilk denemede başarılı. Başarısız bir şey yok. Not: Demo ayarı karışmış eski bir yedek dosyan varsa artık açılmaz; o durumda yeni bir yedek al.
+4. **Önerim:** Bekçinin notu: sunucudan telefona gelen ayarlar henüz Demo için süzülmüyor; küçük bir ek iş olarak sıraya alınabilir. Sıradaki onaylı iş ev-9 (tanımsız renk/ölçü kullanan kartları yakalayan test).
+5. **Senden gereken karar:** Yeni karar yok. Önceki koşulardan açık: «Δεν έχει σπαρθεί ακόμα» sözlüğe eklensin mi; yeni Hintçe kelimeyi kim kontrol edecek; «Σήμερα» için iki soru (is-6b-4).
+
+PR: https://github.com/seaevill/Aloni/pull/686 (birleşti). Bugünkü kod işi: 14/24 (gece vardiyası). Birleşti ≠ canlıda.
+
 ## 2026-11-28 20:55 Atina — yönetici koşusu 20261128-1844
 1. **Uygulamada ne değişti:** Άλλα → yedek ekranında «yedekten geri yükle» artık daha dikkatli. (a) Yedekte olup telefonda olmayan kayıtlar sunucuya «yeni kayıt» olarak gönderilmek üzere sıraya giriyor; önceden «değişiklik» olarak giriyordu ve sunucu bunları reddedebiliyor ya da daha yeni bir kaydın üstüne yazabiliyordu. (b) Eşitleme açıkken telefon sunucudan ilk tam çekmeyi bitirmeden yedek yüklemeye çalışırsan uygulama bunu yapmıyor ve şu yazıyı gösteriyor: «Ο συγχρονισμός είναι ανοιχτός, αλλά δεν έχει ολοκληρωθεί ο πρώτος συγχρονισμός. Συνδεθείτε, περιμένετε να τελειώσει και μετά κάντε την επαναφορά. Δεν έγινε καμία αλλαγή.» (Türkçesi: önce giriş yap, eşitlemenin bitmesini bekle, sonra yedeği yükle; hiçbir şey değişmedi). RUNBOOK §3 ve §13'e de aynı kural tek satırla yazıldı: «önce giriş + eşitleme, sonra yedek».
 2. **Senin için faydası:** Telefon değiştirdiğinde ya da yedekten döndüğünde, eski yedek sunucudaki yeni kayıtları ezmez ve telefonda olmayan kayıtlar kaybolmaz.
