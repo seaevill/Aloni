@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 22:36 Atina — yönetici koşusu 20261128-2006
+1. **Uygulamada ne değişti:** Ekranda görünür bir değişiklik yok. Arka planda, yan stil dosyalarındaki 47 sabit ölçü ortak ölçü listesine bağlandı (değerleri aynen korundu), paylaşım kartının ve açılış logosunun renkleri de artık ortak renk listesinden geliyor (renkler aynı).
+2. **Senin için faydası:** Bundan sonra herhangi bir ekrana listede olmayan bir renk ya da ölçü yazılırsa test hemen kırmızı olur; görünüm tutarlı kalır ve «Φως ημέρας» (güneş modu) gibi ayarlar her ekranı aynı şekilde etkiler.
+3. **Ne denendi, ne başarısız oldu:** Genişletilen korumalar eski kodla kırmızıydı, düzeltmeyle yeşil. Kaçma denemeleri (ekran genişliği koşulu içine gizlenen sabit, küçük yazı, listede olmayan dosya adı, farklı renk paleti) yakalanıyor. Tüm birim testleri (978) geçti; bekçi testleri kendi kopyasında koşturdu, her taşınan değeri eskisiyle tek tek karşılaştırdı ve ilk denemede onayladı. GitHub'da tüm kontroller başarılı. Başarısız bir şey yok. Eksik: ekran görüntüsü karşılaştırması yapılmadı (değerler satır satır karşılaştırıldı); simge çizim aracında iki renk hâlâ sabit.
+4. **Önerim:** Sıradaki onaylı iş ev-12 (işçi ekranlarında her düğme, çip ve giriş kutusu en az 72 px).
+5. **Senden gereken karar:** Yeni karar yok. Önceki koşulardan açık: «Δεν έχει σπαρθεί ακόμα» sözlüğe eklensin mi; yeni Hintçe kelimeyi kim kontrol edecek; «Σήμερα» için iki soru (is-6b-4).
+
+PR: https://github.com/seaevill/Aloni/pull/692 (birleşti). Bugünkü kod işi: 17/24 (gece vardiyası). Birleşti ≠ canlıda.
+
 ## 2026-11-28 21:58 Atina — yönetici koşusu 20261128-1949
 1. **Uygulamada ne değişti:** Eşitleme açıkken sunucunun reddettiği bir kaydın yanında çıkan kırmızı işaret artık okunuyor: önceden koyu zemin üstünde koyu kırmızı yazıydı (neredeyse görünmüyordu), şimdi koyu kırmızı zemin üstünde beyaz yazı. Bu işaret Demo'da görünmez; yalnızca gerçek eşitlemede, sunucu bir kaydı kabul etmezse çıkar.
 2. **Senin için faydası:** Sunucu bir kaydını reddederse bunu güneşte de görürsün. Ayrıca yeni bir test, uygulamadaki her kartın yazı ve zemin rengini tek tek ölçüyor; okunmayacak kadar soluk bir renk çifti yazılırsa test hemen kırmızı olur.
