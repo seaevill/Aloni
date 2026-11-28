@@ -2,13 +2,13 @@
   "takim": "bekci",
   "guncelleme": "2026-11-28",
   "son_denetim": {
-    "pr": 659,
-    "sha": "963e4730378fb6f5f2250c7d006db3f3a6d116b9",
-    "takim": "aloni-gelistirme",
-    "karar": "ONAY"
+    "pr": "662,666,663,664,665,667",
+    "sha": "afdcb40,a544fef,715f490,305567a,727069f,c76eaba",
+    "takim": "aloni-gelistirme (değerlendirme PR seti)",
+    "karar": "662 ONAY, 666 ONAY, 663 ONAY, 664 ONAY, 665 ONAY, 667 RED"
   },
   "denetim_sayaci": {
-    "onay": 20,
-    "red": 3
+    "onay": 25,
+    "red": 4
   }
 }
