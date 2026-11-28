@@ -170,7 +170,7 @@
     {
       "id": "is-8",
       "baslik": "Ürün detayı (Φυτά → bir ürün): ekimler (sayı kutusu + kart başına tarla) sayfanın en üstüne alındı; yalnızca JSX sırası, özellik kaybı yok; sıra testi + 375 px önce/sonra",
-      "pr": "PR_NO"
+      "pr": 653
     }
   ],
   "bekleyen_kararlar": [
