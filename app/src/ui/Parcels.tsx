@@ -19,7 +19,7 @@ import { showUndo } from './Toast';
 import type { Row } from '../db/schema';
 import { useRows } from './useRows';
 import { matchesRecord, RecordSearch } from './cx/RecordSearch';
-import { Status, Title } from './screens';
+import { nameOf, Status, Title } from './screens';
 import type { I18nKey } from '../i18n';
 import { Chip } from './ds';
 
@@ -31,7 +31,7 @@ export function Parcels() {
   const [editing, setEditing] = useState<Row | undefined>(undefined);
   const [shownId, setShownId] = useState<string | undefined>(undefined);
   const q = useRows('parcels');
-  const plantings = useRows('plantings'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const labels = useRows('label_uses');
+  const plantings = useRows('plantings'); const crops = useRows('crops'); const links = useRows('job_plantings'); const sprays = useRows('job_spray'); const labels = useRows('label_uses');
   useBack(adding || !!analysing || !!editing || !!shownId, () => { setAdding(false); setAnalysing(undefined); setEditing(undefined); setShownId(undefined); }, adding || !!editing);
   useEffect(() => { if (openParcelForm.value) { openParcelForm.value = false; setAdding(true); } }, [openParcelForm.value]);
   if (adding) return <ParcelForm onDone={() => setAdding(false)} />;
@@ -51,29 +51,22 @@ export function Parcels() {
       <header class="today-head band"><Title k="parcels.title" /></header>
       {demo ? <p class="muted" data-testid="parcel-demo-note">{t('parcel.demoActive')}</p> : live.length > 0 && <button class="btn" data-testid="parcel-add" onClick={() => setAdding(true)}>{t('parcel.add')}</button>}
       <Status q={{ ...q, rows: q.rows && live.length === 0 ? [] : q.rows }} message={t('list.empty')} action={demo ? undefined : { label: t('parcel.add'), run: () => setAdding(true) }} />
-      {live.length > 0 && <section aria-label={t('detail.sketch')} data-testid="parcel-sketch-overview">
-        <h2>{t('detail.sketch')}</h2>
-        <div class="parcel-sketch-grid">
-          {live.map((r) => {
-            const wait = parcelWait(String(r.id), instantOf(new Date()) ?? '', plantings.rows ?? [], links.rows ?? [], sprays.rows ?? [], labels.rows ?? []);
-            const short = SHORT[wait.state];
-            return <button type="button" class="parcel-sketch-tile" key={r.id} data-testid="parcel-sketch-open" data-wait={wait.state} onClick={() => setShownId(String(r.id))}>
-              <ParcelSketch boundary={r.boundary} sample={demo ? r.sketch : undefined} decorative />
-              <strong>{String(r.name)}</strong>
-              <span class="parcel-sketch-state" data-testid="parcel-sketch-status"><Chip tone={short.tone}>{t(short.key)}</Chip></span>
-            </button>;
-          })}
-        </div>
-      </section>}
       {live.length > 0 && <RecordSearch query={query} onQuery={setQuery} empty={filtered.length === 0} />}
-      {filtered.map((r) => (
-        <div class="card" key={r.id}>
-          <button class="row" data-testid="parcel-open" onClick={() => setShownId(String(r.id))}><span>{String(r.name)}{typeof r.area_str !== 'undefined' && <small>{formatArea(r.area_str as number | string)}</small>}</span><span aria-hidden="true" class="chev" /></button>
-          <small data-testid="parcel-wait">{waitLine(parcelWait(String(r.id), instantOf(new Date()) ?? '', plantings.rows ?? [], links.rows ?? [], sprays.rows ?? [], labels.rows ?? []))}</small>
+      {filtered.map((r) => {
+        const wait = parcelWait(String(r.id), instantOf(new Date()) ?? '', plantings.rows ?? [], links.rows ?? [], sprays.rows ?? [], labels.rows ?? []);
+        const short = SHORT[wait.state];
+        const cropLine = cropLineOf(String(r.id), plantings.rows ?? [], crops.rows ?? []);
+        return <div class="card" key={r.id}>
+          <button class="row parcel-card-open" data-testid="parcel-open" data-wait={wait.state} onClick={() => setShownId(String(r.id))}>
+            <ParcelSketch boundary={r.boundary} sample={demo ? r.sketch : undefined} decorative />
+            <span class="parcel-card-text"><strong>{String(r.name)}</strong>{typeof r.area_str !== 'undefined' && <small>{formatArea(r.area_str as number | string)}</small>}{cropLine !== '' && <small data-testid="parcel-crops">{cropLine}</small>}<span class="parcel-sketch-state" data-testid="parcel-sketch-status"><Chip tone={short.tone}>{t(short.key)}</Chip></span></span>
+            <span aria-hidden="true" class="chev" />
+          </button>
+          <small data-testid="parcel-wait">{waitLine(wait)}</small>
           <UnsyncedMark id={r.id} />
           {!demo && <button class="btn quiet" onClick={() => void archive(r)}>{t('parcel.archive')}</button>}
-        </div>
-      ))}
+        </div>;
+      })}
     </section>
   );
 }
@@ -84,3 +77,9 @@ const SHORT = {
   running: { tone: 'hold', key: 'ui.crops.chip.wait' },
   unknown: { tone: 'unknown', key: 'ui.crops.chip.unknown' },
 } as const satisfies Record<string, { tone: 'ready' | 'hold' | 'unknown'; key: I18nKey }>;
+
+/** the names of the crops still on a field (unfinished plantings), once each: the card then says what grows there without opening it */
+function cropLineOf(parcelId: string, plantings: readonly Row[], crops: readonly Row[]): string {
+  const names = plantings.filter((p) => p.parcel_id === parcelId && !p.deleted_at && p.status !== 'finished').map((p) => nameOf(crops.find((c) => c.id === p.crop_id) ?? {})).filter((n) => n !== '');
+  return [...new Set(names)].join(', ');
+}

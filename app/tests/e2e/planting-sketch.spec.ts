@@ -8,7 +8,7 @@ test('Demo: the parcel sketch shows its plantings (illustrative), a planting row
   await page.getByTestId('empty-state').locator('button').nth(1).click();
   await expect(page.getByTestId('today-counts')).toBeVisible();
   await page.locator('nav.tabs [data-tab="parcels"]').click();
-  await page.getByTestId('parcel-sketch-open').first().click();
+  await page.getByTestId('parcel-open').first().click();
   const detail = page.getByTestId('parcel-detail');
   await detail.getByTestId('detail-weather').click();
   await expect(page.getByTestId('parcel-weather-source')).toBeVisible();
