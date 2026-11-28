@@ -44,6 +44,49 @@ describe('a running PHI is a harvest veto, and the frost thaw advice never says 
   });
 });
 
+describe('several label rows for one (product, crop): every row is read, the longest wait counts, any unsigned row blocks', () => {
+  const sprayed = [{ id: 'j', kind: 'spray', status: 'done', plantingIds: ['pl'], productId: 'prod', startedAt: '2026-11-10T06:00:00Z', endedAt: '2026-11-10T08:00:00Z' }];
+  it('PHI: a short signed row listed FIRST does not hide a longer one (hold to the latest end), in either order', () => {
+    for (const uses of [[use('3', '24', true), use('14', '48', true)], [use('14', '48', true), use('3', '24', true)]]) {
+      const out = runRules(snap({ jobs: sprayed, uses, asOf: '2026-11-20T00:00:00Z' })).filter((o) => o.rule_id === 'PHI');
+      expect(out.map((o) => [o.category, o.values.safe_from, o.values.phi_days])).toEqual([['phi_hold', '2026-11-24T08:00:00Z', 14]]);
+      expect(out[0].vetoes).toEqual([{ by: 'PHI', vetoed: 'harvest', planting_id: 'pl', reason: 'phi_running' }]);
+    }
+  });
+  it('escape attempt: the hold stays on one second before the longest end and is gone after it (the short row never frees it)', () => {
+    const uses = [use('3', '24', true), use('14', '48', true)];
+    expect(runRules(snap({ jobs: sprayed, uses, asOf: '2026-11-24T08:00:00Z' })).some((o) => o.category === 'phi_hold')).toBe(true);
+    expect(runRules(snap({ jobs: sprayed, uses, asOf: '2026-11-24T08:00:01Z' })).some((o) => o.category === 'phi_hold')).toBe(false);
+  });
+  it('PHI: ONE unsigned row among signed ones blocks (not_signed), whatever its position; the REG alert is only for «no row at all»', () => {
+    for (const uses of [[use('3', '24', true), use('14', '48', false)], [use('14', '48', false), use('3', '24', true)]]) {
+      const out = runRules(snap({ jobs: sprayed, uses, asOf: '2026-11-20T00:00:00Z' }));
+      expect(out.filter((o) => o.rule_id === 'PHI').map((o) => [o.category, o.values.reason, o.values.safe_from])).toEqual([['phi_blocked_unknown', 'not_signed', null]]);
+      expect(out.some((o) => o.rule_id === 'REG')).toBe(false);
+    }
+  });
+  it('REI: the LONGEST re-entry counts, and an unsigned row among signed ones makes it unknown', () => {
+    const jobs = [{ ...sprayed[0], startedAt: '2026-11-19T06:00:00Z', endedAt: '2026-11-19T08:00:00Z' }];
+    const rei = runRules(snap({ jobs, uses: [use('3', '24', true), use('3', '72', true)], asOf: '2026-11-20T09:00:00Z' })).filter((o) => o.rule_id === 'REI');
+    expect(rei.map((o) => [o.category, o.values.reentry_at, o.values.rei_h])).toEqual([['rei', '2026-11-22T08:00:00Z', 72]]);
+    const bad = runRules(snap({ jobs, uses: [use('3', '72', false), use('3', '24', true)], asOf: '2026-11-20T09:00:00Z' })).filter((o) => o.rule_id === 'REI');
+    expect(bad.map((o) => [o.category, o.values.reason])).toEqual([['rei_unknown', 'not_signed']]);
+  });
+  it('REG: a draft spray is «on the label» only when EVERY row for the pair is signed', () => {
+    const draftJobs = [{ id: 'd', kind: 'spray', plantingIds: ['pl'], productId: 'prod' }];
+    expect(runRules(snap({ draftJobs, uses: [use('3', '24', true), use('14', '48', true)] })).some((o) => o.category === 'exclude_unregistered_beds')).toBe(false);
+    expect(runRules(snap({ draftJobs, uses: [use('3', '24', true), use('14', '48', false)] })).some((o) => o.category === 'exclude_unregistered_beds')).toBe(true);
+  });
+  it('PHI and REI: a spray that ENDS BEFORE it starts is «unreadable time» (blocked), never counted from the earlier time', () => {
+    const jobs = [{ ...sprayed[0], startedAt: '2026-11-19T10:00:00Z', endedAt: '2026-11-19T06:00:00Z' }];
+    const out = runRules(snap({ jobs, uses: [use('7', '24', true)], asOf: '2026-11-26T07:00:00Z' }));
+    expect(out.filter((o) => o.rule_id === 'PHI').map((o) => [o.category, o.values.reason, o.values.safe_from])).toEqual([['phi_blocked_unknown', 'unreadable_time', null]]);
+    expect(out.filter((o) => o.rule_id === 'REI').map((o) => [o.category, o.values.reason])).toEqual([['rei_unknown', 'unreadable_time']]);
+    const equal = [{ ...sprayed[0], startedAt: '2026-11-19T08:00:00Z', endedAt: '2026-11-19T08:00:00Z' }]; // same instant is fine
+    expect(runRules(snap({ jobs: equal, uses: [use('7', '24', true)], asOf: '2026-11-20T00:00:00Z' })).filter((o) => o.rule_id === 'PHI').map((o) => o.category)).toEqual(['phi_hold']);
+  });
+});
+
 describe('the engine never shortens a waiting period and never decides from what is not signed', () => {
   it('property (1000 sprays): the PHI hold ends exactly PHI × 24 h after the spray, is on while it runs and gone after it, and no date is earlier', () => {
     const rnd = seeded(31);

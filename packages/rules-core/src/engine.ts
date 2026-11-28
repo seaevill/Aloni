@@ -54,24 +54,44 @@ export interface Snapshot {
 const blank = (o: Pick<Output, 'rule_id' | 'kind' | 'category'> & Partial<Output>): Output => ({ notify: false, parcel_ids: [], planting_ids: [], product_ids: [], crop_ids: [], values: {}, vetoes: [], ...o });
 const doneSprays = (s: Snapshot) => s.jobs.filter((j) => j.kind === 'spray' && j.status === 'done');
 
-/** PHI: a sprayed planting is on hold until the END of the spraying + the label's PHI (exact seconds); no label row or an unsigned one = BLOCKED with no date at all. */
+/** EVERY label row for (product, crop). One row is no longer assumed: the first one found must never decide for the others. */
+const rowsFor = (s: Snapshot, productId: string, cropId: string | undefined) => s.uses.filter((u) => u.productId === productId && u.cropId === cropId);
+/** All rows signed and complete → their values; no row, or ANY unsigned/changed/incomplete row → blocked with the reason (never the shortest wait). */
+const signedRows = (rows: readonly UseFact[]): { ok: true; values: SignedLabelUse[] } | { ok: false; reason: 'no_label_row' | 'not_signed' } => {
+  const values = rows.flatMap((u) => (u.signed.known ? [u.signed.value] : []));
+  return rows.length === 0 ? { ok: false, reason: 'no_label_row' } : values.length < rows.length ? { ok: false, reason: 'not_signed' } : { ok: true, values };
+};
+/** A spray that ends before it starts is unreadable data: the wait must never be counted from the earlier time. */
+const endsBeforeStart = (j: JobFact): boolean => {
+  const a = parseInstant(j.startedAt), b = j.endedAt === undefined ? undefined : parseInstant(j.endedAt);
+  return !!b && a.known && b.known && (b.value.day !== a.value.day ? b.value.day < a.value.day : b.value.sec < a.value.sec);
+};
+/** The row with the LATEST wait end (several label rows for one product/crop: the longest wait counts); a row whose end is unknown wins at once = unknown. */
+const latestEnd = <T>(first: { end: Known<string>; row: T }, rest: readonly { end: Known<string>; row: T }[]): { end: Known<string>; row: T } =>
+  rest.reduce((best, c) => (!best.end.known ? best : !c.end.known || waitOver(c.end.value, best.end) ? c : best), first);
+
+/** PHI: a sprayed planting is on hold until the END of the spraying + the label's PHI (exact seconds); no label row or an unsigned one = BLOCKED with no date at all. With several label rows the LONGEST PHI counts. */
 function phi(s: Snapshot): Output[] {
   const out: Output[] = [];
   for (const j of doneSprays(s)) for (const pid of j.plantingIds) {
     const p = s.plantings.find((x) => x.id === pid);
     if (!p) continue;
-    const use = s.uses.find((u) => u.productId === j.productId && u.cropId === p.cropId);
-    if (!use || !use.signed.known) {
-      out.push(blank({ rule_id: 'PHI', kind: 'alert', category: 'phi_blocked_unknown', severity: 'high', planting_ids: [pid], parcel_ids: [p.parcelId], product_ids: [j.productId], values: { lot_status: 'blocked', safe_from: null, reason: use ? 'not_signed' : 'no_label_row' }, vetoes: [{ by: 'PHI', vetoed: 'harvest', planting_id: pid, reason: use ? 'not_signed' : 'no_label_row' }] }));
-      if (!use) out.push(blank({ rule_id: 'REG', kind: 'alert', category: 'unregistered_use', severity: 'high', planting_ids: [pid], parcel_ids: [p.parcelId], product_ids: [j.productId] }));
+    const rows = signedRows(rowsFor(s, j.productId, p.cropId));
+    const blocked = (reason: string) => blank({ rule_id: 'PHI', kind: 'alert', category: 'phi_blocked_unknown', severity: 'high', planting_ids: [pid], parcel_ids: [p.parcelId], product_ids: [j.productId], values: { lot_status: 'blocked', safe_from: null, reason }, vetoes: [{ by: 'PHI', vetoed: 'harvest', planting_id: pid, reason }] });
+    if (!rows.ok) {
+      out.push(blocked(rows.reason));
+      if (rows.reason === 'no_label_row') out.push(blank({ rule_id: 'REG', kind: 'alert', category: 'unregistered_use', severity: 'high', planting_ids: [pid], parcel_ids: [p.parcelId], product_ids: [j.productId] }));
       continue;
     }
-    // counted from the END of the spraying; a missing or unreadable end is «blocked» (never counted from the start, never skipped)
-    const end = j.endedAt === undefined ? ({ known: false } as const) : phiEnd(j.endedAt, known(use.signed.value.phiDays));
-    if (!end.known) {
-      out.push(blank({ rule_id: 'PHI', kind: 'alert', category: 'phi_blocked_unknown', severity: 'high', planting_ids: [pid], parcel_ids: [p.parcelId], product_ids: [j.productId], values: { lot_status: 'blocked', safe_from: null, reason: j.endedAt === undefined ? 'no_end_time' : 'unreadable_time' }, vetoes: [{ by: 'PHI', vetoed: 'harvest', planting_id: pid, reason: j.endedAt === undefined ? 'no_end_time' : 'unreadable_time' }] }));
-    } else if (!waitOver(s.asOf, end)) {
-      out.push(blank({ rule_id: 'PHI', kind: 'alert', category: 'phi_hold', severity: 'high', confidence: 'medium', planting_ids: [pid], parcel_ids: [p.parcelId], product_ids: [j.productId], window: { start: j.startedAt, end: end.value }, values: { safe_from: end.value, phi_days: use.signed.value.phiDays, lot_status: 'hold_phi' },
+    // counted from the END of the spraying; a missing, unreadable or before-the-start end is «blocked» (never counted from the start, never skipped)
+    if (j.endedAt === undefined) { out.push(blocked('no_end_time')); continue; }
+    const [v0, ...vs] = rows.values;
+    const endedAt = j.endedAt;
+    const last = latestEnd({ end: phiEnd(endedAt, known(v0.phiDays)), row: v0 }, vs.map((v) => ({ end: phiEnd(endedAt, known(v.phiDays)), row: v })));
+    if (!last.end.known || endsBeforeStart(j)) {
+      out.push(blocked('unreadable_time'));
+    } else if (!waitOver(s.asOf, last.end)) {
+      out.push(blank({ rule_id: 'PHI', kind: 'alert', category: 'phi_hold', severity: 'high', confidence: 'medium', planting_ids: [pid], parcel_ids: [p.parcelId], product_ids: [j.productId], window: { start: j.startedAt, end: last.end.value }, values: { safe_from: last.end.value, phi_days: last.row.phiDays, lot_status: 'hold_phi' },
         vetoes: [{ by: 'PHI', vetoed: 'harvest', planting_id: pid, reason: 'phi_running' }] })); // a running hold vetoes harvest exactly like the blocked case does
     }
   }
@@ -91,16 +111,19 @@ function rei(s: Snapshot): Output[] {
     for (const pid of j.plantingIds) {
       const p = s.plantings.find((x) => x.id === pid);
       if (!p) continue;
-      const use = s.uses.find((u) => u.productId === j.productId && u.cropId === p.cropId);
-      if (!use?.signed.known) { out.push(unknown(j, p, 'not_signed')); continue; }
+      const rows = signedRows(rowsFor(s, j.productId, p.cropId));
+      if (!rows.ok) { out.push(unknown(j, p, 'not_signed')); continue; }
       if (j.endedAt === undefined) { out.push(unknown(j, p, 'no_end_time')); continue; }
-      const end = reiEnd(j.endedAt, known(use.signed.value.reiHours));
-      if (!end.known) { out.push(unknown(j, p, 'unreadable_time')); continue; }
+      const [v0, ...vs] = rows.values;
+      const endedAt = j.endedAt;
+      const last = latestEnd({ end: reiEnd(endedAt, known(v0.reiHours)), row: v0 }, vs.map((v) => ({ end: reiEnd(endedAt, known(v.reiHours)), row: v })));
+      if (!last.end.known || endsBeforeStart(j)) { out.push(unknown(j, p, 'unreadable_time')); continue; }
+      const end = last.end; // several label rows: the LONGEST re-entry interval counts
       if (waitOver(s.asOf, end)) continue;
       const own = s.tasks.filter((t) => t.plantingIds.includes(pid));
       const blocked = own.filter((t) => !parseInstant(t.at).known || (!waitOver(t.at, end) && t.at !== end.value && t.at < end.value)); // an unreadable task time is blocked
       out.push(blank({ rule_id: 'REI', kind: 'alert', category: 'rei', severity: 'high', confidence: 'medium', planting_ids: [pid], parcel_ids: [p.parcelId], window: { start: j.endedAt, end: end.value },
-        values: { reentry_at: end.value, rei_h: use.signed.value.reiHours, blocked_task_ids: blocked.map((t) => t.id), allowed_task_ids: s.tasks.filter((t) => !blocked.includes(t)).map((t) => t.id) },
+        values: { reentry_at: end.value, rei_h: last.row.reiHours, blocked_task_ids: blocked.map((t) => t.id), allowed_task_ids: s.tasks.filter((t) => !blocked.includes(t)).map((t) => t.id) },
         vetoes: blocked.map((t) => ({ by: 'REI', vetoed: 'task', task_id: t.id, reason: 'before_reentry' })) }));
     }
   }
@@ -109,8 +132,7 @@ function rei(s: Snapshot): Output[] {
 
 const registered = (s: Snapshot, productId: string, plantingId: string): boolean => {
   const p = s.plantings.find((x) => x.id === plantingId);
-  const use = p && s.uses.find((u) => u.productId === productId && u.cropId === p.cropId);
-  return !!use?.signed.known; // only a signed, complete label counts as «on the label»
+  return !!p && signedRows(rowsFor(s, productId, p.cropId)).ok; // only when EVERY row for the pair is signed and complete does it count as «on the label»
 };
 
 /** REG: a draft spray may only cover the plantings the label lists for that product; the others are excluded (never the whole parcel). */
