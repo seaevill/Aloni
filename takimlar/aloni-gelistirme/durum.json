@@ -151,8 +151,8 @@
   },
   "son_kosu": {
     "tarih": "2026-11-28",
-    "is": "yok — yönetici koşusu 20261128-0218",
-    "sonuc": "iş alınmadı: main yeşil (2329a1b), simdi boş; is-6b-4 Bora'nın cevabını bekliyor; q-2 (bakım) için son 24 saatte main'de yeni düşme kanıtı yok; kalan maddelerin onayı yok veya ertelendi"
+    "is": "yok — yönetici koşusu 20261128-0319",
+    "sonuc": "iş alınmadı: main yeşil (6a13605), simdi boş; is-6b-4 Bora'nın cevabını bekliyor; q-2 (bakım) için main'de yeni düşme kanıtı yok (son 24 saatteki tek düşme 45935919215, q-2'nin önceki denemesinde zaten incelendi); kalan maddelerin onayı yok veya ertelendi"
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }
