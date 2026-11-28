@@ -1,5 +1,5 @@
 /* «Φέτος – πέρυσι» */
-.yearcmp { display: grid; gap: var(--sp-2); margin-block: var(--sp-3); }
+.yearcmp { display: grid; gap: var(--sp-2); margin-block: var(--sp-12); }
 .yearcmp small { display: block; }
 .yearcmp-sums { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-2); }
 .yearcmp-sums strong { display: block; }
