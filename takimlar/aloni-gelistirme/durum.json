@@ -4,21 +4,7 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": {
-    "id": "ev-1",
-    "baslik": "[P1] Hasat formu henüz ekilmemiş (yalnızca planlanmış, «Προγραμματισμένη») ekimi sunmasın ya da kilitli göstersin («Δεν έχει σπαρθεί ακόμα»); Χωράφια ve Φυτά'da yalnızca planlanmış ekimi olan tarla/ürün «Έτοιμο για κοπή» değil «Προγραμματισμένη» görünsün. Kaçma denemesi testi: işçi planlanmış ekime hasat yazamaz (birim + 375 px e2e). ~150 satır. Yunanca metin kural 5'e uyar: docs/i18n/glossary-el.md'de olmayan terim uydurulmaz, bekleyen_kararlar'a yazılır.",
-    "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 1-usability U1",
-    "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
-    "sahip": "aloni-gelistirme",
-    "tur": "ozellik",
-    "durum": "pr-acik",
-    "deneme": 1,
-    "son_deneme": {
-      "tarih": "2026-11-28",
-      "sonuc": "PR açıldı; vitest 925 geçti, eslint ve tsc temiz, 375 px e2e geçti",
-      "pr": "https://github.com/seaevill/Aloni/pull/669"
-    }
-  },
+  "simdi": null,
   "sirada": [
     {
       "id": "is-6b-4",
@@ -750,6 +736,11 @@
       "id": "is-11",
       "baslik": "Μητρώο: kayıt kimliği ve «düzeltilen kayıt» satırı kartta kapalı bölüme («Κωδικός εγγραφής») alındı; indirme düğmesi yazıları kısaldı (Λήψη ve «(αγγλικά πεδία)» çıktı), düğmeler 5 satırdan 3 satıra; dışa aktarım ve yazdırma aynen",
       "pr": 659
+    },
+    {
+      "id": "ev-1",
+      "baslik": "Planlanmış (henüz ekilmemiş) ekime hasat yazılamaz: hasat seçicisinde çip kilitli «Προγραμματισμένη»; Χωράφια ve Φυτά'da yalnızca planlanmış ekimi olan tarla/ürün «Προγραμματισμένη» görünür. Kalan: Σήμερα «Για κοπή σήμερα» ve ParcelDetail kesim satırı planlanmışları hâlâ sayıyor (takip önerisi)",
+      "pr": 669
     }
   ],
   "bekleyen_kararlar": [
@@ -775,12 +766,12 @@
   ],
   "gunluk": {
     "tarih": "2026-11-28",
-    "kod_isi": 7
+    "kod_isi": 8
   },
   "son_kosu": {
     "tarih": "2026-11-28",
-    "is": "yok — yönetici koşusu 20261128-1519",
-    "sonuc": "Alınacak iş yok: simdi boş, main 682c32d'de tüm kontroller yeşil, onaylı ve sirada durumunda özellik işi yok; q-2 izleme maddesi için main'de son 24 saatte düşen CI koşusu yok (yeni kanıt yok). Ajan çalışmadı (yalnızca kayıt PR'ı bekçisi)."
+    "is": "ev-1 — yönetici koşusu 20261128-1554",
+    "sonuc": "PR #669 birleşti (squash 1b9cf13): bekçi ONAY 53152cf'de, tüm kontroller (check, sql, static, e2e 1–3, pr-size, Workers Builds) ilk denemede yeşil."
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }

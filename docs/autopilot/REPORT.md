@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 18:15 Atina — yönetici koşusu 20261128-1554
+1. **Uygulamada ne değişti:** Henüz ekilmemiş, yalnızca planlanmış bir ekime artık hasat yazılamıyor. Hasat formunda («Συγκομιδή») ürün seçerken planlanmış ekimin düğmesi gri ve kilitli, üstünde «Προγραμματισμένη» yazıyor. «Χωράφια» ve «Φυτά» ekranlarında yalnızca planlanmış ekimi olan tarla ya da ürün artık yanlışlıkla «Έτοιμο για κοπή» değil, «Προγραμματισμένη» görünüyor. Aynı tarlada büyüyen bir ekim de varsa eskisi gibi gösteriliyor.
+2. **Senin için faydası:** Bir işçi henüz toprağa girmemiş bir ürüne hasat kaydı yazamaz; kayıt defterin ve stok sayıların yanlış satırla bozulmaz. Kartlar «kesime hazır» diye yanıltmıyor.
+3. **Ne denendi, ne başarısız oldu:** Önce planlanmış ekime hasat yazmayı deneyen testler yazıldı (değişiklikten önce 5'i kırmızıydı), şimdi reddediliyor; büyüyen ekime hasat hâlâ yazılabiliyor. Tüm birim testleri (925) geçti; 375 px telefon genişliğinde yeni ekran testi ve ilgili 45 ekran testi geçti. Bekçi testleri kendisi koşturdu ve onayladı. GitHub'da tüm kontroller (iPhone tarayıcısıyla 3 parça ekran testi, SQL, Cloudflare derlemesi) ilk denemede başarılı. Başarısız bir şey yok.
+4. **Önerim:** Telefonda Demo çiftlikte «Συγκομιδή» formunu aç; planlanmış ekimin kilitli olduğuna bak. Eksik kalan: «Σήμερα» ekranındaki «Για κοπή σήμερα» sayısı ve tarla detayındaki kesim satırı planlanmış ekimleri hâlâ sayıyor; bunu küçük bir takip işi olarak öneriyorum. Ayrıca kilit yalnızca telefonda; sunucu tarafı değişmedi (SQL'e dokunulmadı). Sıradaki onaylı iş: ev-2 («Σήμερα έγιναν» satırında hasadın gittiği yer).
+5. **Senden gereken karar:** (1) «Δεν έχει σπαρθεί ακόμα» («henüz ekilmedi») cümlesi Yunanca sözlükte yok, kullanılmadı; sözlüğe eklensin mi? «Προγραμματισμένη» da sözlükte yok ama ekranda zaten vardı. (2) İşçi ekranı için yeni bir Hintçe kelime («योजनाबद्ध», «planlanmış») eklendi; Hintçe bilen biri kontrol etmeli. (3) Yukarıdaki «Σήμερα» takip işi sıraya girsin mi?
+
+PR: https://github.com/seaevill/aloni/pull/669 (birleşti). Bugünkü kod işi: 8/12. Birleşti ≠ canlıda.
+
 ## 2026-11-28 17:20 Atina — yönetici koşusu 20261128-1519
 1. **Uygulamada ne değişti:** Hiçbir şey. Bu koşuda uygulamaya dokunulmadı.
 2. **Senin için faydası:** Yok; yalnızca durum kontrolü yapıldı.
