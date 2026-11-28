@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 13:48 Atina — yönetici koşusu 20261128-1129
+1. **Uygulamada ne değişti:** «Φυτά» ekranında bir ürüne dokununca açılan sayfada, o ürünün ekimleri (Φυτεύσεις sayısı ve her tarlanın ekim kartı) artık ürün adının hemen altında, en üstte. «Συμβουλές», ürün hızı, tohum kartı, yıl karşılaştırması ve rehber düğmesi aynen duruyor, yalnızca ekimlerin altına indi. Hiçbir düğme ya da bilgi kalkmadı.
+2. **Senin için faydası:** «Bu ürün nerede ekili, ne durumda?» sorusunun cevabı aşağı kaydırmadan görünüyor.
+3. **Ne denendi, ne başarısız oldu:** Yeni bir ekran testi önce kırmızıydı (ekimler sayfanın çok altındaydı), değişiklikten sonra yeşil. Tüm birim testleri ve ürün sayfasıyla ilgili 31 ekran testi geçti; bekçi testleri kendisi de koşturdu ve onayladı. GitHub'da tüm kontroller (iPhone tarayıcısıyla 3 parça ekran testi, SQL, Cloudflare derlemesi) ilk denemede başarılı. Yerelde toplu koşuda bir test (ürün hızı) bir kez düştü, tek başına ve GitHub'da geçti; nedeni bilinmiyor.
+4. **Önerim:** Telefonda «Φυτά» → bir ürün aç, ekimlerin en üstte olduğuna bak. Sıradaki onaylı iş is-9 («Άλλα» menüsünü gruplayıp kısaltmak).
+5. **Senden gereken karar:** «Σήμερα» için iki soru hâlâ açık (is-6b-4): (a) «Για κοπή σήμερα» mı «Χωράφια χωρίς αναμονή» mı kalsın? (c) Ekleme düğmeleri hızlı ekleme bölümünde mi, sayfada mı kalsın?
+
+PR: https://github.com/seaevill/aloni/pull/653 (birleşti). Bugünkü kod işi: 4/12. Birleşti ≠ canlıda.
+
 ## 2026-11-28 13:19 Atina — yönetici koşusu 20261128-1119
 1. **Uygulamada ne değişti:** Hiçbir şey. Önceki koşudan beri yeni onaylı iş ya da senden yeni cevap gelmedi.
 2. **Senin için faydası:** Onaysız iş yapılmadı; ana dal sağlam kaldı.
