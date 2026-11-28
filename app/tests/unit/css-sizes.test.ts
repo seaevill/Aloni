@@ -12,4 +12,16 @@ describe('CSS font sizes', () => {
     expect(sizes.length).toBeGreaterThan(0);
     expect(sizes.filter((s) => s < 14)).toEqual([]);
   });
+
+  it('an unclassed <small> has its own 14 px floor (it was 13.3 px outside .card)', () => {
+    const css = readFileSync(new URL('../../src/ui/styles.css', import.meta.url), 'utf8');
+    expect(/(^|\n)small\s*\{\s*font-size:\s*var\(--fs-14\)/.test(css)).toBe(true);
+  });
+
+  it('card folds and planting chips are full-size tap targets', () => {
+    const css = readFileSync(new URL('../../src/ui/styles.css', import.meta.url), 'utf8');
+    expect(/orders-map"\]\s*>\s*summary\s*\{[^}]*min-height:\s*var\(--tap\)/.test(css)).toBe(true);
+    expect(/\.card > summary/.test(css)).toBe(false); // would change ▸ markers of worker-data, dev-section, crop-planting
+    expect(/\.planting-open\s*\{[^}]*min-height:\s*var\(--tap\)/.test(css)).toBe(true);
+  });
 });

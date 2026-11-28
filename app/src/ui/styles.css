@@ -11,6 +11,7 @@ h2.step[data-done="yes"]::before { content:"✓"; background:var(--green); borde
 h1 { font-size:var(--fs-30); font-weight:800; line-height:1.05; letter-spacing:var(--ls-title); margin:0 0 var(--sp-12); display:flex; flex-wrap:wrap; gap:var(--sp-8); align-items:center; overflow-wrap:break-word; hyphens:auto; }
 .badge { font-size:var(--fs-14); font-weight:700; background:var(--warn); color:var(--white); padding:var(--sp-2) var(--sp-8); border-radius:var(--r-pill); }
 .card { overflow-wrap:break-word; hyphens:auto; background:var(--card); border:0; box-shadow:var(--shadow-card); border-radius:var(--r-card); padding:var(--sp-12) var(--sp-14); margin:0 0 var(--sp-10); }
+small { font-size:var(--fs-14); } /* base floor: unclassed <small> was 13.3 px (evaluation 2026-11-28 UI-05) */
 .card small { display:block; font-size:var(--fs-14); color:var(--muted); }
 nav.tabs { position:fixed; left:0; right:0; bottom:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); background:var(--card); border-top:var(--bw-1) solid var(--line); padding-bottom:env(safe-area-inset-bottom); }
 nav.tabs button { min-width:0; padding:0 var(--sp-2); line-height:1.15; text-align:center; overflow-wrap:anywhere; min-height:var(--tap); border:0; background:none; font:inherit; font-size:var(--fs-14); color:var(--tab); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--sp-2); }
@@ -212,6 +213,8 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 .today-head .brand { margin:0; font-size:var(--fs-14); font-weight:800; letter-spacing:var(--ls-h2); color:var(--lime); }
 /* UX1: many «free to cut» rows fold into one line; the summary is a full-size tap target */
 details.fold > summary { min-height:var(--tap); display:flex; align-items:center; padding:0 var(--sp-16); margin:0 0 var(--sp-8); background:var(--card); border:var(--bw-1) solid var(--line); border-radius:var(--r-md); font-weight:700; cursor:pointer; }
+details[data-testid="orders-map"] > summary { min-height:var(--tap); align-content:center; cursor:pointer; } /* Orders map fold is a full-size tap target; no display change, so the ▸ marker stays */
+.planting-open { min-height:var(--tap); }
 details.fold[open] > summary { margin-bottom:var(--sp-12); }
 
 /* the static splash in index.html (the ring mark) until the app mounts: no animation, nothing pulses (design sprint D7) */

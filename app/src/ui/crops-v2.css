@@ -123,11 +123,11 @@
 }
 
 /* «Ρυθμός συγκομιδής» and «Από τις καταγραφές σας» on the crop page */
-.pace { display: grid; gap: var(--sp-2); margin-block: var(--sp-3); }
+.pace { display: grid; gap: var(--sp-2); margin-block: var(--sp-12); }
 .pace small { display: block; }
 .pace .btn { margin-top: var(--sp-2); }
 .pace-form { display: grid; gap: var(--sp-2); }
 /* «Νερό αυτή την εβδομάδα» on the parcel page */
-.water { display: grid; gap: var(--sp-2); margin-block: var(--sp-3); }
+.water { display: grid; gap: var(--sp-2); margin-block: var(--sp-12); }
 .water small { display: block; }
 .water-form { display: grid; gap: var(--sp-2); }
