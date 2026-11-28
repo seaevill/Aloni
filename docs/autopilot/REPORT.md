@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 15:50 Atina — yönetici koşusu 20261128-1321
+1. **Uygulamada ne değişti:** «Χωράφια» ekranında her tarla artık tek kez görünüyor. Eskiden üstte küçük çizim karoları, altında aynı tarlaların listesi vardı; şimdi tek bir kart listesi var. Her kartta tarlanın çizimi, adı, alanı (στρ.), **o tarlada şu an ekili ürünlerin adları** (yeni), durum etiketi ve bekleme cümlesi. Arama, tarla ekleme, arşivleme ve karta dokununca detay açılması aynen duruyor.
+2. **Senin için faydası:** Tarlaları iki kez kaydırmıyorsun; hangi tarlada ne ekili olduğunu kartı açmadan görüyorsun. Telefonda sayfa biraz kısaldı (1797 → 1629 px).
+3. **Ne denendi, ne başarısız oldu:** Tüm birim testleri geçti. Tarla ekranını kullanan 4 ekran testi yalnızca yeni karta dokunacak şekilde değişti, kontroller aynı; bir test eski karoların gerçekten kalktığını ve ürün adlarının göründüğünü kontrol ediyor. Bekçi testleri kendisi koşturdu ve onayladı. GitHub'da tüm kontroller (iPhone tarayıcısıyla 3 parça ekran testi, SQL, Cloudflare derlemesi) ilk denemede başarılı. Yerelde (iPhone tarayıcısı değil) birkaç test düştü; aynıları değişiklik olmadan ana dalda da düşüyor, ortam farkı.
+4. **Önerim:** Telefonda «Χωράφια»yı aç; her tarlanın tek kartta, ekili ürün adlarıyla göründüğüne bak. Sıradaki onaylı iş: is-11 («Μητρώο» ekranında kayıt kimliğini kapalı bölüme almak, indirme düğmesi yazılarını kısaltmak).
+5. **Senden gereken karar:** (1) Eski özellik listesi belgesi (feature-inventory) ve RUNBOOK/Demo test listesi hâlâ eski adları ve yolları yazıyor; güncellensin mi? (2) «Σήμερα» için iki soru hâlâ açık (is-6b-4).
+
+PR: https://github.com/seaevill/aloni/pull/657 (birleşti). Bugünkü kod işi: 6/12. Birleşti ≠ canlıda.
+
 ## 2026-11-28 15:13 Atina — yönetici koşusu 20261128-1155
 1. **Uygulamada ne değişti:** «Άλλα» menüsü kısaldı. Menüde 10 giriş (aynı sırada), dil seçimi ve sürüm satırı kaldı; en alta yeni bir satır geldi: **«Ρυθμίσεις και σύνδεση»**. Eskiden menünün altında uzayan ayarlar (Φως ημέρας, çiftlik seçimi, Demo/Επίδειξη, giriş ve hazırlık kartı, yedek, bildirimler, geliştirici bölümü) artık bu satıra dokununca açılan ayrı ekranda. Hiçbir şey kalkmadı; telefonda sayfa boyu yaklaşık üçte bire indi.
 2. **Senin için faydası:** «Άλλα» açılınca her gün kullandığın ekranlar kaydırmadan görünüyor; ayarlar karışmıyor.
