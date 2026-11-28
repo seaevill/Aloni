@@ -4,7 +4,21 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": null,
+  "simdi": {
+    "id": "ev-2",
+    "baslik": "[P1] Σήμερα → «Σήμερα έγιναν»: hasadın gittiği yer, hasat formunun kaydettiği yerden okunsun (yalnızca telefon modunda önce ayar, sonra satır); bir saniye önceki kayıt «άγνωστο – παλιά καταγραφή» demesin. Önce kırmızı test. ~60 satır.",
+    "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 1-usability U2",
+    "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+    "sahip": "aloni-gelistirme",
+    "tur": "ozellik",
+    "durum": "pr-acik",
+    "deneme": 1,
+    "son_deneme": {
+      "tarih": "2026-11-28",
+      "sonuc": "PR açıldı; bekçi ve CI bekleniyor",
+      "pr": "https://github.com/seaevill/Aloni/pull/671"
+    }
+  },
   "sirada": [
     {
       "id": "is-6b-4",
@@ -51,17 +65,6 @@
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
       "durum": "ertelendi",
-      "deneme": 0,
-      "son_deneme": null
-    },
-    {
-      "id": "ev-2",
-      "baslik": "[P1] Σήμερα → «Σήμερα έγιναν»: hasadın gittiği yer, hasat formunun kaydettiği yerden okunsun (yalnızca telefon modunda önce ayar, sonra satır); bir saniye önceki kayıt «άγνωστο – παλιά καταγραφή» demesin. Önce kırmızı test. ~60 satır.",
-      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 1-usability U2",
-      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
-      "sahip": "aloni-gelistirme",
-      "tur": "ozellik",
-      "durum": "sirada",
       "deneme": 0,
       "son_deneme": null
     },

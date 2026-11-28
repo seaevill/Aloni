@@ -64,10 +64,17 @@ export interface DoneRecord {
   /** only what the record itself says; no `destination` on the record = unknown (old record) */ destination: 'store' | 'dispatch' | undefined;
 }
 
+const destinationOf = (h: Row, phoneDest: Readonly<Record<string, { d?: unknown }>>): 'store' | 'dispatch' | undefined => {
+  const word = (v: unknown): 'store' | 'dispatch' | undefined => (v === 'store' ? 'store' : isDispatch(v) ? 'dispatch' : undefined);
+  return word(h.destination) ?? word(Object.prototype.hasOwnProperty.call(phoneDest, String(h.id)) ? phoneDest[String(h.id)]?.d : undefined);
+};
+
 /** Every record made today (Athens day), sprays and harvests together, oldest first: what it was, where, and (spray) the product or (harvest) the crates and where they went. Information only. */
 export function doneRecords(
   today: string, sprays: readonly Row[], harvests: readonly Row[], jobs: readonly Row[], links: readonly Row[], plantings: readonly Row[],
   workerName: (id: unknown) => string, productName: (id: unknown) => string,
+  /** this phone's own answers (harvest id → where it went), saved by the harvest form while the server column is not yet confirmed; the row's own field wins */
+  phoneDest: Readonly<Record<string, { d?: unknown }>> = {},
 ): DoneRecord[] {
   const out: DoneRecord[] = [];
   const planting = (id: unknown): Row | undefined => plantings.find((p) => p.id === id);
@@ -78,7 +85,7 @@ export function doneRecords(
   for (const h of harvests.filter((x) => !x.deleted_at && dayOf(x.harvested_at) === today)) {
     const p = planting(h.planting_id); const n = parseWhole<'Crates'>(typeof h.crates_str === 'string' ? h.crates_str : '');
     const job = jobs.find((j) => j.id === h.job_id);
-    out.push({ kind: 'harvest', id: String(h.id), at: String(h.harvested_at), cropId: String(p?.crop_id ?? ''), parcelId: String(p?.parcel_id ?? ''), worker: workerName(h.cut_by ?? job?.worker_id), product: '', productId: '', crates: n.known ? String(n.value) : undefined, destination: h.destination === 'store' ? 'store' : isDispatch(h.destination) ? 'dispatch' : undefined });
+    out.push({ kind: 'harvest', id: String(h.id), at: String(h.harvested_at), cropId: String(p?.crop_id ?? ''), parcelId: String(p?.parcel_id ?? ''), worker: workerName(h.cut_by ?? job?.worker_id), product: '', productId: '', crates: n.known ? String(n.value) : undefined, destination: destinationOf(h, phoneDest) });
   }
   return out.sort((a, b) => a.at.localeCompare(b.at));
 }
