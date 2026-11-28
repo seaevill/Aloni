@@ -19,6 +19,31 @@ const snap = (over: Partial<Snapshot>): Snapshot => ({
 const full = (o: Partial<Output>): Output => ({ rule_id: '', kind: 'info', category: '', notify: false, parcel_ids: [], planting_ids: [], product_ids: [], crop_ids: [], values: {}, vetoes: [], ...o });
 const PHI_BLOCK: Partial<Output> = { rule_id: 'PHI', kind: 'alert', category: 'phi_blocked_unknown', severity: 'high', planting_ids: ['pl'], parcel_ids: ['p'], product_ids: ['prod'] };
 
+describe('a running PHI is a harvest veto, and the frost thaw advice never says «PHI clear» during one', () => {
+  const j = [{ id: 'j', kind: 'spray', status: 'done', plantingIds: ['pl'], productId: 'prod', startedAt: '2026-11-18T08:00:00Z', endedAt: '2026-11-18T09:00:00Z' }];
+  it('the running hold carries the same harvest veto as the blocked case (a hold is never an advice without a veto)', () => {
+    const hold = runRules(snap({ jobs: j, asOf: '2026-11-20T00:00:00Z' })).find((o) => o.category === 'phi_hold');
+    expect(hold?.vetoes).toEqual([{ by: 'PHI', vetoed: 'harvest', planting_id: 'pl', reason: 'phi_running' }]);
+  });
+  it('escape attempt: once the hold is over there is no veto, and one second before the end there still is', () => {
+    expect(runRules(snap({ jobs: j, asOf: '2026-11-25T09:00:00Z' })).find((o) => o.category === 'phi_hold')?.vetoes).toHaveLength(1);
+    expect(runRules(snap({ jobs: j, asOf: '2026-11-25T09:00:01Z' })).flatMap((o) => o.vetoes.filter((v) => v.by === 'PHI'))).toEqual([]);
+  });
+  it('FROST thaw: a planting under a running PHI gets no «no harvest before thaw» advice and no phi_clear:true anywhere', () => {
+    const frostParams = { tminMaxC: 2, windMaxKmh: 5, cloudMaxOktas: 2, elevationMaxM: 500, offsetC: { plain: -1, slope: 2, coastal: 1 }, leafBelowAirC: [1, 3] as const, coverGainC: [1, 2] as const };
+    const frost = (): Snapshot => snap({ asOf: '2026-11-20T04:40:00Z', ruleStatus: { FROST: 'signed' }, jobs: j.map((x) => ({ ...x, startedAt: '2026-11-19T06:00:00Z', endedAt: '2026-11-19T08:00:00Z' })),
+      frost: { params: frostParams, parcels: { p: { elevationM: 24, topo: 'plain', nights: [{ night: '2026-11-20/2026-11-21', from: '2026-11-20', to: '2026-11-21', tminC: 1, windKmh: 2, cloudOktas: 1 }] } }, tenderCrops: [], guardCrops: ['crop'], coversOnHand: false,
+        thaw: { firstLocalHour: 6, minLeafTempC: 0, harvestFromByPlanting: { pl: '2026-11-18' }, hoursByParcel: { p: [{ at: '2026-11-21T07:00:00Z', localDay: '2026-11-21', localHour: 9, tempC: 6 }] } } } });
+    const out = runRules(frost());
+    expect(out.some((o) => o.category === 'phi_hold')).toBe(true);
+    expect(out.filter((o) => o.category === 'no_harvest_before_thaw')).toEqual([]);
+    expect(out.some((o) => o.values.phi_clear === true)).toBe(false);
+    // control: with no spray at all the advice is still given, and only then it says phi_clear
+    const clear = runRules({ ...frost(), jobs: [] }).find((o) => o.category === 'no_harvest_before_thaw');
+    expect(clear?.values.phi_clear).toBe(true);
+  });
+});
+
 describe('the engine never shortens a waiting period and never decides from what is not signed', () => {
   it('property (1000 sprays): the PHI hold ends exactly PHI × 24 h after the spray, is on while it runs and gone after it, and no date is earlier', () => {
     const rnd = seeded(31);
