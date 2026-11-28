@@ -1,6 +1,6 @@
 # Management loop
 
-Source of truth: `docs/autopilot/YONETICI.md`, read at main 682c32d (2026-11-28); the file was last changed in commit 03e2dd8 (2026-11-27). `ANAYASA.md` and `CLAUDE.md` win over it.
+Source of truth: `docs/autopilot/YONETICI.md`, read at main 682c32d (2026-11-28); the file was last changed in commit 5416726 (#603, 2026-11-27). `ANAYASA.md` and `CLAUDE.md` win over it.
 
 ## How it came to be (dated)
 
