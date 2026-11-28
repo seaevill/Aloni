@@ -1,12 +1,14 @@
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import { iphone } from './helpers/iphone';
+import { openSettings } from './helpers/tabs';
 
 // Real data in (the data controller details), export a file, open the app on a "new phone" (a fresh browser profile), restore, same data.
 test('export a backup and restore it on a new phone', async ({ page, browser }) => {
   await iphone(page);
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await expect(page.getByTestId('backup-note')).toContainText('ποτέ');
+  await page.getByRole('button', { name: /Πίσω|Επιστροφή/ }).first().click();
   await page.getByTestId('open-info').click();
   const inputs = page.locator('input.input');
   await inputs.nth(0).fill('Test Person'); await inputs.nth(1).fill('Test street 1'); await inputs.nth(2).fill('+30 000 0000000');
@@ -14,6 +16,7 @@ test('export a backup and restore it on a new phone', async ({ page, browser }) 
   await expect(page.getByTestId('sync-chip')).toContainText('Αποθηκεύτηκε στο τηλέφωνο');
   await expect(page.getByTestId('backup-stale')).toBeVisible(); // data on the phone, no backup yet
   await page.getByRole('button', { name: 'Επιστροφή' }).click();
+  await page.getByTestId('open-settings').click();
 
   const download = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Εξαγωγή αντιγράφου' }).click();
@@ -27,13 +30,14 @@ test('export a backup and restore it on a new phone', async ({ page, browser }) 
 
   const phone2 = await (await browser.newContext({ baseURL: 'http://localhost:4173', viewport: { width: 375, height: 667 } })).newPage();
   await iphone(phone2);
-  await phone2.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(phone2);
   await phone2.locator('input[type=file]').setInputFiles(path);
   await expect(phone2.getByTestId('backup-msg')).toContainText('Έγινε επαναφορά');
+  await phone2.getByRole('button', { name: /Πίσω|Επιστροφή/ }).first().click();
   await phone2.getByTestId('open-info').click();
   await expect(phone2.getByTestId('info-privacy')).toContainText('Test Person');
   await phone2.locator('nav.tabs [data-tab="today"]').click();
-  await phone2.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(phone2);
   await phone2.locator('input[type=file]').setInputFiles({ name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from('not a backup') });
   await expect(phone2.getByTestId('backup-msg')).toContainText('δεν είναι αντίγραφο');
 });

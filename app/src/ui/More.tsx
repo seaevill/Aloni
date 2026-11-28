@@ -1,22 +1,15 @@
 import { useState } from 'preact/hooks';
 import { useBack } from './backstack';
-import { activeFarm, dataVersion, deleteDemo, farmLabel, hasDemo, legacyKept, loadDemo, loadDemoSeason, realFarmId } from '../db';
+import { activeFarm } from '../db';
 import { APP_NAME_EL, DEMO_FARM_ID } from '../config';
 import { APP_VERSION } from '../version';
 import { LANGS, LANG_META, lang, setLang, t } from '../i18n';
 
 import { Photos } from './Photos';
-import { SettingsBox } from './SettingsBox';
+import { MoreSettings } from './MoreSettings';
 import { lazyScreen } from './lazyScreen';
 import { tab, workerView } from './nav';
-import { Backup } from './Backup';
-import { GoLive } from './GoLive';
-import { Notifications } from './Notifications';
-import { Readiness } from './Readiness';
-import { SignIn } from './SignIn';
-import { showUndo } from './Toast';
 import { weeklyCopy } from '../content/weekly-report';
-import { setSun, sunMode } from './sunmode';
 import './more-v2.css';
 
 // Opened from Άλλα only, never in a first visit's first seconds: kept out of the first-load JavaScript (warmed after the first screen, see lazyScreen.tsx).
@@ -36,6 +29,7 @@ const MENU_ICONS = {
   photos: 'M3 5h18v14H3zM3 16l5-5 4 4 3-3 6 5M15 9h1',
   money: 'M3 6h18v12H3zM3 10h18M7 15h3',
   stock: 'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10',
+  settings: 'M4 7h10M18 7h2M4 17h2M10 17h10M16 5v4M8 15v4',
   info: 'M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0zM12 11v6m0-10h.01',
 };
 
@@ -45,13 +39,9 @@ function MenuIcon({ name }: { name: keyof typeof MENU_ICONS }) {
 }
 
 export function More() {
-  const [msg, setMsg] = useState('');
-  const [view, setView] = useState<'main' | 'info' | 'photos' | 'workers' | 'register' | 'orders' | 'weekly' | 'customers' | 'money'>('main');
-  const standalone = matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true;
-  const openedFrom = [t(standalone ? 'more.openedFrom.home' : 'more.openedFrom.safari'), t('more.openedFrom.note')].join(' ');
-  const demoLabel = t(hasDemo.value ? 'more.resetDemo' : 'more.loadDemo');
+  const [view, setView] = useState<'main' | 'info' | 'photos' | 'workers' | 'register' | 'orders' | 'weekly' | 'customers' | 'money' | 'settings'>('main');
   useBack(view !== 'main', () => setView('main'));
-  const pick = (id: string) => { activeFarm.value = id; dataVersion.value++; };
+  if (view === 'settings') return <MoreSettings onBack={() => setView('main')} />;
   if (view === 'info') return <Info onBack={() => setView('main')} />;
   if (view === 'weekly') return <WeeklyReport onBack={() => setView('main')} />;
   if (view === 'orders') return <Orders onBack={() => setView('main')} />;
@@ -77,9 +67,8 @@ export function More() {
         <button class="row" data-testid="open-photos" onClick={() => setView('photos')}><MenuIcon name="photos" /><span>{t('photos.title')}</span><span aria-hidden="true" class="chev" /></button>
         <h2 class="menu-group">{t('ui.more.group.info')}</h2>
         <button class="row" data-testid="open-info" onClick={() => setView('info')}><MenuIcon name="info" /><span>{t('more.info')}</span><span aria-hidden="true" class="chev" /></button>
+        <button class="row" data-testid="open-settings" onClick={() => setView('settings')}><MenuIcon name="settings" /><span>{t('more.settings')}</span><span aria-hidden="true" class="chev" /></button>
       </nav>
-
-      <h2>{t('more.settings')}</h2>
 
       <h2>{t('more.language')}</h2>
       <div class="seg">
@@ -87,42 +76,6 @@ export function More() {
           <button key={l} aria-pressed={lang.value === l} onClick={() => setLang(l)}>{LANG_META[l].label}</button>
         ))}
       </div>
-
-      <h2>{t('ui.sun.title')}</h2>
-      <div class="seg two" role="group" aria-label={t('ui.sun.title')} data-testid="sun-toggle">
-        <button aria-pressed={!sunMode.value} data-testid="sun-off" onClick={() => void setSun(false)}>{t('ui.sun.off')}</button>
-        <button aria-pressed={sunMode.value} data-testid="sun-on" onClick={() => void setSun(true)}>{t('ui.sun.on')}</button>
-      </div>
-      <p class="muted">{t('ui.sun.note')}</p>
-
-      <h2>{t('more.activeFarm')}</h2>
-      <div class="seg two">
-        {[realFarmId.value, ...(hasDemo.value ? [DEMO_FARM_ID] : [])].map((id) => (
-          <button key={id} aria-pressed={activeFarm.value === id} onClick={() => pick(id)}>{farmLabel(id)}</button>
-        ))}
-      </div>
-
-      <h2>{t('ui.more.group.demo')}</h2>
-      <button class="btn" data-testid="demo-load" onClick={async () => { await loadDemo(); setMsg(t('more.demoLoaded')); }}>{demoLabel}</button>
-      <button class="btn secondary" data-testid="demo-season-load" onClick={async () => { await loadDemoSeason(); setMsg(t('more.demoLoaded')); }}>{t('more.demoSeason')}</button>
-      {hasDemo.value && (
-        <button class="btn danger" onClick={async () => { await deleteDemo(); showUndo(t('more.demoRemoved'), loadDemo); }}>{t('more.removeDemo')}</button>
-      )}
-      <p class="muted">{t('more.demoNote')}</p>
-      {msg && <p class="msg" role="status">{msg}</p>}
-      <Readiness part="owner" />
-      <GoLive />
-      <p class="muted" data-testid="this-phone">{t('more.thisPhone')}</p>
-      <p class="muted" data-testid="opened-from">{openedFrom}</p>
-      <SignIn />
-      <Backup />
-      <SettingsBox />
-      <Notifications />
-      {legacyKept.value && <p class="draft" role="note">{t('more.legacyKept')}</p>}
-      <details class="card" data-testid="dev-section">
-        <summary>{t('dev.title')}</summary>
-        <Readiness part="dev" />
-      </details>
       <p class="muted">{t('more.version', { v: APP_VERSION, name: APP_NAME_EL })}</p>
     </section>
   );

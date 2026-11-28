@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { athensInput, fixClock } from './helpers/clock';
+import { openSettings } from './helpers/tabs';
 
 // A worker's own phone against a MOCK backend (the e2e build): the invitation is claimed at the first sign-in, the farm's id is taken, the server's rows arrive by pull and the worker
 // sees only her own job. «Έγινε» is a call to the server (complete_spray_job): queued while there is no signal, sent when there is, and the job is then done on the server's side.
@@ -33,7 +34,7 @@ async function mock(page: Page) {
 test('a worker\'s first sign-in: the farm is taken from the invitation, the roster and her job arrive, no owner screens, no «Δεν έγινε»', async ({ page }) => {
   await mock(page);
   await page.goto('/');
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await page.getByTestId('sign-in').locator('input').first().fill('worker@example.org');
   await page.getByTestId('signin-send').click();
   await page.getByTestId('sign-in').locator('input').nth(1).fill('123456');
@@ -51,7 +52,7 @@ test('«Έγινε» without signal waits in the outbox and says so; with signal
   await fixClock(page);
   const state = await mock(page);
   await page.goto('/');
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await page.getByTestId('sign-in').locator('input').first().fill('worker@example.org');
   await page.getByTestId('signin-send').click();
   await page.getByTestId('sign-in').locator('input').nth(1).fill('123456');

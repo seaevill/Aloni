@@ -4,7 +4,21 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": null,
+  "simdi": {
+    "id": "is-9",
+    "baslik": "Άλλα menüsünü kısalt: uzun listeyi gruplayıp kısalt (FARK-LISTESI öneri 1); hiçbir giriş kalkmaz, her ekran yine Άλλα'dan açılır. 375 px önce/sonra ekran görüntüsü.",
+    "kaynak": "Bora, 28 Kasım 2026 (docs/design/compare/2026-11-27/FARK-LISTESI.md önerilerinden seçti)",
+    "onay": "Bora, 28 Kasım 2026",
+    "sahip": "aloni-gelistirme",
+    "tur": "ozellik",
+    "durum": "pr-acik",
+    "deneme": 1,
+    "son_deneme": {
+      "tarih": "2026-11-28",
+      "sonuc": "PR açıldı: Άλλα altındaki ayar bloğu «Ρυθμίσεις και σύνδεση» alt ekranına taşındı; menü 10 giriş + dil + sürüm kaldı; 375 px sayfa 4811 -> 1417 px",
+      "pr": 655
+    }
+  },
   "sirada": [
     {
       "id": "is-6b-4",
@@ -14,17 +28,6 @@
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
       "durum": "bora-bekliyor",
-      "deneme": 0,
-      "son_deneme": null
-    },
-    {
-      "id": "is-9",
-      "baslik": "Άλλα menüsünü kısalt: uzun listeyi gruplayıp kısalt (FARK-LISTESI öneri 1); hiçbir giriş kalkmaz, her ekran yine Άλλα'dan açılır. 375 px önce/sonra ekran görüntüsü.",
-      "kaynak": "Bora, 28 Kasım 2026 (docs/design/compare/2026-11-27/FARK-LISTESI.md önerilerinden seçti)",
-      "onay": "Bora, 28 Kasım 2026",
-      "sahip": "aloni-gelistirme",
-      "tur": "ozellik",
-      "durum": "sirada",
       "deneme": 0,
       "son_deneme": null
     },
@@ -185,7 +188,7 @@
   ],
   "gunluk": {
     "tarih": "2026-11-28",
-    "kod_isi": 4
+    "kod_isi": 5
   },
   "son_kosu": {
     "tarih": "2026-11-28",

@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
+import { openSettings } from './helpers/tabs';
 
 // The built app must work under the real CSP from public/_headers (vite preview does not send it, so we add it).
 const csp = /Content-Security-Policy:\s*(.+)/.exec(readFileSync(new URL('../../public/_headers', import.meta.url), 'utf8'))![1].trim();
@@ -14,7 +15,7 @@ test('the app runs under the production CSP: no violations, demo import and serv
   await page.addInitScript(() => document.addEventListener('securitypolicyviolation', (e) => console.error(`Refused to: ${e.violatedDirective} ${e.blockedURI}`)));
 
   await page.goto('/');
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await page.locator('main button.btn').first().click(); // load the demo farm (IndexedDB)
   await expect(page.getByTestId('demo-banner')).toBeVisible();      // wait until the demo is loaded: its banner pushes the page down, a tap sent before it lands on the wrong spot
   await page.locator('nav.tabs [data-tab="today"]').click();

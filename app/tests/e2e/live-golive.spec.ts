@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { openSettings } from './helpers/tabs';
 
 // The go-live wizard against the MOCK backend (the e2e build): the button is closed until every item is ok; signing in alone sends NOTHING; pressing it sends an empty call first, then
 // the queued records, then pulls; a server error switches nothing on.
@@ -41,7 +42,7 @@ async function prepare(page: Page) {
 }
 
 async function signIn(page: Page) {
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await page.getByTestId('sign-in').locator('input').first().fill('bora@example.org');
   await page.getByTestId('signin-send').click();
   await page.getByTestId('sign-in').locator('input').nth(1).fill('123456');
@@ -52,10 +53,10 @@ async function signIn(page: Page) {
 test('the button is closed until everything is ok; signing in sends nothing; pressing it sends an empty call, then the records, then pulls; the switch stays on after a reload', async ({ page }) => {
   const seen = await mock(page);
   await page.goto('/');
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await expect(page.getByTestId('golive-start')).toBeDisabled();                 // nothing is ready yet
   await prepare(page);
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await expect(page.getByTestId('golive-start')).toBeDisabled();                 // not signed in yet
   await expect(page.getByTestId('golive-signed_in')).toHaveAttribute('data-ok', 'no');
   await signIn(page);
@@ -69,7 +70,7 @@ test('the button is closed until everything is ok; signing in sends nothing; pre
   expect(seen.applied.flat().map((o) => o.table)).toContain('parcels');          // then the record
   expect(seen.pulls).toBeGreaterThan(0);
   await page.reload();
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await expect(page.getByTestId('golive-on')).toBeVisible();                     // the switch is remembered
 });
 

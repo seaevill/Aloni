@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { installClock } from './helpers/clock';
 import { iphone } from './helpers/iphone';
+import { openSettings } from './helpers/tabs';
 
 test('the offline chip appears without a connection and goes away when it is back', async ({ page, context }) => {
   await iphone(page);
@@ -20,13 +21,13 @@ test('empty state: the main action first, the demo second; undo (no dialog) brin
   await expect(page.getByTestId('empty-state').locator('button')).toHaveCount(2); // «add a field» first
   await page.getByTestId('empty-second').click(); // the demo is the second choice
   await expect(page.locator('main .card')).toHaveCount(10);
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await page.locator('main button.btn.danger').click();
   await expect(page.getByTestId('toast')).toContainText('Η επίδειξη διαγράφηκε');
   await page.getByTestId('toast').getByRole('button', { name: 'Αναίρεση' }).click();
   await page.locator('nav.tabs [data-tab="parcels"]').click();
   await expect(page.locator('main .card')).toHaveCount(5); // the demo is back
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await page.locator('main button.btn.danger').click();
   await expect(page.getByTestId('toast')).toBeVisible();
   await page.clock.runFor(5100);

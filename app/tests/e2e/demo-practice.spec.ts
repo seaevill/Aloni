@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { iphone } from './helpers/iphone';
+import { openSettings } from './helpers/tabs';
 
 // T14: the demo farm is writable (practice) and can be reset; nothing of it is queued for sync.
 test('demo: the spray and job forms open, and «Επαναφορά επίδειξης» restores the original', async ({ page }) => {
@@ -11,7 +12,7 @@ test('demo: the spray and job forms open, and «Επαναφορά επίδει�
   await page.getByTestId('job-open').click();
   await expect(page.getByTestId('job-save')).toBeVisible();
   await page.getByRole('button', { name: 'Ακύρωση' }).first().click();
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await expect(page.getByTestId('demo-load')).toHaveText('Επαναφορά επίδειξης');
   await page.getByTestId('demo-load').click();
   await expect(page.getByRole('status').filter({ hasText: /επίδειξη/i }).first()).toBeVisible();
@@ -60,7 +61,7 @@ test('demo: a harvest is recorded for real, and the reset restores the original 
   await page.getByTestId('open-worker-view').click();                                        // the worker's screen of the demo: «Σημερινές δουλειές»
   await expect(page.getByTestId('worker-app')).toBeVisible();
   await page.getByRole('button', { name: /Έξοδος/ }).click();
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await page.getByTestId('demo-load').click();                                               // «Επαναφορά επίδειξης»
   await expect(page.getByRole('status').filter({ hasText: /επίδειξη/i }).first()).toBeVisible();
   expect(await count(page, 'job_harvest')).toBe(before);                                     // exactly the original

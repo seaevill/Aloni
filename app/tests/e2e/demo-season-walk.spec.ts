@@ -25,7 +25,7 @@ for (const [language, width] of RUNS) {
     };
     const lower = async (name: string) => { await page.evaluate(() => window.scrollTo(0, 900)); await visit(name); await page.evaluate(() => window.scrollTo(0, 0)); };
     const tab = (id: string) => goTab(page, id);
-    await tab('more'); await (language === 'classic' ? page.getByTestId('demo-load') : page.getByTestId('demo-season-load')).click(); await expect(page.getByTestId('demo-banner')).toBeVisible();
+    await tab('more'); await page.getByTestId('open-settings').click(); await (language === 'classic' ? page.getByTestId('demo-load') : page.getByTestId('demo-season-load')).click(); await expect(page.getByTestId('demo-banner')).toBeVisible();
     await tab('today'); await visit('today'); await lower('today-lower');
     for (const id of ['kpi-parcels', 'kpi-crops', 'today-cut7-big', 'today-canharvest']) { await page.getByTestId(id).click(); await visit(`today-${id}`); await page.getByTestId('sheet-close').first().click(); }
     await page.getByTestId('history-open').click(); await visit('history'); await back(page);
@@ -35,7 +35,7 @@ for (const [language, width] of RUNS) {
     await tab('stock'); await visit('stock'); await lower('stock-lower'); await page.getByTestId('product-source-open').first().click(); await visit('product-sheet'); await page.getByTestId('sheet-close').first().click();
     await page.getByTestId('stock-open').first().click(); await visit('stock-lots'); await back(page);
     await tab('more'); await visit('more');
-    for (const id of ['open-register', 'open-orders', 'open-customers', 'open-money', 'open-workers', 'open-weekly-report', 'open-photos', 'open-info']) { await page.getByTestId(id).click(); await visit(id); if (id === 'open-customers' && (await page.getByTestId('customer').count()) > 0) { await page.getByTestId('customer').first().click(); await visit('customer-page'); await back(page); } if (id === 'open-money' && (await page.getByTestId('money-entry').count()) > 0) { await page.getByTestId('money-entry').first().click(); await visit('money-entry'); await page.getByTestId('sheet-close').first().click(); } await back(page); }
+    for (const id of ['open-register', 'open-orders', 'open-customers', 'open-money', 'open-workers', 'open-weekly-report', 'open-photos', 'open-info', 'open-settings']) { await page.getByTestId(id).click(); await visit(id); if (id === 'open-customers' && (await page.getByTestId('customer').count()) > 0) { await page.getByTestId('customer').first().click(); await visit('customer-page'); await back(page); } if (id === 'open-money' && (await page.getByTestId('money-entry').count()) > 0) { await page.getByTestId('money-entry').first().click(); await visit('money-entry'); await page.getByTestId('sheet-close').first().click(); } await back(page); }
     await page.getByTestId('open-worker-view').click(); await visit('worker-view');
     expect(problems, 'serious/critical accessibility problems (axe)').toEqual([]);
     expect(errors.filter((e) => !/icon-192|net::ERR/.test(e)), `console errors at ${width}`).toEqual([]);

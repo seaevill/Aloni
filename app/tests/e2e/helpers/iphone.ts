@@ -26,7 +26,7 @@ export async function goTo(page: Page, route: Route): Promise<void> {
 export async function eachScreen(page: Page, visit: (at: { lang: Lang; route: Route; state: State }) => Promise<void>): Promise<void> {
   for (const state of ['empty', 'demo'] as const) {
     await tab(page, 'today'); // leaves the Information sub-screen (More keeps its state while it stays open)
-    if (state === 'demo') { await tab(page, 'more'); await page.getByTestId('demo-load').click(); }
+    if (state === 'demo') { await tab(page, 'more'); await page.getByTestId('open-settings').click(); await page.getByTestId('demo-load').click(); }
     for (const lang of LANGS) {
       await tab(page, 'today');
       await tab(page, 'more');

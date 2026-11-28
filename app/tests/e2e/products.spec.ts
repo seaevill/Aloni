@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { goTab } from './helpers/tabs';
+import { goTab, openSettings } from './helpers/tabs';
 import { iphone } from './helpers/iphone';
 
 const tab = (page: Page, id: string) => goTab(page, id);
@@ -46,7 +46,7 @@ test('add a product offline with a label photo: name kept, type and unit must be
 
 test('while the demo farm is active no product can be added', async ({ page }) => {
   await iphone(page);
-  await tab(page, 'more');
+  await openSettings(page);
   await page.locator('main button.btn').first().click();
   await expect(page.getByTestId('demo-banner')).toBeVisible();      // wait until the demo is loaded: its banner pushes the page down, a tap sent before it lands on the wrong spot
   await tab(page, 'stock');

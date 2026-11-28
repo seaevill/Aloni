@@ -1,5 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 import { setup } from './farm';
+import { openSettings } from './tabs';
 
 // Shared by the live two-phone specs: a MOCK server shared by an owner phone and a worker phone (nothing leaves the machine).
 export const json = (body: unknown, status = 200) => ({ status, contentType: 'application/json', body: JSON.stringify(body) });
@@ -60,7 +61,7 @@ export async function mockFor(page: Page, srv: Server, role: 'owner' | 'worker',
 }
 
 export async function signIn(page: Page, email: string) {
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await page.getByTestId('sign-in').locator('input').first().fill(email);
   await page.getByTestId('signin-send').click();
   await page.getByTestId('sign-in').locator('input').nth(1).fill('123456');
@@ -85,6 +86,7 @@ export async function ownerInvitesWorker(owner: Page, srv: Server): Promise<stri
   const farmId = (await owner.getByTestId('farm-id').innerText()).replace(/^.*?:\s*/, '').trim();
   await owner.getByTestId('golive-start').click();
   await expect(owner.getByTestId('golive-on')).toBeVisible();
+  await owner.getByRole('button', { name: /Πίσω|Επιστροφή/ }).first().click();
   await owner.getByTestId('open-workers').click();
   await owner.locator('[data-testid="worker"]').filter({ hasText: 'Γιώργος' }).locator('input[type=email]').fill('worker@example.org');
   await owner.locator('[data-testid="worker"]').filter({ hasText: 'Γιώργος' }).getByTestId('invite-send').click();

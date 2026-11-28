@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { iphone } from './helpers/iphone';
+import { openSettings } from './helpers/tabs';
 
 test('add a parcel offline (typed στρ. kept exactly), keep it after reload, archive and undo, no dialog', async ({ page, context }) => {
   const dialogs: string[] = [];
@@ -42,7 +43,7 @@ test('add a parcel offline (typed στρ. kept exactly), keep it after reload, a
 
 test('while the demo farm is active no parcel can be added to it', async ({ page }) => {
   await iphone(page);
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await page.locator('main button.btn').first().click(); // load the demo
   await expect(page.getByTestId('demo-banner')).toBeVisible();      // wait until the demo is loaded: its banner pushes the page down, a tap sent before it lands on the wrong spot
   await page.locator('nav.tabs [data-tab="parcels"]').click();

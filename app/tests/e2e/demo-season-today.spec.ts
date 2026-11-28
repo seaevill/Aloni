@@ -1,11 +1,12 @@
 import { expect, test } from '@playwright/test';
 import { iphone } from './helpers/iphone';
+import { openSettings } from './helpers/tabs';
 
 // QUEUE 34e: with the season Demo every number on Σήμερα opens its source sheet and the source agrees with the number.
 test('season Demo: each Σήμερα count opens its source, and the totals agree', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   const errors = await iphone(page);
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await page.getByTestId('demo-season-load').click();
   await expect(page.getByText('Η επίδειξη φορτώθηκε.')).toBeVisible();
   await page.locator('nav.tabs [data-tab="today"]').click();

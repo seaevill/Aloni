@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { iphone } from './helpers/iphone';
 import { setup } from './helpers/farm';
+import { openSettings } from './helpers/tabs';
 
 // E2 the bell on Σήμερα: nothing new at first (the first look starts the clock, old jobs are not «new»); a job finished afterwards shows a count; opening the list shows it and clears the count.
 test.use({ viewport: { width: 375, height: 812 } });
@@ -43,9 +44,10 @@ test('the bell counts a job finished after the last look, lists it, and the coun
 // The worker's screen has the same bell (her own new jobs); on the demo farm nothing was assigned after she looked, so it starts empty and opens the reason.
 test('the worker screen has the bell: 56 px, no count at first, and a reason when opened', async ({ page }) => {
   await iphone(page);
-  await page.locator('nav.tabs [data-tab="more"]').click();
+  await openSettings(page);
   await page.locator('main button.btn').first().click();          // the demo farm (it has the worker view)
   await expect(page.getByTestId('demo-banner')).toBeVisible();      // wait until the demo is loaded: its banner pushes the page down, a tap sent before it lands on the wrong spot
+  await page.getByRole('button', { name: /Πίσω|Επιστροφή/ }).first().click();
   await page.getByTestId('open-worker-view').click();
   const bell = page.getByTestId('worker-app').getByTestId('bell');
   await expect(bell).toBeVisible();
