@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 02:19 Atina — yönetici koşusu 20261128-0018
+1. **Uygulamada ne değişti:** Hiçbir şey. Bu koşuda alınabilecek onaylı ve senin cevabına bağlı olmayan iş yoktu.
+2. **Senin için faydası:** Kuralsız ya da onaysız iş yapılmadı; ana dal sağlam kaldı.
+3. **Ne denendi, ne başarısız oldu:** Ana dal (son kayıt 4ed1af7) yeşil: tüm kontroller (SQL, iPhone tarayıcısıyla 3 parça ekran testi, Cloudflare derlemesi) başarılı. Son 24 saatte ana dalda düşen ya da tekrar çalıştırılan test yok; bu yüzden ara sıra düşen testleri izleme işi (q-2) bu koşuda alınmadı. Başarısız olan yok.
+4. **Önerim:** Telefonda «Άλλα → Αποθήκη»yı ve «Σήμερα» ekranının yeni sade halini dene. Sıradaki iş is-6b-4 senin cevabınla hemen başlayabilir.
+5. **Senden gereken karar:** «Σήμερα» için iki soru (is-6b-4): (a) «Για κοπή σήμερα» ekim sayıyor, «Χωράφια χωρίς αναμονή» tarla sayıyor — tek satıra inecekse hangisi kalsın? (c) İlaçlama/hasat/iş ekleme düğmeleri hem hızlı ekleme bölümünde hem sayfada var — hangisi kalsın? Ayrıca prototip karşılaştırmasındaki 5 öneriden hangileri iş olsun?
+
+PR yok (yalnızca bu kayıt; #508 eski araştırma PR'ı, dokunulmadı). Bugünkü kod işi: 3/12. Birleşti ≠ canlıda.
+
 ## 2026-11-28 01:48 Atina — yönetici koşusu 20261127-2318
 1. **Uygulamada ne değişti:** «Αποθήκη» artık alt menüde değil; «Άλλα» menüsünde, «Καθημερινή δουλειά» grubunda «Παραγγελίες»in hemen altında bir satır olarak duruyor. Alt menüde 4 sekme kaldı (Σήμερα, Φυτά, Χωράφια, Άλλα). Αποθήκη ekranının kendisi (ilaç partileri, son kullanma, stok uyarıları) hiç değişmedi; Αποθήκη açıkken alt menüde «Άλλα» vurgulu görünüyor. Eski Αποθήκη bağlantısı (kayıtlı yer dahil) hâlâ açılıyor.
 2. **Senin için faydası:** Alt menü daha sade, her düğme daha geniş; senin seçtiğin düzen. Hiçbir işlev kaybolmadı.
