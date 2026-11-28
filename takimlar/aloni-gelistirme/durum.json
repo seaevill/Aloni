@@ -18,6 +18,50 @@
       "son_deneme": null
     },
     {
+      "id": "is-8",
+      "baslik": "Ürün detayı (Φυτά → bir ürün): o ürünün ekimleri sayfanın en üstünde görünsün (FARK-LISTESI öneri 2). Özellik kaybı yok; 375 px önce/sonra ekran görüntüsü.",
+      "kaynak": "Bora, 28 Kasım 2026 (docs/design/compare/2026-11-27/FARK-LISTESI.md önerilerinden seçti)",
+      "onay": "Bora, 28 Kasım 2026",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "is-9",
+      "baslik": "Άλλα menüsünü kısalt: uzun listeyi gruplayıp kısalt (FARK-LISTESI öneri 1); hiçbir giriş kalkmaz, her ekran yine Άλλα'dan açılır. 375 px önce/sonra ekran görüntüsü.",
+      "kaynak": "Bora, 28 Kasım 2026 (docs/design/compare/2026-11-27/FARK-LISTESI.md önerilerinden seçti)",
+      "onay": "Bora, 28 Kasım 2026",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "is-10",
+      "baslik": "Χωράφια listesi: aynı bilgi iki kez görünüyor (karo ızgarası + liste); teke indir ve karta ekili ürün adlarını ekle (FARK-LISTESI Χωράφια önerileri ve öneri 5). Özellik kaybı yok; 375 px önce/sonra ekran görüntüsü.",
+      "kaynak": "Bora, 28 Kasım 2026 (docs/design/compare/2026-11-27/FARK-LISTESI.md önerilerinden seçti)",
+      "onay": "Bora, 28 Kasım 2026",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
+      "id": "is-11",
+      "baslik": "Μητρώο: kayıt kimliğini kapalı bölüme al, indirme düğmesi yazılarını kısalt (FARK-LISTESI öneri 4). Kayıt içeriği ve dışa aktarım aynen kalır; 375 px önce/sonra ekran görüntüsü.",
+      "kaynak": "Bora, 28 Kasım 2026 (docs/design/compare/2026-11-27/FARK-LISTESI.md önerilerinden seçti)",
+      "onay": "Bora, 28 Kasım 2026",
+      "sahip": "aloni-gelistirme",
+      "tur": "ozellik",
+      "durum": "sirada",
+      "deneme": 0,
+      "son_deneme": null
+    },
+    {
       "id": "q-2",
       "baslik": "Ara sıra düşen testleri izle (labeluse.spec.ts:118, register-v2 yazdırma); yalnızca main'de yeni düşme kanıtı varsa kök nedeni ara",
       "kaynak": "docs/autopilot/QUEUE.md madde 2",
@@ -140,10 +184,10 @@
     "q-2b: m18_job_board.sql:90 düzeltmesi supabase/** dokunur; Bora yazılı onay verirse yapılır.",
     "Ταμείο veresiye (PR #604): Yunanca «Απλήρωτο / Πληρώθηκε / Δεν πληρώθηκε ακόμα / Απλήρωτα από πελάτες» terimleri docs/i18n/glossary-el.md içinde yok; Bora sözlük onayı versin ya da başka terim söylesin.",
     "Ταμείο kasa fiyatı (is-2c): «Κλούβες», «Προηγούμενη τιμή: … ανά κλούβα», «Χρήση» Yunanca terimleri docs/i18n/glossary-el.md içinde yok (yalnızca «κλούβα» var); Bora sözlük onayı versin ya da başka terim söylesin.",
-    "is-4 fark listesi (docs/design/compare/2026-11-27/FARK-LISTESI.md): 5 öneriden hangileri iş olarak sıraya girsin? (Άλλα'yı kısaltmak, ürün detayında ekimleri üste almak, Σήμερα'da hava özetini üste almak, Μητρώο kimlik satırı/düğme metinleri, Αποθήκη/Χωράφια yinelenen alanlar). Onaysız iş alınmaz.",
     "q-2 restore-drill.spec.ts:25: takım, hesap silme penceresinde yazının kutuda kaldığını doğrulayan bir iddia (toHaveValue) eklemeyi öneriyor; testi sıkılaştırır, bir sonraki düşmede hangi adımın bozulduğunu gösterir. Bora «evet» derse ayrı iş olarak sıraya girer.",
     "is-6b-2 (a): Σήμερα'da «Για κοπή σήμερα» sayısı ekim (φυτεύσεις) sayıyor, «Χωράφια χωρίς αναμονή» kutusu tarla sayıyor. Tek satıra inecekse hangisi kalsın: ekim sayısı mı, tarla sayısı mı, ikisi bir satırda mı?",
-    "is-6b-3 (c): Σήμερα'da ilaçlama/hasat/iş ekleme düğmeleri hem hızlı ekleme (QuickAdd) bölümünde hem sayfanın başka yerinde var. Tekrar kalkacaksa hangisi kalsın: hızlı ekleme bölümü mü, sayfadaki düğmeler mi? (Düğme işlevi silinmez, yalnızca tekrar kalkar.)"
+    "is-6b-3 (c): Σήμερα'da ilaçlama/hasat/iş ekleme düğmeleri hem hızlı ekleme (QuickAdd) bölümünde hem sayfanın başka yerinde var. Tekrar kalkacaksa hangisi kalsın: hızlı ekleme bölümü mü, sayfadaki düğmeler mi? (Düğme işlevi silinmez, yalnızca tekrar kalkar.)",
+    "Σήμερα'daki iki yerde duran ekleme düğmeleri: Bora 28 Kasım 2026'da tercih belirtmedi; dokunulmaz."
   ],
   "gunluk": {
     "tarih": "2026-11-28",
