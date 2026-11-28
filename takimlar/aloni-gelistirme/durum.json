@@ -746,8 +746,8 @@
   },
   "son_kosu": {
     "tarih": "2026-11-28",
-    "is": "ev-5 — yönetici koşusu 20261128-1741",
-    "sonuc": "PR #677 birleşti (squash 6fcaf46): bekçi ONAY 83c1f04'te, tüm kontroller (check, sql, static, e2e 1–3, pr-size, Workers Builds) ilk denemede yeşil. Bugünkü kod işi 12/12 (tavan)."
+    "is": "yok — yönetici koşusu 20261128-1810 (zincir)",
+    "sonuc": "İş alınmadı: bugünkü kod işi tavanı dolu (12/12, Atina 2026-11-28). Main fbc0e9d yeşil, açık iş PR'ı yok. Sıradaki onaylı iş ev-6, 29 Kasım ilk koşuda."
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }

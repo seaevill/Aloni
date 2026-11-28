@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 20:17 Atina — yönetici koşusu 20261128-1810
+1. **Uygulamada ne değişti:** Hiçbir şey. Bu koşuda iş alınmadı.
+2. **Senin için faydası:** Yok; yalnızca kontrol yapıldı.
+3. **Ne denendi, ne başarısız oldu:** Bugünkü kod işi sınırı (12/12) bir önceki koşuda doldu, bu yüzden yeni iş başlatılmadı. Ana dal son birleşmeden sonra yeşil (tüm kontroller başarılı). Açık iş PR'ı yok. Başarısız bir şey yok.
+4. **Önerim:** Sıradaki onaylı iş ev-6 (yedekten dönüşte telefonda olmayan satırların sunucuya yanlış gönderilmemesi); 29 Kasım'ın ilk koşusunda alınır.
+5. **Senden gereken karar:** Yeni karar yok. Önceki koşulardan açık: «Δεν έχει σπαρθεί ακόμα» sözlüğe eklensin mi; yeni Hintçe kelimeyi kim kontrol edecek; «Σήμερα» için iki soru (is-6b-4).
+
+Bugünkü kod işi: 12/12. Birleşti ≠ canlıda.
+
 ## 2026-11-28 20:03 Atina — yönetici koşusu 20261128-1741
 1. **Uygulamada ne değişti:** Ekranda görünen bir değişiklik yok. Değişiklik telefonun sunucudan kayıt çektiği (eşitleme) yerde. Sunucudan gelen her kayıt artık tek bir yerden geçip telefonun kendi biçimine çevriliyor: ziraat mühendisinin imzaladığı bir etiket, çekmeden sonra da «imzalı» kalıyor (önceden imza kaybolup «imzasız» görünebiliyordu); imzanın bir parçası eksikse imzalı sayılmıyor. İlaçlamanın bitiş saati saniyeye yuvarlanırken hep ileri yuvarlanıyor, yani hasat bekleme süresi (PHI) hiçbir zaman kısalmıyor. Sunucuya ait iç sütunlar telefona alınmıyor. Çiftlik ayarları da artık telefona geliyor; telefonda kaydedilmeyi bekleyen bir ayarı ya da yalnızca o telefona ait ayarları ezmiyor. Yedekten geri yüklemede saat karşılaştırması da düzeltildi: aynı an iki farklı yazımla gelince «daha yeni» sayılmıyor.
 2. **Senin için faydası:** Sunucu bağlantısı açıldığında, imzalı etiketlerin ve ilaçlama bekleme sürelerinin eşitlemeden sonra da doğru kalması; telefonda yaptığın ayarların sunucudan gelen eski bir değerle silinmemesi.
