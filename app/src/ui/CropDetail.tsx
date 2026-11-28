@@ -55,13 +55,7 @@ export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) 
         <h1 class="ds-title" tabIndex={-1}>{nameOf(crop)}</h1>
         {typeof crop.latin === 'string' && crop.latin !== '' && <p class="latin" lang="la">{crop.latin}</p>}
       </header>
-      <button type="button" class="btn secondary crop-tips-open" data-testid="crop-tips-open" onClick={() => setShowTips(true)}><Icon name="bulb" /><span>{t('ui.crop.tips')}</span></button>
-      <CropPace crop={crop} plantings={plantings.rows ?? []} harvests={harvests.rows ?? []} />
-      <SeedCard crop={crop} plantings={mine} parcels={parcels.rows ?? []} />
-      <YearCompare cropId={String(crop.id)} plantings={plantings.rows ?? []} harvests={harvests.rows ?? []} />
-      <button type="button" class="btn secondary" data-testid="crop-guide-open" onClick={() => setShowGuide(true)}><Icon name="info" /><span>{t('ui.guide.open')}</span></button>
-      {showGuide && <CropGuide crop={crop} onClose={() => setShowGuide(false)} />}
-      {showTips && <CropTips slug={text(crop.slug)} onClose={() => setShowTips(false)} />}
+      {/* the owner first asks «where is this crop and how is it doing»: its plantings come first (is-8) */}
       {mine.length > 0 && <div class="crop-detail-source">
         <TapNum caption={t('detail.plantings')} source={{ value: formatQty(mine.length), count: mine.length }} onOpen={() => setShowPlantingSource(true)} />
       </div>}
@@ -96,6 +90,13 @@ export function CropDetail({ crop, onBack }: { crop: Row; onBack: () => void }) 
           </details>
         );
       })}
+      <button type="button" class="btn secondary crop-tips-open" data-testid="crop-tips-open" onClick={() => setShowTips(true)}><Icon name="bulb" /><span>{t('ui.crop.tips')}</span></button>
+      <CropPace crop={crop} plantings={plantings.rows ?? []} harvests={harvests.rows ?? []} />
+      <SeedCard crop={crop} plantings={mine} parcels={parcels.rows ?? []} />
+      <YearCompare cropId={String(crop.id)} plantings={plantings.rows ?? []} harvests={harvests.rows ?? []} />
+      <button type="button" class="btn secondary" data-testid="crop-guide-open" onClick={() => setShowGuide(true)}><Icon name="info" /><span>{t('ui.guide.open')}</span></button>
+      {showGuide && <CropGuide crop={crop} onClose={() => setShowGuide(false)} />}
+      {showTips && <CropTips slug={text(crop.slug)} onClose={() => setShowTips(false)} />}
       <h2>{t('detail.lastspray')}</h2>
       {!last && <p class="muted" data-testid="detail-nospray">{t('spray.empty')}</p>}
       {last && (
