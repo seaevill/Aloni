@@ -4,21 +4,7 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": {
-    "id": "is-11",
-    "baslik": "Μητρώο: kayıt kimliğini kapalı bölüme al, indirme düğmesi yazılarını kısalt (FARK-LISTESI öneri 4). Kayıt içeriği ve dışa aktarım aynen kalır; 375 px önce/sonra ekran görüntüsü.",
-    "kaynak": "Bora, 28 Kasım 2026 (docs/design/compare/2026-11-27/FARK-LISTESI.md önerilerinden seçti)",
-    "onay": "Bora, 28 Kasım 2026",
-    "sahip": "aloni-gelistirme",
-    "tur": "ozellik",
-    "durum": "pr-acik",
-    "deneme": 1,
-    "son_deneme": {
-      "tarih": "2026-11-28",
-      "sonuc": "PR açıldı; yerel vitest/eslint/tsc yeşil, register e2e yeşil",
-      "pr": 659
-    }
-  },
+  "simdi": null,
   "sirada": [
     {
       "id": "is-6b-4",
@@ -162,6 +148,11 @@
       "id": "is-10",
       "baslik": "Χωράφια: karo ızgarası + liste tek kart listesine indi (çizim, ad, alan, ekili ürün adları, durum etiketi, bekleme cümlesi); özellik kaybı yok; 375 px 1797 → 1629 px",
       "pr": 657
+    },
+    {
+      "id": "is-11",
+      "baslik": "Μητρώο: kayıt kimliği ve «düzeltilen kayıt» satırı kartta kapalı bölüme («Κωδικός εγγραφής») alındı; indirme düğmesi yazıları kısaldı (Λήψη ve «(αγγλικά πεδία)» çıktı), düğmeler 5 satırdan 3 satıra; dışa aktarım ve yazdırma aynen",
+      "pr": 659
     }
   ],
   "bekleyen_kararlar": [
@@ -174,16 +165,17 @@
     "is-6b-3 (c): Σήμερα'da ilaçlama/hasat/iş ekleme düğmeleri hem hızlı ekleme (QuickAdd) bölümünde hem sayfanın başka yerinde var. Tekrar kalkacaksa hangisi kalsın: hızlı ekleme bölümü mü, sayfadaki düğmeler mi? (Düğme işlevi silinmez, yalnızca tekrar kalkar.)",
     "Σήμερα'daki iki yerde duran ekleme düğmeleri: Bora 28 Kasım 2026'da tercih belirtmedi; dokunulmaz.",
     "is-9 sonrası: RUNBOOK.md ve docs/milestones/DEMO-SEASON-TEST.md hâlâ eski yolu («Άλλα → Σύνδεση», «Άλλα → Επίδειξη…») yazıyor; artık arada «Ρυθμίσεις και σύνδεση» adımı var. Bora onaylarsa belge güncellemesi ayrı iş olarak sıraya girer.",
-    "is-10 sonrası: docs/design/feature-inventory-2026-11-24.md hâlâ kaldırılan parcel-sketch-open / parcel-sketch-overview satırlarını listeliyor; Bora onaylarsa belge güncellemesi ayrı iş olarak sıraya girer."
+    "is-10 sonrası: docs/design/feature-inventory-2026-11-24.md hâlâ kaldırılan parcel-sketch-open / parcel-sketch-overview satırlarını listeliyor; Bora onaylarsa belge güncellemesi ayrı iş olarak sıraya girer.",
+    "is-11 sonrası (bekçi notu): «Μηχανικό αρχείο (2η μορφή)» düğmesinde «2η» kısaltması var, sözlük düğmelerde kısaltma istemiyor (eski metin «δεύτερη μορφή»); ayrıca «(αγγλικά πεδία)» ipucu ekrandan kalktı. Bora onaylarsa küçük düzeltme işi olarak sıraya girer."
   ],
   "gunluk": {
     "tarih": "2026-11-28",
-    "kod_isi": 6
+    "kod_isi": 7
   },
   "son_kosu": {
     "tarih": "2026-11-28",
-    "is": "is-10 — yönetici koşusu 20261128-1321",
-    "sonuc": "is-10 tamam: PR #657 birleşti (squash 69bf237) — bekçi ONAY 45d84e4'te, tüm kontroller (check, sql, static, e2e 1–3, pr-size, Workers Builds) başarılı. Sıradaki onaylı iş: is-11."
+    "is": "is-11 — yönetici koşusu 20261128-1358",
+    "sonuc": "is-11 tamam: PR #659 birleşti (squash dc5efe0) — bekçi ONAY 963e473'te, tüm kontroller (check, sql, static, e2e 1–3, pr-size, Workers Builds) başarılı. Sırada onaylı özellik işi kalmadı; yalnızca izleme maddesi q-2 (yeni kanıt yoksa alınmaz)."
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }
