@@ -213,7 +213,7 @@ input[type="date"], input[type="datetime-local"], input[type="time"] { min-heigh
 .today-head .brand { margin:0; font-size:var(--fs-14); font-weight:800; letter-spacing:var(--ls-h2); color:var(--lime); }
 /* UX1: many «free to cut» rows fold into one line; the summary is a full-size tap target */
 details.fold > summary { min-height:var(--tap); display:flex; align-items:center; padding:0 var(--sp-16); margin:0 0 var(--sp-8); background:var(--card); border:var(--bw-1) solid var(--line); border-radius:var(--r-md); font-weight:700; cursor:pointer; }
-.card > summary { min-height:var(--tap); display:flex; align-items:center; font-weight:700; cursor:pointer; } /* a «card» fold (e.g. Orders map) is a full-size tap target */
+details[data-testid="orders-map"] > summary { min-height:var(--tap); align-content:center; cursor:pointer; } /* Orders map fold is a full-size tap target; no display change, so the ▸ marker stays */
 .planting-open { min-height:var(--tap); }
 details.fold[open] > summary { margin-bottom:var(--sp-12); }
 

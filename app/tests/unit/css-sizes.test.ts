@@ -20,7 +20,8 @@ describe('CSS font sizes', () => {
 
   it('card folds and planting chips are full-size tap targets', () => {
     const css = readFileSync(new URL('../../src/ui/styles.css', import.meta.url), 'utf8');
-    expect(/\.card > summary\s*\{[^}]*min-height:\s*var\(--tap\)/.test(css)).toBe(true);
+    expect(/orders-map"\]\s*>\s*summary\s*\{[^}]*min-height:\s*var\(--tap\)/.test(css)).toBe(true);
+    expect(/\.card > summary/.test(css)).toBe(false); // would change ▸ markers of worker-data, dev-section, crop-planting
     expect(/\.planting-open\s*\{[^}]*min-height:\s*var\(--tap\)/.test(css)).toBe(true);
   });
 });
