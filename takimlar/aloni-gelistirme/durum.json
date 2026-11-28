@@ -174,8 +174,8 @@
   },
   "son_kosu": {
     "tarih": "2026-11-28",
-    "is": "is-11 — yönetici koşusu 20261128-1358",
-    "sonuc": "is-11 tamam: PR #659 birleşti (squash dc5efe0) — bekçi ONAY 963e473'te, tüm kontroller (check, sql, static, e2e 1–3, pr-size, Workers Builds) başarılı. Sırada onaylı özellik işi kalmadı; yalnızca izleme maddesi q-2 (yeni kanıt yoksa alınmaz)."
+    "is": "yok — yönetici koşusu 20261128-1519",
+    "sonuc": "Alınacak iş yok: simdi boş, main 682c32d'de tüm kontroller yeşil, onaylı ve sirada durumunda özellik işi yok; q-2 izleme maddesi için main'de son 24 saatte düşen CI koşusu yok (yeni kanıt yok). Ajan çalışmadı (yalnızca kayıt PR'ı bekçisi)."
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }

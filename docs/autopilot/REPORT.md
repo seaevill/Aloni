@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 17:20 Atina — yönetici koşusu 20261128-1519
+1. **Uygulamada ne değişti:** Hiçbir şey. Bu koşuda uygulamaya dokunulmadı.
+2. **Senin için faydası:** Yok; yalnızca durum kontrolü yapıldı.
+3. **Ne denendi, ne başarısız oldu:** Ana dal (son birleşen: «Μητρώο» düzeltmesi, is-11) GitHub'da tüm kontrollerde yeşil. Açık iş yok. Sırada senin onayladığın ve başlanabilecek özellik işi kalmadı. Ara sıra düşen testleri izleme maddesi (q-2) için son 24 saatte ana dalda düşen koşu yok, yani bakılacak yeni kanıt yok. Bu yüzden takım çalıştırılmadı.
+4. **Önerim:** Sıra boş olduğu için yeni iş seçmen gerekiyor. Hazır öneriler (onay verirsen sıraya girer): (a) «Μηχανικό αρχείο (2η μορφή)» düğmesindeki «2η» kısaltmasını düzeltmek ve «(αγγλικά πεδία)» açıklamasını geri getirmek; (b) RUNBOOK ve Demo test listesinde eski yolları yeni «Άλλα → Ρυθμίσεις και σύνδεση» yoluna göre güncellemek; (c) özellik listesi belgesinden kalkan tarla çizimi satırlarını silmek.
+5. **Senden gereken karar:** (1) Yukarıdaki (a), (b), (c) işlerinden hangileri yapılsın? (2) «Σήμερα» için iki soru (is-6b-4) hâlâ açık: «Για κοπή σήμερα» mı «Χωράφια χωρίς αναμονή» mı kalsın; ekleme düğmeleri hızlı ekleme bölümünde mi sayfada mı kalsın?
+
+PR: yalnızca bu kayıt PR'ı. Bugünkü kod işi: 7/12. Birleşti ≠ canlıda.
+
 ## 2026-11-28 16:25 Atina — yönetici koşusu 20261128-1358
 1. **Uygulamada ne değişti:** «Αρχείο ψεκασμών» (ilaçlama kayıt defteri) ekranında her kaydın uzun kimlik numarası artık kartta görünmüyor; «Κωδικός εγγραφής» başlıklı kapalı bir satıra dokununca açılıyor (düzeltilen kaydın numarası da orada). Üstteki indirme düğmelerinin yazıları kısaldı («Λήψη» ve «(αγγλικά πεδία)» kalktı); düğmeler 5 satırdan 3 satıra indi, «προειδοποιήσεων» kelimesi artık ortadan bölünmüyor. «Εκτύπωση» düğmesi uyarı arşivi düğmesinden önce geliyor. İndirilen dosyalar ve yazdırma aynen aynı.
 2. **Senin için faydası:** Kartlarda okunmayan uzun numaralar yok, düğmeler bir bakışta okunuyor. Dürüst not: kapalı satır parmakla dokunulacak kadar yüksek olduğu için sayfa toplamda kısalmadı, 10 kartta yaklaşık 90 px uzadı.
