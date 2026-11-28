@@ -17,6 +17,7 @@
 ## 3. Yedekten dönme
 - **Şu an (M1):** veriler ve fotoğraflar yalnızca bu telefonda. **Yedek al:** Περισσότερα → «Εξαγωγή αντιγράφου» tek bir dosya kaydeder (fotoğraflar dahil); 7 günden eskiyse uygulama kırmızı uyarı gösterir. Dosyayı e-postana ya da iCloud'a koy.
 - **Yeni telefona/silinen uygulamaya dönmek:** boş telefonda Περισσότερα → «Επαναφορά» → dosyayı seç. Aynı dosyayı ikinci kez yüklemek hiçbir şeyi çoğaltmaz; bozuk fotoğraf varsa hiçbir şey yazılmaz ve uygulama söyler. Başka veri olan telefona yüklemeyi reddeder.
+- **Eşitleme açıksa:** önce giriş + eşitleme (ilk eşitleme bitsin), sonra yedek. Bitmeden yüklersen uygulama «Δεν έγινε καμία αλλαγή» diyerek reddeder; eski yedek sunucudaki yeni kaydı ezmez.
 - Demo çiftlik gerçek verinden ayrıdır; "Diğer → Demo çiftliği sil" gerçek verine dokunmaz.
 - **Hiçbir kayıt silinmez:** stok hareketleri ve fotoğraflar yalnızca eklenir, hata yeni bir kayıtla düzeltilir; parsel, ekim, ürün ve analiz «Αρχειοθέτηση» ile saklanır (5 sn «Αναίρεση»).
 - **Supabase sonrası:** günlük otomatik yedek + haftalık `pg_dump` (senin sahip olduğun AB kovası) + uygulamadan JSON dışa aktarma. Geri yükleme tatbikatı M5'te.
@@ -234,7 +235,7 @@ rollback;
 5. **Çip:** üstte **«Ο συγχρονισμός δουλεύει · τελευταίος: SS:DD»** (bir tur başarılı olunca; önce «Αναμονή πρώτου συγχρονισμού»). **«N μη συγχρονισμένα»** = bekleyen kayıt; **«Εκτός σύνδεσης»** = sinyal yok; **«Δεν στάλθηκε. Θα ξαναδοκιμάσουμε.»** = son tur olmadı, kendiliğinden dener.
 6. **Kontrol:** Supabase → **Table Editor** → `parcels`, `job_spray`: sayılar telefonla aynı olmalı.
 7. **Kırmızı kutu «Ο διακομιστής δεν δέχτηκε αυτές τις εγγραφές»:** her satır ne olduğunu, nedenini ve ne yapılacağını yazar; **kayıt telefonda durur, kaybolmaz**. Ekrandaki metni bana yaz; «Το είδα» yalnızca satırı kaldırır.
-8. **Sorun olursa geri dönüş:** (a) **Άλλα → Αποσύνδεση**: senkron durur, telefonda hiçbir şey silinmez, bekleyenler sırada kalır; düzelince yeniden giriş + aynı düğme **kaldığı yerden** devam eder. (b) Telefon verisi bozulursa §3 (yedekten dön). (c) Sunucu tarafı için §10.3 (Supabase Backups). Üretime hiçbir yapay zeka dokunmaz.
+8. **Sorun olursa geri dönüş:** (a) **Άλλα → Αποσύνδεση**: senkron durur, telefonda hiçbir şey silinmez, bekleyenler sırada kalır; düzelince yeniden giriş + aynı düğme **kaldığı yerden** devam eder. (b) Telefon verisi bozulursa §3 (yedekten dön; sıra: önce giriş + eşitleme, sonra yedek). (c) Sunucu tarafı için §10.3 (Supabase Backups). Üretime hiçbir yapay zeka dokunmaz.
 
 ## 14a. Hava durumu – TEK SAYFA (her adım tek yer, tek tıklama; sen yaparsın, Claude üretime dokunmaz)
 **Yayın yalnızca senin «tamam»ından sonra.** Gizli anahtarı **hiçbir yere yazma** (bana da, SQL Editor'e de). Ayrıntı ve geri dönüş: §14.

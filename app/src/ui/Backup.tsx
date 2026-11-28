@@ -8,7 +8,7 @@ import { BackupError, makeBackup, markBackupDone, parseBackup, restoreBackup, ty
 import { APP_VERSION } from '../version';
 
 const ERROR_KEYS: Record<BackupErrorCode, I18nKey> = {
-  format: 'backup.error.format', version: 'backup.error.version', sha256: 'backup.error.sha256', demo: 'backup.error.demo', conflict: 'backup.error.conflict',
+  format: 'backup.error.format', version: 'backup.error.version', sha256: 'backup.error.sha256', demo: 'backup.error.demo', conflict: 'backup.error.conflict', sync_pending: 'backup.error.sync_pending',
 };
 
 /** Global strong warning: there is data on the phone and no backup newer than 7 days. */

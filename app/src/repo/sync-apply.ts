@@ -70,3 +70,8 @@ const cursorKey = (farmId: string) => `sync_cursor:${farmId}`;
 /** The pull position of this phone for one farm ({x, s, g, v} as the server hands it out; null = from the start). Device-local: never queued. */
 export async function getCursor(db: AppDB, farmId: string): Promise<unknown> { return (await db.settings.get(cursorKey(farmId)))?.value ?? null; }
 export async function setCursor(db: AppDB, farmId: string, cursor: unknown): Promise<void> { await db.settings.put({ key: cursorKey(farmId), value: cursor }); }
+
+/** Device-local marker: a pull of this farm has run to its end (the server said «no more»). A cursor alone is not enough: it is also written after each page of a pull that is still going. */
+export const PULL_DONE_PREFIX = 'pull_done:';
+export async function markPullDone(db: AppDB, farmId: string): Promise<void> { await db.settings.put({ key: `${PULL_DONE_PREFIX}${farmId}`, value: true }); }
+export async function pullDone(db: AppDB, farmId: string): Promise<boolean> { return (await db.settings.get(`${PULL_DONE_PREFIX}${farmId}`))?.value === true; }

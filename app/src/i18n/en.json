@@ -71,6 +71,7 @@
   "backup.error.sha256": "A photo in the backup is damaged. Nothing was changed.",
   "backup.error.demo": "The backup contains demo data and was rejected.",
   "backup.error.conflict": "This phone already holds other data. Nothing was restored.",
+  "backup.error.sync_pending": "Sync is on but the first sync has not finished. Sign in, wait for it to finish, then restore. Nothing was changed.",
   "warn.homescreen": "Add the app to the Home Screen: otherwise the iPhone may delete its data.",
   "warn.persist": "The browser does not guarantee the data will stay. Export a backup often.",
   "parcel.add": "Add a parcel",

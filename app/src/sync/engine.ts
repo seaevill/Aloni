@@ -3,7 +3,7 @@
 // 0001–0017 migrations and a real account trial). Every call is safe to repeat: ops carry their op_id, pull is a cursor.
 import type { AppDB, OutboxRow, Row } from '../db/schema';
 import { RPC_PREFIX } from '../repo';
-import { applyPulled, getCursor, markAcked, markRejected, replaceWeather, setCursor, type ServerAnswer } from '../repo/sync-apply';
+import { applyPulled, getCursor, markAcked, markPullDone, markRejected, replaceWeather, setCursor, type ServerAnswer } from '../repo/sync-apply';
 
 export interface PulledRow { table: string; x: string; seq: number; row: Row }
 export interface PullAnswer { rows: PulledRow[]; more: boolean; reset: boolean; cursor: unknown }
@@ -74,7 +74,7 @@ export async function pull(db: AppDB, tr: Transport, farmId: string): Promise<{ 
     written += await applyPulled(db, farmId, a.rows.map((r) => ({ table: r.table, row: r.row })));
     cursor = a.cursor;
     await setCursor(db, farmId, cursor); // after the rows are in: a crash in between only repeats a page
-    if (!a.more) break;
+    if (!a.more) { await markPullDone(db, farmId); break; }
   }
   return { written, reset };
 }
