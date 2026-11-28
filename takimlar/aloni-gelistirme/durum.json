@@ -4,7 +4,21 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": null,
+  "simdi": {
+    "id": "ev-1",
+    "baslik": "[P1] Hasat formu henüz ekilmemiş (yalnızca planlanmış, «Προγραμματισμένη») ekimi sunmasın ya da kilitli göstersin («Δεν έχει σπαρθεί ακόμα»); Χωράφια ve Φυτά'da yalnızca planlanmış ekimi olan tarla/ürün «Έτοιμο για κοπή» değil «Προγραμματισμένη» görünsün. Kaçma denemesi testi: işçi planlanmış ekime hasat yazamaz (birim + 375 px e2e). ~150 satır. Yunanca metin kural 5'e uyar: docs/i18n/glossary-el.md'de olmayan terim uydurulmaz, bekleyen_kararlar'a yazılır.",
+    "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 1-usability U1",
+    "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
+    "sahip": "aloni-gelistirme",
+    "tur": "ozellik",
+    "durum": "pr-acik",
+    "deneme": 1,
+    "son_deneme": {
+      "tarih": "2026-11-28",
+      "sonuc": "PR açıldı; vitest 925 geçti, eslint ve tsc temiz, 375 px e2e geçti",
+      "pr": "https://github.com/seaevill/Aloni/pull/669"
+    }
+  },
   "sirada": [
     {
       "id": "is-6b-4",
@@ -51,17 +65,6 @@
       "sahip": "aloni-gelistirme",
       "tur": "ozellik",
       "durum": "ertelendi",
-      "deneme": 0,
-      "son_deneme": null
-    },
-    {
-      "id": "ev-1",
-      "baslik": "[P1] Hasat formu henüz ekilmemiş (yalnızca planlanmış, «Προγραμματισμένη») ekimi sunmasın ya da kilitli göstersin («Δεν έχει σπαρθεί ακόμα»); Χωράφια ve Φυτά'da yalnızca planlanmış ekimi olan tarla/ürün «Έτοιμο για κοπή» değil «Προγραμματισμένη» görünsün. Kaçma denemesi testi: işçi planlanmış ekime hasat yazamaz (birim + 375 px e2e). ~150 satır. Yunanca metin kural 5'e uyar: docs/i18n/glossary-el.md'de olmayan terim uydurulmaz, bekleyen_kararlar'a yazılır.",
-      "kaynak": "Değerlendirme 2026-11-28 (docs/reviews/team/2026-11-28-evaluation/SUMMARY.md): 1-usability U1",
-      "onay": "Bora, 28 Kasım 2026: değerlendirme sonucu alınacak kararları ekibe bıraktı (sorma)",
-      "sahip": "aloni-gelistirme",
-      "tur": "ozellik",
-      "durum": "sirada",
       "deneme": 0,
       "son_deneme": null
     },
@@ -767,7 +770,8 @@
     "ev-36 (3-engine BUG-13): PHI-GUARD ileri tetiğinin tamponu (hasattan kaç gün önce) ziraat mühendisi onayı ister.",
     "ev-37 (3-engine E7): yeniden giriş kilidi aynı tarladaki diğer ekimlere de uygulansın mı (savrulma tamponu) — ziraat mühendisi kararı.",
     "ev-38 (5-data F8): iki telefon aynı kaydı değiştirince biri sessizce kayboluyor; düzeltme SQL ister (ya da şartnamedeki söz düzeltilir) — SQL olduğu için Bora'nın onayına bağlı.",
-    "ev-46 (5-data F13): işçinin applied_ops'ta sahibin işlem izlerini görmesini kapatan yeni SQL dosyası (0043); SQL olduğu için yazım ve yükleme Bora'nın onayına bağlı."
+    "ev-46 (5-data F13): işçinin applied_ops'ta sahibin işlem izlerini görmesini kapatan yeni SQL dosyası (0043); SQL olduğu için yazım ve yükleme Bora'nın onayına bağlı.",
+    "ev-1 (PR #669): «Δεν έχει σπαρθεί ακόμα» ifadesi docs/i18n/glossary-el.md içinde yok, kullanılmadı; kartlar ve hasat seçicisi mevcut «Προγραμματισμένη» anahtarını kullanıyor. Bora sözlük onayı verirse hasat seçicisine açıklayıcı cümle eklenir. Ayrıca Hintçe «योजनाबद्ध» (planting.status.planned) geçici, ana dili Hintçe olan biri kontrol etmeli."
   ],
   "gunluk": {
     "tarih": "2026-11-28",

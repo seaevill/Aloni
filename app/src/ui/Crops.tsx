@@ -59,11 +59,12 @@ export function Crops() {
   const canAdd = !demo && liveParcels.length > 0;
   const waitOf = (p: Row) => plantingWait(String(p.id), now, links.rows ?? [], sprays.rows ?? [], plantings.rows ?? [], labels.rows ?? []);
   /** ONE chip per crop: no planting, an unknown waiting period, a running one, or ready to cut (the worst case wins; unknown is never «ready»). */
-  const chipOf = (c: Row): { tone: Tone; key: 'ui.crops.chip.none' | 'ui.crops.chip.unknown' | 'ui.crops.chip.wait' | 'ui.crops.chip.free' } => {
+  const chipOf = (c: Row): { tone: Tone; key: 'ui.crops.chip.none' | 'ui.crops.chip.unknown' | 'ui.crops.chip.wait' | 'ui.crops.chip.free' | 'ui.crops.chip.planned' } => {
     const ws = live.filter((p) => p.crop_id === c.id).map(waitOf);
     if (ws.length === 0) return { tone: 'info', key: 'ui.crops.chip.none' };
     if (ws.some((w) => w.state === 'unknown')) return { tone: 'unknown', key: 'ui.crops.chip.unknown' };
     if (ws.some((w) => w.state === 'running')) return { tone: 'hold', key: 'ui.crops.chip.wait' };
+    if (ws.every((w) => w.state === 'planned')) return { tone: 'info', key: 'ui.crops.chip.planned' };      // only planned (not sown yet): not «ready to cut»
     return { tone: 'ready', key: 'ui.crops.chip.free' };
   };
   if (shownCrop) {

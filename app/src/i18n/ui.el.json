@@ -205,6 +205,7 @@
   "ui.crops.chip.unknown": "Άγνωστη αναμονή",
   "ui.crops.chip.wait": "Σε αναμονή",
   "ui.crops.chip.free": "Έτοιμο για κοπή",
+  "ui.crops.chip.planned": "Προγραμματισμένη",
   "ui.crops.plantings": "Φυτεύσεις",
   "ui.crop.tips": "Συμβουλές",
   "ui.crop.tips.note": "Γενικές πληροφορίες – όχι σύσταση",

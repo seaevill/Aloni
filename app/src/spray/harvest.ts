@@ -59,7 +59,10 @@ export function harvestGate(plantingId: string, at: string, links: readonly Row[
 }
 
 export interface HarvestInput { plantingId: string; crates: string; harvestedAt: string; note: string; /** «Ποιος έκοψε»: the id of a roster worker. Required. */ cutBy: string }
-export type HarvestResult = { ok: true; row: Row } | { ok: false; planting: boolean; crates: boolean; time: boolean; cutBy: boolean; gate: Gate | undefined };
+export type HarvestResult = { ok: true; row: Row } | { ok: false; planting: boolean; crates: boolean; time: boolean; cutBy: boolean; gate: Gate | undefined; /** only present when the planting is planned and not sown yet */ planned?: true };
+
+/** A planting that is only planned («Προγραμματισμένη») has not been sown: there is nothing to cut, so a harvest on it is never recorded. */
+export const isPlanned = (p: Row | undefined): boolean => p?.status === 'planned';
 
 /** The clock's ISO time has milliseconds; the waiting-period logic reads whole UTC seconds. An unreadable «now» stays unreadable (and so blocks). */
 const wholeSeconds = (iso: string): string => iso.replace(/\.\d+Z$/, 'Z');
@@ -73,6 +76,8 @@ export function buildHarvest(input: HarvestInput, links: readonly Row[], sprayRo
   const now = wholeSeconds(nowIso);
   const bad = { planting: !input.plantingId, cutBy: input.cutBy.trim() === '', crates: !crates.known || crates.value < 1 || crates.value > 9999, time: !parseInstant(input.harvestedAt).known || input.harvestedAt > now };
   const gate = input.plantingId ? harvestGate(input.plantingId, now, links, sprayRows, plantings, labels) : undefined;
+  const planned = isPlanned(plantings.find((x) => x.id === input.plantingId));
+  if (planned) return { ok: false, ...bad, planned: true, gate: gate?.ok ? undefined : gate };
   if (bad.planting || bad.crates || bad.time || bad.cutBy || !gate?.ok) return { ok: false, ...bad, gate: gate?.ok ? undefined : gate };
   return { ok: true, row: { id, farm_id: farmId, planting_id: input.plantingId, cut_by: input.cutBy, crates_str: input.crates.trim(), harvested_at: input.harvestedAt, created_at: nowIso, ...(input.note.trim() ? { note: input.note.trim() } : {}) } };
 }

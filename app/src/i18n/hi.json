@@ -110,6 +110,7 @@
   "labeluse.line": "{name}: {value}",
   "labeluse.dose": "मात्रा",
   "harvest.others": "बाकी सभी फसलें",
+  "planting.status.planned": "योजनाबद्ध",
   "harvest.less": "−1",
   "harvest.minus": "−",
   "harvest.more": "+1",

@@ -7,7 +7,7 @@ import { put } from '../repo';
 import { saveDestination, type Destination } from '../stock/destination';
 import { serverDestination } from '../stock/destination-words';
 import { serverRecordsOn } from '../owner-records/mode';
-import { buildHarvest, harvestGate } from '../spray/harvest';
+import { buildHarvest, harvestGate, isPlanned } from '../spray/harvest';
 import { athensInstant, athensLocalNow, instantOf } from '../spray/time';
 import { useSubmit } from './useSubmit';
 import { CropIcon } from './ds';
@@ -58,6 +58,7 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
     return [cropOf(p), dated(p), sameDate && p.area_str !== undefined ? formatArea(p.area_str as string | number) : ''].filter(Boolean).join(' · ');
   };
   const markOf = (p: Row): string => {
+    if (isPlanned(p)) return t('planting.status.planned');      // planned, not sown yet: nothing to cut
     const g = harvestGate(String(p.id), instantOf(new Date()) ?? '', links.rows ?? [], sprays.rows ?? [], plantings.rows ?? [], labelRows.rows ?? []);
     if (g.ok) return '';
     return g.reason === 'running' && g.until ? t('harvest.chip.until', { d: formatDateTime(g.until) }) : t('harvest.chip.unknown');
@@ -70,7 +71,7 @@ export function HarvestForm({ onDone, farmId = activeFarm.value, actorId, big = 
   const picker = (list: Row[]) => [...new Set(list.map((p) => text(p.parcel_id)))].map((pid) => (
     <div key={pid}>
       <h3>{text(parcels.rows?.find((x) => x.id === pid)?.name)}</h3>
-      <div class="seg two">{list.filter((p) => text(p.parcel_id) === pid).map((p) => <button class="pick" key={p.id} data-testid="harvest-chip" aria-pressed={planting === p.id} onClick={() => setPlanting(String(p.id))}><CropIcon slug={slugOf(p)} size="var(--icon-sm)" /><span>{chipText(p)}</span></button>)}</div>
+      <div class="seg two">{list.filter((p) => text(p.parcel_id) === pid).map((p) => <button class="pick" key={p.id} data-testid="harvest-chip" disabled={isPlanned(p)} aria-pressed={planting === p.id} onClick={() => setPlanting(String(p.id))}><CropIcon slug={slugOf(p)} size="var(--icon-sm)" /><span>{chipText(p)}</span></button>)}</div>
     </div>
   ));
   const cratesError = failed > 0 ? (!cratesN.known ? t('harvest.error.crates') : cratesN.value < 1 ? t('harvest.error.zero') : cratesN.value > MAX_CRATES ? t('harvest.error.max', { max: MAX_CRATES }) : '') : '';
