@@ -12,6 +12,15 @@
 
 Her koşu bu başlığın altına yeni bir bölüm ekler. Durum sözleri: **uygulandı · test edildi · birleşti · derlendi (Cloudflare) · canlıda doğrulandı** — «birleşti» «canlıda» demek değildir. Uydurma ilerleme yazılmaz.
 
+## 2026-11-28 19:40 Atina — yönetici koşusu 20261128-1721
+1. **Uygulamada ne değişti:** Ekranda görünen bir değişiklik yok. Değişiklik yine arka plandaki öneri motorunda (henüz hiçbir ekrana bağlı değil). Bir ilaç aynı ürün için etikette birden fazla satırla yazılıysa, motor artık yalnızca ilk satıra değil hepsine bakıyor: hasat bekleme süresi (PHI) ve tarlaya giriş bekleme süresi (REI) için en uzun olanı sayıyor. Satırlardan biri onaysız ya da eksikse karar vermiyor, «engelli» diyor. Bitiş saati başlangıçtan önce girilmiş bir ilaçlama da artık «okunamayan saat» olarak engelleniyor; motor kendisi bir süre tahmin etmiyor.
+2. **Senin için faydası:** Motor ekranlara bağlandığında, kısa bekleme süreli satır yüzünden bekleme süresi erken bitmiş gibi görünmeyecek; yanlış girilmiş saat de sessizce kabul edilmeyecek.
+3. **Ne denendi, ne başarısız oldu:** Önce 6 yeni test yazıldı (eski kodla 6'sı da kırmızıydı), sonra yeşil. Testler kısa satırın önde ya da arkada olmasını, en uzun sürenin bitmesinden bir saniye önce ve sonrasını, onaysız satırın her konumda engellemesini deniyor. Tüm birim testleri (motor 156, uygulama 929) geçti. Bekçi testleri ve kod denetimini kendisi koşturdu, eski kodla 6 testin düştüğünü kendisi gösterdi ve onayladı. GitHub'da tüm kontroller (iPhone tarayıcısıyla 3 parça ekran testi, SQL, Cloudflare derlemesi) ilk denemede başarılı. Başarısız bir şey yok.
+4. **Önerim:** Sıradaki onaylı iş ev-5: sunucudan gelen kayıtları telefonun biçimine çeviren tek bir yer (eşitleme dönüşü).
+5. **Senden gereken karar:** Yeni karar yok. Önceki koşulardan açık: «Δεν έχει σπαρθεί ακόμα» sözlüğe eklensin mi; yeni Hintçe kelimeyi kim kontrol edecek; «Σήμερα» için iki soru (is-6b-4).
+
+PR: https://github.com/seaevill/aloni/pull/675 (birleşti). Bugünkü kod işi: 11/12. Birleşti ≠ canlıda.
+
 ## 2026-11-28 19:05 Atina — yönetici koşusu 20261128-1648
 1. **Uygulamada ne değişti:** Ekranda görünen bir değişiklik yok. Değişiklik uygulamanın arka plandaki öneri motorunda; bu motor henüz hiçbir ekrana bağlı değil. Bir tarlada ilaçlamanın hasat bekleme süresi (PHI) hâlâ sürüyorsa, motor artık o ekim için hasadı açıkça engelliyor. Don sonrası «çözülmeden hasat yok» önerisi de bekleme süresi sürerken (ya da süre bilinmiyorken) artık «ilaç açısından sorun yok» demiyor.
 2. **Senin için faydası:** Motor ekranlara bağlandığında, bekleme süresi dolmamış bir ürün için yanlışlıkla «hasat edilebilir» izlenimi verilmeyecek. İleride bu hatanın geri gelmesini bir test engelliyor.

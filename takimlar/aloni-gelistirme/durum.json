@@ -4,11 +4,7 @@
   "dogrulandi": true,
   "not": "2026-11-27 (Bora onayı): TEK iş listesi budur. docs/autopilot/QUEUE.md arşivdir; açık maddeleri buraya taşındı. Zamanlayıcı docs/autopilot/YONETICI.md'yi uygular. onay alanı boş iş alınmaz.",
   "alanlar": "id · baslik · kaynak · onay (Bora, tarih) · sahip · tur (ozellik|bakim) · durum (sirada|calisiyor|pr-acik|tamam|engelli|ertelendi|bora-bekliyor) · deneme (en fazla 2) · son_deneme {tarih, sonuc, pr}",
-  "simdi": {
-    "id": "ev-4",
-    "pr": 675,
-    "dal": "1128-ev-4-one-label-row"
-  },
+  "simdi": null,
   "sirada": [
     {
       "id": "is-6b-4",
@@ -722,6 +718,11 @@
       "id": "ev-3",
       "baslik": "Karar motoru: süren PHI bekleyişi (phi_hold) artık hasat vetosu taşıyor; don kuralının «çözülmeden hasat yok» önerisi PHI sürerken (ya da bilinmezken) «phi_clear: true» demiyor; yeni altın NEG vakası NEG-FROST-thaw-during-phi (kurgusal, yalnızca test). Motor henüz ekrana bağlı değil",
       "pr": 673
+    },
+    {
+      "id": "ev-4",
+      "baslik": "Karar motoru: PHI/REI/kayıt kontrolü (ürün, bitki) için tüm etiket satırlarını okuyor; birden çok imzalı satırda en geç bitiş sayılıyor, imzasız/eksik satır varsa engelli; bitişi başlangıçtan önce olan ilaçlama «okunamayan saat» (engelli). Motor henüz ekrana bağlı değil",
+      "pr": 675
     }
   ],
   "bekleyen_kararlar": [
@@ -747,12 +748,12 @@
   ],
   "gunluk": {
     "tarih": "2026-11-28",
-    "kod_isi": 10
+    "kod_isi": 11
   },
   "son_kosu": {
     "tarih": "2026-11-28",
-    "is": "ev-3 — yönetici koşusu 20261128-1648",
-    "sonuc": "PR #673 birleşti (squash 4ded424): bekçi ONAY 0c86c41'de, tüm kontroller (check, sql, static, e2e 1–3, pr-size, Workers Builds) ilk denemede yeşil."
+    "is": "ev-4 — yönetici koşusu 20261128-1721",
+    "sonuc": "PR #675 birleşti (squash 0cef82b): bekçi ONAY 9246f4c'de, tüm kontroller (check, sql, static, e2e 1–3, pr-size, Workers Builds) ilk denemede yeşil."
   },
   "yogun_mod": "Bora 27 Kasım 2026: 1 Aralık 2026 (Salı, Atina) dahil günde en fazla 12 kod işi, zamanlayıcı saatte bir; sonra 4'e ve 3 saate döner."
 }
