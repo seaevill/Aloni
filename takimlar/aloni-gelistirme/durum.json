@@ -16,7 +16,7 @@
     "son_deneme": {
       "tarih": "2026-11-28",
       "sonuc": "PR açıldı; yerel vitest/eslint/tsc yeşil, register e2e yeşil",
-      "pr": null
+      "pr": 659
     }
   },
   "sirada": [
