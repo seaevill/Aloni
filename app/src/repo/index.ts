@@ -76,8 +76,12 @@ export async function putMany(db: AppDB, writes: readonly Write[]): Promise<void
   await refreshPending(db);
 }
 
+/** A setting key that carries the Demo farm id (cuts:<demo>, money:<demo>, ...): fictional, so it never travels in a real backup or to the server. */
+export const isDemoKey = (key: string): boolean => key.includes(DEMO_FARM_ID);
+
 /** Owner settings (e.g. the data controller details): same rule, one transaction, queued for sync. */
 export async function putSetting(db: AppDB, farmId: string, key: string, value: unknown): Promise<void> {
+  if (farmId === DEMO_FARM_ID || isDemoKey(key)) { await db.settings.put({ key, value }); return; }   // the Demo farm never reaches the server queue (safety rule 4)
   await db.transaction('rw', [db.settings, db.outbox], async () => {
     await db.settings.put({ key, value });
     await enqueue(db, farmId, 'settings', key, 'update', { key, value }, { device_id: await deviceId(db), actor_id: await actorId(db) });
