@@ -2,13 +2,13 @@
   "takim": "bekci",
   "guncelleme": "2026-11-28",
   "son_denetim": {
-    "pr": "688",
-    "sha": "8f3fb82441015a6e7872a5138abb73845f9ee41c",
-    "takim": "aloni-gelistirme (ev-9 css değişkenleri, 2. denetim)",
+    "pr": "690",
+    "sha": "9cabbc421cfb8c197da1be5565332616248ac76f",
+    "takim": "aloni-gelistirme (ev-10 kural başına kontrast)",
     "karar": "ONAY"
   },
   "denetim_sayaci": {
-    "onay": 35,
+    "onay": 36,
     "red": 5
   }
 }
